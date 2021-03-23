@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Setup
+
+Create a file with the name `.env`. Add variables `REACT_APP_AUTH0_DOMAIN` and `REACT_APP_AUTH0_CLIENT_ID`. These can be found in [vault](https://vault.jrc.no/) under customer-projects > organisasjonskollegiet. Also set `REACT_APP_REDIRECT_URI = http://locahost:3000`.
+
 ## Available Scripts
 
 In the project directory, you can run:
