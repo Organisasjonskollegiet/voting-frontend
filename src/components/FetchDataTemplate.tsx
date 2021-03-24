@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_USERS, GET_MEETINGS } from '../queries/queries'
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface User {
   id: string;
@@ -25,18 +26,20 @@ interface MeetingsData {
 
 const FetchDataTemplate = () => {
 
-  const { loading, error, data } = useQuery<UsersData>(GET_USERS)
+  const { loading, error, data } = useQuery<UsersData>(GET_MEETINGS)
+  const { isAuthenticated } = useAuth0();
+
+  if (!isAuthenticated) return <p>Not logged in...</p>
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
   if (!data) return <p>Error</p>
-
+  
+  console.log(data);
   return (
     <div>
-      {data.users.map( user => (
-        <p>{user.id}</p>
-      ))}
+      <p>Hei</p>
     </div>
   )
 }

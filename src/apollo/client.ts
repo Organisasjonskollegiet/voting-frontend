@@ -1,22 +1,25 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/',
 });
 
 const authLink = setContext((_, { headers }) => {
+  const { getAccessTokenSilently } = useAuth0();
   // get the authentication token from local storage if it exists
-  const token = localStorage.getItem('token');
-  // return the headers to the context so httpLink can read them
-  console.log(token);
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
+  return new Promise((sucess, fail) => {
+    const token = getAccessTokenSilently();
+    // return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  });
 });
 
 export const client = new ApolloClient({

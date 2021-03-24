@@ -16,7 +16,7 @@ export const GET_MEETINGS = gql`
       description
       owner {
         id
-        usernames
+        username
       }
     }
   }
