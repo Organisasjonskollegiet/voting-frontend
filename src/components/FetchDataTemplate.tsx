@@ -1,30 +1,10 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_USERS, GET_MEETINGS } from '../queries/queries'
+import { GET_MEETINGS } from '../queries/queries'
 import { useAuth0 } from '@auth0/auth0-react';
+import {UsersData} from '../types/types'
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
-interface UsersData {
-  users: User[];
-}
-
-interface Meeting {
-  id: string;
-  title: string;
-  description: string;
-  owner: User;
-}
-
-interface MeetingsData {
-  meetings: Meeting[];
-}
-
-const FetchDataTemplate = () => {
+const FetchDataTemplate: React.FC = () => {
 
   const { loading, error, data } = useQuery<UsersData>(GET_MEETINGS)
   const { isAuthenticated } = useAuth0();
