@@ -15,7 +15,7 @@ const ApolloWrapper: React.FC = ({children}) => {
     getToken();
   }, [getAccessTokenSilently, isAuthenticated]);
   const httpLink = new HttpLink({
-    uri: 'http://localhost:4000/',
+    uri: 'http://localhost:4000/graphql',
   });
   const authLink = setContext((_, { headers, ...rest }) => {
     if (!bearerToken) return { headers, ...rest };

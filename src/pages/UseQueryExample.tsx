@@ -1,12 +1,12 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_MEETINGS } from '../queries/queries'
+import { GET_MEETINGS } from '../grapgql/queries'
 import { useAuth0 } from '@auth0/auth0-react';
-import {UsersData} from '../types/types'
+import { UsersData } from '../types/types'
 
-const FetchDataTemplate: React.FC = () => {
+const UseQueryExample: React.FC = () => {
 
-  const { loading, error, data } = useQuery<UsersData>(GET_MEETINGS)
+  const { loading, error, data } = useQuery<UsersData>(GET_MEETINGS);
   const { isAuthenticated } = useAuth0();
 
   if (!isAuthenticated) return <p>Not logged in...</p>
@@ -24,4 +24,4 @@ const FetchDataTemplate: React.FC = () => {
   )
 }
 
-export default FetchDataTemplate;
+export default UseQueryExample;
