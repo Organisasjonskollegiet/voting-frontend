@@ -1,0 +1,12 @@
+query GetUser($id: ID!) {
+  user(id: $id) {
+    ... on User {
+      id
+      email
+    }
+
+    ... on UserNotFoundError {
+      message
+    }
+  }
+}

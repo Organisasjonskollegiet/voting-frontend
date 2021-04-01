@@ -17,7 +17,6 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
-    "chromatic": "^5.7.0",
     "framer-motion": "^3.0.0",
     "graphql": "^15.5.0",
     "react": "^17.0.1",
@@ -37,7 +36,8 @@
     "format": "prettier --write 'src/*.{js,jsx,ts,tsx}'",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "generate": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": [
@@ -59,14 +59,19 @@
   },
   "devDependencies": {
     "@cypress/react": "^4.16.4",
+    "@graphql-codegen/cli": "1.21.3",
     "@storybook/addon-actions": "^6.1.21",
     "@storybook/addon-essentials": "^6.1.21",
     "@storybook/addon-links": "^6.1.21",
     "@storybook/node-logger": "^6.1.21",
     "@storybook/preset-create-react-app": "^3.1.7",
     "@storybook/react": "^6.1.21",
+    "chromatic": "^5.7.0",
     "cypress": "^6.8.0",
-    "eslint-config-prettier": "^8.1.0"
+    "eslint-config-prettier": "^8.1.0",
+    "@graphql-codegen/typescript": "1.21.1",
+    "@graphql-codegen/typescript-operations": "1.17.15",
+    "@graphql-codegen/typescript-react-apollo": "2.2.3"
   },
   "resolutions": {
     "react-scripts/eslint-webpack-plugin": "2.3.0"

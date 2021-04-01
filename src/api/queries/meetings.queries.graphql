@@ -1,0 +1,11 @@
+query GetMeetings {
+  meetings {
+    id
+    title
+    description
+    owner {
+      id
+      email
+    }
+  }
+}

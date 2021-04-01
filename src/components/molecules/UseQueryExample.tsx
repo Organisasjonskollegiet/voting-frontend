@@ -1,24 +1,21 @@
 import React from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_MEETINGS } from '../../grapgql/queries';
 import { useAuth0 } from '@auth0/auth0-react';
-import { UsersData } from '../../types/types';
+import { useGetMeetingsQuery } from '../../__generated__/graphql';
+import { Skeleton } from '@chakra-ui/skeleton';
 
 const UseQueryExample: React.FC = () => {
-  const { loading, error, data } = useQuery<UsersData>(GET_MEETINGS);
+  const { loading, error, data } = useGetMeetingsQuery();
   const { isAuthenticated } = useAuth0();
 
   if (!isAuthenticated) return <p>Not logged in...</p>;
-
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-
-  if (!data) return <p>Error</p>;
 
   console.log(data);
   return (
     <div>
-      <p>Hei</p>
+      <Skeleton isLoaded={!loading || !data}>
+        <p>{JSON.stringify(data?.meetings)}</p>
+      </Skeleton>
     </div>
   );
 };
