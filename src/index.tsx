@@ -1,11 +1,20 @@
+import { ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import Auth0WithHistoryProvider from './services/providers/Auth0ProviderWithHistory';
 import reportWebVitals from './reportWebVitals';
+import ApolloAuthProvider from './services/providers/ApolloProvider';
 
 ReactDOM.render(
   <React.StrictMode>
+    <ChakraProvider>
+      <Auth0WithHistoryProvider>
+        <ApolloAuthProvider>
           <App />
+        </ApolloAuthProvider>
+      </Auth0WithHistoryProvider>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,0 +1,7 @@
+mutation CastVote($alternativeId: String!, $votationId: String!) {
+  castVote(alternativeId: $alternativeId, votationId: $votationId) {
+    alternative {
+      text
+    }
+  }
+}
