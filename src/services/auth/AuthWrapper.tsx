@@ -3,7 +3,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Center } from '@chakra-ui/react';
 
-
 const AuthWrapper: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
 

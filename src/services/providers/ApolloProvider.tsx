@@ -1,12 +1,12 @@
-
 import { ApolloClient, InMemoryCache, HttpLink, ApolloProvider } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
-const ApolloWrapper: React.FC = ({children}) => {
+const ApolloAuthProvider: React.FC = ({ children }) => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [bearerToken, setBearerToken] = useState('');
+
   useEffect(() => {
     const getToken = async () => {
       const token = isAuthenticated ? await getAccessTokenSilently() : '';
@@ -14,6 +14,7 @@ const ApolloWrapper: React.FC = ({children}) => {
     };
     getToken();
   }, [getAccessTokenSilently, isAuthenticated]);
+
   const httpLink = new HttpLink({
     uri: 'http://localhost:4000/graphql',
   });
@@ -29,13 +30,13 @@ const ApolloWrapper: React.FC = ({children}) => {
       },
     };
   });
+
   const client = new ApolloClient({
     link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
   });
-  return (
-    <ApolloProvider client={client}>{children}</ApolloProvider>
-  )
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
-export default ApolloWrapper;
+export default ApolloAuthProvider;
