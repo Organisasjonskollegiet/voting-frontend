@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import ClipLoader from 'react-spinners/ClipLoader';
-import { Center } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 
 const AuthWrapper: React.FC = ({ children }) => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -16,11 +15,12 @@ const AuthWrapper: React.FC = ({ children }) => {
 
   return (
     <Center>
-      <ClipLoader
-        css={`
-          position: absolute;
-          top: 50%;
-        `}
+      <Spinner
+        thickness="4px"
+        speed="0.65s"
+        emptyColor="gray.200"
+        color="gray.500"
+        size="xl"
       />
     </Center>
   );
