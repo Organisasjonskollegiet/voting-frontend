@@ -5,11 +5,16 @@ import UseMutationExample from '../molecules/UseMutationExample';
 import { useAuth0 } from '@auth0/auth0-react';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 
-const PageExample: React.FC = () => {
+interface IProps {
+  page: string;
+}
+
+const PageExample: React.FC<IProps> = ({page}) => {
   const { isAuthenticated, user, logout, loginWithRedirect } = useAuth0();
 
   return (
     <AuthWrapper>
+      <h1>{page}</h1>
       <Center>
         <p>{!isAuthenticated ? 'Vennligst logg inn' : `Welcome ${user.name}`}</p>
         <Button

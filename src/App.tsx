@@ -6,8 +6,11 @@ const App: FC = () => {
   return (
     <Router>
       <Switch>
+        <Route path="/admin">
+          <PageExample page="/admin"/>
+        </Route>
         <Route path="/">
-          <PageExample />
+          <PageExample page="/" />
         </Route>
       </Switch>
     </Router>
