@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
-import { useCastVoteMutation } from '../../__generated__/graphql';
+import { useCastVoteMutation } from '../../__generated__/graphql-types';
 
 const UseMutationExample: React.FC = () => {
   // CAST_VOTE require the authenticated user to be particant that is eligible to vote of the votation.
