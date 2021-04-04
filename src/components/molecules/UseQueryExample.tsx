@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useGetMeetingsQuery } from '../../__generated__/graphql';
+import { useGetMeetingsQuery } from '../../__generated__/graphql-types';
 import { Skeleton } from '@chakra-ui/skeleton';
 
 const UseQueryExample: React.FC = () => {
@@ -8,6 +8,7 @@ const UseQueryExample: React.FC = () => {
   const { isAuthenticated } = useAuth0();
 
   if (!isAuthenticated) return <p>Not logged in...</p>;
+  console.log(error);
   if (error) return <p>Error :(</p>;
 
   console.log(data);

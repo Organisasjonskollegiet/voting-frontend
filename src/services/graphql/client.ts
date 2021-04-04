@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: process.env.GRAPHQL_ENDPOINT || 'localhost:4000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
