@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: any;
 };
 
@@ -28,6 +29,12 @@ export type Alternative = {
   votationId: Scalars['String'];
   votation?: Maybe<Votation>;
   votes?: Maybe<Array<Maybe<Vote>>>;
+};
+
+export type CreateMeetingInput = {
+  title: Scalars['String'];
+  startTime: Scalars['DateTime'];
+  description?: Scalars['String'];
 };
 
 
@@ -53,12 +60,18 @@ export type Meeting = {
 export type Mutation = {
   __typename?: 'Mutation';
   castVote?: Maybe<Vote>;
+  createMeeting?: Maybe<Meeting>;
 };
 
 
 export type MutationCastVoteArgs = {
   alternativeId: Scalars['String'];
   votationId: Scalars['String'];
+};
+
+
+export type MutationCreateMeetingArgs = {
+  meeting: CreateMeetingInput;
 };
 
 export type Participant = {

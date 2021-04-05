@@ -1,18 +1,21 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Auth0Provider } from '@auth0/auth0-react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { AppState, Auth0Provider } from '@auth0/auth0-react';
 
 const Auth0WithHistoryProvider: React.FC = ({ children }) => {
   const domain = process.env.REACT_APP_AUTH0_DOMAIN ?? '';
   const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID ?? '';
-  const callbackUrl = process.env.REACT_APP_AUTH_CALLBACK_URL ?? '';
+  // Changes the callback url to the previewed deployment
+  const callbackUrl = process.env.REACT_APP_NETLIFY
+    ? process.env.REACT_APP_DEPLOY_URL
+    : process.env.REACT_APP_AUTH0_CALLBACK_URL;
   const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
   const history = useHistory();
+  const location = useLocation();
 
-  // eslint-disable-next-line
-  const onRedirectCallback = (appState: any) => {
-    history.push(appState?.returnTo || window.location.pathname);
+  const onRedirectCallback = (appState: AppState) => {
+    history.push(appState?.returnTo || location.pathname);
   };
 
   return (

@@ -1,20 +1,20 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useGetMeetingsQuery } from '../../__generated__/graphql';
 import { Skeleton } from '@chakra-ui/skeleton';
+import { useGetUserQuery } from '../../__generated__/graphql-types';
 
 const UseQueryExample: React.FC = () => {
-  const { loading, error, data } = useGetMeetingsQuery();
-  const { isAuthenticated } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
+  const { data, loading, error } = useGetUserQuery({ variables: { id: user.sub.split('|')[1] } });
 
   if (!isAuthenticated) return <p>Not logged in...</p>;
+  console.log(error);
   if (error) return <p>Error :(</p>;
 
-  console.log(data);
   return (
     <div>
       <Skeleton isLoaded={!loading || !data}>
-        <p>{JSON.stringify(data?.meetings)}</p>
+        <p>{JSON.stringify(data?.user)}</p>
       </Skeleton>
     </div>
   );
