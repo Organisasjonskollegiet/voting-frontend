@@ -9,7 +9,7 @@ interface IProps {
   page: string;
 }
 
-const PageExample: React.FC<IProps> = ({page}) => {
+const PageExample: React.FC<IProps> = ({ page }) => {
   const { isAuthenticated, user, logout, loginWithRedirect } = useAuth0();
 
   return (

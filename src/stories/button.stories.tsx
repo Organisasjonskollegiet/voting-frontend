@@ -1,18 +1,16 @@
-import React from "react";
-import { Button, ButtonProps } from "@chakra-ui/react";
-import { Meta, Story } from "@storybook/react";
+import React from 'react';
+import { Button, ButtonProps } from '@chakra-ui/react';
+import { Meta, Story } from '@storybook/react';
 
 export default {
-  title: "Button",
+  title: 'Button',
   component: Button,
 } as Meta;
 
-const Template: Story<ButtonProps> = (args) => (
-  <Button {...args}>Button</Button>
-);
+const Template: Story<ButtonProps> = (args) => <Button {...args}>Button</Button>;
 
 export const Primary = Template.bind({});
-Primary.args = { colorScheme: "blue" };
+Primary.args = { colorScheme: 'blue' };
 
 export const Secondary = Template.bind({});
-Secondary.args = { ...Primary.args, variant: "outline" };
+Secondary.args = { ...Primary.args, variant: 'outline' };

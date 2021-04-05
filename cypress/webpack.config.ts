@@ -1,8 +1,8 @@
 module.exports = {
-  mode: "development",
+  mode: 'development',
   devtool: false,
   resolve: {
-    extensions: [".ts", ".tsx", ".js"],
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
@@ -11,7 +11,7 @@ module.exports = {
         exclude: [/node_modules/],
         use: [
           {
-            loader: "ts-loader",
+            loader: 'ts-loader',
             options: {
               transpileOnly: true,
             },
