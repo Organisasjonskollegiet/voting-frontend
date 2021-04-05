@@ -28,6 +28,13 @@ jobs:
               if: steps.node-cache.outputs.cache-hit != 'true'
               run: yarn
 
+            - name: Lint the application
+              uses: wearerequired/lint-action@v1
+              with:
+                  eslint: true
+                  prettier: true
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Build project
               run: yarn build
 
@@ -56,13 +63,8 @@ jobs:
                       ~/.cache/Cypress
                   key: my-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
-            - name: Lint the application
-              uses: wearerequired/lint-action@v1
-              with:
-                  eslint: true
-                  prettier: true
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  
+
+
             - name: Cypress run
               uses: cypress-io/github-action@v2
               with:
