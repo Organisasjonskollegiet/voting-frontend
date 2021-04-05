@@ -28,18 +28,8 @@ jobs:
               if: steps.node-cache.outputs.cache-hit != 'true'
               run: yarn
 
-            - name: Lint the application
-              uses: wearerequired/lint-action@v1
-              with:
-                  eslint: true
-                  eslint_extensions: "js, ts, tsx"
-                  eslint_dir: 'src'
-                  prettier: true
-                  prettier_extensions: "js, ts, tsx"
-                  prettier_dir: 'src, cypress'
-                  auto_fix: true
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-
+            - name: Lint project
+              run: yarn lint
             - name: Build project
               run: yarn build
 
