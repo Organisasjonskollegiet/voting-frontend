@@ -1,13 +1,11 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AppState, Auth0Provider } from '@auth0/auth0-react';
-import { AlertIcon } from '@chakra-ui/alert';
-import { Alert } from '@chakra-ui/react';
 
 const Auth0WithHistoryProvider: React.FC = ({ children }) => {
-  const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
-  const callbackUrl = process.env.REACT_APP_AUTH_CALLBACK_URL;
+  const domain = process.env.REACT_APP_AUTH0_DOMAIN ?? '';
+  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID ?? '';
+  const callbackUrl = process.env.REACT_APP_AUTH_CALLBACK_URL ?? '';
   const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
   const history = useHistory();
@@ -16,15 +14,6 @@ const Auth0WithHistoryProvider: React.FC = ({ children }) => {
   const onRedirectCallback = (appState: AppState) => {
     history.push(appState?.returnTo || location.pathname);
   };
-
-  if (!domain || !clientId || callbackUrl || audience) {
-    return (
-      <Alert status="error">
-        <AlertIcon />
-        The Auth0 env-variables are missing
-      </Alert>
-    );
-  }
 
   return (
     <Auth0Provider
