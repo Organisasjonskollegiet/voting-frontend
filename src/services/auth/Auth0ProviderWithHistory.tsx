@@ -8,7 +8,7 @@ const Auth0WithHistoryProvider: React.FC = ({ children }) => {
   // Changes the callback url to the previewed deployment
   const callbackUrl = process.env.REACT_APP_NETLIFY
     ? process.env.REACT_APP_DEPLOY_URL
-    : process.env.REACT_APP_AUTH_CALLBACK_URL;
+    : process.env.REACT_APP_AUTH0_CALLBACK_URL;
   const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
   const history = useHistory();
