@@ -1,21 +1,27 @@
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
-import React, { useEffect } from 'react';
-import { client } from './client';
-import Cookies from 'js-cookie';
-import { ApolloProvider } from '@apollo/client';
+import React from 'react';
+import { setContext } from '@apollo/client/link/context';
 
 const ApolloAuthProvider: React.FC = ({ children }) => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
+  const httpLink = createHttpLink({
+    uri: process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:4000/graphql',
+  });
 
-  useEffect(() => {
-    const getToken = async () => {
-      const token = isAuthenticated ? await getAccessTokenSilently() : '';
-      if (token) {
-        Cookies.set('jwt', token);
-      }
+  const authLink = setContext(async () => {
+    const token = await getAccessTokenSilently();
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     };
-    getToken();
-  }, [getAccessTokenSilently, isAuthenticated]);
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

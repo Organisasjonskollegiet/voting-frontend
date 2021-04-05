@@ -8,7 +8,6 @@ const UseQueryExample: React.FC = () => {
   const { data, loading, error } = useGetUserQuery({ variables: { id: user.sub.split('|')[1] } });
 
   if (!isAuthenticated) return <p>Not logged in...</p>;
-  console.log(error);
   if (error) return <p>Error :(</p>;
 
   return (
