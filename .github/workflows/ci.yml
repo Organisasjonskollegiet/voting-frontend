@@ -32,7 +32,9 @@ jobs:
               uses: wearerequired/lint-action@v1
               with:
                   eslint: true
+                  eslint_extensions: "js, jsx, ts, tsx"
                   prettier: true
+                  prettier_extensions: "js, jsx, ts, tsx"
                   auto_fix: true
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
