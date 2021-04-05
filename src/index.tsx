@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import ApolloAuthProvider from './services/providers/ApolloProvider';
+import ApolloAuthProvider from './services/apollo/ApolloProvider';
 
 ReactDOM.render(
   <React.StrictMode>

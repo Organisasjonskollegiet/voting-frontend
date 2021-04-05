@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import PageExample from './components/pages/PageExample';
-import Auth0WithHistoryProvider from './services/providers/Auth0ProviderWithHistory';
+import Auth0WithHistoryProvider from './services/auth/Auth0ProviderWithHistory';
 
+// The Auth0 provider is here so it can access to the router hooks for location and history
 const App: FC = () => {
   return (
     <Router>
