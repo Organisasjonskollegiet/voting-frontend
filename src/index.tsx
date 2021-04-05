@@ -5,7 +5,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ApolloAuthProvider from './services/providers/ApolloProvider';
 
-
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider>
