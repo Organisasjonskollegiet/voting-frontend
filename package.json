@@ -75,6 +75,7 @@
     "eslint-config-prettier": "^8.1.0"
   },
   "resolutions": {
-    "react-scripts/eslint-webpack-plugin": "2.3.0"
+    "react-scripts/eslint-webpack-plugin": "2.3.0",
+    "babel-loader": "8.1.0"
   }
 }
