@@ -1,6 +1,5 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import Alternative, { AlternativeProps } from '../components/atoms/Alternative';
 import AlternativeContainer, { AlternativeContainerProps } from '../components/molecules/AlternativeContainer';
 
 export default {
