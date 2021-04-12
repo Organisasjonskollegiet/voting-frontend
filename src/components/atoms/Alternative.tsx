@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import { Button, ComponentStyleConfig, useStyleConfig } from '@chakra-ui/react';
 

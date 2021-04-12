@@ -11,7 +11,7 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
   const [selectedAlternative, setSelectedAlternative] = useState<AlternativeType | null>(null);
 
   function updateSelected(id: string) {
-    setSelectedAlternative(selectedAlternative?.id === id ? null : alternatives.find((alt) => alt.id == id) || null);
+    setSelectedAlternative(selectedAlternative?.id === id ? null : alternatives.find((alt) => alt.id === id) || null);
   }
 
   const containerStyles = useStyleConfig('AlternativeContainer');
