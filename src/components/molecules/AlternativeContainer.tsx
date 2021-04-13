@@ -8,10 +8,10 @@ export interface AlternativeContainerProps {
 }
 
 const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternatives }) => {
-  const [selectedAlternative, setSelectedAlternative] = useState<AlternativeType | null>(null);
+  const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   function updateSelected(id: string) {
-    setSelectedAlternative(selectedAlternative?.id === id ? null : alternatives.find((alt) => alt.id === id) || null);
+    setSelectedAlternativeId(selectedAlternativeId === id ? null : id);
   }
 
   const containerStyles = useStyleConfig('AlternativeContainer');
@@ -21,7 +21,7 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
       {alternatives.map((alt) => (
         <Alternative
           alternative={alt}
-          selected={alt.id === selectedAlternative?.id}
+          selected={alt.id === selectedAlternativeId}
           onClick={() => updateSelected(alt.id)}
         ></Alternative>
       ))}
