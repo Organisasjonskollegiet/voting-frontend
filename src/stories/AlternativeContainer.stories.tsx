@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import AlternativeContainer, { AlternativeContainerProps } from '../components/molecules/AlternativeContainer';
 
 export default {
-  title: 'Atoms/AlternativeContainer',
+  title: 'Molecules/AlternativeContainer',
   component: AlternativeContainer,
 } as Meta;
 

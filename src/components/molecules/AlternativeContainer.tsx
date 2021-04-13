@@ -17,10 +17,11 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
   const containerStyles = useStyleConfig('AlternativeContainer');
 
   return (
-    <SimpleGrid columns={1} spacingY="25px" sx={containerStyles}>
+    <SimpleGrid columns={1} spacingY="24px" sx={containerStyles}>
       {alternatives.map((alt) => (
         <Alternative
           alternative={alt}
+          key={alt.id}
           selected={alt.id === selectedAlternativeId}
           onClick={() => updateSelected(alt.id)}
         ></Alternative>
