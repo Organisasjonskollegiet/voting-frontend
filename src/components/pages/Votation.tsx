@@ -61,12 +61,10 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   const subTitles = {
-    fontFamily: 'Helvetica',
     fontStyle: 'normal',
     fontSize: '16px',
     fontWeight: 'bold',
     lineHeight: '150%',
-    color: '#718096',
   } as React.CSSProperties;
 
   const containerStyles = useStyleConfig('Votation');
