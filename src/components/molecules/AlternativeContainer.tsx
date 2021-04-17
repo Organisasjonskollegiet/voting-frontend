@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Alternative from '../atoms/Alternative';
-import { ComponentStyleConfig, useStyleConfig, Grid, systemProps } from '@chakra-ui/react';
+import { ComponentStyleConfig, useStyleConfig, Grid } from '@chakra-ui/react';
 
 export interface AlternativeContainerProps {
   alternatives: Array<AlternativeType>;
@@ -13,8 +13,9 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   function updateSelected(id: string) {
-    setSelectedAlternativeId(selectedAlternativeId === id ? null : id);
-    handleSelect(selectedAlternativeId);
+    const newId = selectedAlternativeId === id ? null : id;
+    setSelectedAlternativeId(newId);
+    handleSelect(newId);
   }
 
   const containerStyles = useStyleConfig('AlternativeContainer');

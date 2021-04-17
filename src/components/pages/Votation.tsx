@@ -77,7 +77,7 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
   };
 
   return (
-    <Box sx={containerStyles}>
+    <Box sx={containerStyles} pb="3em">
       <Heading as="h1" sx={h1Style}>
         <span style={subTitles}>Sak {votation.id}</span> <br />
         {votation.title}
