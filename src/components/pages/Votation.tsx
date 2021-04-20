@@ -12,11 +12,7 @@ import {
 import AlternativeContainer, { AlternativeContainerProps } from '../molecules/AlternativeContainer';
 import Loading from '../atoms/Loading';
 
-export interface VotationProps {
-  id: string;
-}
-
-const Votation: React.FC<VotationProps> = () => {
+const Votation = () => {
   //TODO: fetch data
   const votation /*: VotationType */ = {
     id: '1',
