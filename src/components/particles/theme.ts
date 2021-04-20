@@ -1,7 +1,5 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../atoms/Alternative';
-import { AlternativeContainerConfig } from '../molecules/AlternativeContainer';
-import { VotationConfig } from '../pages/Votation';
 
 const darkblue = '#718096';
 const lightblue = '#EDF2F7'
@@ -17,8 +15,6 @@ const theme = extendTheme({
   },
   components: {
     Alternative: AlternativeConfig,
-    AlternativeContainer: AlternativeContainerConfig,
-    Votation: VotationConfig,
 
     Button: {
       baseStyle: {

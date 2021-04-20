@@ -6,10 +6,8 @@ import {
   Button,
   Box,
   Center,
-  ComponentStyleConfig,
   VStack,
   Divider,
-  useStyleConfig,
 } from '@chakra-ui/react';
 import AlternativeContainer, { AlternativeContainerProps } from '../molecules/AlternativeContainer';
 import Loading from '../atoms/Loading';
@@ -18,8 +16,8 @@ export interface VotationProps {
   id: string;
 }
 
-const Votation: React.FC<VotationProps> = ({ id: string }) => {
-  //TODO: fetch data with given id
+const Votation: React.FC<VotationProps> = () => {
+  //TODO: fetch data
   const votation /*: VotationType */ = {
     id: '1',
     title: 'Valg av ny leder',
@@ -57,7 +55,6 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
   };
 
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const [isClosed, setClosed] = useState<boolean>(false);
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   const subTitles = {
@@ -67,21 +64,18 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
     lineHeight: '150%',
   } as React.CSSProperties;
 
-  const containerStyles = useStyleConfig('Votation');
-
   const h1Style = {
-    color: '#718096',
     fontSize: '1.5em',
   };
 
   return (
-    <Box sx={containerStyles} pb="3em">
+    <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
       <Heading as="h1" sx={h1Style}>
         <span style={subTitles}>Sak {votation.id}</span> <br />
         {votation.title}
       </Heading>
 
-      <Text color="#718096" mt="1em" mb="2em">
+      <Text mt="1em" mb="2em">
         {votation.description}
       </Text>
 
@@ -94,7 +88,7 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
         </VStack>
       ) : (
         <Box mt="4em">
-          <Loading text={!isClosed ? 'Votering pågår' : 'Avventer resultat'} />
+          <Loading text={'Votering pågår'} />
         </Box>
       )}
 
@@ -131,15 +125,6 @@ const Votation: React.FC<VotationProps> = ({ id: string }) => {
       </VStack>
     </Box>
   );
-};
-
-export const VotationConfig: ComponentStyleConfig = {
-  baseStyle: {
-    width: '80vw',
-    maxWidth: 'max-content',
-    margin: 'auto',
-    color: '#718096',
-  },
 };
 
 export default Votation;

@@ -18,7 +18,6 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
     handleSelect(newId);
   }
 
-  const containerStyles = useStyleConfig('AlternativeContainer');
   const alternativeStyle = useStyleConfig('Alternative');
 
   return (
@@ -41,10 +40,6 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
       )}
     </Grid>
   );
-};
-
-export const AlternativeContainerConfig: ComponentStyleConfig = {
-  baseStyle: {},
 };
 
 export default AlternativeContainer;

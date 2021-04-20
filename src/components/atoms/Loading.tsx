@@ -16,7 +16,7 @@ const Loading: React.FC<LoadingProps> = ({ text }) => {
   return (
     <VStack spacing="1.5em">
       <Center>
-        <Spinner thickness="0.25em" speed="0.69s" size="xl" /> <br />
+        <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>
       <Center>
         <Text sx={textStyle}>{text}</Text>
