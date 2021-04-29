@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Alternative from '../atoms/Alternative';
-import { ComponentStyleConfig, useStyleConfig, Grid } from '@chakra-ui/react';
+import { useStyleConfig, Grid } from '@chakra-ui/react';
 
 export interface AlternativeContainerProps {
   alternatives: Array<AlternativeType>;

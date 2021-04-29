@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Votation as VotationType } from '../../__generated__/graphql-types';
+import { useCastVoteMutation, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
 import {
   Heading,
   Text,
@@ -8,52 +8,38 @@ import {
   Center,
   VStack,
   Divider,
+  Spinner,
 } from '@chakra-ui/react';
-import AlternativeContainer, { AlternativeContainerProps } from '../molecules/AlternativeContainer';
+import AlternativeContainer from '../molecules/AlternativeContainer';
+import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useParams } from 'react-router';
 
-const Votation = () => {
-  //TODO: fetch data
-  const votation /*: VotationType */ = {
-    id: '1',
-    title: 'Valg av ny leder',
-    description:
-      'Quo illum corporis enim repellat totam natus sit. Voluptas earum molestias iste quis quam est nemo. Aut modi praesentium facilis ullam.',
-    blankVotes: true,
-  };
+const Votation: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const {data, loading, error} = useGetVotationByIdQuery({variables: {id: id}});
+  const votationData = data?.votationById;
 
-  //TODO: remove when fetch works
-  const alternativesDummyData: AlternativeContainerProps = {
-    blankVotes: true,
-    alternatives: [
-      {
-        id: '1',
-        text: 'Alternativ 1',
-        votationId: '1',
-      },
-      {
-        id: '2',
-        text: 'Alternativ 2',
-        votationId: '1',
-      },
-      {
-        id: '3',
-        text: 'Alternativ 3',
-        votationId: '1',
-      },
-      {
-        id: '4',
-        text: 'Alternativ 4',
-        votationId: '1',
-      },
-    ],
-    handleSelect: (id: string | null) => setSelectedAlternativeId(id),
-  };
-
-  const [hasVoted, setHasVoted] = useState<boolean>(false);
+  const {user} = useAuth0();
+  const [hasThisUserVoted, setHasThisUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
+  
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
+  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
-  const subTitles = {
+  const [castVote] = useCastVoteMutation();
+  const submitVote = () => {
+    if (selectedAlternativeId !== null) {
+      setHasThisUserVoted(true);
+      castVote({ variables: { votationId: id, alternativeId: selectedAlternativeId } });
+    }
+  }
+
+  if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
+  if (loading) return <Spinner size="xl" m="auto"/>;
+
+
+  const subTitlesStyle = {
     fontStyle: 'normal',
     fontSize: '16px',
     fontWeight: 'bold',
@@ -67,20 +53,24 @@ const Votation = () => {
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
       <Heading as="h1" sx={h1Style}>
-        <span style={subTitles}>Sak {votation.id}</span> <br />
-        {votation.title}
+        <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
+        {votationData?.title}
       </Heading>
 
       <Text mt="1em" mb="2em">
-        {votation.description}
+        {votationData?.description}
       </Text>
 
-      {!hasVoted ? (
+      {votationData?.status !== 'ENDED' ? (
+        <Box>
+          {!hasThisUserVoted ? (
         <VStack spacing="1.5em" align="left">
-          <Heading as="h2" sx={subTitles}>
+          <Heading as="h2" sx={subTitlesStyle}>
             Alternativer
           </Heading>
-          <AlternativeContainer {...alternativesDummyData} />
+          <AlternativeContainer alternatives={votationData?.alternatives as Array<AlternativeType> || []}
+            handleSelect={handleSelect}
+            blankVotes= {votationData?.blankVotes || false} />
         </VStack>
       ) : (
         <Box mt="4em">
@@ -91,9 +81,9 @@ const Votation = () => {
       <Divider m="3em 0" />
 
       <Center>
-        {!hasVoted ? (
+        {!hasThisUserVoted ? (
           <Button
-            onClick={() => setHasVoted(true)}
+            onClick={() => submitVote()}
             p="1.5em 4em"
             borderRadius="16em"
             isDisabled={selectedAlternativeId === null}
@@ -114,11 +104,26 @@ const Votation = () => {
           </Text>
         </Center>
         <Center>
-          <Heading as="h2" sx={subTitles}>
+          <Heading as="h2" sx={subTitlesStyle}>
             stemmer
           </Heading>
         </Center>
       </VStack>
+        </Box>
+      ) : (
+        //TODO: ferdigstille resultatside
+        <VStack>
+          <Center>
+            <img src="hammer.svg" alt=""/>
+          </Center>
+          <Center>
+            <Text sx={subTitlesStyle}>
+              Vinner av valget var x
+            </Text>
+          </Center>
+        </VStack>
+
+      )}
     </Box>
   );
 };
