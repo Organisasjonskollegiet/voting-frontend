@@ -15,6 +15,7 @@ import { Alternative as AlternativeType } from '../../__generated__/graphql-type
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
+import WinnerAlternative from '../atoms/WinnerAlternative';
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -111,18 +112,8 @@ const Votation: React.FC = () => {
       </VStack>
         </Box>
       ) : (
-        //TODO: ferdigstille resultatside
-        <VStack>
-          <Center>
-            <img src="hammer.svg" alt=""/>
-          </Center>
-          <Center>
-            <Text sx={subTitlesStyle}>
-              Vinner av valget var x
-            </Text>
-          </Center>
-        </VStack>
-
+        //<WinnerAlternative alternative={} />
+        <></>
       )}
     </Box>
   );
