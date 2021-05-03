@@ -109,7 +109,7 @@ export type Query = {
 
 
 export type QueryVotationByIdArgs = {
-  id: Scalars['ID'];
+  votationId: Scalars['ID'];
 };
 
 
@@ -225,7 +225,7 @@ export type GetMeetingsQuery = (
 );
 
 export type GetVotationByIdQueryVariables = Exact<{
-  id: Scalars['ID'];
+  votationId: Scalars['ID'];
 }>;
 
 
@@ -365,8 +365,8 @@ export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($id: ID!) {
-  votationById(id: $id) {
+    query GetVotationById($votationId: ID!) {
+  votationById(votationId: $votationId) {
     ... on Votation {
       id
       title
@@ -400,7 +400,7 @@ export const GetVotationByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      votationId: // value for 'votationId'
  *   },
  * });
  */

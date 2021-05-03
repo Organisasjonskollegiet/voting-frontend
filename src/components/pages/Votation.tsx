@@ -19,7 +19,7 @@ import WinnerAlternative from '../atoms/WinnerAlternative';
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const {data, loading, error} = useGetVotationByIdQuery({variables: {id: id}});
+  const {data, loading, error} = useGetVotationByIdQuery({variables: {votationId: id}});
   const votationData = data?.votationById;
 
   const {user} = useAuth0();

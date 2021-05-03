@@ -1,5 +1,5 @@
-query GetVotationById($id: ID!) {
-  votationById(id: $id) {
+query GetVotationById($votationId: ID!) {
+  votationById(votationId: $votationId) {
     ... on Votation {
       id
       title
