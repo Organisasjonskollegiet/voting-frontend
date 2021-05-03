@@ -23,7 +23,8 @@ const Votation: React.FC = () => {
   const votationData = data?.votationById;
 
   const {user} = useAuth0();
-  const [hasThisUserVoted, setHasThisUserVoted] = useState<boolean>((votationData?.__typename === "Votation" && votationData.hasVoted?.includes(user)) || false);
+  console.log(user)
+  const [hasThisUserVoted, setHasThisUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
   
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
@@ -38,7 +39,6 @@ const Votation: React.FC = () => {
 
   if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
   if (loading) return <Center><Spinner size="xl" m="auto"/></Center>;
-  if (votationData?.__typename === "VotationNotFoundError") return <Center><Text>Kunne ikke finne voteringen</Text></Center>
 
 
   const subTitlesStyle = {
@@ -54,8 +54,6 @@ const Votation: React.FC = () => {
 
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
-      { votationData?.__typename === "Votation" &&
-      <>
       <Heading as="h1" sx={h1Style}>
         <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
         {votationData?.title}
@@ -118,8 +116,6 @@ const Votation: React.FC = () => {
         //<WinnerAlternative alternative={} />
         <></>
       )}
-      </>
-      }
     </Box>
   );
 };

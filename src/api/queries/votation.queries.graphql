@@ -1,21 +1,16 @@
 query GetVotationById($votationId: ID!) {
   votationById(votationId: $votationId) {
-    ... on Votation {
+    id
+    title
+    description
+    hasVoted {
       id
-      title
-      description
-      hasVoted {
-        id
-      }
-      alternatives {
-        id
-        text
-      }
-      status
-      blankVotes
     }
-    ... on VotationNotFoundError {
-      message
+    alternatives {
+      id
+      text
     }
+    status
+    blankVotes
   }
 }

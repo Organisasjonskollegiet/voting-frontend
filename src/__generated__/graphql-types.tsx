@@ -99,7 +99,7 @@ export type Participant = {
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
-  votationById?: Maybe<VotationResult>;
+  votationById?: Maybe<Votation>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
@@ -160,13 +160,6 @@ export type Votation = {
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
 };
-
-export type VotationNotFoundError = {
-  __typename?: 'VotationNotFoundError';
-  message: Scalars['String'];
-};
-
-export type VotationResult = Votation | VotationNotFoundError;
 
 export type Vote = {
   __typename?: 'Vote';
@@ -241,9 +234,6 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
-  ) | (
-    { __typename?: 'VotationNotFoundError' }
-    & Pick<VotationNotFoundError, 'message'>
   )> }
 );
 
@@ -367,23 +357,18 @@ export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMee
 export const GetVotationByIdDocument = gql`
     query GetVotationById($votationId: ID!) {
   votationById(votationId: $votationId) {
-    ... on Votation {
+    id
+    title
+    description
+    hasVoted {
       id
-      title
-      description
-      hasVoted {
-        id
-      }
-      alternatives {
-        id
-        text
-      }
-      status
-      blankVotes
     }
-    ... on VotationNotFoundError {
-      message
+    alternatives {
+      id
+      text
     }
+    status
+    blankVotes
   }
 }
     `;
