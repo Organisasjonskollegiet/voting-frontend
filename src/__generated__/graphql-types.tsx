@@ -53,7 +53,7 @@ export type Meeting = {
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
-  owner: User;
+  owner?: Maybe<User>;
   votations?: Maybe<Array<Maybe<Votation>>>;
   status: Status;
   participants: Array<Maybe<Participant>>;
@@ -99,8 +99,8 @@ export type Participant = {
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
-  alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   votationById?: Maybe<Votation>;
+  alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -108,13 +108,13 @@ export type Query = {
 };
 
 
-export type QueryAlternativesByVotationArgs = {
-  votationId: Scalars['String'];
+export type QueryVotationByIdArgs = {
+  votationId: Scalars['ID'];
 };
 
 
-export type QueryVotationByIdArgs = {
-  id: Scalars['ID'];
+export type QueryAlternativesByVotationArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -210,15 +210,15 @@ export type GetMeetingsQuery = (
   & { meetings: Array<Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id' | 'title' | 'description'>
-    & { owner: (
+    & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
-    ) }
+    )> }
   )>> }
 );
 
 export type GetVotationByIdQueryVariables = Exact<{
-  id: Scalars['ID'];
+  votationId: Scalars['ID'];
 }>;
 
 
@@ -355,8 +355,8 @@ export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($id: ID!) {
-  votationById(id: $id) {
+    query GetVotationById($votationId: ID!) {
+  votationById(votationId: $votationId) {
     id
     title
     description
@@ -385,7 +385,7 @@ export const GetVotationByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      votationId: // value for 'votationId'
  *   },
  * });
  */

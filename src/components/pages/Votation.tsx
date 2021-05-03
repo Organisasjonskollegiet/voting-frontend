@@ -19,10 +19,11 @@ import WinnerAlternative from '../atoms/WinnerAlternative';
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const {data, loading, error} = useGetVotationByIdQuery({variables: {id: id}});
+  const {data, loading, error} = useGetVotationByIdQuery({variables: {votationId: id}});
   const votationData = data?.votationById;
 
   const {user} = useAuth0();
+  console.log(user)
   const [hasThisUserVoted, setHasThisUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
   
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -37,7 +38,7 @@ const Votation: React.FC = () => {
   }
 
   if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
-  if (loading) return <Spinner size="xl" m="auto"/>;
+  if (loading) return <Center><Spinner size="xl" m="auto"/></Center>;
 
 
   const subTitlesStyle = {
