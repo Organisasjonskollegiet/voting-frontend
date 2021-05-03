@@ -53,7 +53,7 @@ export type Meeting = {
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
-  owner: User;
+  owner?: Maybe<User>;
   votations?: Maybe<Array<Maybe<Votation>>>;
   status: Status;
   participants: Array<Maybe<Participant>>;
@@ -99,8 +99,8 @@ export type Participant = {
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
+  votationById?: Maybe<VotationResult>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
-  votationById?: Maybe<Votation>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -108,13 +108,13 @@ export type Query = {
 };
 
 
-export type QueryAlternativesByVotationArgs = {
-  votationId: Scalars['String'];
+export type QueryVotationByIdArgs = {
+  id: Scalars['ID'];
 };
 
 
-export type QueryVotationByIdArgs = {
-  id: Scalars['ID'];
+export type QueryAlternativesByVotationArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -160,6 +160,13 @@ export type Votation = {
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
 };
+
+export type VotationNotFoundError = {
+  __typename?: 'VotationNotFoundError';
+  message: Scalars['String'];
+};
+
+export type VotationResult = Votation | VotationNotFoundError;
 
 export type Vote = {
   __typename?: 'Vote';
@@ -210,10 +217,10 @@ export type GetMeetingsQuery = (
   & { meetings: Array<Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id' | 'title' | 'description'>
-    & { owner: (
+    & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
-    ) }
+    )> }
   )>> }
 );
 
@@ -234,6 +241,9 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
+  ) | (
+    { __typename?: 'VotationNotFoundError' }
+    & Pick<VotationNotFoundError, 'message'>
   )> }
 );
 
@@ -357,18 +367,23 @@ export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMee
 export const GetVotationByIdDocument = gql`
     query GetVotationById($id: ID!) {
   votationById(id: $id) {
-    id
-    title
-    description
-    hasVoted {
+    ... on Votation {
       id
+      title
+      description
+      hasVoted {
+        id
+      }
+      alternatives {
+        id
+        text
+      }
+      status
+      blankVotes
     }
-    alternatives {
-      id
-      text
+    ... on VotationNotFoundError {
+      message
     }
-    status
-    blankVotes
   }
 }
     `;
