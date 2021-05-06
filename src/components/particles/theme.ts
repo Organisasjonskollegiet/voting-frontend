@@ -30,6 +30,11 @@ const theme = extendTheme({
         borderRightColor: lightblue,
       }
     },
+    Text: {
+      baseStyle: {
+        color: darkblue,
+      }
+    }
   }
 });
 
