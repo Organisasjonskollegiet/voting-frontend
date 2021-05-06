@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useCastVoteMutation, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Spinner } from '@chakra-ui/react';
-import AlternativeContainer from '../molecules/AlternativeContainer';
+import AlternativeList from '../molecules/AlternativeList';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -14,8 +14,7 @@ const Votation: React.FC = () => {
   const votationData = data?.votationById;
 
   const { user } = useAuth0();
-  console.log(user);
-  const [hasThisUserVoted, setHasThisUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
+  const [hasUserVoted, sethasUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
 
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
@@ -23,7 +22,7 @@ const Votation: React.FC = () => {
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
-      setHasThisUserVoted(true);
+      sethasUserVoted(true);
       castVote({ variables: { votationId: id, alternativeId: selectedAlternativeId } });
     }
   };
@@ -60,12 +59,12 @@ const Votation: React.FC = () => {
 
       {votationData?.status !== 'ENDED' ? (
         <Box>
-          {!hasThisUserVoted ? (
+          {!hasUserVoted ? (
             <VStack spacing="1.5em" align="left">
               <Heading as="h2" sx={subTitlesStyle}>
                 Alternativer
               </Heading>
-              <AlternativeContainer
+              <AlternativeList
                 alternatives={(votationData?.alternatives as Array<AlternativeType>) || []}
                 handleSelect={handleSelect}
                 blankVotes={votationData?.blankVotes || false}
@@ -80,7 +79,7 @@ const Votation: React.FC = () => {
           <Divider m="3em 0" />
 
           <Center>
-            {!hasThisUserVoted ? (
+            {!hasUserVoted ? (
               <Button
                 onClick={() => submitVote()}
                 p="1.5em 4em"
@@ -113,7 +112,7 @@ const Votation: React.FC = () => {
         <Box mt="4em">
           <VotationResult
             text={
-              //the winning alternatives text property
+              //TODO: replace with the winning alternatives text property
               ''
             }
           />

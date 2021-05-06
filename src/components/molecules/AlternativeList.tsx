@@ -3,13 +3,13 @@ import { Alternative as AlternativeType } from '../../__generated__/graphql-type
 import Alternative from '../atoms/Alternative';
 import { useStyleConfig, Grid } from '@chakra-ui/react';
 
-export interface AlternativeContainerProps {
+export interface AlternativeListProps {
   alternatives: Array<AlternativeType>;
   blankVotes: boolean;
   handleSelect: (id: string | null) => void;
 }
 
-const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternatives, blankVotes, handleSelect }) => {
+const AlternativeList: React.FC<AlternativeListProps> = ({ alternatives, blankVotes, handleSelect }) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   function updateSelected(id: string) {
@@ -42,4 +42,4 @@ const AlternativeContainer: React.FC<AlternativeContainerProps> = ({ alternative
   );
 };
 
-export default AlternativeContainer;
+export default AlternativeList;

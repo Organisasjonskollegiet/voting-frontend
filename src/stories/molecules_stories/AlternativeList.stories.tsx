@@ -1,13 +1,13 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import AlternativeContainer, { AlternativeContainerProps } from '../../components/molecules/AlternativeContainer';
+import AlternativeList, { AlternativeListProps } from '../../components/molecules/AlternativeList';
 
 export default {
-  title: 'Molecules/AlternativeContainer',
-  component: AlternativeContainer,
+  title: 'Molecules/AlternativeList',
+  component: AlternativeList,
 } as Meta;
 
-const Template: Story<AlternativeContainerProps> = (args) => <AlternativeContainer {...args} />;
+const Template: Story<AlternativeListProps> = (args) => <AlternativeList {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
