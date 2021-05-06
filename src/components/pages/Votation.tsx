@@ -111,7 +111,12 @@ const Votation: React.FC = () => {
         </Box>
       ) : (
         <Box mt="4em">
-          <VotationResult text="Alternativ 4" />
+          <VotationResult
+            text={
+              //the winning alternatives text property
+              ''
+            }
+          />
         </Box>
       )}
     </Box>
