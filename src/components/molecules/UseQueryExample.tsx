@@ -4,9 +4,8 @@ import { Skeleton } from '@chakra-ui/skeleton';
 import { useGetUserQuery } from '../../__generated__/graphql-types';
 
 const UseQueryExample: React.FC = () => {
-  const { user, isAuthenticated } = useAuth0();
-  const { data, loading, error } = useGetUserQuery({ variables: { id: user.sub.split('|')[1] } });
-
+  const { isAuthenticated } = useAuth0();
+  const { data, loading, error } = useGetUserQuery();
   if (!isAuthenticated) return <p>Not logged in...</p>;
   if (error) return <p>Error :(</p>;
 

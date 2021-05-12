@@ -19,10 +19,9 @@ const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClic
 
 export const AlternativeConfig: ComponentStyleConfig = {
   baseStyle: {
-    color: '#718096',
-    bg: '#EDF2F7',
     height: '52px',
-    width: '320px',
+    minWidth: '320px',
+    width: '100%',
     padding: '12px;',
     borderRadius: '5px',
     fontSize: '18px',
