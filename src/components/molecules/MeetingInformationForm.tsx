@@ -37,7 +37,7 @@ const MeetingInformationForm: React.FC = () => {
   } as React.CSSProperties;
 
   return (
-    <VStack spacing='6' color='#718096' sx={meetingInformationFormStyle}>
+    <VStack spacing='7' color='#718096' sx={meetingInformationFormStyle}>
         <FormControl isRequired>
           <FormLabel sx={labelStyle}>
             Organisasjonsnavn
@@ -58,7 +58,7 @@ const MeetingInformationForm: React.FC = () => {
             placeholder="Hva skal tittelen på møtet være?" 
             onChange={(e: any) => setMeeting({...meeting, title: e.target.value})} />
         </FormControl>
-        <FormControl isRequired>
+        <FormControl isRequired fontWeight='normal'>
           <FormLabel sx={labelStyle}>
             Møtetidspunkt
           </FormLabel>
@@ -102,7 +102,7 @@ export const MeetingInformationFormConfig: ComponentStyleConfig = {
     fontSize: '16px',
     fontWeight: '700',
     justifyContent: 'left',
-    bg: '#f9f9f9',
+    // bg: '#f9f9f9',
   },
   variants: {
       selected: {
