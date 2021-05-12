@@ -14,6 +14,7 @@ const Votation: React.FC = () => {
   const votationData = data?.votationById;
 
   const { user } = useAuth0();
+  console.log(user)
   const [hasUserVoted, sethasUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
 
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -27,7 +28,10 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
+  if (error) {
+    console.log(error)
+    return <Text>Det skjedde noe galt under innlastingen</Text>;
+  }
   if (loading)
     return (
       <Center>

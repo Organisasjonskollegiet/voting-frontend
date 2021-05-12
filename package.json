@@ -21,6 +21,7 @@
     "framer-motion": "^3.0.0",
     "graphql": "^15.5.0",
     "react": "^17.0.1",
+    "react-datepicker": "^3.8.0",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
@@ -70,6 +71,7 @@
     "@storybook/node-logger": "^6.1.21",
     "@storybook/preset-create-react-app": "^3.1.7",
     "@storybook/react": "^6.1.21",
+    "@types/react-datepicker": "^3.1.8",
     "chromatic": "^5.7.0",
     "cypress": "^7.0.0",
     "eslint-config-prettier": "^8.1.0"

@@ -25,6 +25,7 @@ export type Alternative = {
 };
 
 export type CreateMeetingInput = {
+  organization: Scalars['String'];
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Scalars['String'];
@@ -51,6 +52,7 @@ export type Meeting = {
   __typename?: 'Meeting';
   id: Scalars['ID'];
   title: Scalars['String'];
+  organization: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   owner?: Maybe<User>;
@@ -63,8 +65,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   createVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
+  updateVotation?: Maybe<Votation>;
+  updateAlternative?: Maybe<Alternative>;
   castVote?: Maybe<Vote>;
   createMeeting?: Maybe<Meeting>;
+  updateMeeting?: Maybe<Meeting>;
 };
 
 
@@ -79,6 +84,17 @@ export type MutationCreateAlternativeArgs = {
 };
 
 
+export type MutationUpdateVotationArgs = {
+  votation: UpdateVotationInput;
+};
+
+
+export type MutationUpdateAlternativeArgs = {
+  id: Scalars['String'];
+  text: Scalars['String'];
+};
+
+
 export type MutationCastVoteArgs = {
   alternativeId: Scalars['String'];
   votationId: Scalars['String'];
@@ -87,6 +103,11 @@ export type MutationCastVoteArgs = {
 
 export type MutationCreateMeetingArgs = {
   meeting: CreateMeetingInput;
+};
+
+
+export type MutationUpdateMeetingArgs = {
+  meeting: UpdateMeetingInput;
 };
 
 export type Participant = {
@@ -133,6 +154,24 @@ export enum Status {
   Ongoing = 'ONGOING',
   Ended = 'ENDED'
 }
+
+export type UpdateMeetingInput = {
+  id: Scalars['String'];
+  organization?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  startTime?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  status?: Maybe<Status>;
+};
+
+export type UpdateVotationInput = {
+  id: Scalars['String'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  blankVotes: Scalars['Boolean'];
+  majorityType: MajorityType;
+  majorityThreshold: Scalars['Int'];
+};
 
 export type User = {
   __typename?: 'User';
