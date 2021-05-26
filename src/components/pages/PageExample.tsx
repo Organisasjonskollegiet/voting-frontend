@@ -16,7 +16,7 @@ const PageExample: React.FC<IProps> = ({ page }) => {
     <AuthWrapper>
       <h1>{page}</h1>
       <Center>
-        <p>{!isAuthenticated ? 'Vennligst logg inn' : `Welcome ${user.name}`}</p>
+        <p>{!isAuthenticated ? 'Vennligst logg inn' : `Welcome`}</p>
         <Button
           colorScheme="blue"
           onClick={isAuthenticated ? () => logout({ returnTo: window.location.origin }) : () => loginWithRedirect()}

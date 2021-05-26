@@ -1,7 +1,6 @@
 import React from 'react'
-import { Center, Divider, Button, VStack } from '@chakra-ui/react'
-import AddMeetingInformation from '../molecules/AddMeetingInformation';
-import AddVotation from '../molecules/AddVotation';
+import { Center, Divider, Button, VStack, Text } from '@chakra-ui/react'
+import AddVotations from '../molecules/AddVotations';
 import AddMeetingStatus from '../molecules/AddMeetingStatus';
 
 const Votation: React.FC = () => {
@@ -30,7 +29,7 @@ const Votation: React.FC = () => {
   return (
     <Center sx={outerContainer}>
       <VStack spacing='10' align='left' sx={centerContainer}>
-        <AddVotation />
+        <AddVotations />
         <Divider m="3em 0" />
         <VStack spacing='8'>
           <Button

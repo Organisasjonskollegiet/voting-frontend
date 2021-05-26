@@ -15,7 +15,7 @@ const Votation: React.FC = () => {
 
   const { user } = useAuth0();
   console.log(user)
-  const [hasUserVoted, sethasUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
+  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */false);
 
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
@@ -23,7 +23,7 @@ const Votation: React.FC = () => {
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
-      sethasUserVoted(true);
+      setUserHasVoted(true);
       castVote({ variables: { votationId: id, alternativeId: selectedAlternativeId } });
     }
   };
@@ -63,7 +63,7 @@ const Votation: React.FC = () => {
 
       {votationData?.status !== 'ENDED' ? (
         <Box>
-          {!hasUserVoted ? (
+          {!userHasVoted ? (
             <VStack spacing="1.5em" align="left">
               <Heading as="h2" sx={subTitlesStyle}>
                 Alternativer
@@ -83,7 +83,7 @@ const Votation: React.FC = () => {
           <Divider m="3em 0" />
 
           <Center>
-            {!hasUserVoted ? (
+            {!userHasVoted ? (
               <Button
                 onClick={() => submitVote()}
                 p="1.5em 4em"
