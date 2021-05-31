@@ -1,9 +1,48 @@
-import React from 'react'
-import { Center, Divider, Button, VStack, Text } from '@chakra-ui/react'
+import React, {useState} from 'react'
+import { Center, VStack } from '@chakra-ui/react'
 import AddVotations from '../molecules/AddVotations';
-import AddMeetingStatus from '../molecules/AddMeetingStatus';
+import { MajorityType } from '../../__generated__/graphql-types';
+import AddMeetingInformation from '../molecules/AddMeetingInformation';
+import AuthWrapper from '../../services/auth/AuthWrapper'
+import { useAuth0 } from '@auth0/auth0-react';
 
-const Votation: React.FC = () => {
+interface Alternative {
+  id: number;
+  text: string;
+}
+
+interface Votation {
+  id: string;
+  title: string;
+  description: string;
+  alternatives: Alternative[];
+  blankVotes: boolean;
+  hiddenVotes: boolean;
+  severalVotes: boolean;
+  majorityType: MajorityType;
+  majorityThreshold: number;
+}
+
+const AddMeeting: React.FC = () => {
+
+  const {user} = useAuth0();
+
+  console.log(user)
+
+  const [meetingId, setMeetingId] = useState<string>('');
+
+  const [votations, setVotations] = useState<Votation[]>([]);
+
+  const [participants, setParticipants] = useState<string[]>([]);
+
+  const [activeTab, setActiveTab] = useState<number>(0)
+
+  const onMeetingCreated = (meetingId: string) => {
+    setMeetingId(meetingId)
+    setActiveTab(1)
+  }
+  
+  const meetingTabs = [<AddMeetingInformation onMeetingCreated={onMeetingCreated} />, <AddVotations />]
 
   const outerContainer = {
     paddingTop: '5rem',
@@ -18,30 +57,17 @@ const Votation: React.FC = () => {
     maxWidth: '800px',
   } as React.CSSProperties;
 
-  const buttonStyle = {
-    p: "1.5em 4em",
-    borderRadius: "16em",
-    bg: 'gray.500',
-    color: 'white',
-    width: '245px'
-  } as React.CSSProperties
+  console.log(meetingId)
 
   return (
-    <Center sx={outerContainer}>
-      <VStack spacing='10' align='left' sx={centerContainer}>
-        <AddVotations />
-        <Divider m="3em 0" />
-        <VStack spacing='8'>
-          <Button
-            sx={buttonStyle}
-          >
-            Neste
-          </Button>
-          <AddMeetingStatus active='AddMeetingInformation' />
-        </VStack>
-      </ VStack>
-    </Center>
+    <AuthWrapper>
+      <Center sx={outerContainer}>
+        <VStack spacing='10' align='left' sx={centerContainer}>
+          {meetingTabs[activeTab]}
+        </ VStack>
+      </Center>
+    </AuthWrapper>
   )
 };
 
-export default Votation;
+export default AddMeeting;

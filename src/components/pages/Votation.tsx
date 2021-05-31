@@ -35,7 +35,7 @@ const Votation: React.FC = () => {
   if (loading)
     return (
       <Center>
-        <Spinner size="xl" m="auto" />
+        <Spinner asOverlay={false} size="xl" m="auto" />
       </Center>
     );
 
@@ -76,7 +76,7 @@ const Votation: React.FC = () => {
             </VStack>
           ) : (
             <Box mt="4em">
-              <Loading text={'Votering pågår'} />
+              <Loading asOverlay={false} text={'Votering pågår'} />
             </Box>
           )}
 

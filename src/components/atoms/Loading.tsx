@@ -3,9 +3,10 @@ import { VStack, Center, Spinner, Text } from '@chakra-ui/react';
 
 export interface LoadingProps {
   text: string;
+  asOverlay: boolean;
 }
 
-const Loading: React.FC<LoadingProps> = ({ text }) => {
+const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
   const textStyle = {
     fontStyle: 'normal',
     fontWeight: 'bold',
@@ -13,12 +14,24 @@ const Loading: React.FC<LoadingProps> = ({ text }) => {
     color: '#718096',
   };
 
+  const overlaySpinnerStyle = {
+    position: 'absolute',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    left: '0',
+    top: '0',
+    backgroundColor: 'rgba(255, 255, 255, 0.4);',
+    // opacity: 0.2,
+    zIndex: 10
+  } as React.CSSProperties
+
   return (
-    <VStack spacing="1.5em">
-      <Center>
+    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : undefined} >
+      <Center position='relative'>
         <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>
-      <Center>
+      <Center position='relative'>
         <Text sx={textStyle}>{text}</Text>
       </Center>
     </VStack>

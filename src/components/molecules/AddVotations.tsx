@@ -4,6 +4,7 @@ import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { MajorityType } from '../../__generated__/graphql-types';
 import {v4 as uuid} from 'uuid'
+import AddMeetingController from './AddMeetingController';
 
 interface Alternative {
   id: number;
@@ -75,6 +76,14 @@ const AddVotations: React.FC = () => {
     setState({votations})
   }
 
+  const handleNext = () => {
+    return null;
+  }
+
+  const handlePrev = () => {
+    return null;
+  }
+
   return (
      <>
       <VStack spacing='5' align='left'>
@@ -91,6 +100,7 @@ const AddVotations: React.FC = () => {
           </Droppable>
         </DragDropContext>
       </VStack>
+      <AddMeetingController handleNext={handleNext} showPrev={true} handlePrev={handlePrev} activeTab={1}/>
     </>
   )
    

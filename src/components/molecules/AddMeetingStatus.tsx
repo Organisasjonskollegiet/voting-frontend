@@ -2,7 +2,7 @@ import React from 'react';
 import { HStack, Text, Divider, Center } from '@chakra-ui/react';
 
 interface IProps {
-  active: string;
+  active: number;
 }
 
 const AddMeetingStatus: React.FC<IProps> = ({active}) => {
@@ -21,15 +21,15 @@ const AddMeetingStatus: React.FC<IProps> = ({active}) => {
   return (
     <Center>
       <HStack width='100%' spacing='4'>
-        <Text sx={active === 'AddMeetingInformation' ? activeStyle : undefined} >
+        <Text sx={active === 0 ? activeStyle : undefined} >
           Opprette møte
         </Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 'AddVotations' ? activeStyle : undefined}>
+        <Text sx={active === 1 ? activeStyle : undefined}>
           Legge til møtesaker
         </Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 'AddParticipants' ? activeStyle : undefined}>
+        <Text sx={active === 2 ? activeStyle : undefined}>
           Invitere møtedeltakere
         </Text>
       </HStack>

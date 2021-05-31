@@ -5,3 +5,20 @@ mutation CastVote($alternativeId: String!, $votationId: String!) {
     }
   }
 }
+
+mutation CreateMeeting($meeting: CreateMeetingInput!) {
+  createMeeting(meeting: $meeting) {
+    id
+    organization
+    title
+    description
+    startTime
+    status
+    participants {
+      role
+      user {
+        email
+      }
+    }
+  }
+}

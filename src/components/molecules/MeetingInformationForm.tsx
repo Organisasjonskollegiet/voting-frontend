@@ -11,22 +11,28 @@ import {
 import DatePicker from '../atoms/DatePicker/DatePicker'
 import { CreateMeetingInput } from '../../__generated__/graphql-types';
 
-// interface MeetingInformationFormProps {
-
-// }
-
 const inputBackgroundColor = "#fff"
+interface Meeting {
+  organization: string;
+  title: string;
+  startTime: Date;
+  description: string;
+}
+interface IProps {
+  meeting: CreateMeetingInput;
+  onChange: (meeting: CreateMeetingInput) => void;
+}
 
-const MeetingInformationForm: React.FC = () => {
+const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
  
   const meetingInformationFormStyle = useStyleConfig('MeetingInformationForm');
 
-  const [meeting, setMeeting] = useState<CreateMeetingInput>({
-    organization: '',
-    title: '',
-    startTime: new Date(),
-    description: '',
-  });
+  // const [meeting, setMeeting] = useState<CreateMeetingInput>({
+  //   organization: '',
+  //   title: '',
+  //   startTime: new Date(),
+  //   description: '',
+  // });
   
   const labelStyle = {
     fontStyle: 'normal',
@@ -46,7 +52,7 @@ const MeetingInformationForm: React.FC = () => {
             sx={inputStyle}
             isRequired
             placeholder="Hva heter organisasjonen møtet arrangeres av?" 
-            onChange={(e: any) => setMeeting({...meeting, organization: e.target.value})} />
+            onChange={(e: any) => onChange({...meeting, organization: e.target.value})} />
         </FormControl>
         <FormControl isRequired>
           <FormLabel sx={labelStyle}>
@@ -56,7 +62,7 @@ const MeetingInformationForm: React.FC = () => {
             sx={inputStyle}
             isRequired 
             placeholder="Hva skal tittelen på møtet være?" 
-            onChange={(e: any) => setMeeting({...meeting, title: e.target.value})} />
+            onChange={(e: any) => onChange({...meeting, title: e.target.value})} />
         </FormControl>
         <FormControl isRequired fontWeight='normal'>
           <FormLabel sx={labelStyle}>
@@ -65,7 +71,7 @@ const MeetingInformationForm: React.FC = () => {
           <DatePicker
             id="published-date"
             selectedDate={meeting.startTime}
-            onChange={(date: any) => setMeeting({...meeting, startTime: date})}
+            onChange={(date: any) => onChange({...meeting, startTime: date})}
             showPopperArrow={true}
           />
         </FormControl>
@@ -78,7 +84,7 @@ const MeetingInformationForm: React.FC = () => {
             isRequired
             placeholder='Skriv gjerne en god beskrivelse av hva møte skal handle om.' 
             resize='none'
-            onChange={(e: any) => setMeeting({...meeting, description: e.target.value})}
+            onChange={(e: any) => onChange({...meeting, description: e.target.value})}
           />
         </FormControl>
     </VStack>
