@@ -7,5 +7,6 @@ query GetMeetings {
       id
       email
     }
+    status
   }
 }
