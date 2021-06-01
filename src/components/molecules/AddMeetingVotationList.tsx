@@ -41,7 +41,9 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
   }
 
   const duplicateVotation = (votation: Votation) => {
-    updateVotations([...votations, {...votation, id: uuid()}])
+    const newId = uuid();
+    updateVotations([...votations, {...votation, id: newId}])
+    setActiveVotationId(newId)
   }
 
   return (

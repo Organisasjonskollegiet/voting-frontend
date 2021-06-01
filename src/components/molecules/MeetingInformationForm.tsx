@@ -11,13 +11,6 @@ import {
 import DatePicker from '../atoms/DatePicker/DatePicker'
 import { CreateMeetingInput } from '../../__generated__/graphql-types';
 
-const inputBackgroundColor = "#fff"
-interface Meeting {
-  organization: string;
-  title: string;
-  startTime: Date;
-  description: string;
-}
 interface IProps {
   meeting: CreateMeetingInput;
   onChange: (meeting: CreateMeetingInput) => void;
@@ -26,13 +19,6 @@ interface IProps {
 const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
  
   const meetingInformationFormStyle = useStyleConfig('MeetingInformationForm');
-
-  // const [meeting, setMeeting] = useState<CreateMeetingInput>({
-  //   organization: '',
-  //   title: '',
-  //   startTime: new Date(),
-  //   description: '',
-  // });
   
   const labelStyle = {
     fontStyle: 'normal',
@@ -51,6 +37,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
           <Input 
             sx={inputStyle}
             isRequired
+            value={meeting.organization}
             placeholder="Hva heter organisasjonen møtet arrangeres av?" 
             onChange={(e: any) => onChange({...meeting, organization: e.target.value})} />
         </FormControl>
@@ -61,6 +48,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
           <Input 
             sx={inputStyle}
             isRequired 
+            value={meeting.title}
             placeholder="Hva skal tittelen på møtet være?" 
             onChange={(e: any) => onChange({...meeting, title: e.target.value})} />
         </FormControl>
@@ -82,6 +70,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
           <Textarea 
             sx={inputStyle}
             isRequired
+            value={meeting.description}
             placeholder='Skriv gjerne en god beskrivelse av hva møte skal handle om.' 
             resize='none'
             onChange={(e: any) => onChange({...meeting, description: e.target.value})}
@@ -119,4 +108,4 @@ export const MeetingInformationFormConfig: ComponentStyleConfig = {
       },
     };
     
-    export default MeetingInformationForm;
+export default MeetingInformationForm;

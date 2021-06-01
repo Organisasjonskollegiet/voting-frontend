@@ -1,24 +1,11 @@
+mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
+  createVotations(meetingId: $meetingId, votations: $votations)
+}
+
 mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {
     alternative {
       text
-    }
-  }
-}
-
-mutation CreateMeeting($meeting: CreateMeetingInput!) {
-  createMeeting(meeting: $meeting) {
-    id
-    organization
-    title
-    description
-    startTime
-    status
-    participants {
-      role
-      user {
-        email
-      }
     }
   }
 }

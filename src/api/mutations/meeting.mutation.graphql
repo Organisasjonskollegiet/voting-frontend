@@ -1,0 +1,21 @@
+mutation CreateMeeting($meeting: CreateMeetingInput!) {
+  createMeeting(meeting: $meeting) {
+    id
+    title
+    organization
+    startTime
+    description
+    status
+  }
+}
+
+mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
+  updateMeeting(meeting: $meeting) {
+    id
+    title
+    organization
+    startTime
+    description
+    status
+  }
+}

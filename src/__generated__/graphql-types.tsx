@@ -35,9 +35,10 @@ export type CreateVotationInput = {
   title: Scalars['String'];
   description: Scalars['String'];
   blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
-  meetingId: Scalars['String'];
 };
 
 
@@ -65,7 +66,7 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotation?: Maybe<Votation>;
+  createVotations?: Maybe<Scalars['Int']>;
   updateVotation?: Maybe<Votation>;
   deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
@@ -79,8 +80,9 @@ export type Mutation = {
 };
 
 
-export type MutationCreateVotationArgs = {
-  votation: CreateVotationInput;
+export type MutationCreateVotationsArgs = {
+  meetingId: Scalars['String'];
+  votations: Array<CreateVotationInput>;
 };
 
 
@@ -201,6 +203,8 @@ export type UpdateVotationInput = {
   title: Scalars['String'];
   description: Scalars['String'];
   blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
 };
@@ -224,7 +228,9 @@ export type Votation = {
   description: Scalars['String'];
   order?: Maybe<Scalars['Int']>;
   status: Status;
-  blankVotes?: Maybe<Scalars['Boolean']>;
+  blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
   meetingId: Scalars['String'];
@@ -242,6 +248,43 @@ export type Vote = {
   prevVote?: Maybe<Vote>;
 };
 
+export type CreateMeetingMutationVariables = Exact<{
+  meeting: CreateMeetingInput;
+}>;
+
+
+export type CreateMeetingMutation = (
+  { __typename?: 'Mutation' }
+  & { createMeeting?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status'>
+  )> }
+);
+
+export type UpdateMeetingMutationVariables = Exact<{
+  meeting: UpdateMeetingInput;
+}>;
+
+
+export type UpdateMeetingMutation = (
+  { __typename?: 'Mutation' }
+  & { updateMeeting?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status'>
+  )> }
+);
+
+export type CreateVotationsMutationVariables = Exact<{
+  meetingId: Scalars['String'];
+  votations: Array<CreateVotationInput> | CreateVotationInput;
+}>;
+
+
+export type CreateVotationsMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'createVotations'>
+);
+
 export type CastVoteMutationVariables = Exact<{
   alternativeId: Scalars['String'];
   votationId: Scalars['String'];
@@ -256,30 +299,6 @@ export type CastVoteMutation = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'text'>
     )> }
-  )> }
-);
-
-export type CreateMeetingMutationVariables = Exact<{
-  meeting: CreateMeetingInput;
-}>;
-
-
-export type CreateMeetingMutation = (
-  { __typename?: 'Mutation' }
-  & { createMeeting?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'organization' | 'title' | 'description' | 'startTime' | 'status'>
-    & { owner?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id'>
-    )>, participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'email'>
-      )> }
-    )>> }
   )> }
 );
 
@@ -333,6 +352,114 @@ export type GetVotationByIdQuery = (
 );
 
 
+export const CreateMeetingDocument = gql`
+    mutation CreateMeeting($meeting: CreateMeetingInput!) {
+  createMeeting(meeting: $meeting) {
+    id
+    title
+    organization
+    startTime
+    description
+    status
+  }
+}
+    `;
+export type CreateMeetingMutationFn = Apollo.MutationFunction<CreateMeetingMutation, CreateMeetingMutationVariables>;
+
+/**
+ * __useCreateMeetingMutation__
+ *
+ * To run a mutation, you first call `useCreateMeetingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMeetingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMeetingMutation, { data, loading, error }] = useCreateMeetingMutation({
+ *   variables: {
+ *      meeting: // value for 'meeting'
+ *   },
+ * });
+ */
+export function useCreateMeetingMutation(baseOptions?: Apollo.MutationHookOptions<CreateMeetingMutation, CreateMeetingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMeetingMutation, CreateMeetingMutationVariables>(CreateMeetingDocument, options);
+      }
+export type CreateMeetingMutationHookResult = ReturnType<typeof useCreateMeetingMutation>;
+export type CreateMeetingMutationResult = Apollo.MutationResult<CreateMeetingMutation>;
+export type CreateMeetingMutationOptions = Apollo.BaseMutationOptions<CreateMeetingMutation, CreateMeetingMutationVariables>;
+export const UpdateMeetingDocument = gql`
+    mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
+  updateMeeting(meeting: $meeting) {
+    id
+    title
+    organization
+    startTime
+    description
+    status
+  }
+}
+    `;
+export type UpdateMeetingMutationFn = Apollo.MutationFunction<UpdateMeetingMutation, UpdateMeetingMutationVariables>;
+
+/**
+ * __useUpdateMeetingMutation__
+ *
+ * To run a mutation, you first call `useUpdateMeetingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMeetingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateMeetingMutation, { data, loading, error }] = useUpdateMeetingMutation({
+ *   variables: {
+ *      meeting: // value for 'meeting'
+ *   },
+ * });
+ */
+export function useUpdateMeetingMutation(baseOptions?: Apollo.MutationHookOptions<UpdateMeetingMutation, UpdateMeetingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateMeetingMutation, UpdateMeetingMutationVariables>(UpdateMeetingDocument, options);
+      }
+export type UpdateMeetingMutationHookResult = ReturnType<typeof useUpdateMeetingMutation>;
+export type UpdateMeetingMutationResult = Apollo.MutationResult<UpdateMeetingMutation>;
+export type UpdateMeetingMutationOptions = Apollo.BaseMutationOptions<UpdateMeetingMutation, UpdateMeetingMutationVariables>;
+export const CreateVotationsDocument = gql`
+    mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
+  createVotations(meetingId: $meetingId, votations: $votations)
+}
+    `;
+export type CreateVotationsMutationFn = Apollo.MutationFunction<CreateVotationsMutation, CreateVotationsMutationVariables>;
+
+/**
+ * __useCreateVotationsMutation__
+ *
+ * To run a mutation, you first call `useCreateVotationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateVotationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createVotationsMutation, { data, loading, error }] = useCreateVotationsMutation({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *      votations: // value for 'votations'
+ *   },
+ * });
+ */
+export function useCreateVotationsMutation(baseOptions?: Apollo.MutationHookOptions<CreateVotationsMutation, CreateVotationsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateVotationsMutation, CreateVotationsMutationVariables>(CreateVotationsDocument, options);
+      }
+export type CreateVotationsMutationHookResult = ReturnType<typeof useCreateVotationsMutation>;
+export type CreateVotationsMutationResult = Apollo.MutationResult<CreateVotationsMutation>;
+export type CreateVotationsMutationOptions = Apollo.BaseMutationOptions<CreateVotationsMutation, CreateVotationsMutationVariables>;
 export const CastVoteDocument = gql`
     mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {
@@ -369,53 +496,6 @@ export function useCastVoteMutation(baseOptions?: Apollo.MutationHookOptions<Cas
 export type CastVoteMutationHookResult = ReturnType<typeof useCastVoteMutation>;
 export type CastVoteMutationResult = Apollo.MutationResult<CastVoteMutation>;
 export type CastVoteMutationOptions = Apollo.BaseMutationOptions<CastVoteMutation, CastVoteMutationVariables>;
-export const CreateMeetingDocument = gql`
-    mutation CreateMeeting($meeting: CreateMeetingInput!) {
-  createMeeting(meeting: $meeting) {
-    id
-    organization
-    title
-    description
-    startTime
-    status
-    owner {
-      id
-    }
-    participants {
-      role
-      user {
-        email
-      }
-    }
-  }
-}
-    `;
-export type CreateMeetingMutationFn = Apollo.MutationFunction<CreateMeetingMutation, CreateMeetingMutationVariables>;
-
-/**
- * __useCreateMeetingMutation__
- *
- * To run a mutation, you first call `useCreateMeetingMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateMeetingMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createMeetingMutation, { data, loading, error }] = useCreateMeetingMutation({
- *   variables: {
- *      meeting: // value for 'meeting'
- *   },
- * });
- */
-export function useCreateMeetingMutation(baseOptions?: Apollo.MutationHookOptions<CreateMeetingMutation, CreateMeetingMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateMeetingMutation, CreateMeetingMutationVariables>(CreateMeetingDocument, options);
-      }
-export type CreateMeetingMutationHookResult = ReturnType<typeof useCreateMeetingMutation>;
-export type CreateMeetingMutationResult = Apollo.MutationResult<CreateMeetingMutation>;
-export type CreateMeetingMutationOptions = Apollo.BaseMutationOptions<CreateMeetingMutation, CreateMeetingMutationVariables>;
 export const GetUserDocument = gql`
     query GetUser {
   user {

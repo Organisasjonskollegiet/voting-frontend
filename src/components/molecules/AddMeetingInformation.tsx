@@ -1,41 +1,36 @@
 import React, { useState } from 'react';
 import { Heading, VStack, Text, Center, Alert, AlertIcon, Spinner } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm'
-import { CreateMeetingInput, useCreateMeetingMutation } from '../../__generated__/graphql-types'
+import { CreateMeetingInput, useCreateMeetingMutation, Meeting, useUpdateMeetingMutation } from '../../__generated__/graphql-types'
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 
 interface IProps {
-  onMeetingCreated: (meeting: string) => void;
+  meetingFromProps: CreateMeetingInput | undefined;
+  meetingId: string | undefined;
+  onMeetingUpdated: (meeting: Meeting) => void;
 }
 
-const AddMeetingInformation: React.FC<IProps> = ({ onMeetingCreated }) => {
- 
-  const [showAlert, setShowAlert] = useState<boolean>(false);
-
-  const [createMeeting, result] = useCreateMeetingMutation();
-
-  const [meeting, setMeeting] = useState<CreateMeetingInput>({
+const emptyMeeting = {
     organization: '',
     title: '',
     startTime: new Date(),
     description: '',
-  });
+  } as CreateMeetingInput; 
+
+const AddMeetingInformation: React.FC<IProps> = ({ onMeetingUpdated, meetingFromProps, meetingId }) => {
+ 
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
+
+  const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
+
+  const [meeting, setMeeting] = useState<CreateMeetingInput>(meetingFromProps ?? emptyMeeting);
 
    const h1Style = {
     fontSize: '1.5em',
   }
-
-  const overlaySpinnerStyle = {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    left: '0',
-    top: '0',
-    backgroundColor: '#fcfcfc',
-    opacity: 0.2,
-    zIndex: 10
-  } as React.CSSProperties
 
    const onChange = (meeting: CreateMeetingInput) => {
     setMeeting(meeting)
@@ -51,20 +46,22 @@ const AddMeetingInformation: React.FC<IProps> = ({ onMeetingCreated }) => {
     const isValid = isMeetingInformationValid();
     if (!isValid) {
       setShowAlert(true);
-    } else {
+    } else if (!meetingId) {
       createMeeting({variables: {meeting}})
+    } else {
+      updateMeeting({variables: {meeting: {...meeting, id: meetingId}}})
     }
   }
 
-  if (result.data?.createMeeting){
-    onMeetingCreated(result.data.createMeeting?.id);
+  if (createMeetingResult.data?.createMeeting){
+    onMeetingUpdated(createMeetingResult.data.createMeeting as Meeting);
+  } else if (updateMeetingResult.data?.updateMeeting) {
+    onMeetingUpdated(updateMeetingResult.data.updateMeeting as Meeting)
   }
-
-  console.log(result)
 
   return (
     <>
-      {result.loading && 
+      {(createMeetingResult.loading || updateMeetingResult.loading) && 
         <Loading asOverlay={true} text='Oppretter møte' />
       }
       {showAlert && <Alert status='error'>
