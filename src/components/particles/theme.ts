@@ -1,6 +1,5 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../atoms/Alternative';
-import { MeetingConfig } from '../atoms/Meeting';
 
 const darkblue = '#718096';
 const lightblue = '#EDF2F7'
@@ -16,7 +15,6 @@ const theme = extendTheme({
   },
   components: {
     Alternative: AlternativeConfig,
-    Meeting: MeetingConfig,
 
     Button: {
       baseStyle: {
@@ -33,6 +31,11 @@ const theme = extendTheme({
       }
     },
     Text: {
+      baseStyle: {
+        color: darkblue,
+      }
+    },
+    Heading: {
       baseStyle: {
         color: darkblue,
       }

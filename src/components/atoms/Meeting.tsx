@@ -1,29 +1,32 @@
-import { ComponentStyleConfig, Flex, Heading, Text, useStyleConfig } from '@chakra-ui/react';
+import { ComponentStyleConfig, Box, Flex, Heading, Text, useStyleConfig } from '@chakra-ui/react';
 import React from 'react';
 
 export interface MeetingProps {
   id: string;
   title: string;
-  startTime: Date;
+  startTime: string;
   description: string;
   owner: string;
 }
 
+
+const styles = {
+  width: '100%',
+  borderRadius: '4px',
+  boxShadow: '0ps 0px 10px rgba(0,0,0,0.1)',
+} as React.CSSProperties
+
 const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, owner }) => {
-  const styles = useStyleConfig('Meeting');
   return (
-    <Flex sx={styles}>
+    <Box sx={styles}>
       <Heading as="h2"> {title} </Heading>
-      <Text> {description} </Text>
-      <Text fontWeight="bold"> {owner} </Text>
-      <Text fontWeight="bold"> {startTime} </Text>
-    </Flex>
+      <Text mb="1em"> {description} </Text>
+      <Flex justifyContent="space-between">
+        <Text fontWeight="bold"> {owner} </Text>
+        <Text fontWeight="bold"> {startTime} </Text>
+      </Flex>
+    </Box>
   );
 };
 
-export const MeetingConfig: ComponentStyleConfig = {
-  baseStyle: {
-    width: '100%',
-  },
-};
 export default Meeting;

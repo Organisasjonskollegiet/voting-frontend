@@ -2,15 +2,13 @@ import React from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
 import { Center, Spinner } from '@chakra-ui/react';
+import { Status, useGetMeetingsQuery } from '../../__generated__/graphql-types';
 
 const MyMeetings = () => {
   //TODO lage følgende query
-  const { data, loading, error } = useGetMeetingsByUser();
+  const { data, loading, error } = useGetMeetingsQuery();
 
-  const meetingsData = data?.meetingByUser;
-  const upcomingMeetings = meetingsData.filter((meeting) => meeting.status === Status.Upcoming);
-  const ongoingMeetings = meetingsData.filter((meeting) => meeting.status === Status.Ongoing);
-  const endedMeetings = meetingsData.filter((meeting) => meeting.status === Status.Ended);
+  const meetingsData = data?.meetings;
 
   if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
   if (loading)
@@ -20,24 +18,28 @@ const MyMeetings = () => {
       </Center>
     );
 
+  const upcomingMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Upcoming);
+  const ongoingMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Ongoing);
+  const endedMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Ended);
+
   return (
     <Box>
-      {upcomingMeetings.length() > 0 && (
+      {upcomingMeetings && (
         <Box>
           <Heading as="h1">Kommende møter</Heading>
-          <MeetingList {...upcomingMeetings} />
+          <MeetingList meetings={upcomingMeetings} />
         </Box>
       )}
-      {ongoingMeetings.length() > 0 && (
+      {ongoingMeetings && (
         <Box>
           <Heading as="h1">Pågående møter</Heading>
-          <MeetingList {...ongoingMeetings} />
+          <MeetingList meetings={ongoingMeetings} />
         </Box>
       )}
-      {endedMeetings.length() > 0 && (
+      {endedMeetings && (
         <Box>
           <Heading as="h1">Pågående møter</Heading>
-          <MeetingList {...endedMeetings} />
+          <MeetingList meetings={endedMeetings} />
         </Box>
       )}
     </Box>
