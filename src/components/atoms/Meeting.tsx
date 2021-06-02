@@ -4,24 +4,26 @@ import React from 'react';
 export interface MeetingProps {
   id: string;
   title: string;
+  description?: string | null;
   startTime: string;
-  description: string;
-  owner: string;
+  owner?: {
+    //TODO: må finne en løsning på å vise arrangør
+  } | null;
 }
-
 
 const styles = {
   width: '100%',
   borderRadius: '4px',
-  boxShadow: '0ps 0px 10px rgba(0,0,0,0.1)',
+  boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
+  padding: '1em 2em'
 } as React.CSSProperties
 
 const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, owner }) => {
   return (
     <Box sx={styles}>
-      <Heading as="h2"> {title} </Heading>
-      <Text mb="1em"> {description} </Text>
-      <Flex justifyContent="space-between">
+      <Heading as="h2" fontSize="1.125em"> {title} </Heading>
+      <Text mb="1em" fontSize="0.75em"> {description} </Text>
+      <Flex justifyContent="space-between" fontSize="0.75em">
         <Text fontWeight="bold"> {owner} </Text>
         <Text fontWeight="bold"> {startTime} </Text>
       </Flex>

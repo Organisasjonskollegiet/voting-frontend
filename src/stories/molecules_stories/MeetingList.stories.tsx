@@ -1,13 +1,17 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import MeetingList, { MeetingListProps } from '../../components/molecules/MeetingList';
+import { Box } from '@chakra-ui/layout';
 
 export default {
   title: 'Molecules/MeetingList',
   component: MeetingList,
 } as Meta;
 
-const Template: Story<MeetingListProps> = (args) => (<MeetingList {...args} />);
+const Template: Story<MeetingListProps> = (args) => ( 
+  <Box w="80vw" m="auto">
+    <MeetingList {...args} />
+  </Box>);
 
 export const Default = Template.bind({});
 Default.args = {

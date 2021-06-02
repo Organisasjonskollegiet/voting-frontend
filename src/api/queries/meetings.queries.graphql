@@ -8,5 +8,6 @@ query GetMeetings {
       email
     }
     status
+    startTime
   }
 }

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
-import { Center, Spinner } from '@chakra-ui/react';
+import { Center, extendTheme, Spinner } from '@chakra-ui/react';
 import { Status, useGetMeetingsQuery } from '../../__generated__/graphql-types';
+import Meeting, { MeetingProps } from '../atoms/Meeting';
 
 const MyMeetings = () => {
-  //TODO lage følgende query
   const { data, loading, error } = useGetMeetingsQuery();
 
   const meetingsData = data?.meetings;
@@ -18,28 +18,30 @@ const MyMeetings = () => {
       </Center>
     );
 
-  const upcomingMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Upcoming);
-  const ongoingMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Ongoing);
-  const endedMeetings = meetingsData?.filter((meeting) => meeting?.status === Status.Ended);
+  if(!meetingsData) return <Center><Text>Du har ingen møter</Text></Center>
+
+  const upcomingMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Upcoming);
+  const ongoingMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ongoing);
+  const endedMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ended);
 
   return (
-    <Box>
+    <Box w="80vw" m="auto"> 
       {upcomingMeetings && (
         <Box>
           <Heading as="h1">Kommende møter</Heading>
-          <MeetingList meetings={upcomingMeetings} />
+          <MeetingList meetings={upcomingMeetings as Array<MeetingProps>} />
         </Box>
       )}
       {ongoingMeetings && (
         <Box>
           <Heading as="h1">Pågående møter</Heading>
-          <MeetingList meetings={ongoingMeetings} />
+          <MeetingList meetings={ongoingMeetings as Array<MeetingProps>} />
         </Box>
       )}
       {endedMeetings && (
         <Box>
-          <Heading as="h1">Pågående møter</Heading>
-          <MeetingList meetings={endedMeetings} />
+          <Heading as="h1">Tidligere møter</Heading>
+          <MeetingList meetings={endedMeetings as Array<MeetingProps>} />
         </Box>
       )}
     </Box>

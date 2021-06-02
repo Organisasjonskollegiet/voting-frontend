@@ -1,6 +1,6 @@
-import { Flex } from '@chakra-ui/layout';
 import React from 'react';
 import Meeting, { MeetingProps } from '../atoms/Meeting';
+import { SimpleGrid } from '@chakra-ui/layout';
 
 export interface MeetingListProps {
   meetings: Array<MeetingProps>;
@@ -8,11 +8,11 @@ export interface MeetingListProps {
 
 const MeetingList: React.FC<MeetingListProps> = ({ meetings }) => {
   return (
-    <Flex>
+    <SimpleGrid col="1" gap="1.5em">
       {meetings.map((meeting) => (
         <Meeting {...meeting} key={meeting.id} />
       ))}
-    </Flex>
+    </SimpleGrid>
   );
 };
 
