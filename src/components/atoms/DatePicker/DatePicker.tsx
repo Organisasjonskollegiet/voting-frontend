@@ -1,8 +1,8 @@
 import React, { HTMLAttributes } from 'react';
 import ReactDatePicker from 'react-datepicker';
-import { Input, InputGroup, InputRightElement, useColorMode, Icon } from '@chakra-ui/react';
+import { Input, InputGroup, InputRightElement, useColorMode } from '@chakra-ui/react';
 import CalendarIcon from './icon.svg';
-import { inputStyle } from '../../molecules/MeetingInformationForm';
+import { inputStyle } from '../../particles/formStyles';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import './date-picker.css';

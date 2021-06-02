@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import DatePicker from '../atoms/DatePicker/DatePicker'
 import { CreateMeetingInput } from '../../__generated__/graphql-types';
+import { labelStyle, inputStyle } from '../particles/formStyles'
 
 interface IProps {
   meeting: CreateMeetingInput;
@@ -20,14 +21,6 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
  
   const meetingInformationFormStyle = useStyleConfig('MeetingInformationForm');
   
-  const labelStyle = {
-    fontStyle: 'normal',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    lineHeight: '150%',
-    marginBottom: '10px',
-  } as React.CSSProperties;
-
   return (
     <VStack spacing='7' color='#718096' sx={meetingInformationFormStyle}>
         <FormControl isRequired>
@@ -81,10 +74,6 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
    
 };
 
-export const inputStyle = {
-  background: '#fff',
-  boxShadow: ' 0px 0px 10px rgba(0, 0, 0, 0.1);',
-} as React.CSSProperties;
 
 
 export const MeetingInformationFormConfig: ComponentStyleConfig = {
