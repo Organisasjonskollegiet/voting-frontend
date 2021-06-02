@@ -1,4 +1,4 @@
-import { ComponentStyleConfig, Box, Flex, Heading, Text, useStyleConfig } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 
 export interface MeetingProps {
@@ -15,7 +15,7 @@ const styles = {
   width: '100%',
   borderRadius: '4px',
   boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
-  padding: '1em 2em'
+  padding: '1em 2em',
 } as React.CSSProperties
 
 const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, owner }) => {

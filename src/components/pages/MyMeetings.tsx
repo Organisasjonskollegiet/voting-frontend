@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
-import { Center, extendTheme, Spinner } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 import { Status, useGetMeetingsQuery } from '../../__generated__/graphql-types';
-import Meeting, { MeetingProps } from '../atoms/Meeting';
+import { MeetingProps } from '../atoms/Meeting';
 
-const MyMeetings = () => {
+const MyMeetings: React.FC = () => {
   const { data, loading, error } = useGetMeetingsQuery();
 
   const meetingsData = data?.meetings;
