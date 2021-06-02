@@ -21,14 +21,14 @@ Default.args = {
       title: "Generalforsamling",
       startTime: "2021-11-05",
       description: "Quo illum corporis enim repellat totam natus sit.",
-      owner: "Random Linjeforening",
+      organization: "Random Linjeforening",
     },
     {
       id: "2",
       title: "Valg av nytt styre",
       startTime: "2021-09-02",
       description: "Quo illum corporis enim repellat totam natus sit.",
-      owner: "Random Linjeforening",
+      organization: "Random Linjeforening",
     },
   ]
 };

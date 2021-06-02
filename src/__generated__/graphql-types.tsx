@@ -287,7 +287,7 @@ export type GetMeetingsQuery = (
   { __typename?: 'Query' }
   & { meetings: Array<Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description' | 'status' | 'startTime'>
+    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime'>
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
@@ -402,6 +402,7 @@ export const GetMeetingsDocument = gql`
       id
       email
     }
+    organization
     status
     startTime
   }

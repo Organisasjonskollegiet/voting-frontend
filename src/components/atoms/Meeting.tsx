@@ -6,9 +6,7 @@ export interface MeetingProps {
   title: string;
   description?: string | null;
   startTime: string;
-  owner?: {
-    //TODO: må finne en løsning på å vise arrangør
-  } | null;
+  organization: string;
 }
 
 const styles = {
@@ -18,14 +16,16 @@ const styles = {
   padding: '1em 2em',
 } as React.CSSProperties
 
-const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, owner }) => {
+const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, organization }) => {
   return (
     <Box sx={styles}>
       <Heading as="h2" fontSize="1.125em"> {title} </Heading>
       <Text mb="1em" fontSize="0.75em"> {description} </Text>
       <Flex justifyContent="space-between" fontSize="0.75em">
-        <Text fontWeight="bold"> {owner} </Text>
-        <Text fontWeight="bold"> {startTime} </Text>
+        <Text fontWeight="bold"> {organization} </Text>
+        <Text fontWeight="bold">
+           {startTime.split('T')[0].split('-').reverse().reduce((s1, s2) => s1 + '.' + s2)}
+        </Text>
       </Flex>
     </Box>
   );

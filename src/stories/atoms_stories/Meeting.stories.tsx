@@ -20,5 +20,5 @@ Default.args = {
     title: "Generalforsamling",
     startTime: "2021-11-05",
     description: "Quo illum corporis enim repellat totam natus sit.",
-    owner: "Random Linjeforening",
+    organization: "Random Linjeforening",
 };
