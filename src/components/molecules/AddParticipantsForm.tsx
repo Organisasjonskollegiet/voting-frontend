@@ -6,8 +6,22 @@ import UploadIcon from './uploadIcon.svg'
 const AddParticipantsForm = () => {
 
   const [participants, setParticipants] = useState<string[]>([]);
+  const [admins, setAdmins] = useState<string[]>([]);
+  const [readingFiles, setReadingFiles] = useState<boolean>(false);
+
+  const handleEnterPressed = (event: any, elementId: string, state: string[], setState: (emails: string[]) => void) => {
+    if (event.keyCode !== 13) return;
+    const input = document.getElementById(elementId) as HTMLInputElement;
+    if (!input) return;
+    const email = input.value;
+    if (email && email.trim().length > 0) {
+      setState([...state, email]);
+    }
+    input.value = '';
+  }
 
   const onFileUpload = (event: any) => {
+    setReadingFiles(true);
     const file = event.target.files[0]
     const reader = new FileReader();
     reader.onload = (evt: any) => {
@@ -23,11 +37,13 @@ const AddParticipantsForm = () => {
         if (email && !emailExists) emails.push(email)
       }
       setParticipants(emails);
+      setReadingFiles(false);
     };
     reader.readAsText(file, 'UTF-8');
   }
 
-  console.log(participants)
+  console.log("participants", participants)
+  console.log("admins", admins)
 
   return (
     <VStack spacing='7'>
@@ -51,8 +67,10 @@ const AddParticipantsForm = () => {
           </HStack>
         </FormLabel>
         <Input 
+          id='participantInput'
           sx={inputStyle}
           placeholder="Inviter deltaker med epostadresse"
+          onKeyDown={(event) => handleEnterPressed(event, 'participantInput', participants, setParticipants)}
         />
       </FormControl>
       <Divider m="3em 0" />
@@ -61,8 +79,10 @@ const AddParticipantsForm = () => {
           Gi redigeringstilgang
         </FormLabel>
         <Input 
+          id='adminInput'
           sx={inputStyle}
           placeholder="Inviter administrator med epostadresse"
+          onKeyDown={(event) => handleEnterPressed(event, 'adminInput', admins, setAdmins)}
         />
       </FormControl>
     </VStack>
