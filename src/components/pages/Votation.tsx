@@ -7,6 +7,7 @@ import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
+import { h1Style } from '../particles/formStyles'
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,9 +47,6 @@ const Votation: React.FC = () => {
     lineHeight: '150%',
   } as React.CSSProperties;
 
-  const h1Style = {
-    fontSize: '1.5em',
-  };
 
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">

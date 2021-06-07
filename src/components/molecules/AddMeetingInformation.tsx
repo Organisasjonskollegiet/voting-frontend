@@ -4,6 +4,7 @@ import MeetingInformationForm from './MeetingInformationForm'
 import { CreateMeetingInput, useCreateMeetingMutation, Meeting, useUpdateMeetingMutation } from '../../__generated__/graphql-types'
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
+import {h1Style} from '../particles/formStyles'
 
 interface IProps {
   meetingFromProps: CreateMeetingInput | undefined;
@@ -27,10 +28,6 @@ const AddMeetingInformation: React.FC<IProps> = ({ onMeetingUpdated, meetingFrom
   const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
 
   const [meeting, setMeeting] = useState<CreateMeetingInput>(meetingFromProps ?? emptyMeeting);
-
-   const h1Style = {
-    fontSize: '1.5em',
-  }
 
    const onChange = (meeting: CreateMeetingInput) => {
     setMeeting(meeting)

@@ -6,6 +6,7 @@ import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper'
 import {v4 as uuid} from 'uuid'
 import { useAuth0 } from '@auth0/auth0-react';
+import AddParticipants from '../molecules/AddParticipants';
 
 interface Alternative {
   id: number;
@@ -51,7 +52,7 @@ const AddMeeting: React.FC = () => {
 
   const [participants, setParticipants] = useState<string[]>([]);
 
-  const [activeTab, setActiveTab] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<number>(2)
 
   const onMeetingUpdated = (meeting: Meeting) => {
     setMeeting(meeting)
@@ -59,7 +60,7 @@ const AddMeeting: React.FC = () => {
   }
 
   const onVotationsCreated = () => {
-    setActiveTab(0)
+    setActiveTab(2)
   }
 
   const handlePrevFromVotation = (votations: Votation[]) => {
@@ -86,7 +87,8 @@ const AddMeeting: React.FC = () => {
       votations={votations}
       onVotationsCreated={onVotationsCreated} 
       meetingId={meeting?.id ?? ''}
-      handlePrevious={handlePrevFromVotation} />
+      handlePrevious={handlePrevFromVotation} />,
+    <AddParticipants />
   ]
 
   const outerContainer = {

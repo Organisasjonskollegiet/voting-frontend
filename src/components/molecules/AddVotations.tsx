@@ -5,6 +5,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { MajorityType, useCreateVotationsMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
+import { h1Style } from '../particles/formStyles'
 
 interface IProps {
   meetingId: string;
@@ -35,10 +36,6 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
   const [createVotations, result] = useCreateVotationsMutation();
   
   const [state, setState] = useState({ votations });
-
-   const h1Style = {
-    fontSize: '1.5em',
-  }
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -82,11 +79,12 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
       .filter(votation => 
         isValidVotation(votation)
       )
-      .map(votation => 
+      .map((votation, index) => 
         {
           return {
             title: votation.title, 
             description: votation.title,
+            index,
             blankVotes: votation.blankVotes,
             hiddenVotes: votation.hiddenVotes,
             severalVotes: votation.severalVotes,

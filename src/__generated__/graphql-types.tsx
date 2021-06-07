@@ -39,6 +39,8 @@ export type CreateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
+  alternatives?: Maybe<Array<Scalars['String']>>;
 };
 
 
@@ -66,7 +68,7 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotations?: Maybe<Scalars['Int']>;
+  createVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
   updateVotation?: Maybe<Votation>;
   deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
@@ -207,6 +209,7 @@ export type UpdateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
 };
 
 export type User = {
@@ -233,6 +236,7 @@ export type Votation = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
   meetingId: Scalars['String'];
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
