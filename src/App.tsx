@@ -1,5 +1,6 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
+import Navbar from './components/atoms/Navbar';
 import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
 
@@ -14,7 +15,7 @@ const App: FC = () => {
         <Votation />
       </Route>
       <Route path="/">
-        <PageExample page="/" />
+        <Navbar />
       </Route>
     </Switch>
   );
