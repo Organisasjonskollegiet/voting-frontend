@@ -25,6 +25,7 @@ export type Alternative = {
 };
 
 export type CreateMeetingInput = {
+  organization: Scalars['String'];
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Scalars['String'];
@@ -34,11 +35,15 @@ export type CreateVotationInput = {
   title: Scalars['String'];
   description: Scalars['String'];
   blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
-  meetingId: Scalars['String'];
+  alternatives?: Maybe<Array<Scalars['String']>>;
 };
 
+
+export type DeleteParticipantResult = Participant | OwnerCannotBeRemovedFromParticipantError;
 
 export type GetUserResult = User | UserNotFoundError;
 
@@ -51,6 +56,7 @@ export type Meeting = {
   __typename?: 'Meeting';
   id: Scalars['ID'];
   title: Scalars['String'];
+  organization: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   owner?: Maybe<User>;
@@ -61,21 +67,50 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotation?: Maybe<Votation>;
+  createVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
+  updateVotation?: Maybe<Votation>;
+  deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
+  updateAlternative?: Maybe<Alternative>;
+  deleteAlternative?: Maybe<Alternative>;
   castVote?: Maybe<Vote>;
   createMeeting?: Maybe<Meeting>;
+  updateMeeting?: Maybe<Meeting>;
+  deleteParticipant?: Maybe<DeleteParticipantResult>;
+  deleteMeeting?: Maybe<Meeting>;
 };
 
 
-export type MutationCreateVotationArgs = {
-  votation: CreateVotationInput;
+export type MutationCreateVotationsArgs = {
+  meetingId: Scalars['String'];
+  votations: Array<CreateVotationInput>;
+};
+
+
+export type MutationUpdateVotationArgs = {
+  votation: UpdateVotationInput;
+};
+
+
+export type MutationDeleteVotationArgs = {
+  id: Scalars['String'];
 };
 
 
 export type MutationCreateAlternativeArgs = {
   text: Scalars['String'];
   votationId: Scalars['String'];
+};
+
+
+export type MutationUpdateAlternativeArgs = {
+  id: Scalars['String'];
+  text: Scalars['String'];
+};
+
+
+export type MutationDeleteAlternativeArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -87,6 +122,27 @@ export type MutationCastVoteArgs = {
 
 export type MutationCreateMeetingArgs = {
   meeting: CreateMeetingInput;
+};
+
+
+export type MutationUpdateMeetingArgs = {
+  meeting: UpdateMeetingInput;
+};
+
+
+export type MutationDeleteParticipantArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
+export type MutationDeleteMeetingArgs = {
+  id: Scalars['String'];
+};
+
+export type OwnerCannotBeRemovedFromParticipantError = {
+  __typename?: 'OwnerCannotBeRemovedFromParticipantError';
+  message: Scalars['String'];
 };
 
 export type Participant = {
@@ -134,6 +190,26 @@ export enum Status {
   Ended = 'ENDED'
 }
 
+export type UpdateMeetingInput = {
+  id: Scalars['String'];
+  organization?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  startTime?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  status?: Maybe<Status>;
+};
+
+export type UpdateVotationInput = {
+  id: Scalars['String'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
+  majorityType: MajorityType;
+  majorityThreshold: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -153,7 +229,9 @@ export type Votation = {
   description: Scalars['String'];
   order?: Maybe<Scalars['Int']>;
   status: Status;
-  blankVotes?: Maybe<Scalars['Boolean']>;
+  blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
   meetingId: Scalars['String'];
@@ -209,7 +287,7 @@ export type GetMeetingsQuery = (
   { __typename?: 'Query' }
   & { meetings: Array<Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description'>
+    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime'>
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
@@ -324,6 +402,9 @@ export const GetMeetingsDocument = gql`
       id
       email
     }
+    organization
+    status
+    startTime
   }
 }
     `;

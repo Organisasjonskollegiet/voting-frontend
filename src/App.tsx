@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/atoms/Navbar';
 import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
+import MyMeetings from './components/pages/MyMeetings';
 
 // The Auth0 provider is here so it can access to the router hooks for location and history
 const App: FC = () => {
@@ -10,6 +11,9 @@ const App: FC = () => {
     <Switch>
       <Route path="/admin">
         <PageExample page="/admin" />
+      </Route>
+      <Route path="/meetings">
+        <MyMeetings />
       </Route>
       <Route path="/votation/:id">
         <Votation />
