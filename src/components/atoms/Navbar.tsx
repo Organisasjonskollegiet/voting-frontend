@@ -4,7 +4,7 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { darkblue, lightblue } from "../particles/theme";
 
 const links: Map<string, string> = new Map([
-  ["Mine møter", "/meeting/attending"],
+  ["Mine møter", "/meetings"],
   ["Min profil", "/profile"],
   ["Opprett møte", "/meeting/new"]
 ]);
@@ -25,7 +25,6 @@ const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <>
       <Box bg={{ base: darkblue, md: "white" }} px="50px" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)">
         <Flex h="5.5em" alignItems={'center'} justifyContent={'space-between'}>
           
@@ -50,7 +49,7 @@ const Navbar: React.FC = () => {
           <IconButton
             bg={darkblue}
             size={'md'}
-            icon={isOpen ? <CloseIcon color="white" boxSize="1.5em"/> : <HamburgerIcon color="white" boxSize="2em"/>}
+            icon={isOpen ? <CloseIcon color="white" boxSize="1em"/> : <HamburgerIcon color="white" boxSize="1.5em"/>}
             aria-label={'Open Menu'}
             display={{ md: 'none' }}
             onClick={isOpen ? onClose : onOpen}
@@ -68,7 +67,6 @@ const Navbar: React.FC = () => {
           </Box>
         )}
       </Box>
-    </>
   );
 };
 

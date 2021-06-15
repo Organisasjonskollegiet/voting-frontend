@@ -5,14 +5,15 @@ import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
 import MyMeetings from './components/pages/MyMeetings';
 
-// The Auth0 provider is here so it can access to the router hooks for location and history
 const App: FC = () => {
   return (
     <Switch>
       <Route path="/admin">
+        <Navbar />
         <PageExample page="/admin" />
       </Route>
       <Route path="/meetings">
+        <Navbar />
         <MyMeetings />
       </Route>
       <Route path="/votation/:id">
