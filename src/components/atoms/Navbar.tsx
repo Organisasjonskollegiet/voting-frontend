@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
             display={{ base: 'none', md: 'flex' }}
           >
             {pageArray.map((page) => (
-              <NavLink key={page} link={links.get(page)!}>{page}</NavLink>
+              <NavLink key={page} link={links.get(page) || ""}>{page}</NavLink>
             ))}
           </HStack>
         
@@ -58,15 +58,15 @@ const Navbar: React.FC = () => {
         </Flex>
 
         {/* The hamburger menu */}
-        {isOpen ? (
+        {isOpen && (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4} pl="0.5em">
               {pageArray.map((page) => (
-                <NavLink key={page} link={links.get(page)!}>{page}</NavLink>
+                <NavLink key={page} link={links.get(page) || ""}>{page}</NavLink>
               ))}
             </Stack>
           </Box>
-        ) : null}
+        )}
       </Box>
     </>
   );
