@@ -1,10 +1,9 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../atoms/Alternative';
 
-const darkblue = '#718096';
-const lightblue = '#EDF2F7'
+export const darkblue = '#718096';
+export const lightblue = '#EDF2F7'
 
-// TODO: Define colors and theme based on design
 const theme = extendTheme({
   fonts: {
     body: 'Helvetica',

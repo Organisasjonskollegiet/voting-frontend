@@ -7,6 +7,7 @@ import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
+import { darkblue } from '../particles/theme';
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +48,9 @@ const Votation: React.FC = () => {
   };
 
   return (
-    <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
+    <Box>
+      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+      <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
       <Heading as="h1" sx={h1Style}>
         <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
         {votationData?.title}
@@ -119,6 +122,7 @@ const Votation: React.FC = () => {
         </Box>
       )}
     </Box>
+    </Box> 
   );
 };
 

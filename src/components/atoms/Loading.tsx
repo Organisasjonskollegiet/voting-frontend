@@ -1,5 +1,6 @@
 import React from 'react';
 import { VStack, Center, Spinner, Text } from '@chakra-ui/react';
+import { darkblue } from '../particles/theme';
 
 export interface LoadingProps {
   text: string;
@@ -10,7 +11,7 @@ const Loading: React.FC<LoadingProps> = ({ text }) => {
     fontStyle: 'normal',
     fontWeight: 'bold',
     lineHeight: '150%',
-    color: '#718096',
+    color: darkblue,
   };
 
   return (
