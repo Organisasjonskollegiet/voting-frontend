@@ -12,9 +12,7 @@ const MyMeetings: React.FC = () => {
   if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
   if (loading)
     return (
-      <Center>
-        <Spinner size="xl" />
-      </Center>
+      <Center mt="10vh"><Spinner size="xl" /></Center>
     );
   if(!meetingsData) return <Center><Text>Du har ingen møter</Text></Center>;
 
@@ -23,7 +21,7 @@ const MyMeetings: React.FC = () => {
   const endedMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ended);
 
   return (
-    <Box w="65vw" m="auto"> 
+    <Box w="65vw" m="auto" mt="10vh"> 
       {ongoingMeetings.length > 0 && (
         <Box mb="2.625em">
           <Heading as="h1" fontSize="1em" mb="1.125em">Pågående møter</Heading>
