@@ -19,7 +19,7 @@ const App: FC = () => {
         <Votation />
       </Route>
       <Route path="/">
-        <Navbar />
+        <MyMeetings />
       </Route>
     </Switch>
   );
