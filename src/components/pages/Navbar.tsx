@@ -8,7 +8,7 @@ const links: Map<string, string> = new Map([
   ["Min profil", "/profile"],
   ["Opprett møte", "/meeting/new"]
 ]);
-const pageArray = Array.from(links.keys());
+const pageNames = Array.from(links.keys());
 
 const NavLink = ({ children, link }: { children: ReactNode, link: string}) => (
   <Link
@@ -40,14 +40,16 @@ const Navbar: React.FC = () => {
             spacing="5.5em"
             display={{ base: 'none', md: 'flex' }}
           >
-            {pageArray.map((page) => (
+            {pageNames.map((page) => (
               <NavLink key={page} link={links.get(page) || ""}>{page}</NavLink>
             ))}
           </HStack>
         
           
           <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
-            <Avatar size="sm"></Avatar>
+            <Link href={links.get("Min profil")}>
+              <Avatar size="sm"/>
+            </Link>
           </Flex>
 
           {/* Button to toggle hamburger menu */}
@@ -65,7 +67,7 @@ const Navbar: React.FC = () => {
         {isOpen && (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4} pl="0.5em">
-              {pageArray.map((page) => (
+              {pageNames.map((page) => (
                 <NavLink key={page} link={links.get(page) || ""}>{page}</NavLink>
               ))}
             </Stack>
