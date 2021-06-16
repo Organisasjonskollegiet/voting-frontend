@@ -9,7 +9,7 @@ interface PageContainerProps {
 
 const PageContainer: React.FC<PageContainerProps> = ({ children, color }) => {
     return (
-      <Box w="100vw" h="100vh" backgroundcolor={color || offwhite}>
+      <Box w="100vw" minH="100vh" background={color || offwhite} pb="5em">
         {children}
       </Box>
     );

@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react"
 import { Box, Flex, Avatar, HStack, Link, IconButton, useDisclosure, Stack, Image } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { darkblue, offwhite } from "../particles/theme";
+import { darkblue, lightblue } from "../particles/theme";
 
 const links: Map<string, string> = new Map([
   ["Mine møter", "/meetings"],
@@ -12,7 +12,7 @@ const pageNames = Array.from(links.keys());
 
 const NavLink = ({ children, link }: { children: ReactNode, link: string}) => (
   <Link
-    color={{base: offwhite, md: darkblue }}
+    color={{base: lightblue, md: darkblue }}
     fontWeight="bold"
     _hover={{color: {base: '#c6ccd5', md: '#9ca6b6' }}}
     href={link}>
@@ -26,14 +26,14 @@ const Navbar: React.FC = () => {
 
   return (
       <Box bg={{ base: darkblue, md: "white" }} px="50px" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)">
-        <Flex h="5.5em" alignItems={'center'} justifyContent={'space-between'}>
-          
+        <Flex h="5.5em" alignItems="center" justifyContent="space-between">
+
           <Image 
             display={{ base: 'none', md: 'flex' }} 
             src="Orgkol_logo.svg" 
-            alt="organisasjonskollegiet"
+            alt="Organisasjonskollegiet"
             h="3em"
-            />
+          />
 
           <HStack
             as={'nav'}
@@ -45,12 +45,9 @@ const Navbar: React.FC = () => {
             ))}
           </HStack>
         
-          
-          <Flex alignItems={'center'} display={{ base: 'none', md: 'flex' }}>
-            <Link href={links.get("Min profil")}>
-              <Avatar size="sm"/>
-            </Link>
-          </Flex>
+          <Link href={links.get("Min profil")} display={{ base: 'none', md: 'flex' }}>
+            <Avatar size="sm"/>
+          </Link>
 
           {/* Button to toggle hamburger menu */}
           <IconButton
