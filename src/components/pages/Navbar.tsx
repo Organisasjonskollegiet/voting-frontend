@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react"
-import { Box, Flex, Avatar, HStack, Link, IconButton, useDisclosure, Stack, Icon } from '@chakra-ui/react';
+import { Box, Flex, Avatar, HStack, Link, IconButton, useDisclosure, Stack, Image } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { darkblue, lightblue } from "../particles/theme";
+import { darkblue, offwhite } from "../particles/theme";
 
 const links: Map<string, string> = new Map([
   ["Mine møter", "/meetings"],
@@ -12,7 +12,7 @@ const pageArray = Array.from(links.keys());
 
 const NavLink = ({ children, link }: { children: ReactNode, link: string}) => (
   <Link
-    color={{base: lightblue, md: darkblue }}
+    color={{base: offwhite, md: darkblue }}
     fontWeight="bold"
     _hover={{color: {base: '#c6ccd5', md: '#9ca6b6' }}}
     href={link}>
@@ -28,7 +28,12 @@ const Navbar: React.FC = () => {
       <Box bg={{ base: darkblue, md: "white" }} px="50px" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)">
         <Flex h="5.5em" alignItems={'center'} justifyContent={'space-between'}>
           
-          <Icon display={{ base: 'none', md: 'flex' }}></Icon>
+          <Image 
+            display={{ base: 'none', md: 'flex' }} 
+            src="Orgkol_logo.svg" 
+            alt="organisasjonskollegiet"
+            h="3em"
+            />
 
           <HStack
             as={'nav'}

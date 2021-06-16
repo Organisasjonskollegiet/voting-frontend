@@ -2,7 +2,8 @@ import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../atoms/Alternative';
 
 export const darkblue = '#718096';
-export const lightblue = '#EDF2F7'
+export const offwhite = '#EDF2F7';
+
 
 const theme = extendTheme({
   fonts: {
@@ -18,15 +19,15 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         color: darkblue,
-        bg: lightblue,
+        bg: offwhite,
       }
     },
     Spinner: {
       baseStyle: {
         color: darkblue,
-        borderBottomColor: lightblue,
-        borderLeftColor: lightblue,
-        borderRightColor: lightblue,
+        borderBottomColor: offwhite,
+        borderLeftColor: offwhite,
+        borderRightColor: offwhite,
       }
     },
     Text: {
