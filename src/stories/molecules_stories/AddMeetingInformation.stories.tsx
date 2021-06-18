@@ -1,7 +1,7 @@
 import React from 'react';
 import {Meta, Story} from '@storybook/react';
 import AddMeetingInformation from '../../components/molecules/AddMeetingInformation';
-import { Meeting } from '../../__generated__/graphql-types';
+import { Meeting, Status } from '../../__generated__/graphql-types';
 
 export default {
   title: 'Molecules/AddMeetingInformation',
@@ -9,10 +9,12 @@ export default {
 } as Meta;
 
 
-const onMeetingUpdated = (meeting: Meeting) => {
-  return undefined;
+const nullFunction = () => {
+  return;
 }
 
-const Template: Story = () => <AddMeetingInformation meetingId={undefined} meetingFromProps={undefined} onMeetingUpdated={onMeetingUpdated} />
+const emptyMeeting = {title:'', organization: '', startTime: new Date(), description: ''}
+
+const Template: Story = () => <AddMeetingInformation meeting={emptyMeeting} updateMeeting={(meeting) => nullFunction()} handleNext={nullFunction} />
 
 export const Default = Template.bind({});

@@ -9,12 +9,13 @@ import {
   VStack
 } from '@chakra-ui/react';
 import DatePicker from '../atoms/DatePicker/DatePicker'
-import { CreateMeetingInput } from '../../__generated__/graphql-types';
+import { CreateMeetingInput, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
 import { labelStyle, inputStyle } from '../particles/formStyles'
+import { MeetingWorking } from '../../types/types'
 
 interface IProps {
-  meeting: CreateMeetingInput;
-  onChange: (meeting: CreateMeetingInput) => void;
+  meeting: MeetingWorking;
+  onChange: (meeting: MeetingWorking) => void;
 }
 
 const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {

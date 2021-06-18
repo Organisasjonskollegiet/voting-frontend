@@ -1,22 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Center, VStack, useToast } from '@chakra-ui/react'
 import AddVotations from '../molecules/AddVotations';
-import { MajorityType, Meeting, CreateMeetingInput, ParticipantInput, Status } from '../../__generated__/graphql-types';
+import { MajorityType, Meeting, CreateMeetingInput, ParticipantInput, Status, useCreateMeetingMutation, useUpdateMeetingMutation  } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper'
 import {v4 as uuid} from 'uuid'
 import { useAuth0 } from '@auth0/auth0-react';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router'
+import { MeetingWorking } from '../../types/types'
+import Loading from '../atoms/Loading'
 
-interface MeetingWorking {
-  id?: string;
-  title: string;
-  organization: string;
-  startTime: Date;
-  description?: string;
-  status: Status;
-}
 
 interface Alternative {
   id: number;
@@ -60,32 +54,49 @@ const AddMeeting: React.FC = () => {
 
   console.log(user)
 
-  const [meeting, setMeeting] = useState<Meeting>();
+  const [meeting, setMeeting] = useState<MeetingWorking>({
+    title: '',
+    organization: '',
+    startTime: new Date(),
+    description: ''
+  });
 
   const [votations, setVotations] = useState<Votation[]>(initialVotationValues);
 
   const [participants, setParticipants] = useState<ParticipantInput[]>([]);
 
+  const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
+
+  const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
+
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const onMeetingUpdated = (meeting: Meeting) => {
-    console.log("setActiveTab")
-    setActiveTab(1)
-    console.log("setMeeting")
-    setMeeting(meeting)
-    console.log("toasting")
-    const toastId = 'meeting-toast';
-    console.log("isActive", toast.isActive(toastId));
-    if (!toast.isActive(toastId)){
+  const use
+
+  const isMeetingInformationValid = () => {
+    return meeting.organization !== '' && 
+           meeting.title !== '' && 
+           meeting.description !== '';
+  }
+
+  const handleNextFromMeeting = () => {
+    const isValid = isMeetingInformationValid();
+    if (!isValid) {
       toast({
-        id: toastId,
-        title: "Møte opprettet.",
-        description: "Møte har blitt opprettet",
-        status: "success",
+        title: 'Kan ikke opprette møte',
+        description: 'Du må fylle ut alle felter markert med *',
+        status: 'error',
         duration: 9000,
-        isClosable: true,
+        isClosable: true
       })
+      return;
     }
+    if (!meeting.id) {
+      createMeeting({variables: {meeting}})
+    } else {
+      updateMeeting({variables: {meeting: {...meeting, id: meeting.id!}}})
+    }
+    setActiveTab(1)
   }
 
   const onVotationsCreated = () => {
@@ -140,14 +151,9 @@ const AddMeeting: React.FC = () => {
   
   const meetingTabs = [
     <AddMeetingInformation 
-      onMeetingUpdated={onMeetingUpdated} 
-      meetingId={meeting?.id ?? undefined}
-      meetingFromProps={meeting ? {
-        organization: meeting.organization,
-        title: meeting.title,
-        startTime: new Date(meeting.startTime),
-        description: meeting.description 
-      } as CreateMeetingInput : undefined} />, 
+      meeting={meeting}
+      updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
+      handleNext={handleNextFromMeeting} />, 
     <AddVotations 
       votations={votations}
       onVotationsCreated={onVotationsCreated} 
@@ -173,20 +179,25 @@ const AddMeeting: React.FC = () => {
     maxWidth: '800px',
   } as React.CSSProperties;
 
+  if (createMeetingResult.error) {
+    toast({
+      title: "Kunne ikke oppette møte",
+      description: "Det var et problem med å opprette møtet"
+    })
+  }
+
   return (
     <AuthWrapper>
       <Center sx={outerContainer}>
+        {(createMeetingResult.loading || updateMeetingResult.loading) && 
+          <Loading asOverlay={true} text='Oppretter møte' />
+        }
         <VStack spacing='10' align='left' sx={centerContainer}>
-          { activeTab === 0 && 
+          {/* { activeTab === 0 && 
             <AddMeetingInformation 
-              onMeetingUpdated={onMeetingUpdated} 
-              meetingId={meeting?.id ?? undefined}
-              meetingFromProps={meeting ? {
-                organization: meeting.organization,
-                title: meeting.title,
-                startTime: new Date(meeting.startTime),
-                description: meeting.description 
-              } as CreateMeetingInput : undefined} />
+              meeting={meeting}
+              updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
+              handleNext={handleNextFromMeeting} />
           }
           { activeTab === 1 && 
            <AddVotations 
@@ -201,8 +212,8 @@ const AddMeeting: React.FC = () => {
               meetingId={meeting?.id ?? undefined}
               onParticipantsAdded={onParticipantsAdded} 
               handlePrevious={handlePrevFromParticipants} />
-          }
-          {/*meetingTabs[activeTab]*/}
+          } */}
+          { meetingTabs[activeTab] }
         </ VStack>
       </Center>
     </AuthWrapper>
