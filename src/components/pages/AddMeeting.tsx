@@ -71,7 +71,34 @@ const AddMeeting: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const use
+  const handleCreatedOrUpdatedMeeting = (meeting: any, action: "updated" | "created") => {
+    setMeeting({
+      id: meeting.id,
+      title: meeting.title,
+      description: meeting.description ?? '',
+      organization: meeting.organization,
+      startTime: new Date(meeting.startTime)
+    })
+    setActiveTab(1);
+    const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
+    toast({
+      title: `Møte ${responseKeyWord}`,
+      description: `Møtet ble ${responseKeyWord}.`,
+      status: 'success',
+      duration: 9000,
+      isClosable: true
+    })
+  }
+
+  useEffect(() => {
+    if (!updateMeetingResult.data?.updateMeeting) return;
+    handleCreatedOrUpdatedMeeting(updateMeetingResult.data.updateMeeting, "updated");
+  }, [updateMeetingResult.data?.updateMeeting])
+
+  useEffect(() => {
+    if (!createMeetingResult.data?.createMeeting) return;
+    handleCreatedOrUpdatedMeeting(createMeetingResult.data.createMeeting, "created");
+  }, [createMeetingResult.data?.createMeeting])
 
   const isMeetingInformationValid = () => {
     return meeting.organization !== '' && 
@@ -96,7 +123,6 @@ const AddMeeting: React.FC = () => {
     } else {
       updateMeeting({variables: {meeting: {...meeting, id: meeting.id!}}})
     }
-    setActiveTab(1)
   }
 
   const onVotationsCreated = () => {

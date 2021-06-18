@@ -9,7 +9,6 @@ import {
   VStack
 } from '@chakra-ui/react';
 import DatePicker from '../atoms/DatePicker/DatePicker'
-import { CreateMeetingInput, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
 import { labelStyle, inputStyle } from '../particles/formStyles'
 import { MeetingWorking } from '../../types/types'
 

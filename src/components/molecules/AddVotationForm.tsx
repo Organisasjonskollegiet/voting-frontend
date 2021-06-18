@@ -85,8 +85,6 @@ const AddVotationForm: React.FC<IProps> = ({ votation, index, isActive, toggleCo
     </Draggable>
   )}
 
-  console.log(votation)
-
   return (
     <Draggable isDragDisabled={true} draggableId={votation.id} index={index}>
       {(provided) => (
