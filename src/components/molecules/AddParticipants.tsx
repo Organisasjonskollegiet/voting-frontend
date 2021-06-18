@@ -46,8 +46,6 @@ const AddParticipants: React.FC<IProps> = ({ meetingId, onParticipantsAdded, pre
     onParticipantsAdded();
   }
 
-  console.log(participants);
-
   return (
     <>
     {(addParticipantsResult.loading) && 
@@ -62,7 +60,7 @@ const AddParticipants: React.FC<IProps> = ({ meetingId, onParticipantsAdded, pre
       handleAddParticipants={handleAddParticipants} />
     <AddMeetingController 
       handleNext={handleNext} 
-      showPrev={false} 
+      showPrev={true} 
       activeTab={2} 
       handlePrev={() => handlePrevious(participants)} /> 
     </>

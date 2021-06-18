@@ -125,19 +125,9 @@ const AddMeeting: React.FC = () => {
     }
   }
 
-  const onVotationsCreated = () => {
+  const onVotationsCreated = (votations: Votation[]) => {
+    setVotations(votations);    
     setActiveTab(2)
-    const toastId = 'votation-toast';
-    if (!toast.isActive(toastId)){
-      toast({
-        id: toastId,
-        title: "Voteringer opprettet.",
-        description: "Voteringene har blitt opprettet",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-      })
-    }
   }
 
   const onParticipantsAdded = () => {

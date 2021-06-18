@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Heading, VStack, Text} from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Heading, VStack, Text, useToast, useEventListenerMap} from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { MajorityType, useCreateVotationsMutation } from '../../__generated__/graphql-types';
@@ -10,7 +10,7 @@ import { h1Style } from '../particles/formStyles'
 interface IProps {
   meetingId: string;
   votations: Votation[];
-  onVotationsCreated: () => void;
+  onVotationsCreated: (votations: Votation[]) => void;
   handlePrevious: (votations: Votation[]) => void;
 }
 
@@ -36,6 +36,19 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
   const [createVotations, result] = useCreateVotationsMutation();
   
   const [state, setState] = useState({ votations });
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!result.data?.createVotations) return;
+    toast({
+      title: "Voteringer opprettet.",
+      description: "Voteringene har blitt opprettet",
+      status: "success",
+      duration: 9000,
+      isClosable: true,
+    })
+  }, [result.data?.createVotations])
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -98,10 +111,6 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
           }
         });
     createVotations({variables: {votations: filteredVotations, meetingId }})
-  }
-
-  if (result.data) {
-    onVotationsCreated()
   }
 
   return (
