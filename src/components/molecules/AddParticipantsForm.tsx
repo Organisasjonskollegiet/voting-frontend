@@ -1,21 +1,41 @@
 import React, { useState } from 'react'
+import { ParticipantInput, Role } from '../../__generated__/graphql-types'
 import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack, Box, Icon } from '@chakra-ui/react'
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from './uploadIcon.svg'
 
-const AddParticipantsForm = () => {
+interface IProps {
+  participants: ParticipantInput[];
+  handleAddParticipants: (participants: ParticipantInput[]) => void;
+}
 
-  const [participants, setParticipants] = useState<string[]>([]);
-  const [admins, setAdmins] = useState<string[]>([]);
+const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, participants }) => {
+
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
 
-  const handleEnterPressed = (event: any, elementId: string, state: string[], setState: (emails: string[]) => void) => {
+  const getRole = (role: string) => {
+    switch (role.toLowerCase().trim()) {
+      case 'teller':
+        return Role.Counter;
+      case 'administrator' || 'admin':
+        return Role.Admin;
+      default:
+        return Role.Participant;
+    }
+  }
+
+  const handleEnterPressed = (event: any, elementId: string, participants: ParticipantInput[], role: Role) => {
     if (event.keyCode !== 13) return;
     const input = document.getElementById(elementId) as HTMLInputElement;
-    if (!input) return;
+    if (!input || !input.value || input.value.trim().length === 0) return;
     const email = input.value;
-    if (email && email.trim().length > 0) {
-      setState([...state, email]);
+    const emailAlreadyAdded = participants.filter(participant => participant.email === email).length > 0;
+    if (!emailAlreadyAdded) {
+      handleAddParticipants([{
+        email,
+        role,
+        isVotingEligible: true,
+      }])
     }
     input.value = '';
   }
@@ -25,25 +45,30 @@ const AddParticipantsForm = () => {
     const file = event.target.files[0]
     const reader = new FileReader();
     reader.onload = (evt: any) => {
-      const emails: any[] = []
+      const participants: ParticipantInput[] = []
       const content = evt.target.result;
       const lines = content.split('\n').filter((line: any) => line.length > 0);
-      const indexOfEmail = lines[0].split(',').map((content: any) => content.trim()).indexOf('email')
+      const firstRowArray = lines[0].split(',').map((content: any) => content.trim())
+      const indexOfEmail = firstRowArray.indexOf('email')
+      const indexOfRole = firstRowArray.indexOf('rolle')
       for (let i = 1; i < lines.length; i++){
         const lineList = lines[i].split(',').filter((email: any) => email.trim().length > 0);
         const email = lineList[indexOfEmail]
-        console.log(lineList);
-        const emailExists = emails.indexOf(email) >= 0;
-        if (email && !emailExists) emails.push(email)
+        const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole])
+        const emailExists = participants.indexOf(email) >= 0;
+        if (email && !emailExists) {
+          participants.push({
+            email, 
+            role, 
+            isVotingEligible: true 
+          })
+        }
       }
-      setParticipants(emails);
+      handleAddParticipants(participants)
       setReadingFiles(false);
     };
     reader.readAsText(file, 'UTF-8');
   }
-
-  console.log("participants", participants)
-  console.log("admins", admins)
 
   return (
     <VStack spacing='7'>
@@ -70,7 +95,12 @@ const AddParticipantsForm = () => {
           id='participantInput'
           sx={inputStyle}
           placeholder="Inviter deltaker med epostadresse"
-          onKeyDown={(event) => handleEnterPressed(event, 'participantInput', participants, setParticipants)}
+          onKeyDown={(event) => 
+            handleEnterPressed(
+              event, 
+              'participantInput', 
+              participants, 
+              Role.Participant)}
         />
       </FormControl>
       <Divider m="3em 0" />
@@ -82,7 +112,12 @@ const AddParticipantsForm = () => {
           id='adminInput'
           sx={inputStyle}
           placeholder="Inviter administrator med epostadresse"
-          onKeyDown={(event) => handleEnterPressed(event, 'adminInput', admins, setAdmins)}
+          onKeyDown={(event) => 
+            handleEnterPressed(
+              event, 
+              'adminInput', 
+              participants,
+              Role.Admin)}
         />
       </FormControl>
     </VStack>

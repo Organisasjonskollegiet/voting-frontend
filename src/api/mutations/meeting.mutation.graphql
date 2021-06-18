@@ -19,3 +19,7 @@ mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
     status
   }
 }
+
+mutation AddParticipants($meetingId: String!, $participants: [ParticipantInput!]!) {
+  addParticipants(meetingId: $meetingId, participants: $participants)
+}

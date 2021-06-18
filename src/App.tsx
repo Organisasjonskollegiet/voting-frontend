@@ -9,14 +9,14 @@ import AddMeeting from './components/pages/AddMeeting'
 const App: FC = () => {
   return (
     <Switch>
-      <Route path="/admin">
-        <PageExample page="/admin" />
-      </Route>
       <Route path="/votation/:id">
         <Votation />
       </Route>
-      <Route path="/">
+      <Route path="/mote/opprett">
         <AddMeeting />
+      </Route>
+      <Route path="/">
+        <PageExample page="/" />
       </Route>
     </Switch>
   );

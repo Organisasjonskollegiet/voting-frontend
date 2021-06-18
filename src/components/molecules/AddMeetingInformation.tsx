@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heading, VStack, Text, Center, Alert, AlertIcon, Spinner } from '@chakra-ui/react';
+import { Heading, VStack, Text, Alert, AlertIcon, useToast } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm'
 import { CreateMeetingInput, useCreateMeetingMutation, Meeting, useUpdateMeetingMutation } from '../../__generated__/graphql-types'
 import AddMeetingController from './AddMeetingController';
@@ -22,7 +22,7 @@ const emptyMeeting = {
 const AddMeetingInformation: React.FC<IProps> = ({ onMeetingUpdated, meetingFromProps, meetingId }) => {
  
   const [showAlert, setShowAlert] = useState<boolean>(false);
-
+  const toast = useToast();
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
 
   const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
@@ -51,6 +51,7 @@ const AddMeetingInformation: React.FC<IProps> = ({ onMeetingUpdated, meetingFrom
   }
 
   if (createMeetingResult.data?.createMeeting){
+    console.log("created")
     onMeetingUpdated(createMeetingResult.data.createMeeting as Meeting);
   } else if (updateMeetingResult.data?.updateMeeting) {
     onMeetingUpdated(updateMeetingResult.data.updateMeeting as Meeting)

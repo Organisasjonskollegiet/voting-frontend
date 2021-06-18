@@ -41,7 +41,7 @@ const AddMeetingController: React.FC<IProps> = ({ handleNext, showPrev, activeTa
             sx={buttonStyle}
             onClick={handleNext}
           >
-            Neste
+            {activeTab !== 2 ? 'Neste' : 'Fullfør'}
           </Button>
         </Grid>
         <AddMeetingStatus active={activeTab} />
