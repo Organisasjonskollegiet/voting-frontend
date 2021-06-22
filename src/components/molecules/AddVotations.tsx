@@ -1,41 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Heading, VStack, Text, useToast, useEventListenerMap} from '@chakra-ui/react';
+import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { MajorityType, useCreateVotationsMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
+import {v4 as uuid} from 'uuid'
+import { Votation } from '../../types/types'
 
 interface IProps {
   meetingId: string;
-  votations: Votation[];
-  onVotationsCreated: (votations: Votation[]) => void;
-  handlePrevious: (votations: Votation[]) => void;
+  onVotationsCreated: () => void;
+  handlePrevious: () => void;
+  isActive: boolean;
 }
 
-interface Alternative {
-  id: number;
-  text: string;
-}
 
-interface Votation {
-  id: string;
-  title: string;
-  description: string;
-  alternatives: Alternative[];
-  blankVotes: boolean;
-  hiddenVotes: boolean;
-  severalVotes: boolean;
-  majorityType: MajorityType;
-  majorityThreshold: number;
-}
+const initialVotationValues = [{
+    id: uuid(),
+    title: '',
+    description: '',
+    index: 1,
+    alternatives: [{
+      id: 1,
+      text: ''
+    }],
+    blankVotes: false,
+    hiddenVotes: false,
+    severalVotes: false,
+    majorityType: 'SIMPLE' as MajorityType,
+    majorityThreshold: 50,
+    existsInDb: false
+  }];
 
-const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votations, handlePrevious }) => {
+
+const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, onVotationsCreated }) => {
 
   const [createVotations, result] = useCreateVotationsMutation();
   
-  const [state, setState] = useState({ votations });
+  const [state, setState] = useState({ votations: initialVotationValues });
 
   const toast = useToast();
 
@@ -48,6 +52,14 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
       duration: 9000,
       isClosable: true,
     })
+    const votations = result.data.createVotations.map(votation => {
+      return {
+        ...votation,
+        existsInDb: true
+      }
+    }) as Votation[]
+    setState({ votations })
+    onVotationsCreated();
   }, [result.data?.createVotations])
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
@@ -73,10 +85,17 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
       result.destination.index
     );
 
-    setState({ votations });
+    const updatedVotations: Votation[] = votations.map((votation, index) => {
+      return {
+        ...votation,
+        index: index
+      }
+    })
+
+    setState({ votations: updatedVotations});
   }
 
-  const updateVotations = (votations: Votation[]) => {
+  const onVotationsUpdated = (votations: Votation[]) => {
     setState({ votations })
   }
 
@@ -87,31 +106,73 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
     )
   }
 
-  const handleNext = () => {
-    const filteredVotations = state.votations
-      .filter(votation => 
-        isValidVotation(votation)
-      )
-      .map((votation, index) => 
-        {
-          return {
-            title: votation.title, 
-            description: votation.title,
-            index,
-            blankVotes: votation.blankVotes,
-            hiddenVotes: votation.hiddenVotes,
-            severalVotes: votation.severalVotes,
-            majorityType: votation.majorityType,
-            majorityThreshold: votation.majorityThreshold,
-            alternatives: votation.alternatives
-              .map(alternative => 
-                alternative.text)
-              .filter(alternative => 
-                alternative !== '')
-          }
-        });
-    createVotations({variables: {votations: filteredVotations, meetingId }})
+  const handleCreateVotations = (votations: Votation[]) => {
+    const preparedVotations = votations.map(votation => {
+      return {
+        title: votation.title, 
+        description: votation.title,
+        index: votation.index,
+        blankVotes: votation.blankVotes,
+        hiddenVotes: votation.hiddenVotes,
+        severalVotes: votation.severalVotes,
+        majorityType: votation.majorityType,
+        majorityThreshold: votation.majorityThreshold,
+        alternatives: votation.alternatives
+          .map(alternative => 
+            alternative.text)
+          .filter(alternative => 
+            alternative !== '')
+      }
+    });
+    createVotations({variables: {votations: preparedVotations, meetingId }})
   }
+
+  const handleUpdateVotations = (votations: Votation[]) => {
+    const preparedVotations = votations.map(votation => {
+      return {
+        id: votation.id,
+        title: votation.title, 
+        description: votation.title,
+        index: votation.index,
+        blankVotes: votation.blankVotes,
+        hiddenVotes: votation.hiddenVotes,
+        severalVotes: votation.severalVotes,
+        majorityType: votation.majorityType,
+        majorityThreshold: votation.majorityThreshold,
+        // alternatives: votation.alternatives
+        //   .map(alternative => 
+        //     alternative.text)
+        //   .filter(alternative => 
+        //     alternative !== '') 
+      }
+    })
+  }
+
+  const handleNext = () => {
+    let isValid = true;
+    state.votations
+      .forEach(votation => {
+        isValid = isValid && isValidVotation(votation) 
+      })
+    if (!isValid) {
+      toast({
+        title: "Kan ikke opprette voteringer",
+        description: "Alle voteringer må ha både tittel og beskrivelse",
+        status: "error",
+        duration: 9000,
+        isClosable: true
+      })
+      return;
+    }
+    const votationsToCreate = state.votations.filter(votation => !votation.existsInDb);
+    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb);
+    handleCreateVotations(votationsToCreate);
+    handleUpdateVotations(votationsToUpdate);
+  }
+
+  console.log(state.votations)
+
+  if (!isActive) return <></>
 
   return (
      <>
@@ -123,14 +184,14 @@ const AddVotations: React.FC<IProps> = ({ meetingId, onVotationsCreated, votatio
           <Droppable droppableId="list">
             {provided => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
-                <AddMeetingVotationList votations={state.votations} updateVotations={updateVotations} />
+                <AddMeetingVotationList votations={state.votations} updateVotations={onVotationsUpdated} />
                 {provided.placeholder}
               </div>
             )}
           </Droppable>
         </DragDropContext>
       </VStack>
-      <AddMeetingController handleNext={handleNext} showPrev={true} handlePrev={() => handlePrevious(votations)} activeTab={1}/>
+      <AddMeetingController handleNext={handleNext} showPrev={true} handlePrev={handlePrevious} activeTab={1}/>
     </>
   )
    

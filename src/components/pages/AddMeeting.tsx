@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Center, VStack, useToast } from '@chakra-ui/react'
 import AddVotations from '../molecules/AddVotations';
-import { MajorityType, Meeting, CreateMeetingInput, ParticipantInput, Status, useCreateMeetingMutation, useUpdateMeetingMutation  } from '../../__generated__/graphql-types';
+import { MajorityType, Meeting, CreateMeetingInput, ParticipantInput, Status, useCreateMeetingMutation, useUpdateMeetingMutation, useCreateVotationsMutation } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper'
 import {v4 as uuid} from 'uuid'
@@ -10,39 +10,8 @@ import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router'
 import { MeetingWorking } from '../../types/types'
 import Loading from '../atoms/Loading'
+import { Votation } from '../../types/types'
 
-
-interface Alternative {
-  id: number;
-  text: string;
-}
-
-interface Votation {
-  id: string;
-  title: string;
-  description: string;
-  alternatives: Alternative[];
-  blankVotes: boolean;
-  hiddenVotes: boolean;
-  severalVotes: boolean;
-  majorityType: MajorityType;
-  majorityThreshold: number;
-}
-
-const initialVotationValues = [{
-    id: uuid(),
-    title: '',
-    description: '',
-    alternatives: [{
-      id: 1,
-      text: ''
-    }],
-    blankVotes: false,
-    hiddenVotes: false,
-    severalVotes: false,
-    majorityType: 'SIMPLE' as MajorityType,
-    majorityThreshold: 50
-  }];
 
 const AddMeeting: React.FC = () => {
 
@@ -61,7 +30,24 @@ const AddMeeting: React.FC = () => {
     description: ''
   });
 
-  const [votations, setVotations] = useState<Votation[]>(initialVotationValues);
+  // const initialVotationValues = [{
+  //   id: uuid(),
+  //   title: '',
+  //   description: '',
+  //   index: 1,
+  //   alternatives: [{
+  //     id: 1,
+  //     text: ''
+  //   }],
+  //   blankVotes: false,
+  //   hiddenVotes: false,
+  //   severalVotes: false,
+  //   majorityType: 'SIMPLE' as MajorityType,
+  //   majorityThreshold: 50
+  // }];
+
+
+  // const [votations, setVotations] = useState<Votation[]>(initialVotationValues);
 
   const [participants, setParticipants] = useState<ParticipantInput[]>([]);
 
@@ -125,8 +111,7 @@ const AddMeeting: React.FC = () => {
     }
   }
 
-  const onVotationsCreated = (votations: Votation[]) => {
-    setVotations(votations);    
+  const onVotationsCreated = () => {
     setActiveTab(2)
   }
 
@@ -145,11 +130,9 @@ const AddMeeting: React.FC = () => {
     history.push('/')
   }
 
-  const handlePrevFromVotation = (votations: Votation[]) => {
+  const handlePrevFromVotation = () => {
     try {
-      console.log(votations);
       setActiveTab(activeTab - 1)
-      setVotations(votations)
     } catch (error) {
       console.log("error", error);
     }
@@ -164,23 +147,6 @@ const AddMeeting: React.FC = () => {
       console.log("error", error);
     }
   }
-  
-  const meetingTabs = [
-    <AddMeetingInformation 
-      meeting={meeting}
-      updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
-      handleNext={handleNextFromMeeting} />, 
-    <AddVotations 
-      votations={votations}
-      onVotationsCreated={onVotationsCreated} 
-      meetingId={meeting?.id ?? ''}
-      handlePrevious={handlePrevFromVotation} />,
-    <AddParticipants 
-      previouslyAddedParticipants={participants}
-      meetingId={meeting?.id ?? undefined}
-      onParticipantsAdded={onParticipantsAdded} 
-      handlePrevious={handlePrevFromParticipants} />
-  ]
 
   const outerContainer = {
     paddingTop: '5rem',
@@ -201,6 +167,7 @@ const AddMeeting: React.FC = () => {
       description: "Det var et problem med å opprette møtet"
     })
   }
+  
 
   return (
     <AuthWrapper>
@@ -209,27 +176,24 @@ const AddMeeting: React.FC = () => {
           <Loading asOverlay={true} text='Oppretter møte' />
         }
         <VStack spacing='10' align='left' sx={centerContainer}>
-          {/* { activeTab === 0 && 
-            <AddMeetingInformation 
-              meeting={meeting}
-              updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
-              handleNext={handleNextFromMeeting} />
-          }
-          { activeTab === 1 && 
-           <AddVotations 
-            votations={votations}
+          <AddMeetingInformation 
+            isActive={activeTab === 0}
+            meeting={meeting}
+            updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
+            handleNext={handleNextFromMeeting} />
+          <AddVotations 
+            isActive={activeTab === 1}
             onVotationsCreated={onVotationsCreated} 
             meetingId={meeting?.id ?? ''}
-            handlePrevious={handlePrevFromVotation} /> 
-          }
-          { activeTab === 2 &&
-            <AddParticipants 
-              previouslyAddedParticipants={participants}
-              meetingId={meeting?.id ?? undefined}
-              onParticipantsAdded={onParticipantsAdded} 
-              handlePrevious={handlePrevFromParticipants} />
-          } */}
-          { meetingTabs[activeTab] }
+            handlePrevious={handlePrevFromVotation} 
+            /> 
+          <AddParticipants 
+            isActive={activeTab === 2}
+            previouslyAddedParticipants={participants}
+            meetingId={meeting?.id ?? undefined}
+            onParticipantsAdded={onParticipantsAdded} 
+            handlePrevious={handlePrevFromParticipants} />
+          {/* { meetingTabs[activeTab] } */}
         </ VStack>
       </Center>
     </AuthWrapper>

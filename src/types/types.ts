@@ -1,4 +1,5 @@
-import { Status } from '../__generated__/graphql-types';
+import { NumberDecrementStepperProps } from '@chakra-ui/number-input';
+import { MajorityType } from '../__generated__/graphql-types';
 
 export interface MeetingWorking {
   id?: string;
@@ -6,4 +7,22 @@ export interface MeetingWorking {
   organization: string;
   startTime: Date;
   description: string;
+}
+
+interface Alternative {
+  id: number;
+  text: string;
+}
+export interface Votation {
+  id: string;
+  title: string;
+  description: string;
+  index: number;
+  alternatives: Alternative[];
+  blankVotes: boolean;
+  hiddenVotes: boolean;
+  severalVotes: boolean;
+  majorityType: MajorityType;
+  majorityThreshold: number;
+  existsInDb: boolean;
 }

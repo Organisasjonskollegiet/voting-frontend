@@ -2,28 +2,13 @@ import React, { useState } from 'react';
 import AddVotationForm from './AddVotationForm'
 import { MajorityType } from '../../__generated__/graphql-types';
 import {v4 as uuid} from 'uuid'
+import { Votation } from '../../types/types'
 
 interface VotationListProps {
   votations: Votation[];
   updateVotations: (votations: Votation[]) => void;
 }
 
-interface Alternative {
-  id: number;
-  text: string;
-}
-
-interface Votation {
-  id: string;
-  title: string;
-  description: string;
-  alternatives: Alternative[];
-  blankVotes: boolean;
-  hiddenVotes: boolean;
-  severalVotes: boolean;
-  majorityType: MajorityType;
-  majorityThreshold: number;
-}
 
 const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, updateVotations }) => {
 
@@ -42,7 +27,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
 
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
-    updateVotations([...votations, {...votation, id: newId}])
+    updateVotations([...votations, {...votation, id: newId, existsInDb: false}])
     setActiveVotationId(newId)
   }
 

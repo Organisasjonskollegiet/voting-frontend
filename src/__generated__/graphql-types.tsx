@@ -68,7 +68,7 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotation?: Maybe<Votation>;
   deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
@@ -310,7 +310,14 @@ export type CreateVotationsMutationVariables = Exact<{
 
 export type CreateVotationsMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'createVotations'>
+  & { createVotations?: Maybe<Array<Maybe<(
+    { __typename?: 'Votation' }
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
+    & { alternatives?: Maybe<Array<Maybe<(
+      { __typename?: 'Alternative' }
+      & Pick<Alternative, 'text'>
+    )>>> }
+  )>>> }
 );
 
 export type CastVoteMutationVariables = Exact<{
@@ -490,7 +497,20 @@ export type AddParticipantsMutationResult = Apollo.MutationResult<AddParticipant
 export type AddParticipantsMutationOptions = Apollo.BaseMutationOptions<AddParticipantsMutation, AddParticipantsMutationVariables>;
 export const CreateVotationsDocument = gql`
     mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
-  createVotations(meetingId: $meetingId, votations: $votations)
+  createVotations(meetingId: $meetingId, votations: $votations) {
+    id
+    title
+    description
+    index
+    blankVotes
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    alternatives {
+      text
+    }
+  }
 }
     `;
 export type CreateVotationsMutationFn = Apollo.MutationFunction<CreateVotationsMutation, CreateVotationsMutationVariables>;

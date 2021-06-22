@@ -15,6 +15,6 @@ const nullFunction = () => {
 
 const emptyMeeting = {title:'', organization: '', startTime: new Date(), description: ''}
 
-const Template: Story = () => <AddMeetingInformation meeting={emptyMeeting} updateMeeting={(meeting) => nullFunction()} handleNext={nullFunction} />
+const Template: Story = () => <AddMeetingInformation isActive={true} meeting={emptyMeeting} updateMeeting={(meeting) => nullFunction()} handleNext={nullFunction} />
 
 export const Default = Template.bind({});

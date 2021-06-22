@@ -11,9 +11,10 @@ interface IProps {
   onParticipantsAdded: () => void;
   handlePrevious: (participants: ParticipantInput[]) => void;
   previouslyAddedParticipants: ParticipantInput[];
+  isActive: boolean;
 }
 
-const AddParticipants: React.FC<IProps> = ({ meetingId, onParticipantsAdded, previouslyAddedParticipants, handlePrevious }) => {
+const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, onParticipantsAdded, previouslyAddedParticipants, handlePrevious }) => {
 
   const [participants, setParticipants] = useState<ParticipantInput[]>(previouslyAddedParticipants);
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
@@ -45,6 +46,8 @@ const AddParticipants: React.FC<IProps> = ({ meetingId, onParticipantsAdded, pre
     }
     onParticipantsAdded();
   }
+
+  if (!isActive) return <></>
 
   return (
     <>

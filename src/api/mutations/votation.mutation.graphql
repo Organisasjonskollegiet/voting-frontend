@@ -1,5 +1,18 @@
 mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
-  createVotations(meetingId: $meetingId, votations: $votations)
+  createVotations(meetingId: $meetingId, votations: $votations) {
+    id
+    title
+    description
+    index
+    blankVotes
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    alternatives {
+      text
+    }
+  }
 }
 
 mutation CastVote($alternativeId: String!, $votationId: String!) {

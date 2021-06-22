@@ -17,22 +17,7 @@ import VotationTypeSelect from './VotationTypeSelect'
 import VotationCheckboxes from './VotationCheckboxes'
 import VotationInfoForm from './VotationInfoForm';
 import { collapsedStyle, hightlightedStyle, containerStyle } from '../particles/formStyles'
-
-interface Alternative {
-  id: number;
-  text: string;
-}
-interface Votation {
-  id: string;
-  title: string;
-  description: string;
-  alternatives: Alternative[];
-  blankVotes: boolean;
-  hiddenVotes: boolean;
-  severalVotes: boolean;
-  majorityType: MajorityType;
-  majorityThreshold: number;
-}
+import { Votation } from '../../types/types';
 
 interface IProps {
   index: number;
