@@ -10,7 +10,7 @@ const App: FC = () => {
       <Route path="/admin">
         <PageExample page="/admin" />
       </Route>
-      <Route path="/votation/:id">
+      <Route path="/meeting/:meetingId/votation/:votationId">
         <Votation />
       </Route>
       <Route path="/">

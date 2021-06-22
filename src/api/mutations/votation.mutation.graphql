@@ -5,3 +5,9 @@ mutation CastVote($alternativeId: String!, $votationId: String!) {
     }
   }
 }
+
+mutation ChangeVotationStatus($votation: UpdateVotationStatusInput!) {
+  updateVotationStatus(votation: $votation){
+    status
+  }
+}

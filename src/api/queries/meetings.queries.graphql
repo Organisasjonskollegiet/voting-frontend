@@ -9,3 +9,14 @@ query GetMeetings {
     }
   }
 }
+
+query GetParticipantsByMeeting($meetingId: String!) {
+  meetingsById(meetingId: $meetingId){
+    participants {
+      user {
+        email
+      }
+      role
+    }
+  }
+}
