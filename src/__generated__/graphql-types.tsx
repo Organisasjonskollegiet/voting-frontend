@@ -24,6 +24,11 @@ export type Alternative = {
   votes?: Maybe<Scalars['Int']>;
 };
 
+export type AlternativeInput = {
+  id?: Maybe<Scalars['String']>;
+  text: Scalars['String'];
+};
+
 export type CreateMeetingInput = {
   organization: Scalars['String'];
   title: Scalars['String'];
@@ -69,7 +74,7 @@ export type Meeting = {
 export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
-  updateVotation?: Maybe<Votation>;
+  updateVotations?: Maybe<Array<Maybe<Votation>>>;
   deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
   updateAlternative?: Maybe<Alternative>;
@@ -89,8 +94,8 @@ export type MutationCreateVotationsArgs = {
 };
 
 
-export type MutationUpdateVotationArgs = {
-  votation: UpdateVotationInput;
+export type MutationUpdateVotationsArgs = {
+  votations: Array<UpdateVotationInput>;
 };
 
 
@@ -223,6 +228,7 @@ export type UpdateVotationInput = {
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
+  alternatives?: Maybe<Array<AlternativeInput>>;
 };
 
 export type User = {
@@ -316,6 +322,23 @@ export type CreateVotationsMutation = (
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'text'>
+    )>>> }
+  )>>> }
+);
+
+export type UpdateVotationsMutationVariables = Exact<{
+  votations: Array<UpdateVotationInput> | UpdateVotationInput;
+}>;
+
+
+export type UpdateVotationsMutation = (
+  { __typename?: 'Mutation' }
+  & { updateVotations?: Maybe<Array<Maybe<(
+    { __typename?: 'Votation' }
+    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold' | 'index'>
+    & { alternatives?: Maybe<Array<Maybe<(
+      { __typename?: 'Alternative' }
+      & Pick<Alternative, 'id' | 'text'>
     )>>> }
   )>>> }
 );
@@ -540,6 +563,51 @@ export function useCreateVotationsMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateVotationsMutationHookResult = ReturnType<typeof useCreateVotationsMutation>;
 export type CreateVotationsMutationResult = Apollo.MutationResult<CreateVotationsMutation>;
 export type CreateVotationsMutationOptions = Apollo.BaseMutationOptions<CreateVotationsMutation, CreateVotationsMutationVariables>;
+export const UpdateVotationsDocument = gql`
+    mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
+  updateVotations(votations: $votations) {
+    id
+    title
+    description
+    blankVotes
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    index
+    alternatives {
+      id
+      text
+    }
+  }
+}
+    `;
+export type UpdateVotationsMutationFn = Apollo.MutationFunction<UpdateVotationsMutation, UpdateVotationsMutationVariables>;
+
+/**
+ * __useUpdateVotationsMutation__
+ *
+ * To run a mutation, you first call `useUpdateVotationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVotationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVotationsMutation, { data, loading, error }] = useUpdateVotationsMutation({
+ *   variables: {
+ *      votations: // value for 'votations'
+ *   },
+ * });
+ */
+export function useUpdateVotationsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateVotationsMutation, UpdateVotationsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateVotationsMutation, UpdateVotationsMutationVariables>(UpdateVotationsDocument, options);
+      }
+export type UpdateVotationsMutationHookResult = ReturnType<typeof useUpdateVotationsMutation>;
+export type UpdateVotationsMutationResult = Apollo.MutationResult<UpdateVotationsMutation>;
+export type UpdateVotationsMutationOptions = Apollo.BaseMutationOptions<UpdateVotationsMutation, UpdateVotationsMutationVariables>;
 export const CastVoteDocument = gql`
     mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {

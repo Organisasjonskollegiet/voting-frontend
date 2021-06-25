@@ -15,6 +15,24 @@ mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]
   }
 }
 
+mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
+  updateVotations(votations: $votations) {
+    id
+    title
+    description
+    blankVotes
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    index
+    alternatives {
+      id
+      text
+    }
+  }
+}
+
 mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {
     alternative {

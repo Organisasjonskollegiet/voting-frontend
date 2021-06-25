@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { MajorityType, useCreateVotationsMutation } from '../../__generated__/graphql-types';
+import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
@@ -37,14 +37,16 @@ const initialVotationValues = [{
 
 const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, onVotationsCreated }) => {
 
-  const [createVotations, result] = useCreateVotationsMutation();
+  const [createVotations, createVotationsResult] = useCreateVotationsMutation();
+
+  const [upadteVotations, updateVotationsResult] = useUpdateVotationsMutation();
   
   const [state, setState] = useState({ votations: initialVotationValues });
 
   const toast = useToast();
 
   useEffect(() => {
-    if (!result.data?.createVotations) return;
+    if (!createVotationsResult.data?.createVotations) return;
     toast({
       title: "Voteringer opprettet.",
       description: "Voteringene har blitt opprettet",
@@ -52,7 +54,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
-    const votations = result.data.createVotations.map(votation => {
+    const votations = createVotationsResult.data.createVotations.map(votation => {
       return {
         ...votation,
         existsInDb: true
@@ -60,7 +62,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     }) as Votation[]
     setState({ votations })
     onVotationsCreated();
-  }, [result.data?.createVotations])
+  }, [createVotationsResult.data?.createVotations])
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -139,13 +141,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
         severalVotes: votation.severalVotes,
         majorityType: votation.majorityType,
         majorityThreshold: votation.majorityThreshold,
-        // alternatives: votation.alternatives
-        //   .map(alternative => 
-        //     alternative.text)
-        //   .filter(alternative => 
-        //     alternative !== '') 
+        alternatives: votation.alternatives
+          .filter(alternative => 
+            alternative.text !== '') 
       }
     })
+    upadteVotations({variables: {votations: preparedVotations}})
   }
 
   const handleNext = () => {
@@ -176,7 +177,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   return (
      <>
-      {result.loading && <Loading asOverlay={true} text="Oppretter voteringer" />}
+      {(createVotationsResult.loading || updateVotationsResult.loading) && <Loading asOverlay={true} text="Oppretter voteringer" />}
       <VStack spacing='5' align='left'>
         <Heading sx={h1Style} as='h1'>Legg til møtesaker</Heading>
         <Text fontSize='20px'>Her kan du legge til informasjon om møtet. Saker kan også legges til på et senere tidspunkt.</Text>
