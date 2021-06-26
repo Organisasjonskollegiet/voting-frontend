@@ -41,13 +41,17 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
     input.value = '';
   }
 
-  const onFileUpload = (event: any) => {
+  const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setReadingFiles(true);
-    const file = event.target.files[0]
+    const input = event.target as HTMLInputElement;
+    if (!(input.files && input.files.length > 0)) return;
+    const file =  input.files[0];
     const reader = new FileReader();
-    reader.onload = (evt: any) => {
+    reader.onload = (evt: ProgressEvent<FileReader>) => {
       const participants: ParticipantInput[] = []
-      const content = evt.target.result;
+      if (!evt.target) return;
+      const content = evt.target.result as string;
+      if (!content) return;
       const lines = content.split('\n').filter((line: string) => line.length > 0);
       const firstRowArray = lines[0].split(',').map((content: string) => content.trim())
       const indexOfEmail = firstRowArray.indexOf('email')
@@ -56,7 +60,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[indexOfEmail]
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole])
-        const emailExists = participants.indexOf(email) >= 0;
+        const emailExists = participants.map(p => p.email).indexOf(email) >= 0;
         if (email && !emailExists) {
           participants.push({
             email, 
@@ -65,11 +69,12 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
           })
         }
       }
-      handleAddParticipants(participants)
-      setReadingFiles(false);
+      handleAddParticipants(participants)  
     };
     reader.readAsText(file, 'UTF-8');
+    setReadingFiles(false);
   }
+
 
   return (
     <>
