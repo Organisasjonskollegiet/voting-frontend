@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import AddVotationForm from './AddVotationForm'
-import { MajorityType } from '../../__generated__/graphql-types';
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
 

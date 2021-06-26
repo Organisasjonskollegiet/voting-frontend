@@ -64,7 +64,7 @@ const AddVotationForm: React.FC<IProps> = ({ votation, index, isActive, toggleCo
               <Text sx={hightlightedStyle}>{`Sak ${index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
-          <img {...provided.dragHandleProps}  src={MoveIcon} /> 
+          <img alt="move" {...provided.dragHandleProps}  src={MoveIcon} /> 
         </HStack>
       )}
     </Draggable>
@@ -103,8 +103,8 @@ const AddVotationForm: React.FC<IProps> = ({ votation, index, isActive, toggleCo
         </HStack>
         <Divider m="3em 0" />
         <Box align='right' width='100%'>
-          <IconButton aria-label="Slett møtesak" bg={'white'} onClick={() => deleteVotation(votation.id)} icon={<img src={DeleteIcon} />}/>
-          <IconButton aria-label="Dupliser møtesak" bg={'white'} onClick={() => duplicateVotation(votation)} icon={<img src={DuplicateIcon} />}/>
+          <IconButton aria-label="Slett møtesak" bg={'white'} onClick={() => deleteVotation(votation.id)} icon={<img alt="delete" src={DeleteIcon} />}/>
+          <IconButton aria-label="Dupliser møtesak" bg={'white'} onClick={() => duplicateVotation(votation)} icon={<img alt="duplicate" src={DuplicateIcon} />}/>
         </Box>
         </VStack>
       )}

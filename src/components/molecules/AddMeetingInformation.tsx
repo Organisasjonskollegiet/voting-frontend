@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Heading, VStack, Text, Alert, AlertIcon } from '@chakra-ui/react';
+import React from 'react';
+import { Heading, VStack, Text } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm'
 import AddMeetingController from './AddMeetingController';
 import {h1Style} from '../particles/formStyles'
@@ -15,8 +15,6 @@ interface IProps {
 
 const AddMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, meeting, handleNext }) => {
  
-  const [showAlert, setShowAlert] = useState<boolean>(false);
-
   const onChange = (meeting: MeetingWorking) => {
     updateMeeting(meeting)
   }

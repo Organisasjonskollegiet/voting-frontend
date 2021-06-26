@@ -27,7 +27,7 @@ const AddMeetingController: React.FC<IProps> = ({ handleNext, showPrev, activeTa
         <Grid templateColumns="repeat(3, 1fr)" gap={6}>
           {showPrev ? 
             <Button 
-              leftIcon={<img src={ArrowLeft} />} 
+              leftIcon={<img alt="previous" src={ArrowLeft} />} 
               variant='ghost' 
               maxWidth='100px' 
               fontWeight='normal' 

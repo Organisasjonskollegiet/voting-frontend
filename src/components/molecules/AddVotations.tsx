@@ -8,7 +8,6 @@ import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 interface IProps {
   meetingId: string;

@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { ParticipantInput, Role } from '../../__generated__/graphql-types'
-import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack, Box, Icon } from '@chakra-ui/react'
+import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack } from '@chakra-ui/react'
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from './uploadIcon.svg'
+import Loading from '../atoms/Loading';
 
 interface IProps {
   participants: ParticipantInput[];
@@ -47,12 +48,12 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
     reader.onload = (evt: any) => {
       const participants: ParticipantInput[] = []
       const content = evt.target.result;
-      const lines = content.split('\n').filter((line: any) => line.length > 0);
-      const firstRowArray = lines[0].split(',').map((content: any) => content.trim())
+      const lines = content.split('\n').filter((line: string) => line.length > 0);
+      const firstRowArray = lines[0].split(',').map((content: string) => content.trim())
       const indexOfEmail = firstRowArray.indexOf('email')
       const indexOfRole = firstRowArray.indexOf('rolle')
       for (let i = 1; i < lines.length; i++){
-        const lineList = lines[i].split(',').filter((email: any) => email.trim().length > 0);
+        const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[indexOfEmail]
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole])
         const emailExists = participants.indexOf(email) >= 0;
@@ -71,6 +72,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
   }
 
   return (
+    <>
+    {(readingFiles) && 
+        <Loading asOverlay={true} text='Henter deltakere fra fil' />
+      }
     <VStack spacing='7'>
       <FormControl>
         <FormLabel sx={labelStyle}>
@@ -85,7 +90,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
             justify='center'
             borderRadius='4px'
             >
-            <img src={UploadIcon} />
+            <img alt="upload" src={UploadIcon} />
             <Text>
               Last opp deltagerliste fra CSV-fil
             </Text>
@@ -121,6 +126,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
         />
       </FormControl>
     </VStack>
+    </>
   )
 }
 
