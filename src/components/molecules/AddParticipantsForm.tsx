@@ -25,8 +25,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ handleAddParticipants, particip
     }
   }
 
-  const handleEnterPressed = (event: any, elementId: string, participants: ParticipantInput[], role: Role) => {
-    if (event.keyCode !== 13) return;
+  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, elementId: string, participants: ParticipantInput[], role: Role) => {
+    if (event.code !== "Enter") return;
     const input = document.getElementById(elementId) as HTMLInputElement;
     if (!input || !input.value || input.value.trim().length === 0) return;
     const email = input.value;
