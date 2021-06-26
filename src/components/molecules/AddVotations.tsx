@@ -57,6 +57,16 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   const toast = useToast();
 
   useEffect(() => {
+    if (!deleteVotationsResult.data?.deleteVotations) return;
+    setVotationsToDelete(votationsToDelete.filter(votation => !deleteVotationsResult.data?.deleteVotations?.includes(votation)))
+  }, [deleteVotationsResult.data?.deleteVotations])
+
+  useEffect(() => {
+    if (!deleteAlternativesResult.data?.deleteAlternatives) return;
+    setAlternativesToDelete(alternativesToDelete.filter(alternative => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)))
+  }, [deleteAlternativesResult.data?.deleteAlternatives])
+
+  useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
     toast({
       title: "Voteringer oppdatert.",
