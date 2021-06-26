@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation, useDeleteVotationsMutation, useDeleteAlternativesMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation, Alternative } from '../../types/types'
+import { createRegularExpressionLiteral } from 'typescript';
 
 interface IProps {
   meetingId: string;
@@ -16,8 +17,8 @@ interface IProps {
   isActive: boolean;
 }
 
-
-const initialVotationValues = [{
+const getEmptyVotation = () => {
+  return [{
     id: uuid(),
     title: '',
     description: '',
@@ -35,7 +36,8 @@ const initialVotationValues = [{
     majorityThreshold: 50,
     existsInDb: false,
     isEdited: false
-  }];
+  }] 
+}
 
 
 const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, onVotationsCreated }) => {
@@ -48,7 +50,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   const [deleteAlternatives, deleteAlternativesResult] = useDeleteAlternativesMutation();
   
-  const [state, setState] = useState({ votations: initialVotationValues });
+  const [state, setState] = useState({ votations: getEmptyVotation() });
 
   const [votationsToDelete, setVotationsToDelete] = useState<string[]>([]);
 
@@ -59,12 +61,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   useEffect(() => {
     if (!deleteVotationsResult.data?.deleteVotations) return;
     setVotationsToDelete(votationsToDelete.filter(votation => !deleteVotationsResult.data?.deleteVotations?.includes(votation)))
-  }, [deleteVotationsResult.data?.deleteVotations])
+  }, [deleteVotationsResult.data?.deleteVotations, setVotationsToDelete])
 
   useEffect(() => {
     if (!deleteAlternativesResult.data?.deleteAlternatives) return;
     setAlternativesToDelete(alternativesToDelete.filter(alternative => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)))
-  }, [deleteAlternativesResult.data?.deleteAlternatives])
+  }, [deleteAlternativesResult.data?.deleteAlternatives, setAlternativesToDelete])
 
   useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
@@ -75,8 +77,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
+    console.log("result1", createVotationsResult.data.createVotations)
+    console.log("result2", updateVotationsResult.data.updateVotations)
     const createResults = createVotationsResult.data.createVotations as Votation[]; 
     const updateResults = updateVotationsResult.data.updateVotations as Votation[]; 
+    console.log("updateResults", updateResults)
+    console.log("createResults", createResults)
     const createdVotations = formatVotations(createResults) as Votation[];
     const updatedVotations = formatVotations(updateResults) as Votation[];
     const untouchedVotations = state.votations.filter(v => !v.isEdited && v.existsInDb);
@@ -112,7 +118,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     return result;
   }
 
-  function onDragEnd(result: any) {
+  function onDragEnd(result: DropResult) {
     if (!result.destination) {
       return;
     }
@@ -152,7 +158,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     const preparedVotations = votations.map(votation => {
       return {
         title: votation.title, 
-        description: votation.title,
+        description: votation.description,
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
@@ -172,9 +178,15 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   const deleteVotation = (votation: Votation) => {
     if (votationsToDelete.includes(votation.id)) return;
     if (votation.existsInDb) setVotationsToDelete([...votationsToDelete, votation.id]);
-    setState({ 
-      votations: state.votations.filter(v => v.id !== votation.id) 
-    })
+    if (state.votations.length > 1) {
+      setState({ 
+        votations: state.votations.filter(v => v.id !== votation.id) 
+      })
+    } else {
+      setState({
+        votations: getEmptyVotation()
+      })
+    }
   }
 
   const deleteAlternative = (id: string) => {
@@ -187,7 +199,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       return {
         id: votation.id,
         title: votation.title, 
-        description: votation.title,
+        description: votation.description,
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
@@ -209,33 +221,27 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   const handleNext = () => {
-    let isValid = true;
-    state.votations
-      .forEach(votation => {
-        isValid = isValid && isValidVotation(votation) 
+    if (votationsToDelete.length > 0) {
+      deleteVotations({ 
+        variables: { 
+          ids: votationsToDelete 
+        } 
       })
-    if (!isValid) {
-      toast({
-        title: "Kan ikke oppdatere voteringer",
-        description: "Alle voteringer må ha både tittel og beskrivelse",
-        status: "error",
-        duration: 9000,
-        isClosable: true
-      })
-      return;
     }
-    deleteVotations({ 
-      variables: { 
-        ids: votationsToDelete 
-      } 
-    })
+    const validVotations = state.votations
+      .filter(votation => {
+        return isValidVotation(votation) 
+      })
     deleteAlternatives({
       variables: {
         ids: alternativesToDelete
       }
     })
-    const votationsToCreate = state.votations.filter(votation => !votation.existsInDb);
-    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb && votation.isEdited);
+    if (validVotations.length === 0) return;
+    const votationsToCreate = validVotations.filter(votation => !votation.existsInDb);
+    const votationsToUpdate = validVotations.filter(votation => votation.existsInDb && votation.isEdited);
+    console.log("toUpdate", votationsToUpdate)
+    console.log("toCreate", votationsToCreate)
     handleCreateVotations(votationsToCreate);
     handleUpdateVotations(votationsToUpdate);
   }
