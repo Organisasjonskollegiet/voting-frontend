@@ -26,4 +26,5 @@ export interface Votation {
   majorityType: MajorityType;
   majorityThreshold: number;
   existsInDb: boolean;
+  isUpdated: boolean;
 }

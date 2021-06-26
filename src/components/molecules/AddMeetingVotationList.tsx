@@ -23,10 +23,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
     updateVotations(votations)
   }
 
-  // const deleteVotaton = (id: string) => {
-  //   updateVotations(votations.filter(votation => votation.id !== id))
-  // }
-
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
     updateVotations([...votations, {...votation, id: newId, existsInDb: false, index: nextIndex}])

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation, Votation as GraphQLVotation } from '../../__generated__/graphql-types';
+import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
-import { GraphQLArgs } from 'graphql';
+import { transpileModule } from 'typescript';
 
 interface IProps {
   meetingId: string;
@@ -33,7 +33,8 @@ const initialVotationValues = [{
     severalVotes: false,
     majorityType: 'SIMPLE' as MajorityType,
     majorityThreshold: 50,
-    existsInDb: false
+    existsInDb: false,
+    isUpdated: false
   }];
 
 
@@ -62,7 +63,8 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     })
     const createdVotations = formatVotations(createVotationsResult.data.createVotations) as Votation[];
     const updatedVotations = formatVotations(updateVotationsResult.data.updateVotations) as Votation[];
-    const votations = [...createdVotations, ...updatedVotations] as Votation[]
+    const untouchedVotations = state.votations.filter(v => !v.isUpdated && v.existsInDb);
+    const votations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[]
     setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
@@ -73,11 +75,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
         return {
           ...votation, 
           existsInDb: true, 
+          isUpdated: false,
           alternatives: votation.alternatives
             .map((alternative: any, index: number) => {
               return {
                 ...alternative, 
-                index
+                index: index
               }
             })
         }
@@ -205,7 +208,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       return;
     }
     const votationsToCreate = state.votations.filter(votation => !votation.existsInDb);
-    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb);
+    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb && votation.isUpdated);
     handleCreateVotations(votationsToCreate);
     handleUpdateVotations(votationsToUpdate);
   }

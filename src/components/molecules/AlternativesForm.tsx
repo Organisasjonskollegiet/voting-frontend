@@ -35,8 +35,9 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
             <HStack key={alternative.id} spacing='4'>
               <Input 
                 key={alternative.id}
+                id={alternative.id}
                 onChange={(event) => {
-                  updateVotation({...votation, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, text: event.target.value, index: alternative.index}]})
+                  updateVotation({...votation, isUpdated: true, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, text: event.target.value, index: alternative.index}]})
                 }}
                 value={alternative.text} 
                 sx={inputStyle} 
@@ -57,7 +58,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           bg='white' 
           variant='link'
           onClick={() => {
-            updateVotation({...votation, alternatives: [...votation.alternatives, {id: uuid(), text: '', index: nextIndex}]})
+            updateVotation({...votation, isUpdated: true, alternatives: [...votation.alternatives, {id: uuid(), text: '', index: nextIndex}]})
             setNextIndex(nextIndex + 1)
           }}
         >

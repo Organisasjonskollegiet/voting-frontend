@@ -21,7 +21,8 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
           onChange={(e) => 
             updateVotation({
               ...votation, 
-              title: e.target.value
+              title: e.target.value,
+              isUpdated: true
             })} 
           value={votation.title} 
           placeholder='Eg. Valg av neste styreleder' />
@@ -35,7 +36,8 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
           onChange={(e) => 
             updateVotation({
               ...votation, 
-              description: e.target.value
+              description: e.target.value,
+              isUpdated: true
             })} 
           value={votation.description} 
           placeholder='Eg. Valg av neste styreleder' />

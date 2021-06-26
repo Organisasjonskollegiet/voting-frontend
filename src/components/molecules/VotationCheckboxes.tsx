@@ -21,7 +21,8 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
             isChecked={votation.blankVotes} 
             onChange={() => 
               updateVotation({
-                ...votation, 
+                ...votation,
+                isUpdated: true, 
                 blankVotes: !votation.blankVotes 
               })} 
             colorScheme='gray' 
@@ -35,6 +36,7 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
             onChange={() => 
               updateVotation({
                 ...votation, 
+                isUpdated: true,
                 hiddenVotes: !votation.hiddenVotes 
               })} 
             colorScheme='gray' 
@@ -47,6 +49,7 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
             onChange={() => 
               updateVotation({
                 ...votation, 
+                isUpdated: true,
                 severalVotes: !votation.severalVotes 
               })} 
             colorScheme='gray' 
