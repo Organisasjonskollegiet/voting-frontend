@@ -75,15 +75,17 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
-    const createdVotations = formatVotations(createVotationsResult.data.createVotations) as Votation[];
-    const updatedVotations = formatVotations(updateVotationsResult.data.updateVotations) as Votation[];
+    const createResults = createVotationsResult.data.createVotations as Votation[]; 
+    const updateResults = updateVotationsResult.data.updateVotations as Votation[]; 
+    const createdVotations = formatVotations(createResults) as Votation[];
+    const updatedVotations = formatVotations(updateResults) as Votation[];
     const untouchedVotations = state.votations.filter(v => !v.isEdited && v.existsInDb);
     const votations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[]
     setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
 
-  const formatVotations = (votations: any[]) => {
+  const formatVotations = (votations: Votation[]) => {
     if (!votations) return;
     return votations.map(votation => {
         return {
