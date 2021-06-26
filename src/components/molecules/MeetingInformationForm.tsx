@@ -20,7 +20,22 @@ interface IProps {
 const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
  
   const meetingInformationFormStyle = useStyleConfig('MeetingInformationForm');
-  
+
+  const onOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target) return;
+    onChange({...meeting, organization: (e.target as HTMLInputElement).value});
+  }
+
+  const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target) return;
+    onChange({...meeting, title: (e.target as HTMLInputElement).value});
+  }
+
+  const onDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!e.target) return;
+    onChange({...meeting, description: (e.target as HTMLTextAreaElement).value});
+  }
+
   return (
     <VStack spacing='7' color='#718096' sx={meetingInformationFormStyle}>
         <FormControl isRequired>
@@ -32,7 +47,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
             isRequired
             value={meeting.organization}
             placeholder="Hva heter organisasjonen møtet arrangeres av?" 
-            onChange={(e: any) => onChange({...meeting, organization: e.target.value})} />
+            onChange={onOrganizationChange} />
         </FormControl>
         <FormControl isRequired>
           <FormLabel sx={labelStyle}>
@@ -43,7 +58,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
             isRequired 
             value={meeting.title}
             placeholder="Hva skal tittelen på møtet være?" 
-            onChange={(e: any) => onChange({...meeting, title: e.target.value})} />
+            onChange={onTitleChange} />
         </FormControl>
         <FormControl isRequired fontWeight='normal'>
           <FormLabel sx={labelStyle}>
@@ -52,6 +67,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
           <DatePicker
             id="published-date"
             selectedDate={meeting.startTime}
+            // eslint-disable-next-line
             onChange={(date: any) => onChange({...meeting, startTime: date})}
             showPopperArrow={true}
           />
@@ -66,7 +82,7 @@ const MeetingInformationForm: React.FC<IProps> = ({meeting, onChange}) => {
             value={meeting.description}
             placeholder='Skriv gjerne en god beskrivelse av hva møte skal handle om.' 
             resize='none'
-            onChange={(e: any) => onChange({...meeting, description: e.target.value})}
+            onChange={onDescriptionChange}
           />
         </FormControl>
     </VStack>

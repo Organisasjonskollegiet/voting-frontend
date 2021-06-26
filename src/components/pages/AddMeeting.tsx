@@ -36,7 +36,7 @@ const AddMeeting: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const handleCreatedOrUpdatedMeeting = (meeting: any, action: "updated" | "created") => {
+  const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: "updated" | "created") => {
     setMeeting({
       id: meeting.id,
       title: meeting.title,
@@ -57,12 +57,14 @@ const AddMeeting: React.FC = () => {
 
   useEffect(() => {
     if (!updateMeetingResult.data?.updateMeeting) return;
-    handleCreatedOrUpdatedMeeting(updateMeetingResult.data.updateMeeting, "updated");
+    const meeting = updateMeetingResult.data.updateMeeting as MeetingWorking;
+    handleCreatedOrUpdatedMeeting(meeting, "updated");
   }, [updateMeetingResult.data?.updateMeeting])
 
   useEffect(() => {
     if (!createMeetingResult.data?.createMeeting) return;
-    handleCreatedOrUpdatedMeeting(createMeetingResult.data.createMeeting, "created");
+    const meeting = createMeetingResult.data.createMeeting as MeetingWorking; 
+    handleCreatedOrUpdatedMeeting(meeting, "created");
   }, [createMeetingResult.data?.createMeeting])
 
   const isMeetingInformationValid = () => {
