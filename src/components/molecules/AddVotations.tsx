@@ -26,7 +26,7 @@ const initialVotationValues = [{
     alternatives: [{
       id: uuid(),
       text: '',
-      index: 1
+      index: 0
     }],
     blankVotes: false,
     hiddenVotes: false,
@@ -56,13 +56,13 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
-    const votations = createVotationsResult.data.createVotations.map(votation => {
+    const votations = [...createVotationsResult.data.createVotations, ...updateVotationsResult.data.updateVotations].map(votation => {
       return {
         ...votation,
         existsInDb: true
       }
     }) as Votation[]
-    setState({ votations })
+    setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
 
@@ -111,7 +111,6 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   const handleCreateVotations = (votations: Votation[]) => {
-    // if (votations.length === 0) return;
     const preparedVotations = votations.map(votation => {
       return {
         title: votation.title, 
@@ -134,7 +133,6 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   const handleUpdateVotations = (votations: Votation[]) => {
-    // if (votations.length === 0) return;
     const preparedVotations = votations.map(votation => {
       return {
         id: votation.id,
@@ -157,12 +155,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
             alternative.text !== '') 
       }
     })
-    try {
-      console.log("update", preparedVotations)
-      updateVotations({ variables: { votations: preparedVotations } })
-    } catch (error) {
-      console.log("eeerooor", error)
-    }
+    updateVotations({ variables: { votations: preparedVotations } })
   }
 
   const handleNext = () => {
@@ -188,10 +181,6 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   console.log("state", state.votations)
-
-  if (updateVotationsResult.error) {
-    console.log(updateVotationsResult.error)
-  }
 
   if (!isActive) return <></>
 

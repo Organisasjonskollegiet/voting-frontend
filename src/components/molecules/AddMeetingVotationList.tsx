@@ -13,6 +13,7 @@ interface VotationListProps {
 const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, updateVotations }) => {
 
   const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
+  const [nextIndex, setNextIndex] = useState<number>(Math.max(...votations.map(votation => votation.index)) + 1)
 
   
   const updateVotation = (votation: Votation) => {
@@ -27,7 +28,8 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
 
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
-    updateVotations([...votations, {...votation, id: newId, existsInDb: false}])
+    updateVotations([...votations, {...votation, id: newId, existsInDb: false, index: nextIndex}])
+    setNextIndex(nextIndex + 1)
     setActiveVotationId(newId)
   }
 

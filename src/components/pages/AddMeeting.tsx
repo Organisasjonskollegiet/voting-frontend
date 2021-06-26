@@ -30,25 +30,6 @@ const AddMeeting: React.FC = () => {
     description: ''
   });
 
-  // const initialVotationValues = [{
-  //   id: uuid(),
-  //   title: '',
-  //   description: '',
-  //   index: 1,
-  //   alternatives: [{
-  //     id: 1,
-  //     text: ''
-  //   }],
-  //   blankVotes: false,
-  //   hiddenVotes: false,
-  //   severalVotes: false,
-  //   majorityType: 'SIMPLE' as MajorityType,
-  //   majorityThreshold: 50
-  // }];
-
-
-  // const [votations, setVotations] = useState<Votation[]>(initialVotationValues);
-
   const [participants, setParticipants] = useState<ParticipantInput[]>([]);
 
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
