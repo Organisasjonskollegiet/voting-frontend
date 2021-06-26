@@ -8,6 +8,7 @@ import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 interface IProps {
   meetingId: string;
@@ -23,8 +24,9 @@ const initialVotationValues = [{
     description: '',
     index: 1,
     alternatives: [{
-      id: 1,
-      text: ''
+      id: uuid(),
+      text: '',
+      index: 1
     }],
     blankVotes: false,
     hiddenVotes: false,
@@ -39,16 +41,16 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
-  const [upadteVotations, updateVotationsResult] = useUpdateVotationsMutation();
+  const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
   
   const [state, setState] = useState({ votations: initialVotationValues });
 
   const toast = useToast();
 
   useEffect(() => {
-    if (!createVotationsResult.data?.createVotations) return;
+    if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
     toast({
-      title: "Voteringer opprettet.",
+      title: "Voteringer oppdatert.",
       description: "Voteringene har blitt opprettet",
       status: "success",
       duration: 9000,
@@ -62,7 +64,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     }) as Votation[]
     setState({ votations })
     onVotationsCreated();
-  }, [createVotationsResult.data?.createVotations])
+  }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -109,6 +111,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   const handleCreateVotations = (votations: Votation[]) => {
+    // if (votations.length === 0) return;
     const preparedVotations = votations.map(votation => {
       return {
         title: votation.title, 
@@ -126,10 +129,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
             alternative !== '')
       }
     });
+    console.log("create", preparedVotations)
     createVotations({variables: {votations: preparedVotations, meetingId }})
   }
 
   const handleUpdateVotations = (votations: Votation[]) => {
+    // if (votations.length === 0) return;
     const preparedVotations = votations.map(votation => {
       return {
         id: votation.id,
@@ -142,11 +147,22 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
         majorityType: votation.majorityType,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
+          .map(alternative => {
+            return {
+              id: alternative.id,
+              text: alternative.text
+            }
+          })
           .filter(alternative => 
             alternative.text !== '') 
       }
     })
-    upadteVotations({variables: {votations: preparedVotations}})
+    try {
+      console.log("update", preparedVotations)
+      updateVotations({ variables: { votations: preparedVotations } })
+    } catch (error) {
+      console.log("eeerooor", error)
+    }
   }
 
   const handleNext = () => {
@@ -171,13 +187,17 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     handleUpdateVotations(votationsToUpdate);
   }
 
-  console.log(state.votations)
+  console.log("state", state.votations)
+
+  if (updateVotationsResult.error) {
+    console.log(updateVotationsResult.error)
+  }
 
   if (!isActive) return <></>
 
   return (
      <>
-      {(createVotationsResult.loading || updateVotationsResult.loading) && <Loading asOverlay={true} text="Oppretter voteringer" />}
+      {(createVotationsResult.loading || updateVotationsResult.loading) && <Loading asOverlay={true} text="Oppdaterer voteringer" />}
       <VStack spacing='5' align='left'>
         <Heading sx={h1Style} as='h1'>Legg til møtesaker</Heading>
         <Text fontSize='20px'>Her kan du legge til informasjon om møtet. Saker kan også legges til på et senere tidspunkt.</Text>

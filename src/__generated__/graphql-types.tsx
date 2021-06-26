@@ -25,7 +25,7 @@ export type Alternative = {
 };
 
 export type AlternativeInput = {
-  id?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   text: Scalars['String'];
 };
 
@@ -321,7 +321,7 @@ export type CreateVotationsMutation = (
     & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'text'>
+      & Pick<Alternative, 'id' | 'text'>
     )>>> }
   )>>> }
 );
@@ -335,7 +335,7 @@ export type UpdateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { updateVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold' | 'index'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -531,6 +531,7 @@ export const CreateVotationsDocument = gql`
     majorityType
     majorityThreshold
     alternatives {
+      id
       text
     }
   }
@@ -570,11 +571,11 @@ export const UpdateVotationsDocument = gql`
     title
     description
     blankVotes
+    index
     hiddenVotes
     severalVotes
     majorityType
     majorityThreshold
-    index
     alternatives {
       id
       text

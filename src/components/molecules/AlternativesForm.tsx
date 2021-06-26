@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { FormControl, FormLabel, VStack, HStack, Input, Button } from '@chakra-ui/react'
+import { FormControl, FormLabel, VStack, HStack, Input, Button, useOutsideClick } from '@chakra-ui/react'
 import RemoveIcon from  './removeIcon.svg'
 import AddIcon from './addIcon.svg'
+import {v4 as uuid} from 'uuid'
 import { labelStyle, inputStyle, pointerStyle } from '../particles/formStyles'
 import { MajorityType } from '../../__generated__/graphql-types'
 import { Votation } from '../../types/types'
@@ -12,7 +13,7 @@ interface IProps {
 
 const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
   
-  const [nextId, setNextId] = useState<number>(2);
+  const [nextIndex, setNextIndex] = useState<number>(Math.max(...votation.alternatives.map(alternative => alternative.index)) + 1);
 
   return (
     <FormControl >
@@ -21,12 +22,12 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
       </FormLabel>
       <VStack spacing='5' align='left'>
         {
-          votation.alternatives.sort((a, b) => a.id - b.id).map(alternative => 
+          votation.alternatives.sort((a, b) => a.index - b.index).map(alternative => 
             <HStack spacing='4'>
               <Input 
                 key={alternative.id}
                 onChange={(event) => {
-                  updateVotation({...votation, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, text: event.target.value}]})
+                  updateVotation({...votation, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, text: event.target.value, index: alternative.index}]})
                 }}
                 value={alternative.text} 
                 sx={inputStyle} 
@@ -52,8 +53,8 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
           bg='white' 
           variant='link'
           onClick={() => {
-            updateVotation({...votation, alternatives: [...votation.alternatives, {id: nextId, text: ''}]})
-            setNextId(nextId + 1)
+            updateVotation({...votation, alternatives: [...votation.alternatives, {id: uuid(), text: '', index: nextIndex}]})
+            setNextIndex(nextIndex + 1)
           }}
         >
           Legg til svaralternativ

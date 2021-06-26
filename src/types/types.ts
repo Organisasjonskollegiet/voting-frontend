@@ -10,8 +10,9 @@ export interface MeetingWorking {
 }
 
 interface Alternative {
-  id: number;
+  id: string;
   text: string;
+  index: number;
 }
 export interface Votation {
   id: string;
