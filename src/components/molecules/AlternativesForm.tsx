@@ -4,8 +4,8 @@ import RemoveIcon from  './removeIcon.svg'
 import AddIcon from './addIcon.svg'
 import {v4 as uuid} from 'uuid'
 import { labelStyle, inputStyle, pointerStyle } from '../particles/formStyles'
-import { Votation } from '../../types/types'
-import Alternative from '../atoms/Alternative';
+import { Votation, Alternative } from '../../types/types'
+
 interface IProps {
   votation: Votation;
   updateVotation: (votation: Votation) => void;
@@ -16,12 +16,12 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
   
   const [nextIndex, setNextIndex] = useState<number>(Math.max(...votation.alternatives.map(alternative => alternative.index)) + 1);
 
-  const handleClickRemoveAlterantive = (id: string) => {
+  const handleClickRemoveAlterantive = (alternative: Alternative) => {
     updateVotation({
       ...votation,
-      alternatives: votation.alternatives.filter(a => a.id !== id)
+      alternatives: votation.alternatives.filter(a => a.id !== alternative.id)
     })
-    deleteAlternative(id)
+    if (alternative.existsInDb) deleteAlternative(alternative.id)
   }
 
   return (
@@ -37,7 +37,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
                 key={alternative.id}
                 id={alternative.id}
                 onChange={(event) => {
-                  updateVotation({...votation, isEdited: true, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, text: event.target.value, index: alternative.index}]})
+                  updateVotation({...votation, isEdited: true, alternatives: [...votation.alternatives.filter(a => a.id !== alternative.id), {id: alternative.id, existsInDb: alternative.existsInDb, text: event.target.value, index: alternative.index}]})
                 }}
                 value={alternative.text} 
                 sx={inputStyle} 
@@ -47,7 +47,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
                 style={pointerStyle} 
                 src={RemoveIcon} 
                 onClick={() => 
-                  handleClickRemoveAlterantive(alternative.id)} />
+                  handleClickRemoveAlterantive(alternative)} />
             </HStack>
           )
         }
@@ -58,7 +58,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           bg='white' 
           variant='link'
           onClick={() => {
-            updateVotation({...votation, isEdited: true, alternatives: [...votation.alternatives, {id: uuid(), text: '', index: nextIndex}]})
+            updateVotation({...votation, isEdited: true, alternatives: [...votation.alternatives, {id: uuid(), text: '', existsInDb: false, index: nextIndex}]})
             setNextIndex(nextIndex + 1)
           }}
         >

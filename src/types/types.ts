@@ -9,10 +9,11 @@ export interface MeetingWorking {
   description: string;
 }
 
-interface Alternative {
+export interface Alternative {
   id: string;
   text: string;
   index: number;
+  existsInDb: boolean;
 }
 export interface Votation {
   id: string;

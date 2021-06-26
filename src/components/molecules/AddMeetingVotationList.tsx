@@ -6,7 +6,7 @@ import { Votation } from '../../types/types'
 interface VotationListProps {
   votations: Votation[];
   updateVotations: (votations: Votation[]) => void;
-  deleteVotation: (id: string) => void;
+  deleteVotation: (votation: Votation) => void;
   deleteAlternative: (id: string) => void;
 }
 

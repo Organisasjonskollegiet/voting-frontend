@@ -75,10 +75,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
-  deleteVotation?: Maybe<Votation>;
+  deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
   createAlternative?: Maybe<Alternative>;
   updateAlternative?: Maybe<Alternative>;
-  deleteAlternative?: Maybe<Alternative>;
+  deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castVote?: Maybe<Vote>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
@@ -99,8 +99,8 @@ export type MutationUpdateVotationsArgs = {
 };
 
 
-export type MutationDeleteVotationArgs = {
-  id: Scalars['String'];
+export type MutationDeleteVotationsArgs = {
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -116,8 +116,8 @@ export type MutationUpdateAlternativeArgs = {
 };
 
 
-export type MutationDeleteAlternativeArgs = {
-  id: Scalars['String'];
+export type MutationDeleteAlternativesArgs = {
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -341,6 +341,26 @@ export type UpdateVotationsMutation = (
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
   )>>> }
+);
+
+export type DeleteVotationsMutationVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteVotationsMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteVotations'>
+);
+
+export type DeleteAlternativesMutationVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteAlternativesMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteAlternatives'>
 );
 
 export type CastVoteMutationVariables = Exact<{
@@ -609,6 +629,68 @@ export function useUpdateVotationsMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateVotationsMutationHookResult = ReturnType<typeof useUpdateVotationsMutation>;
 export type UpdateVotationsMutationResult = Apollo.MutationResult<UpdateVotationsMutation>;
 export type UpdateVotationsMutationOptions = Apollo.BaseMutationOptions<UpdateVotationsMutation, UpdateVotationsMutationVariables>;
+export const DeleteVotationsDocument = gql`
+    mutation DeleteVotations($ids: [String!]!) {
+  deleteVotations(ids: $ids)
+}
+    `;
+export type DeleteVotationsMutationFn = Apollo.MutationFunction<DeleteVotationsMutation, DeleteVotationsMutationVariables>;
+
+/**
+ * __useDeleteVotationsMutation__
+ *
+ * To run a mutation, you first call `useDeleteVotationsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteVotationsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteVotationsMutation, { data, loading, error }] = useDeleteVotationsMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useDeleteVotationsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteVotationsMutation, DeleteVotationsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteVotationsMutation, DeleteVotationsMutationVariables>(DeleteVotationsDocument, options);
+      }
+export type DeleteVotationsMutationHookResult = ReturnType<typeof useDeleteVotationsMutation>;
+export type DeleteVotationsMutationResult = Apollo.MutationResult<DeleteVotationsMutation>;
+export type DeleteVotationsMutationOptions = Apollo.BaseMutationOptions<DeleteVotationsMutation, DeleteVotationsMutationVariables>;
+export const DeleteAlternativesDocument = gql`
+    mutation DeleteAlternatives($ids: [String!]!) {
+  deleteAlternatives(ids: $ids)
+}
+    `;
+export type DeleteAlternativesMutationFn = Apollo.MutationFunction<DeleteAlternativesMutation, DeleteAlternativesMutationVariables>;
+
+/**
+ * __useDeleteAlternativesMutation__
+ *
+ * To run a mutation, you first call `useDeleteAlternativesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAlternativesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAlternativesMutation, { data, loading, error }] = useDeleteAlternativesMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useDeleteAlternativesMutation(baseOptions?: Apollo.MutationHookOptions<DeleteAlternativesMutation, DeleteAlternativesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteAlternativesMutation, DeleteAlternativesMutationVariables>(DeleteAlternativesDocument, options);
+      }
+export type DeleteAlternativesMutationHookResult = ReturnType<typeof useDeleteAlternativesMutation>;
+export type DeleteAlternativesMutationResult = Apollo.MutationResult<DeleteAlternativesMutation>;
+export type DeleteAlternativesMutationOptions = Apollo.BaseMutationOptions<DeleteAlternativesMutation, DeleteAlternativesMutationVariables>;
 export const CastVoteDocument = gql`
     mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {

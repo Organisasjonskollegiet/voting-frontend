@@ -25,7 +25,7 @@ interface IProps {
   votation: Votation;
   toggleCollapsedVotation: () => void;
   updateVotation: (votation: Votation) => void;
-  deleteVotation: (id: string) => void;
+  deleteVotation: (votation: Votation) => void;
   duplicateVotation: (votation: Votation) => void;
   deleteAlternative: (id: string) => void;
 }
@@ -114,7 +114,7 @@ const AddVotationForm: React.FC<IProps> = ({
         </HStack>
         <Divider m="3em 0" />
         <Box align='right' width='100%'>
-          <IconButton aria-label="Slett møtesak" bg={'white'} onClick={() => deleteVotation(votation.id)} icon={<img alt="delete" src={DeleteIcon} />}/>
+          <IconButton aria-label="Slett møtesak" bg={'white'} onClick={() => deleteVotation(votation)} icon={<img alt="delete" src={DeleteIcon} />}/>
           <IconButton aria-label="Dupliser møtesak" bg={'white'} onClick={() => duplicateVotation(votation)} icon={<img alt="duplicate" src={DuplicateIcon} />}/>
         </Box>
         </VStack>

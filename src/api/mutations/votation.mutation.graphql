@@ -34,6 +34,14 @@ mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
   }
 }
 
+mutation DeleteVotations($ids: [String!]!) {
+  deleteVotations(ids: $ids)
+}
+
+mutation DeleteAlternatives($ids: [String!]!) {
+  deleteAlternatives(ids: $ids)
+}
+
 mutation CastVote($alternativeId: String!, $votationId: String!) {
   castVote(alternativeId: $alternativeId, votationId: $votationId) {
     alternative {

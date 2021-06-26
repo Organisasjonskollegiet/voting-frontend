@@ -8,7 +8,6 @@ import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
-import { transpileModule } from 'typescript';
 
 interface IProps {
   meetingId: string;
@@ -26,7 +25,8 @@ const initialVotationValues = [{
     alternatives: [{
       id: uuid(),
       text: '',
-      index: 0
+      index: 0,
+      existsInDb: false
     }],
     blankVotes: false,
     hiddenVotes: false,
@@ -80,7 +80,8 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
             .map((alternative: any, index: number) => {
               return {
                 ...alternative, 
-                index: index
+                index: index,
+                existsInDb: true
               }
             })
         }
@@ -152,11 +153,11 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     createVotations({variables: {votations: preparedVotations, meetingId }})
   }
 
-  const deleteVotation = (id: string) => {
-    if (votationsToDelete.includes(id)) return;
-    setVotationsToDelete([...votationsToDelete, id]);
+  const deleteVotation = (votation: Votation) => {
+    if (votationsToDelete.includes(votation.id)) return;
+    if (votation.existsInDb) setVotationsToDelete([...votationsToDelete, votation.id]);
     setState({ 
-      votations: state.votations.filter(votation => votation.id !== id) 
+      votations: state.votations.filter(v => v.id !== votation.id) 
     })
   }
 
@@ -214,6 +215,10 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   }
 
   console.log(state.votations)
+
+  console.log("votationsToDelete", votationsToDelete)
+
+  console.log("alternativesToDelete", alternativesToDelete)
 
   if (!isActive) return <></>
 
