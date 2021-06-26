@@ -45,13 +45,13 @@ const AddVotationForm: React.FC<IProps> = ({
   const updateVotationFromSelect = (value: string) => {
     switch (value) {
       case 'SIMPLE':
-        updateVotation({...votation, isUpdated: true, majorityType: 'SIMPLE' as MajorityType})
+        updateVotation({...votation, isEdited: true, majorityType: 'SIMPLE' as MajorityType})
         break;
       case 'QUALIFIED50':
-        updateVotation({...votation, isUpdated: true, majorityType: 'QUALIFIED' as MajorityType, majorityThreshold: 50})
+        updateVotation({...votation, isEdited: true, majorityType: 'QUALIFIED' as MajorityType, majorityThreshold: 50})
         break;
       case 'QUALIFIED67':
-        updateVotation({...votation, isUpdated: true, majorityType: 'QUALIFIED' as MajorityType, majorityThreshold: 67})
+        updateVotation({...votation, isEdited: true, majorityType: 'QUALIFIED' as MajorityType, majorityThreshold: 67})
         break;
       default:
         break;

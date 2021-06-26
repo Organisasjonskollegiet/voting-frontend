@@ -34,7 +34,7 @@ const initialVotationValues = [{
     majorityType: 'SIMPLE' as MajorityType,
     majorityThreshold: 50,
     existsInDb: false,
-    isUpdated: false
+    isEdited: false
   }];
 
 
@@ -63,7 +63,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     })
     const createdVotations = formatVotations(createVotationsResult.data.createVotations) as Votation[];
     const updatedVotations = formatVotations(updateVotationsResult.data.updateVotations) as Votation[];
-    const untouchedVotations = state.votations.filter(v => !v.isUpdated && v.existsInDb);
+    const untouchedVotations = state.votations.filter(v => !v.isEdited && v.existsInDb);
     const votations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[]
     setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
@@ -75,7 +75,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
         return {
           ...votation, 
           existsInDb: true, 
-          isUpdated: false,
+          isEdited: false,
           alternatives: votation.alternatives
             .map((alternative: any, index: number) => {
               return {
@@ -208,7 +208,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       return;
     }
     const votationsToCreate = state.votations.filter(votation => !votation.existsInDb);
-    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb && votation.isUpdated);
+    const votationsToUpdate = state.votations.filter(votation => votation.existsInDb && votation.isEdited);
     handleCreateVotations(votationsToCreate);
     handleUpdateVotations(votationsToUpdate);
   }

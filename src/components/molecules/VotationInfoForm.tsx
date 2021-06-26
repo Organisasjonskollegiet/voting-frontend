@@ -22,7 +22,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
             updateVotation({
               ...votation, 
               title: e.target.value,
-              isUpdated: true
+              isEdited: true
             })} 
           value={votation.title} 
           placeholder='Eg. Valg av neste styreleder' />
@@ -37,7 +37,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
             updateVotation({
               ...votation, 
               description: e.target.value,
-              isUpdated: true
+              isEdited: true
             })} 
           value={votation.description} 
           placeholder='Eg. Valg av neste styreleder' />
