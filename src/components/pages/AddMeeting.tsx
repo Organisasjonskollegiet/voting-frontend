@@ -57,14 +57,16 @@ const AddMeeting: React.FC = () => {
 
   useEffect(() => {
     if (!updateMeetingResult.data?.updateMeeting) return;
-    const meeting = updateMeetingResult.data.updateMeeting as MeetingWorking;
-    handleCreatedOrUpdatedMeeting(meeting, "updated");
+    const updatedMeeting = updateMeetingResult.data.updateMeeting as MeetingWorking;
+    handleCreatedOrUpdatedMeeting(updatedMeeting, "updated");
+    // eslint-disable-next-line
   }, [updateMeetingResult.data?.updateMeeting])
 
   useEffect(() => {
     if (!createMeetingResult.data?.createMeeting) return;
-    const meeting = createMeetingResult.data.createMeeting as MeetingWorking; 
-    handleCreatedOrUpdatedMeeting(meeting, "created");
+    const createdMeeting = createMeetingResult.data.createMeeting as MeetingWorking; 
+    handleCreatedOrUpdatedMeeting(createdMeeting, "created");
+    // eslint-disable-next-line
   }, [createMeetingResult.data?.createMeeting])
 
   const isMeetingInformationValid = () => {

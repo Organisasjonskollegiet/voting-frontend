@@ -58,14 +58,14 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   const toast = useToast();
 
   useEffect(() => {
-    if (!deleteVotationsResult.data?.deleteVotations) return;
+    if (!deleteVotationsResult.data?.deleteVotations || votationsToDelete.length === 0) return;
     setVotationsToDelete(votationsToDelete.filter(votation => !deleteVotationsResult.data?.deleteVotations?.includes(votation)))
-  }, [deleteVotationsResult.data?.deleteVotations, setVotationsToDelete])
+  }, [deleteVotationsResult.data?.deleteVotations, setVotationsToDelete, votationsToDelete])
 
   useEffect(() => {
-    if (!deleteAlternativesResult.data?.deleteAlternatives) return;
+    if (!deleteAlternativesResult.data?.deleteAlternatives || alternativesToDelete.length === 0) return;
     setAlternativesToDelete(alternativesToDelete.filter(alternative => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)))
-  }, [deleteAlternativesResult.data?.deleteAlternatives, setAlternativesToDelete])
+  }, [deleteAlternativesResult.data?.deleteAlternatives, setAlternativesToDelete, alternativesToDelete])
 
   useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
@@ -88,6 +88,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     const votations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[]
     setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
+    // eslint-disable-next-line
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
 
   const formatVotations = (votations: Votation[]) => {
