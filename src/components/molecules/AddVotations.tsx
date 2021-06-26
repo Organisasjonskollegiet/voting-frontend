@@ -76,12 +76,8 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
-    console.log("result1", createVotationsResult.data.createVotations)
-    console.log("result2", updateVotationsResult.data.updateVotations)
     const createResults = createVotationsResult.data.createVotations as Votation[]; 
     const updateResults = updateVotationsResult.data.updateVotations as Votation[]; 
-    console.log("updateResults", updateResults)
-    console.log("createResults", createResults)
     const createdVotations = formatVotations(createResults) as Votation[];
     const updatedVotations = formatVotations(updateResults) as Votation[];
     const untouchedVotations = state.votations.filter(v => !v.isEdited && v.existsInDb);
@@ -240,17 +236,9 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     if (validVotations.length === 0) return;
     const votationsToCreate = validVotations.filter(votation => !votation.existsInDb);
     const votationsToUpdate = validVotations.filter(votation => votation.existsInDb && votation.isEdited);
-    console.log("toUpdate", votationsToUpdate)
-    console.log("toCreate", votationsToCreate)
     handleCreateVotations(votationsToCreate);
     handleUpdateVotations(votationsToUpdate);
   }
-
-  console.log(state.votations)
-
-  console.log("votationsToDelete", votationsToDelete)
-
-  console.log("alternativesToDelete", alternativesToDelete)
 
   if (!isActive) return <></>
 

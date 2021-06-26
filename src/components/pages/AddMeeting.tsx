@@ -123,7 +123,6 @@ const AddMeeting: React.FC = () => {
 
   const handlePrevFromParticipants = (participants: ParticipantInput[]) => {
     try {
-      console.log(participants)
       setActiveTab(activeTab - 1)
       setParticipants(participants)
     } catch (error) {
