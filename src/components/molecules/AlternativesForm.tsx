@@ -23,7 +23,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
       <VStack spacing='5' align='left'>
         {
           votation.alternatives.sort((a, b) => a.index - b.index).map(alternative => 
-            <HStack spacing='4'>
+            <HStack key={alternative.id} spacing='4'>
               <Input 
                 key={alternative.id}
                 onChange={(event) => {
