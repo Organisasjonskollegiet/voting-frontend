@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { FormControl, FormLabel, VStack, HStack, Input, Button, useOutsideClick } from '@chakra-ui/react'
+import { FormControl, FormLabel, VStack, HStack, Input, Button } from '@chakra-ui/react'
 import RemoveIcon from  './removeIcon.svg'
 import AddIcon from './addIcon.svg'
 import {v4 as uuid} from 'uuid'
 import { labelStyle, inputStyle, pointerStyle } from '../particles/formStyles'
-import { MajorityType } from '../../__generated__/graphql-types'
 import { Votation } from '../../types/types'
 interface IProps {
   votation: Votation;
@@ -33,6 +32,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
                 sx={inputStyle} 
                 placeholder='Navn på alternativ' />
               <img 
+                alt="remove"
                 style={pointerStyle} 
                 src={RemoveIcon} 
                 onClick={() => 
@@ -49,7 +49,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
         <Button 
           width='190px' 
           fontWeight='normal'
-          leftIcon={<img src={AddIcon} />} 
+          leftIcon={<img alt="add" src={AddIcon} />} 
           bg='white' 
           variant='link'
           onClick={() => {

@@ -1,16 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import { Center, VStack, useToast } from '@chakra-ui/react'
 import AddVotations from '../molecules/AddVotations';
-import { MajorityType, Meeting, CreateMeetingInput, ParticipantInput, Status, useCreateMeetingMutation, useUpdateMeetingMutation, useCreateVotationsMutation } from '../../__generated__/graphql-types';
+import { ParticipantInput, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper'
-import {v4 as uuid} from 'uuid'
 import { useAuth0 } from '@auth0/auth0-react';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router'
 import { MeetingWorking } from '../../types/types'
 import Loading from '../atoms/Loading'
-import { Votation } from '../../types/types'
 
 
 const AddMeeting: React.FC = () => {
@@ -88,7 +86,7 @@ const AddMeeting: React.FC = () => {
     if (!meeting.id) {
       createMeeting({variables: {meeting}})
     } else {
-      updateMeeting({variables: {meeting: {...meeting, id: meeting.id!}}})
+      updateMeeting({variables: {meeting: {...meeting, id: meeting.id}}})
     }
   }
 

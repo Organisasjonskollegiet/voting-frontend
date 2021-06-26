@@ -1,7 +1,6 @@
 import React from 'react'
 import { FormControl, FormLabel, Input } from '@chakra-ui/react'
 import { labelStyle, inputStyle } from '../particles/formStyles'
-import { MajorityType } from '../../__generated__/graphql-types'
 import { Votation } from '../../types/types'
 
 

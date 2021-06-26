@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const PageExample: React.FC<IProps> = ({ page }) => {
-  const { isAuthenticated, user, logout, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, logout, loginWithRedirect } = useAuth0();
 
   return (
     <AuthWrapper>
