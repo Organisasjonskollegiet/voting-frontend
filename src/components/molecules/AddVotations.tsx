@@ -7,7 +7,7 @@ import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
-import { Votation } from '../../types/types'
+import { Votation, Alternative } from '../../types/types'
 
 interface IProps {
   meetingId: string;
@@ -91,7 +91,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
           existsInDb: true, 
           isEdited: false,
           alternatives: votation.alternatives
-            .map((alternative: any, index: number) => {
+            .map((alternative: Alternative, index: number) => {
               return {
                 ...alternative, 
                 index: index,
