@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation } from '../../__generated__/graphql-types';
+import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation, useDeleteVotationsMutation, useDeleteAlternativesMutation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
@@ -43,6 +43,10 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
+
+  const [deleteVotations, deleteVotationsResult] = useDeleteVotationsMutation();
+
+  const [deleteAlternatives, deleteAlternativesResult] = useDeleteAlternativesMutation();
   
   const [state, setState] = useState({ votations: initialVotationValues });
 
@@ -200,7 +204,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       })
     if (!isValid) {
       toast({
-        title: "Kan ikke opprette voteringer",
+        title: "Kan ikke oppdatere voteringer",
         description: "Alle voteringer må ha både tittel og beskrivelse",
         status: "error",
         duration: 9000,
@@ -208,6 +212,16 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       })
       return;
     }
+    deleteVotations({ 
+      variables: { 
+        ids: votationsToDelete 
+      } 
+    })
+    deleteAlternatives({
+      variables: {
+        ids: alternativesToDelete
+      }
+    })
     const votationsToCreate = state.votations.filter(votation => !votation.existsInDb);
     const votationsToUpdate = state.votations.filter(votation => votation.existsInDb && votation.isEdited);
     handleCreateVotations(votationsToCreate);
