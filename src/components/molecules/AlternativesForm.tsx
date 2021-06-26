@@ -5,14 +5,24 @@ import AddIcon from './addIcon.svg'
 import {v4 as uuid} from 'uuid'
 import { labelStyle, inputStyle, pointerStyle } from '../particles/formStyles'
 import { Votation } from '../../types/types'
+import Alternative from '../atoms/Alternative';
 interface IProps {
   votation: Votation;
   updateVotation: (votation: Votation) => void;
+  deleteAlternative: (id: string) => void;
 }
 
-const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
+const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAlternative }) => {
   
   const [nextIndex, setNextIndex] = useState<number>(Math.max(...votation.alternatives.map(alternative => alternative.index)) + 1);
+
+  const handleClickRemoveAlterantive = (id: string) => {
+    updateVotation({
+      ...votation,
+      alternatives: votation.alternatives.filter(a => a.id !== id)
+    })
+    deleteAlternative(id)
+  }
 
   return (
     <FormControl >
@@ -36,13 +46,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation }) => {
                 style={pointerStyle} 
                 src={RemoveIcon} 
                 onClick={() => 
-                  updateVotation({
-                    ...votation, 
-                    alternatives: [
-                      ...votation.alternatives
-                      .filter(a => a.id !== alternative.id)
-                    ]
-                  })} />
+                  handleClickRemoveAlterantive(alternative.id)} />
             </HStack>
           )
         }

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation } from '../../__generated__/graphql-types';
+import { MajorityType, useCreateVotationsMutation, useUpdateVotationsMutation, Votation as GraphQLVotation } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles'
 import {v4 as uuid} from 'uuid'
 import { Votation } from '../../types/types'
+import { GraphQLArgs } from 'graphql';
 
 interface IProps {
   meetingId: string;
@@ -44,6 +45,10 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   
   const [state, setState] = useState({ votations: initialVotationValues });
 
+  const [votationsToDelete, setVotationsToDelete] = useState<string[]>([]);
+
+  const [alternativesToDelete, setAlternativesToDelete] = useState<string[]>([]);
+
   const toast = useToast();
 
   useEffect(() => {
@@ -55,15 +60,29 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       duration: 9000,
       isClosable: true,
     })
-    const votations = [...createVotationsResult.data.createVotations, ...updateVotationsResult.data.updateVotations].map(votation => {
-      return {
-        ...votation,
-        existsInDb: true
-      }
-    }) as Votation[]
+    const createdVotations = formatVotations(createVotationsResult.data.createVotations) as Votation[];
+    const updatedVotations = formatVotations(updateVotationsResult.data.updateVotations) as Votation[];
+    const votations = [...createdVotations, ...updatedVotations] as Votation[]
     setState({ votations: votations.sort((a, b) => a.index - b.index) })
     onVotationsCreated();
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations])
+
+  const formatVotations = (votations: any[]) => {
+    if (!votations) return;
+    return votations.map(votation => {
+        return {
+          ...votation, 
+          existsInDb: true, 
+          alternatives: votation.alternatives
+            .map((alternative: any, index: number) => {
+              return {
+                ...alternative, 
+                index
+              }
+            })
+        }
+      }) 
+  }
 
   const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -127,8 +146,20 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
             alternative !== '')
       }
     });
-    console.log("create", preparedVotations)
     createVotations({variables: {votations: preparedVotations, meetingId }})
+  }
+
+  const deleteVotation = (id: string) => {
+    if (votationsToDelete.includes(id)) return;
+    setVotationsToDelete([...votationsToDelete, id]);
+    setState({ 
+      votations: state.votations.filter(votation => votation.id !== id) 
+    })
+  }
+
+  const deleteAlternative = (id: string) => {
+    if (alternativesToDelete.includes(id)) return;
+    setAlternativesToDelete([...alternativesToDelete, id]);
   }
 
   const handleUpdateVotations = (votations: Votation[]) => {
@@ -179,7 +210,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     handleUpdateVotations(votationsToUpdate);
   }
 
-  console.log("state", state.votations)
+  console.log(state.votations)
 
   if (!isActive) return <></>
 
@@ -193,7 +224,11 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
           <Droppable droppableId="list">
             {provided => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
-                <AddMeetingVotationList votations={state.votations} updateVotations={onVotationsUpdated} />
+                <AddMeetingVotationList 
+                  votations={state.votations} 
+                  deleteVotation={deleteVotation} 
+                  updateVotations={onVotationsUpdated} 
+                  deleteAlternative={deleteAlternative}/>
                 {provided.placeholder}
               </div>
             )}

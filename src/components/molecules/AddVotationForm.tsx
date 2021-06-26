@@ -27,9 +27,19 @@ interface IProps {
   updateVotation: (votation: Votation) => void;
   deleteVotation: (id: string) => void;
   duplicateVotation: (votation: Votation) => void;
+  deleteAlternative: (id: string) => void;
 }
 
-const AddVotationForm: React.FC<IProps> = ({ votation, index, isActive, toggleCollapsedVotation, updateVotation, deleteVotation, duplicateVotation }) => {
+const AddVotationForm: React.FC<IProps> = ({ 
+  votation, 
+  index, 
+  isActive, 
+  toggleCollapsedVotation, 
+  updateVotation, 
+  deleteVotation, 
+  duplicateVotation, 
+  deleteAlternative 
+}) => {
 
 
   const updateVotationFromSelect = (value: string) => {
@@ -90,7 +100,8 @@ const AddVotationForm: React.FC<IProps> = ({ votation, index, isActive, toggleCo
               updateVotation={updateVotation} />
             <AlternativesForm 
               votation={votation} 
-              updateVotation={updateVotation} /> 
+              updateVotation={updateVotation}
+              deleteAlternative={deleteAlternative} /> 
           </VStack>
           <VStack flex='1' spacing='7' align='left'>
             <VotationTypeSelect 

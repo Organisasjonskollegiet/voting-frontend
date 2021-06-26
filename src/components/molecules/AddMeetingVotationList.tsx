@@ -6,10 +6,12 @@ import { Votation } from '../../types/types'
 interface VotationListProps {
   votations: Votation[];
   updateVotations: (votations: Votation[]) => void;
+  deleteVotation: (id: string) => void;
+  deleteAlternative: (id: string) => void;
 }
 
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, updateVotations }) => {
+const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, updateVotations, deleteVotation, deleteAlternative }) => {
 
   const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
   const [nextIndex, setNextIndex] = useState<number>(Math.max(...votations.map(votation => votation.index)) + 1)
@@ -21,9 +23,9 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
     updateVotations(votations)
   }
 
-  const deleteVotaton = (id: string) => {
-    updateVotations(votations.filter(votation => votation.id !== id))
-  }
+  // const deleteVotaton = (id: string) => {
+  //   updateVotations(votations.filter(votation => votation.id !== id))
+  // }
 
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
@@ -42,7 +44,8 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ votations, update
         index={index} 
         key={votation.id} 
         updateVotation={updateVotation}
-        deleteVotation={deleteVotaton}
+        deleteVotation={deleteVotation}
+        deleteAlternative={deleteAlternative}
         duplicateVotation={duplicateVotation}
       />
     ))}
