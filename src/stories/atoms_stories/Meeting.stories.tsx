@@ -10,15 +10,15 @@ export default {
 
 const Template: Story<MeetingProps> = (args) => (
   <Box width="600px">
-    <Meeting {...args}/>
+    <Meeting {...args} />
   </Box>
 );
 
 export const Default = Template.bind({});
 Default.args = {
-    id: "1",
-    title: "Generalforsamling",
-    startTime: "2021-11-05",
-    description: "Quo illum corporis enim repellat totam natus sit.",
-    organization: "Random Linjeforening",
+  id: '1',
+  title: 'Generalforsamling',
+  startTime: '2021-11-05',
+  description: 'Quo illum corporis enim repellat totam natus sit.',
+  organization: 'Random Linjeforening',
 };

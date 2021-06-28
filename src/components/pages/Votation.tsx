@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Participant, Role, Status, useCastVoteMutation, useChangeVotationStatusMutation, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
+import {
+  Participant,
+  Role,
+  Status,
+  useCastVoteMutation,
+  useChangeVotationStatusMutation,
+  useGetVotationByIdQuery,
+} from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Spinner, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
@@ -21,20 +28,21 @@ const h1Style = {
 };
 
 const Votation: React.FC = () => {
-  
-  const { meetingId, votationId } = useParams<{ meetingId: string, votationId: string }>();
+  const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
 
   //Get votation data and participants from meeting
-  const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: votationId, meetingId: meetingId } });
+  const { data, loading, error } = useGetVotationByIdQuery({
+    variables: { votationId: votationId, meetingId: meetingId },
+  });
 
-  //Check if user has voted 
+  //Check if user has voted
   const { user } = useAuth0();
   const [hasUserVoted, sethasUserVoted] = useState<boolean>(data?.votationById?.hasVoted?.includes(user) || false);
 
   //handle selected alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
-  
+
   //Register vote
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
@@ -48,48 +56,60 @@ const Votation: React.FC = () => {
   const [updateVotationStatus] = useChangeVotationStatusMutation();
 
   if (loading) {
-    return <>
+    return (
+      <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
           <Spinner size="xl" m="auto" />
         </Center>
       </>
+    );
   }
 
-  if (error?.message === 'Not Authorised!'){
+  if (error?.message === 'Not Authorised!') {
     return (
       <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="40vh">
-          <Text>Du har ikke tilgang til denne voteringen, <Link href="/" textDecoration="underline">gå tilbake til hjemmesiden.</Link>
+          <Text>
+            Du har ikke tilgang til denne voteringen,{' '}
+            <Link href="/" textDecoration="underline">
+              gå tilbake til hjemmesiden.
+            </Link>
           </Text>
         </Center>
       </>
-    )
+    );
   }
 
-  if (error|| data?.votationById?.id === undefined) {
-    return <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-      <Center mt="10vh">
-        <Text>Det skjedde noe galt under innlastingen</Text>
-      </Center>
-    </>
+  if (error || data?.votationById?.id === undefined) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Det skjedde noe galt under innlastingen</Text>
+        </Center>
+      </>
+    );
   }
 
   if (data.votationById.status === Status.Upcoming) {
-    return <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-      <Center mt="10vh">
-        <Text>Denne voteringen har ikke åpnet enda</Text>
-      </Center>
-    </>
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Denne voteringen har ikke åpnet enda</Text>
+        </Center>
+      </>
+    );
   }
 
   //Check if user is admin
   const participants = data?.meetingsById?.participants as Array<Participant>;
-  participants.forEach((participant) => console.log(participant))
-  const isUserAdmin = participants?.some((participant) => participant.user?.email === user.email && participant.role === Role.Admin)
+  participants.forEach((participant) => console.log(participant));
+  const isUserAdmin = participants?.some(
+    (participant) => participant.user?.email === user.email && participant.role === Role.Admin
+  );
 
   return (
     <Box>
@@ -113,9 +133,9 @@ const Votation: React.FC = () => {
                   Alternativer
                 </Heading>
                 <AlternativeList
-                  alternatives={ (data.votationById.alternatives as Array<AlternativeType>) || [] }
+                  alternatives={(data.votationById.alternatives as Array<AlternativeType>) || []}
                   handleSelect={handleSelect}
-                  blankVotes={ data.votationById.blankVotes || false }
+                  blankVotes={data.votationById.blankVotes || false}
                 />
               </VStack>
             ) : (
@@ -130,16 +150,16 @@ const Votation: React.FC = () => {
             <Center>
               {!hasUserVoted ? (
                 <Button
-                  onClick={ () => submitVote() }
+                  onClick={() => submitVote()}
                   type="submit"
                   p="1.5em 4em"
                   borderRadius="16em"
-                  isDisabled={ selectedAlternativeId === null }
+                  isDisabled={selectedAlternativeId === null}
                 >
                   Avgi Stemme
                 </Button>
               ) : (
-                <Heading as="h1" sx={ h1Style }>
+                <Heading as="h1" sx={h1Style}>
                   Din stemme er registrert.
                 </Heading>
               )}
@@ -154,28 +174,30 @@ const Votation: React.FC = () => {
                 </Text>
               </Center>
               <Center>
-                <Heading as="h2" sx={ subtitlesStyle }>
+                <Heading as="h2" sx={subtitlesStyle}>
                   stemmer
                 </Heading>
               </Center>
             </VStack>
 
-            {/* Close votation button for admin */
+            {
+              /* Close votation button for admin */
               isUserAdmin && (
                 <Center mt="3em">
                   <Button
-                    onClick={ () => updateVotationStatus({variables: { votation: {id: votationId, status: Status.Ended} } }) }
+                    onClick={() =>
+                      updateVotationStatus({ variables: { votation: { id: votationId, status: Status.Ended } } })
+                    }
                     p="1.5em 4em"
                     borderRadius="16em"
                     bgColor="darkred"
                     color="white"
                   >
-                  Steng avstemning
+                    Steng avstemning
                   </Button>
                 </Center>
               )
             }
-
           </Box>
         ) : (
           <Box mt="4em">
@@ -188,7 +210,7 @@ const Votation: React.FC = () => {
           </Box>
         )}
       </Box>
-    </Box> 
+    </Box>
   );
 };
 

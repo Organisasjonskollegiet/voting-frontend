@@ -15,7 +15,7 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     severalVotes
   }
 
-  meetingsById(meetingId: $meetingId){
+  meetingsById(meetingId: $meetingId) {
     participants {
       user {
         email
