@@ -58,22 +58,7 @@ const Votation: React.FC = () => {
       </>
   }
 
-  if (vError || mError || vData?.votationById?.id === undefined) {
-    return <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-      <Center mt="10vh">
-        <Text>Det skjedde noe galt under innlastingen</Text>
-      </Center>
-    </>
-  }
-
-  //Check if user is admin
-  const participants = mData?.meetingsById?.participants as Array<Participant>;
-  participants.forEach((participant) => console.log(participant))
-  const isUserAdmin = participants?.some((participant) => participant.user?.email === user.email && participant.role === Role.Admin)
-  
-
-  if ( ! mData?.meetingsById?.participants.includes(user)){
+  if (vError?.message === 'Not Authorised!'){
     return (
       <>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -85,6 +70,28 @@ const Votation: React.FC = () => {
     )
   }
 
+  if (vError || mError || vData?.votationById?.id === undefined) {
+    return <>
+      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
+    </>
+  }
+
+  if (vData.votationById.status === Status.Upcoming) {
+    return <>
+      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+      <Center mt="10vh">
+        <Text>Denne voteringen har ikke åpnet enda</Text>
+      </Center>
+    </>
+  }
+
+  //Check if user is admin
+  const participants = mData?.meetingsById?.participants as Array<Participant>;
+  participants.forEach((participant) => console.log(participant))
+  const isUserAdmin = participants?.some((participant) => participant.user?.email === user.email && participant.role === Role.Admin)
 
   return (
     <Box>
