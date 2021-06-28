@@ -31,10 +31,11 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const [hasUserVoted, sethasUserVoted] = useState<boolean>(data?.votationById?.hasVoted?.includes(user) || false);
 
-  //Register vote
+  //handle selected alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
   
+  //Register vote
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId) {
@@ -148,6 +149,7 @@ const Votation: React.FC = () => {
             <VStack mt="3em" spacing="0">
               <Center>
                 <Text fontSize="2.25em" fontWeight="bold">
+                  {/* TODO: use subscription to get number of votes */}
                   69 / 80
                 </Text>
               </Center>
