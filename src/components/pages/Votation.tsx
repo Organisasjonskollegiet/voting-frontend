@@ -9,7 +9,7 @@ import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
 import { darkblue } from '../particles/theme';
 
-const subTitlesStyle = {
+const subtitlesStyle = {
   fontStyle: 'normal',
   fontSize: '16px',
   fontWeight: 'bold',
@@ -24,7 +24,7 @@ const Votation: React.FC = () => {
   
   const { meetingId, votationId } = useParams<{ meetingId: string, votationId: string }>();
 
-  //Get votation data by query
+  //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: votationId, meetingId: meetingId } });
 
   //Check if user has voted 
@@ -95,7 +95,7 @@ const Votation: React.FC = () => {
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
         <Heading as="h1" sx={h1Style}>
-          <span style={subTitlesStyle}>Sak {data.votationById.id /* TODO: bytte ut med løpenummer */}</span> <br />
+          <span style={subtitlesStyle}>Sak {data.votationById.id /* TODO: bytte ut med løpenummer */}</span> <br />
           {data.votationById.title}
         </Heading>
 
@@ -108,7 +108,7 @@ const Votation: React.FC = () => {
             {!hasUserVoted ? (
               /* Show alternatives */
               <VStack spacing="1.5em" align="left">
-                <Heading as="h2" sx={subTitlesStyle}>
+                <Heading as="h2" sx={subtitlesStyle}>
                   Alternativer
                 </Heading>
                 <AlternativeList
@@ -152,7 +152,7 @@ const Votation: React.FC = () => {
                 </Text>
               </Center>
               <Center>
-                <Heading as="h2" sx={ subTitlesStyle }>
+                <Heading as="h2" sx={ subtitlesStyle }>
                   stemmer
                 </Heading>
               </Center>
