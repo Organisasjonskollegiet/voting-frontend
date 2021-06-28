@@ -1,4 +1,4 @@
-query GetVotationById($votationId: String!) {
+query GetVotationById($votationId: String!, $meetingId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -13,5 +13,14 @@ query GetVotationById($votationId: String!) {
     status
     blankVotes
     severalVotes
+  }
+
+  meetingsById(meetingId: $meetingId){
+    participants {
+      user {
+        email
+      }
+      role
+    }
   }
 }

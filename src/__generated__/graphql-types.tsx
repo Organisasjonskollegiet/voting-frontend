@@ -39,6 +39,7 @@ export type CreateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
   alternatives?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -67,7 +68,7 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotation?: Maybe<Votation>;
   updateVotationStatus?: Maybe<Votation>;
   deleteVotation?: Maybe<Votation>;
@@ -77,8 +78,9 @@ export type Mutation = {
   castVote?: Maybe<Vote>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
-  deleteParticipant?: Maybe<DeleteParticipantResult>;
   deleteMeeting?: Maybe<Meeting>;
+  addParticipants?: Maybe<Scalars['Int']>;
+  deleteParticipant?: Maybe<DeleteParticipantResult>;
 };
 
 
@@ -136,14 +138,20 @@ export type MutationUpdateMeetingArgs = {
 };
 
 
-export type MutationDeleteParticipantArgs = {
-  meetingId: Scalars['String'];
-  userId: Scalars['String'];
+export type MutationDeleteMeetingArgs = {
+  id: Scalars['String'];
 };
 
 
-export type MutationDeleteMeetingArgs = {
-  id: Scalars['String'];
+export type MutationAddParticipantsArgs = {
+  meetingId: Scalars['String'];
+  participants: Array<ParticipantInput>;
+};
+
+
+export type MutationDeleteParticipantArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 export type OwnerCannotBeRemovedFromParticipantError = {
@@ -156,6 +164,12 @@ export type Participant = {
   role: Role;
   isVotingEligible: Scalars['Boolean'];
   user?: Maybe<User>;
+};
+
+export type ParticipantInput = {
+  email: Scalars['String'];
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
 };
 
 export type Query = {
@@ -214,7 +228,7 @@ export type UpdateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
-  status: Status;
+  index: Scalars['Int'];
 };
 
 export type UpdateVotationStatusInput = {
@@ -246,6 +260,7 @@ export type Votation = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
   meetingId: Scalars['String'];
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
@@ -320,28 +335,9 @@ export type GetMeetingsQuery = (
   )>> }
 );
 
-export type GetParticipantsByMeetingQueryVariables = Exact<{
-  meetingId: Scalars['String'];
-}>;
-
-
-export type GetParticipantsByMeetingQuery = (
-  { __typename?: 'Query' }
-  & { meetingsById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & { participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'email'>
-      )> }
-    )>> }
-  )> }
-);
-
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -357,6 +353,16 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
+  )>, meetingsById?: Maybe<(
+    { __typename?: 'Meeting' }
+    & { participants: Array<Maybe<(
+      { __typename?: 'Participant' }
+      & Pick<Participant, 'role'>
+      & { user?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'email'>
+      )> }
+    )>> }
   )> }
 );
 
@@ -510,48 +516,8 @@ export function useGetMeetingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
-export const GetParticipantsByMeetingDocument = gql`
-    query GetParticipantsByMeeting($meetingId: String!) {
-  meetingsById(meetingId: $meetingId) {
-    participants {
-      user {
-        email
-      }
-      role
-    }
-  }
-}
-    `;
-
-/**
- * __useGetParticipantsByMeetingQuery__
- *
- * To run a query within a React component, call `useGetParticipantsByMeetingQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetParticipantsByMeetingQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetParticipantsByMeetingQuery({
- *   variables: {
- *      meetingId: // value for 'meetingId'
- *   },
- * });
- */
-export function useGetParticipantsByMeetingQuery(baseOptions: Apollo.QueryHookOptions<GetParticipantsByMeetingQuery, GetParticipantsByMeetingQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetParticipantsByMeetingQuery, GetParticipantsByMeetingQueryVariables>(GetParticipantsByMeetingDocument, options);
-      }
-export function useGetParticipantsByMeetingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetParticipantsByMeetingQuery, GetParticipantsByMeetingQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetParticipantsByMeetingQuery, GetParticipantsByMeetingQueryVariables>(GetParticipantsByMeetingDocument, options);
-        }
-export type GetParticipantsByMeetingQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingQuery>;
-export type GetParticipantsByMeetingLazyQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingLazyQuery>;
-export type GetParticipantsByMeetingQueryResult = Apollo.QueryResult<GetParticipantsByMeetingQuery, GetParticipantsByMeetingQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: String!) {
+    query GetVotationById($votationId: String!, $meetingId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -566,6 +532,14 @@ export const GetVotationByIdDocument = gql`
     status
     blankVotes
     severalVotes
+  }
+  meetingsById(meetingId: $meetingId) {
+    participants {
+      user {
+        email
+      }
+      role
+    }
   }
 }
     `;
@@ -583,6 +557,7 @@ export const GetVotationByIdDocument = gql`
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
  *      votationId: // value for 'votationId'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */

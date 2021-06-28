@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Participant, Role, Status, useCastVoteMutation, useChangeVotationStatusMutation, useGetParticipantsByMeetingQuery, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
+import { Participant, Role, Status, useCastVoteMutation, useChangeVotationStatusMutation, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Spinner, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
@@ -25,14 +25,11 @@ const Votation: React.FC = () => {
   const { meetingId, votationId } = useParams<{ meetingId: string, votationId: string }>();
 
   //Get votation data by query
-  const { data: vData, loading: vLoading, error: vError } = useGetVotationByIdQuery({ variables: { votationId: votationId } });
-
-  //Get participants by meeting
-  const { data: mData, loading: mLoading, error: mError } = useGetParticipantsByMeetingQuery({variables: { meetingId: meetingId}})
+  const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: votationId, meetingId: meetingId } });
 
   //Check if user has voted 
   const { user } = useAuth0();
-  const [hasUserVoted, sethasUserVoted] = useState<boolean>(vData?.votationById?.hasVoted?.includes(user) || false);
+  const [hasUserVoted, sethasUserVoted] = useState<boolean>(data?.votationById?.hasVoted?.includes(user) || false);
 
   //Register vote
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -49,7 +46,7 @@ const Votation: React.FC = () => {
   //Close votation
   const [updateVotationStatus] = useChangeVotationStatusMutation();
 
-  if (vLoading || mLoading) {
+  if (loading) {
     return <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
@@ -58,7 +55,7 @@ const Votation: React.FC = () => {
       </>
   }
 
-  if (vError?.message === 'Not Authorised!'){
+  if (error?.message === 'Not Authorised!'){
     return (
       <>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -70,7 +67,7 @@ const Votation: React.FC = () => {
     )
   }
 
-  if (vError || mError || vData?.votationById?.id === undefined) {
+  if (error|| data?.votationById?.id === undefined) {
     return <>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Center mt="10vh">
@@ -79,7 +76,7 @@ const Votation: React.FC = () => {
     </>
   }
 
-  if (vData.votationById.status === Status.Upcoming) {
+  if (data.votationById.status === Status.Upcoming) {
     return <>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Center mt="10vh">
@@ -89,7 +86,7 @@ const Votation: React.FC = () => {
   }
 
   //Check if user is admin
-  const participants = mData?.meetingsById?.participants as Array<Participant>;
+  const participants = data?.meetingsById?.participants as Array<Participant>;
   participants.forEach((participant) => console.log(participant))
   const isUserAdmin = participants?.some((participant) => participant.user?.email === user.email && participant.role === Role.Admin)
 
@@ -98,15 +95,15 @@ const Votation: React.FC = () => {
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
         <Heading as="h1" sx={h1Style}>
-          <span style={subTitlesStyle}>Sak {vData.votationById.id /* TODO: bytte ut med løpenummer */}</span> <br />
-          {vData.votationById.title}
+          <span style={subTitlesStyle}>Sak {data.votationById.id /* TODO: bytte ut med løpenummer */}</span> <br />
+          {data.votationById.title}
         </Heading>
 
         <Text mt="1em" mb="2em">
-          {vData.votationById.description}
+          {data.votationById.description}
         </Text>
 
-        {vData.votationById.status !== 'ENDED' ? (
+        {data.votationById.status !== Status.Ended ? (
           <Box>
             {!hasUserVoted ? (
               /* Show alternatives */
@@ -115,9 +112,9 @@ const Votation: React.FC = () => {
                   Alternativer
                 </Heading>
                 <AlternativeList
-                  alternatives={ (vData.votationById.alternatives as Array<AlternativeType>) || [] }
+                  alternatives={ (data.votationById.alternatives as Array<AlternativeType>) || [] }
                   handleSelect={handleSelect}
-                  blankVotes={ vData.votationById.blankVotes || false }
+                  blankVotes={ data.votationById.blankVotes || false }
                 />
               </VStack>
             ) : (
