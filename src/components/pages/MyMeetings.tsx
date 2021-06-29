@@ -36,8 +36,8 @@ const MyMeetings: React.FC = () => {
   const endedMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ended);
 
   return (
-    <PageContainer>
-      <Box w="65vw" m="auto" mt="5em" pb="1.125em">
+    <PageContainer > 
+      <Box w="65vw" m="auto" pt="5em" pb="1.125em">
         {ongoingMeetings.length > 0 && (
           <Box mb="2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
