@@ -7,21 +7,23 @@ import MyMeetings from './components/pages/MyMeetings';
 
 const App: FC = () => {
   return (
-    <Switch>
-      <Route path="/admin">
-        <Navbar />
-        <PageExample page="/admin" />
-      </Route>
-      <Route path="/meetings">
-        <MyMeetings />
-      </Route>
-      <Route path="/votation/:id">
-        <Votation />
-      </Route>
-      <Route path="/">
-        <MyMeetings />
-      </Route>
-    </Switch>
+    <>
+      <Navbar />
+      <Switch>
+        <Route path="/admin">
+          <PageExample page="/admin" />
+        </Route>
+        <Route path="/meetings">
+          <MyMeetings />
+        </Route>
+        <Route path="/votation/:id">
+          <Votation />
+        </Route>
+        <Route path="/">
+          <MyMeetings />
+        </Route>
+      </Switch>
+    </>
   );
 };
 

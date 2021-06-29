@@ -12,12 +12,22 @@ export interface MeetingProps {
 const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, organization }) => {
   return (
     <Box bg="white" w="100%" rounded="4px" p="1em 2em" shadow="0px 0px 10px rgba(0,0,0,0.1)">
-      <Heading as="h2" fontSize="1.125em"> {title} </Heading>
-      <Text mb="1em" fontSize="0.75em"> {description} </Text>
+      <Heading as="h2" fontSize="1.125em">
+        {' '}
+        {title}{' '}
+      </Heading>
+      <Text mb="1em" fontSize="0.75em">
+        {' '}
+        {description}{' '}
+      </Text>
       <Flex justifyContent="space-between" fontSize="0.75em">
         <Text fontWeight="bold"> {organization} </Text>
         <Text fontWeight="bold">
-           {startTime.split('T')[0].split('-').reverse().reduce((s1, s2) => s1 + '.' + s2)}
+          {startTime
+            .split('T')[0]
+            .split('-')
+            .reverse()
+            .reduce((s1, s2) => s1 + '.' + s2)}
         </Text>
       </Flex>
     </Box>

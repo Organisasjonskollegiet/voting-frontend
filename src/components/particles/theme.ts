@@ -20,7 +20,7 @@ const theme = extendTheme({
       baseStyle: {
         color: darkblue,
         bg: lightblue,
-      }
+      },
     },
     Spinner: {
       baseStyle: {
@@ -28,19 +28,19 @@ const theme = extendTheme({
         borderBottomColor: lightblue,
         borderLeftColor: lightblue,
         borderRightColor: lightblue,
-      }
+      },
     },
     Text: {
       baseStyle: {
         color: darkblue,
-      }
+      },
     },
     Heading: {
       baseStyle: {
         color: darkblue,
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export default theme;

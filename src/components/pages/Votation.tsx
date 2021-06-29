@@ -53,81 +53,83 @@ const Votation: React.FC = () => {
     <Box>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
-      <Heading as="h1" sx={h1Style}>
-        <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
-        {votationData?.title}
-      </Heading>
+        <Heading as="h1" sx={h1Style}>
+          <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
+          {votationData?.title}
+        </Heading>
 
-      <Text mt="1em" mb="2em">
-        {votationData?.description}
-      </Text>
+        <Text mt="1em" mb="2em">
+          {votationData?.description}
+        </Text>
 
-      {votationData?.status !== 'ENDED' ? (
-        <Box>
-          { /* Displays the votation alternatives */
-          !hasUserVoted ? (
-            <VStack spacing="1.5em" align="left">
-              <Heading as="h2" sx={subTitlesStyle}>
-                Alternativer
-              </Heading>
-              <AlternativeList
-                alternatives={(votationData?.alternatives as Array<AlternativeType>) || []}
-                handleSelect={handleSelect}
-                blankVotes={votationData?.blankVotes || false}
-              />
-            </VStack>
-          ) : (
-            <Box mt="4em">
-              <Loading text={'Votering pågår'} />
-            </Box>
-          )}
-
-          <Divider m="3em 0" />
-          
-          {/* Submit button */}
-          <Center>
-            {!hasUserVoted ? (
-              <Button
-                onClick={() => submitVote()}
-                p="1.5em 4em"
-                borderRadius="16em"
-                isDisabled={selectedAlternativeId === null}
-              >
-                Avgi Stemme
-              </Button>
-            ) : (
-              <Heading as="h1" sx={h1Style}>
-                Din stemme er registrert.
-              </Heading>
-            )}
-          </Center>
-          
-          {/* Shows how many participants has voted */}
-          <VStack mt="3em" spacing="0">
-            <Center>
-              <Text fontSize="2.25em" fontWeight="bold">
-                69 / 80
-              </Text>
-            </Center>
-            <Center>
-              <Heading as="h2" sx={subTitlesStyle}>
-                stemmer
-              </Heading>
-            </Center>
-          </VStack>
-        </Box>
-      ) : (
-        <Box mt="4em">
-          <VotationResult
-            text={
-              //TODO: replace with the winning alternatives text property
-              ''
+        {votationData?.status !== 'ENDED' ? (
+          <Box>
+            {
+              /* Displays the votation alternatives */
+              !hasUserVoted ? (
+                <VStack spacing="1.5em" align="left">
+                  <Heading as="h2" sx={subTitlesStyle}>
+                    Alternativer
+                  </Heading>
+                  <AlternativeList
+                    alternatives={(votationData?.alternatives as Array<AlternativeType>) || []}
+                    handleSelect={handleSelect}
+                    blankVotes={votationData?.blankVotes || false}
+                  />
+                </VStack>
+              ) : (
+                <Box mt="4em">
+                  <Loading text={'Votering pågår'} />
+                </Box>
+              )
             }
-          />
-        </Box>
-      )}
+
+            <Divider m="3em 0" />
+
+            {/* Submit button */}
+            <Center>
+              {!hasUserVoted ? (
+                <Button
+                  onClick={() => submitVote()}
+                  p="1.5em 4em"
+                  borderRadius="16em"
+                  isDisabled={selectedAlternativeId === null}
+                >
+                  Avgi Stemme
+                </Button>
+              ) : (
+                <Heading as="h1" sx={h1Style}>
+                  Din stemme er registrert.
+                </Heading>
+              )}
+            </Center>
+
+            {/* Shows how many participants has voted */}
+            <VStack mt="3em" spacing="0">
+              <Center>
+                <Text fontSize="2.25em" fontWeight="bold">
+                  69 / 80
+                </Text>
+              </Center>
+              <Center>
+                <Heading as="h2" sx={subTitlesStyle}>
+                  stemmer
+                </Heading>
+              </Center>
+            </VStack>
+          </Box>
+        ) : (
+          <Box mt="4em">
+            <VotationResult
+              text={
+                //TODO: replace with the winning alternatives text property
+                ''
+              }
+            />
+          </Box>
+        )}
+      </Box>
     </Box>
-    </Box> 
   );
 };
 

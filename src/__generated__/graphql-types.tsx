@@ -39,6 +39,7 @@ export type CreateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
   alternatives?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -67,8 +68,9 @@ export type Meeting = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
+  createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotation?: Maybe<Votation>;
+  updateVotationStatus?: Maybe<Votation>;
   deleteVotation?: Maybe<Votation>;
   createAlternative?: Maybe<Alternative>;
   updateAlternative?: Maybe<Alternative>;
@@ -76,8 +78,9 @@ export type Mutation = {
   castVote?: Maybe<Vote>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
-  deleteParticipant?: Maybe<DeleteParticipantResult>;
   deleteMeeting?: Maybe<Meeting>;
+  addParticipants?: Maybe<Scalars['Int']>;
+  deleteParticipant?: Maybe<DeleteParticipantResult>;
 };
 
 
@@ -89,6 +92,11 @@ export type MutationCreateVotationsArgs = {
 
 export type MutationUpdateVotationArgs = {
   votation: UpdateVotationInput;
+};
+
+
+export type MutationUpdateVotationStatusArgs = {
+  votation: UpdateVotationStatusInput;
 };
 
 
@@ -130,14 +138,20 @@ export type MutationUpdateMeetingArgs = {
 };
 
 
-export type MutationDeleteParticipantArgs = {
-  meetingId: Scalars['String'];
-  userId: Scalars['String'];
+export type MutationDeleteMeetingArgs = {
+  id: Scalars['String'];
 };
 
 
-export type MutationDeleteMeetingArgs = {
-  id: Scalars['String'];
+export type MutationAddParticipantsArgs = {
+  meetingId: Scalars['String'];
+  participants: Array<ParticipantInput>;
+};
+
+
+export type MutationDeleteParticipantArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 export type OwnerCannotBeRemovedFromParticipantError = {
@@ -150,6 +164,12 @@ export type Participant = {
   role: Role;
   isVotingEligible: Scalars['Boolean'];
   user?: Maybe<User>;
+};
+
+export type ParticipantInput = {
+  email: Scalars['String'];
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
 };
 
 export type Query = {
@@ -165,7 +185,7 @@ export type Query = {
 
 
 export type QueryVotationByIdArgs = {
-  votationId: Scalars['ID'];
+  votationId: Scalars['String'];
 };
 
 
@@ -208,6 +228,12 @@ export type UpdateVotationInput = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
+};
+
+export type UpdateVotationStatusInput = {
+  id: Scalars['String'];
+  status: Status;
 };
 
 export type User = {
@@ -234,6 +260,7 @@ export type Votation = {
   severalVotes: Scalars['Boolean'];
   majorityType: MajorityType;
   majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
   meetingId: Scalars['String'];
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
@@ -296,7 +323,7 @@ export type GetMeetingsQuery = (
 );
 
 export type GetVotationByIdQueryVariables = Exact<{
-  votationId: Scalars['ID'];
+  votationId: Scalars['String'];
 }>;
 
 
@@ -436,7 +463,7 @@ export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: ID!) {
+    query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
