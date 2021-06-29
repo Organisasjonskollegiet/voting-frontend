@@ -5,7 +5,7 @@ import { darkblue, lightblue } from '../particles/theme';
 import { Link, NavLink } from 'react-router-dom';
 
 const links: Map<string, string> = new Map([
-  ['Mine møter', '/meetings'],
+  ['Mine møter', '/'],
   ['Min profil', '/profile'],
   ['Opprett møte', '/meeting/new'],
 ]);

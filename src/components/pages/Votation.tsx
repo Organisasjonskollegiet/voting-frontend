@@ -51,7 +51,6 @@ const Votation: React.FC = () => {
 
   return (
     <Box>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
         <Heading as="h1" sx={h1Style}>
           <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
