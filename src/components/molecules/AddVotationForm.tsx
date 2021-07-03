@@ -7,9 +7,9 @@ import {
   IconButton, 
   Box 
 } from '@chakra-ui/react'
-import MoveIcon from './moveIcon.svg'
-import DeleteIcon from './deleteIcon.svg'
-import DuplicateIcon from './duplicateIcon.svg'
+import MoveIcon from '../../static/moveIcon.svg'
+import DeleteIcon from '../../static/deleteIcon.svg'
+import DuplicateIcon from '../../static/duplicateIcon.svg'
 import { MajorityType } from '../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd'
 import AlternativesForm from './AlternativesForm'

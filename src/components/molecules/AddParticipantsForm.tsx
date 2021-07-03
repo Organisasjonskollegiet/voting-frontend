@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ParticipantInput, Role } from '../../__generated__/graphql-types'
 import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack } from '@chakra-ui/react'
 import { inputStyle, labelStyle } from '../particles/formStyles';
-import UploadIcon from './uploadIcon.svg'
+import UploadIcon from '../../static/uploadIcon.svg'
 import Loading from '../atoms/Loading';
 
 interface IProps {
