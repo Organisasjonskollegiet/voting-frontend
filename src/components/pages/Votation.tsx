@@ -7,6 +7,7 @@ import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
+import { h1Style } from '../particles/formStyles'
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,8 @@ const Votation: React.FC = () => {
   const votationData = data?.votationById;
 
   const { user } = useAuth0();
-  const [hasUserVoted, sethasUserVoted] = useState<boolean>(votationData?.hasVoted?.includes(user) || false);
+  console.log(user)
+  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */false);
 
   //Gets selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -24,16 +26,19 @@ const Votation: React.FC = () => {
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
-      sethasUserVoted(true);
-      castVote({ variables: { votationId: id, alternativeId: selectedAlternativeId } });
+      setUserHasVoted(true);
+      castVote({ variables: { alternativeId: selectedAlternativeId } });
     }
   };
 
-  if (error) return <Text>Det skjedde noe galt under innlastingen</Text>;
+  if (error) {
+    console.log(error)
+    return <Text>Det skjedde noe galt under innlastingen</Text>;
+  }
   if (loading)
     return (
       <Center>
-        <Spinner size="xl" m="auto" />
+        <Spinner asOverlay={false} size="xl" m="auto" />
       </Center>
     );
 
@@ -44,9 +49,6 @@ const Votation: React.FC = () => {
     lineHeight: '150%',
   } as React.CSSProperties;
 
-  const h1Style = {
-    fontSize: '1.5em',
-  };
 
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
@@ -59,10 +61,9 @@ const Votation: React.FC = () => {
         {votationData?.description}
       </Text>
 
-      {votationData?.status !== 'ENDED' ? (
+      {votationData?.status === 'OPEN' && (
         <Box>
-          { /* Displays the votation alternatives */
-          !hasUserVoted ? (
+          {!userHasVoted ? (
             <VStack spacing="1.5em" align="left">
               <Heading as="h2" sx={subTitlesStyle}>
                 Alternativer
@@ -75,7 +76,7 @@ const Votation: React.FC = () => {
             </VStack>
           ) : (
             <Box mt="4em">
-              <Loading text={'Votering pågår'} />
+              <Loading asOverlay={false} text={'Votering pågår'} />
             </Box>
           )}
 
@@ -83,7 +84,7 @@ const Votation: React.FC = () => {
           
           {/* Submit button */}
           <Center>
-            {!hasUserVoted ? (
+            {!userHasVoted ? (
               <Button
                 onClick={() => submitVote()}
                 p="1.5em 4em"
@@ -113,7 +114,8 @@ const Votation: React.FC = () => {
             </Center>
           </VStack>
         </Box>
-      ) : (
+      )}
+      {votationData?.status === 'PUBLISHED_RESULT' && (
         <Box mt="4em">
           <VotationResult
             text={

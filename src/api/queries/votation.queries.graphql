@@ -1,4 +1,4 @@
-query GetVotationById($votationId: ID!) {
+query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
