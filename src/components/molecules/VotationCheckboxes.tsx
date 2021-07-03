@@ -1,7 +1,7 @@
-import React from 'react'
-import { FormControl, FormLabel, CheckboxGroup, VStack, Checkbox } from '@chakra-ui/react'
-import { labelStyle, checkboxStyle } from '../particles/formStyles'
-import { Votation } from '../../types/types'
+import React from 'react';
+import { FormControl, FormLabel, CheckboxGroup, VStack, Checkbox } from '@chakra-ui/react';
+import { labelStyle, checkboxStyle } from '../particles/formStyles';
+import { Votation } from '../../types/types';
 
 interface IProps {
   votation: Votation;
@@ -11,55 +11,61 @@ interface IProps {
 const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
   return (
     <FormControl>
-      <FormLabel sx={labelStyle} marginBottom='30px'>
+      <FormLabel sx={labelStyle} marginBottom="30px">
         Valgalternativer
       </FormLabel>
-      <CheckboxGroup >
-      <VStack spacing='5' align='left'>
-          <Checkbox 
-            sx={checkboxStyle} 
-            isChecked={votation.blankVotes} 
-            onChange={() => 
+      <CheckboxGroup>
+        <VStack spacing="5" align="left">
+          <Checkbox
+            sx={checkboxStyle}
+            isChecked={votation.blankVotes}
+            onChange={() =>
               updateVotation({
                 ...votation,
-                isEdited: true, 
-                blankVotes: !votation.blankVotes 
-              })} 
-            colorScheme='gray' 
-            spacing='16px' 
-            iconSize='150px'>
+                isEdited: true,
+                blankVotes: !votation.blankVotes,
+              })
+            }
+            colorScheme="gray"
+            spacing="16px"
+            iconSize="150px"
+          >
             Stemmer kan være blanke
           </Checkbox>
-          <Checkbox 
-            sx={checkboxStyle} 
-            isChecked={votation.hiddenVotes} 
-            onChange={() => 
+          <Checkbox
+            sx={checkboxStyle}
+            isChecked={votation.hiddenVotes}
+            onChange={() =>
               updateVotation({
-                ...votation, 
+                ...votation,
                 isEdited: true,
-                hiddenVotes: !votation.hiddenVotes 
-              })} 
-            colorScheme='gray' 
-            spacing='16px'>
+                hiddenVotes: !votation.hiddenVotes,
+              })
+            }
+            colorScheme="gray"
+            spacing="16px"
+          >
             Skjult stemmeresultat
           </Checkbox>
-          <Checkbox 
-            sx={checkboxStyle} 
-            isChecked={votation.severalVotes} 
-            onChange={() => 
+          <Checkbox
+            sx={checkboxStyle}
+            isChecked={votation.severalVotes}
+            onChange={() =>
               updateVotation({
-                ...votation, 
+                ...votation,
                 isEdited: true,
-                severalVotes: !votation.severalVotes 
-              })} 
-            colorScheme='gray' 
-            spacing='16px'>
+                severalVotes: !votation.severalVotes,
+              })
+            }
+            colorScheme="gray"
+            spacing="16px"
+          >
             Tillat flere stemmer
           </Checkbox>
         </VStack>
       </CheckboxGroup>
     </FormControl>
-  )
-}
+  );
+};
 
 export default VotationCheckboxes;

@@ -1,8 +1,7 @@
-import React from 'react'
-import { FormControl, FormLabel, Input } from '@chakra-ui/react'
-import { labelStyle, inputStyle } from '../particles/formStyles'
-import { Votation } from '../../types/types'
-
+import React from 'react';
+import { FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { labelStyle, inputStyle } from '../particles/formStyles';
+import { Votation } from '../../types/types';
 
 interface IProps {
   votation: Votation;
@@ -12,38 +11,38 @@ interface IProps {
 const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
   return (
     <>
-      <FormControl >
-        <FormLabel sx={labelStyle}>
-          Sakstittel
-        </FormLabel>
-        <Input 
-          sx={inputStyle} 
-          onChange={(e) => 
+      <FormControl>
+        <FormLabel sx={labelStyle}>Sakstittel</FormLabel>
+        <Input
+          sx={inputStyle}
+          onChange={(e) =>
             updateVotation({
-              ...votation, 
+              ...votation,
               title: e.target.value,
-              isEdited: true
-            })} 
-          value={votation.title} 
-          placeholder='Eg. Valg av neste styreleder' />
+              isEdited: true,
+            })
+          }
+          value={votation.title}
+          placeholder="Eg. Valg av neste styreleder"
+        />
       </FormControl>
-      <FormControl >
-        <FormLabel sx={labelStyle}>
-          Beskrivelse
-        </FormLabel>
-        <Input 
-          sx={inputStyle} 
-          onChange={(e) => 
+      <FormControl>
+        <FormLabel sx={labelStyle}>Beskrivelse</FormLabel>
+        <Input
+          sx={inputStyle}
+          onChange={(e) =>
             updateVotation({
-              ...votation, 
+              ...votation,
               description: e.target.value,
-              isEdited: true
-            })} 
-          value={votation.description} 
-          placeholder='Eg. Valg av neste styreleder' />
+              isEdited: true,
+            })
+          }
+          value={votation.description}
+          placeholder="Eg. Valg av neste styreleder"
+        />
       </FormControl>
     </>
-  )
-}
+  );
+};
 
 export default VotationInfoForm;

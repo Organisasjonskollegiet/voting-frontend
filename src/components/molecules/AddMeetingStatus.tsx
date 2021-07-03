@@ -5,36 +5,29 @@ interface IProps {
   active: number;
 }
 
-const AddMeetingStatus: React.FC<IProps> = ({active}) => {
-
+const AddMeetingStatus: React.FC<IProps> = ({ active }) => {
   const dividerStyle = {
-    border:'2px solid',
-    width:'46px',
-    borderColor: '#718096'
-  } as React.CSSProperties
+    border: '2px solid',
+    width: '46px',
+    borderColor: '#718096',
+  } as React.CSSProperties;
 
   const activeStyle = {
-    color:'#43679C',
-    fontWeight:'bold',
-  } as React.CSSProperties
-  
+    color: '#43679C',
+    fontWeight: 'bold',
+  } as React.CSSProperties;
+
   return (
     <Center>
-      <HStack width='100%' spacing='4' marginBottom='32px'>
-        <Text sx={active === 0 ? activeStyle : undefined} >
-          Opprette møte
-        </Text>
+      <HStack width="100%" spacing="4" marginBottom="32px">
+        <Text sx={active === 0 ? activeStyle : undefined}>Opprette møte</Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 1 ? activeStyle : undefined}>
-          Legge til møtesaker
-        </Text>
+        <Text sx={active === 1 ? activeStyle : undefined}>Legge til møtesaker</Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 2 ? activeStyle : undefined}>
-          Invitere møtedeltakere
-        </Text>
+        <Text sx={active === 2 ? activeStyle : undefined}>Invitere møtedeltakere</Text>
       </HStack>
     </Center>
-  )
-}
+  );
+};
 
 export default AddMeetingStatus;
