@@ -3,6 +3,7 @@ query GetVotationById($votationId: String!) {
     id
     title
     description
+    index
     hasVoted {
       id
     }

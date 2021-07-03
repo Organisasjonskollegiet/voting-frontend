@@ -1,0 +1,3 @@
+subscription VotationStatusUpdated($id: String!) {
+  votationStatusUpdated(id: $id)
+}

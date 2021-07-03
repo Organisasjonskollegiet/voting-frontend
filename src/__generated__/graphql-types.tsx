@@ -492,7 +492,7 @@ export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'status' | 'blankVotes'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes'>
     & { hasVoted?: Maybe<Array<Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id'>
@@ -501,6 +501,16 @@ export type GetVotationByIdQuery = (
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
   )> }
+);
+
+export type VotationStatusUpdatedSubscriptionVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type VotationStatusUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'votationStatusUpdated'>
 );
 
 
@@ -889,6 +899,7 @@ export const GetVotationByIdDocument = gql`
     id
     title
     description
+    index
     hasVoted {
       id
     }
@@ -929,3 +940,31 @@ export function useGetVotationByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetVotationByIdQueryHookResult = ReturnType<typeof useGetVotationByIdQuery>;
 export type GetVotationByIdLazyQueryHookResult = ReturnType<typeof useGetVotationByIdLazyQuery>;
 export type GetVotationByIdQueryResult = Apollo.QueryResult<GetVotationByIdQuery, GetVotationByIdQueryVariables>;
+export const VotationStatusUpdatedDocument = gql`
+    subscription VotationStatusUpdated($id: String!) {
+  votationStatusUpdated(id: $id)
+}
+    `;
+
+/**
+ * __useVotationStatusUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useVotationStatusUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useVotationStatusUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationStatusUpdatedSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useVotationStatusUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<VotationStatusUpdatedSubscription, VotationStatusUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<VotationStatusUpdatedSubscription, VotationStatusUpdatedSubscriptionVariables>(VotationStatusUpdatedDocument, options);
+      }
+export type VotationStatusUpdatedSubscriptionHookResult = ReturnType<typeof useVotationStatusUpdatedSubscription>;
+export type VotationStatusUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationStatusUpdatedSubscription>;

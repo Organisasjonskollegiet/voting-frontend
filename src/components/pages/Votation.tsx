@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { useCastVoteMutation, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
-import { Heading, Text, Button, Box, Center, VStack, Divider, Spinner } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import {
+  useCastVoteMutation,
+  useGetVotationByIdQuery,
+  useVotationStatusUpdatedSubscription,
+} from '../../__generated__/graphql-types';
+import { Heading, Text, Button, Box, Center, VStack, Divider } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
-import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
+import { Alternative as AlternativeType, VotationStatus } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
@@ -12,7 +16,26 @@ import { h1Style } from '../particles/formStyles';
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: id } });
+  const { data: newStatusResult, error: statusError } = useVotationStatusUpdatedSubscription({
+    variables: { id },
+  });
+
+  const [status, setStatus] = useState<VotationStatus | null>(null);
+
   const votationData = data?.votationById;
+
+  useEffect(() => {
+    const newStatus = newStatusResult?.votationStatusUpdated ?? null;
+    if (newStatus !== null && newStatus !== status) {
+      setStatus(newStatus);
+    }
+  }, [newStatusResult, status]);
+
+  useEffect(() => {
+    if (data?.votationById && status === null) {
+      setStatus(data.votationById.status);
+    }
+  }, [data, status]);
 
   const { user } = useAuth0();
   console.log(user);
@@ -31,14 +54,13 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (error) {
-    console.log(error);
+  if (error || statusError) {
     return <Text>Det skjedde noe galt under innlastingen</Text>;
   }
   if (loading)
     return (
       <Center>
-        <Spinner asOverlay={false} size="xl" m="auto" />
+        <Loading asOverlay={false} text={'Henter votering'} />
       </Center>
     );
 
@@ -52,7 +74,7 @@ const Votation: React.FC = () => {
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
       <Heading as="h1" sx={h1Style}>
-        <span style={subTitlesStyle}>Sak {votationData?.id}</span> <br />
+        <span style={subTitlesStyle}>Sak {votationData?.index}</span> <br />
         {votationData?.title}
       </Heading>
 
@@ -60,7 +82,7 @@ const Votation: React.FC = () => {
         {votationData?.description}
       </Text>
 
-      {votationData?.status === 'OPEN' && (
+      {status === 'OPEN' && (
         <Box>
           {!userHasVoted ? (
             <VStack spacing="1.5em" align="left">
@@ -114,7 +136,12 @@ const Votation: React.FC = () => {
           </VStack>
         </Box>
       )}
-      {votationData?.status === 'PUBLISHED_RESULT' && (
+      {status === 'CHECKING_RESULT' && (
+        <Box>
+          <Loading asOverlay={false} text={'Resultatene sjekkes'} />
+        </Box>
+      )}
+      {status === 'PUBLISHED_RESULT' && (
         <Box mt="4em">
           <VotationResult
             text={
