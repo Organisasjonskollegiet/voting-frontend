@@ -1,31 +1,33 @@
-import React, {useState, useEffect} from 'react'
-import { Center, VStack, useToast } from '@chakra-ui/react'
+import React, { useState, useEffect } from 'react';
+import { Center, VStack, useToast } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
-import { ParticipantInput, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
+import {
+  ParticipantInput,
+  useCreateMeetingMutation,
+  useUpdateMeetingMutation,
+} from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
-import AuthWrapper from '../../services/auth/AuthWrapper'
+import AuthWrapper from '../../services/auth/AuthWrapper';
 import { useAuth0 } from '@auth0/auth0-react';
 import AddParticipants from '../molecules/AddParticipants';
-import { useHistory } from 'react-router'
-import { MeetingWorking } from '../../types/types'
-import Loading from '../atoms/Loading'
-
+import { useHistory } from 'react-router';
+import { MeetingWorking } from '../../types/types';
+import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
-
   const { user } = useAuth0();
 
   const toast = useToast();
 
   const history = useHistory();
 
-  console.log(user)
+  console.log(user);
 
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
     organization: '',
     startTime: new Date(),
-    description: ''
+    description: '',
   });
 
   const [participants, setParticipants] = useState<ParticipantInput[]>([]);
@@ -36,14 +38,14 @@ const AddMeeting: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: "updated" | "created") => {
+  const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
     setMeeting({
       id: meeting.id,
       title: meeting.title,
       description: meeting.description ?? '',
       organization: meeting.organization,
-      startTime: new Date(meeting.startTime)
-    })
+      startTime: new Date(meeting.startTime),
+    });
     setActiveTab(1);
     const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
     toast({
@@ -51,29 +53,27 @@ const AddMeeting: React.FC = () => {
       description: `Møtet ble ${responseKeyWord}.`,
       status: 'success',
       duration: 9000,
-      isClosable: true
-    })
-  }
+      isClosable: true,
+    });
+  };
 
   useEffect(() => {
     if (!updateMeetingResult.data?.updateMeeting) return;
     const updatedMeeting = updateMeetingResult.data.updateMeeting as MeetingWorking;
-    handleCreatedOrUpdatedMeeting(updatedMeeting, "updated");
+    handleCreatedOrUpdatedMeeting(updatedMeeting, 'updated');
     // eslint-disable-next-line
-  }, [updateMeetingResult.data?.updateMeeting])
+  }, [updateMeetingResult.data?.updateMeeting]);
 
   useEffect(() => {
     if (!createMeetingResult.data?.createMeeting) return;
-    const createdMeeting = createMeetingResult.data.createMeeting as MeetingWorking; 
-    handleCreatedOrUpdatedMeeting(createdMeeting, "created");
+    const createdMeeting = createMeetingResult.data.createMeeting as MeetingWorking;
+    handleCreatedOrUpdatedMeeting(createdMeeting, 'created');
     // eslint-disable-next-line
-  }, [createMeetingResult.data?.createMeeting])
+  }, [createMeetingResult.data?.createMeeting]);
 
   const isMeetingInformationValid = () => {
-    return meeting.organization !== '' && 
-           meeting.title !== '' && 
-           meeting.description !== '';
-  }
+    return meeting.organization !== '' && meeting.title !== '' && meeting.description !== '';
+  };
 
   const handleNextFromMeeting = () => {
     const isValid = isMeetingInformationValid();
@@ -83,59 +83,59 @@ const AddMeeting: React.FC = () => {
         description: 'Du må fylle ut alle felter markert med *',
         status: 'error',
         duration: 9000,
-        isClosable: true
-      })
+        isClosable: true,
+      });
       return;
     }
     if (!meeting.id) {
-      createMeeting({variables: {meeting}})
+      createMeeting({ variables: { meeting } });
     } else {
-      updateMeeting({variables: {meeting: {...meeting, id: meeting.id}}})
+      updateMeeting({ variables: { meeting: { ...meeting, id: meeting.id } } });
     }
-  }
+  };
 
   const onVotationsCreated = () => {
-    setActiveTab(2)
-  }
+    setActiveTab(2);
+  };
 
   const onParticipantsAdded = () => {
     const toastId = 'participants-toast';
-    if (toast.isActive(toastId)){
+    if (toast.isActive(toastId)) {
       toast({
         id: toastId,
-        title: "Deltakere lagt til.",
-        description: "Deltakerne har blitt lagt til møtet",
-        status: "success",
+        title: 'Deltakere lagt til.',
+        description: 'Deltakerne har blitt lagt til møtet',
+        status: 'success',
         duration: 9000,
         isClosable: true,
-      })
+      });
     }
-    history.push('/')
-  }
+    history.push('/');
+  };
 
   const handlePrevFromVotation = () => {
     try {
-      setActiveTab(activeTab - 1)
+      setActiveTab(activeTab - 1);
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
     }
-  }
+  };
 
   const handlePrevFromParticipants = (participants: ParticipantInput[]) => {
     try {
-      setActiveTab(activeTab - 1)
-      setParticipants(participants)
+      setActiveTab(activeTab - 1);
+      setParticipants(participants);
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
     }
-  }
+  };
 
   const outerContainer = {
     paddingTop: '5rem',
-    width:'100%',
-    bg:'#f9f9f9',
-    color:"#718096"
-  } as React.CSSProperties
+    width: '100%',
+    bg: '#f9f9f9',
+    color: '#718096',
+  } as React.CSSProperties;
 
   const centerContainer = {
     minWidth: '320px',
@@ -143,43 +143,44 @@ const AddMeeting: React.FC = () => {
     maxWidth: '800px',
   } as React.CSSProperties;
 
-  if (createMeetingResult.error) {
+  if (createMeetingResult.error) {
     toast({
-      title: "Kunne ikke oppette møte",
-      description: "Det var et problem med å opprette møtet"
-    })
+      title: 'Kunne ikke oppette møte',
+      description: 'Det var et problem med å opprette møtet',
+    });
   }
-  
 
   return (
     <AuthWrapper>
       <Center sx={outerContainer}>
-        {(createMeetingResult.loading || updateMeetingResult.loading) && 
-          <Loading asOverlay={true} text='Oppretter møte' />
-        }
-        <VStack spacing='10' align='left' sx={centerContainer}>
-          <AddMeetingInformation 
+        {(createMeetingResult.loading || updateMeetingResult.loading) && (
+          <Loading asOverlay={true} text="Oppretter møte" />
+        )}
+        <VStack spacing="10" align="left" sx={centerContainer}>
+          <AddMeetingInformation
             isActive={activeTab === 0}
             meeting={meeting}
             updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
-            handleNext={handleNextFromMeeting} />
-          <AddVotations 
+            handleNext={handleNextFromMeeting}
+          />
+          <AddVotations
             isActive={activeTab === 1}
-            onVotationsCreated={onVotationsCreated} 
+            onVotationsCreated={onVotationsCreated}
             meetingId={meeting?.id ?? ''}
-            handlePrevious={handlePrevFromVotation} 
-            /> 
-          <AddParticipants 
+            handlePrevious={handlePrevFromVotation}
+          />
+          <AddParticipants
             isActive={activeTab === 2}
             previouslyAddedParticipants={participants}
             meetingId={meeting?.id ?? undefined}
-            onParticipantsAdded={onParticipantsAdded} 
-            handlePrevious={handlePrevFromParticipants} />
+            onParticipantsAdded={onParticipantsAdded}
+            handlePrevious={handlePrevFromParticipants}
+          />
           {/* { meetingTabs[activeTab] } */}
-        </ VStack>
+        </VStack>
       </Center>
     </AuthWrapper>
-  )
+  );
 };
 
 export default AddMeeting;

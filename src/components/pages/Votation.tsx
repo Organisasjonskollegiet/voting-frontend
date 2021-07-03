@@ -7,7 +7,7 @@ import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
-import { h1Style } from '../particles/formStyles'
+import { h1Style } from '../particles/formStyles';
 
 const Votation: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,8 +15,8 @@ const Votation: React.FC = () => {
   const votationData = data?.votationById;
 
   const { user } = useAuth0();
-  console.log(user)
-  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */false);
+  console.log(user);
+  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */ false);
 
   //Gets selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -32,7 +32,7 @@ const Votation: React.FC = () => {
   };
 
   if (error) {
-    console.log(error)
+    console.log(error);
     return <Text>Det skjedde noe galt under innlastingen</Text>;
   }
   if (loading)
@@ -48,7 +48,6 @@ const Votation: React.FC = () => {
     fontWeight: 'bold',
     lineHeight: '150%',
   } as React.CSSProperties;
-
 
   return (
     <Box pb="3em" w="80vw" maxW="max-content" m="auto" color="#718096">
@@ -81,7 +80,7 @@ const Votation: React.FC = () => {
           )}
 
           <Divider m="3em 0" />
-          
+
           {/* Submit button */}
           <Center>
             {!userHasVoted ? (
@@ -99,7 +98,7 @@ const Votation: React.FC = () => {
               </Heading>
             )}
           </Center>
-          
+
           {/* Shows how many participants has voted */}
           <VStack mt="3em" spacing="0">
             <Center>
