@@ -42,8 +42,8 @@ mutation DeleteAlternatives($ids: [String!]!) {
   deleteAlternatives(ids: $ids)
 }
 
-mutation CastVote($alternativeId: String!, $votationId: String!) {
-  castVote(alternativeId: $alternativeId, votationId: $votationId) {
+mutation CastVote($alternativeId: String!) {
+  castVote(alternativeId: $alternativeId) {
     alternative {
       text
     }

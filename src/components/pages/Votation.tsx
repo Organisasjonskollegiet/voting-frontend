@@ -18,14 +18,16 @@ const Votation: React.FC = () => {
   console.log(user)
   const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */false);
 
+  //Gets selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
+  //Register the vote
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
       setUserHasVoted(true);
-      castVote({ variables: { votationId: id, alternativeId: selectedAlternativeId } });
+      castVote({ variables: { alternativeId: selectedAlternativeId } });
     }
   };
 
@@ -59,7 +61,7 @@ const Votation: React.FC = () => {
         {votationData?.description}
       </Text>
 
-      {votationData?.status !== 'ENDED' ? (
+      {votationData?.status === 'OPEN' && (
         <Box>
           {!userHasVoted ? (
             <VStack spacing="1.5em" align="left">
@@ -79,7 +81,8 @@ const Votation: React.FC = () => {
           )}
 
           <Divider m="3em 0" />
-
+          
+          {/* Submit button */}
           <Center>
             {!userHasVoted ? (
               <Button
@@ -96,7 +99,8 @@ const Votation: React.FC = () => {
               </Heading>
             )}
           </Center>
-
+          
+          {/* Shows how many participants has voted */}
           <VStack mt="3em" spacing="0">
             <Center>
               <Text fontSize="2.25em" fontWeight="bold">
@@ -110,7 +114,8 @@ const Votation: React.FC = () => {
             </Center>
           </VStack>
         </Box>
-      ) : (
+      )}
+      {votationData?.status === 'PUBLISHED_RESULT' && (
         <Box mt="4em">
           <VotationResult
             text={

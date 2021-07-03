@@ -14,7 +14,7 @@ const UseMutationExample: React.FC = () => {
 
   console.log(result.data);
   return (
-    <Button onClick={() => castVote({ variables: { votationId, alternativeId } })} colorScheme="blue">
+    <Button onClick={() => castVote({ variables: { alternativeId } })} colorScheme="blue">
       Avgi stemme
     </Button>
   );

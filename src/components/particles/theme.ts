@@ -36,6 +36,11 @@ const theme = extendTheme({
         color: darkblue,
       },
     },
+    Heading: {
+      baseStyle: {
+        color: darkblue,
+      },
+    },
   },
 });
 

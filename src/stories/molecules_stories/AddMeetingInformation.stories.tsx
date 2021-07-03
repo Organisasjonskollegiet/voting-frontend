@@ -1,7 +1,6 @@
 import React from 'react';
 import {Meta, Story} from '@storybook/react';
 import AddMeetingInformation from '../../components/molecules/AddMeetingInformation';
-import { Meeting, Status } from '../../__generated__/graphql-types';
 
 export default {
   title: 'Molecules/AddMeetingInformation',

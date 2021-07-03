@@ -58,6 +58,11 @@ export enum MajorityType {
   Simple = 'SIMPLE'
 }
 
+export type MaxOneOpenVotationError = {
+  __typename?: 'MaxOneOpenVotationError';
+  message: Scalars['String'];
+};
+
 export type Meeting = {
   __typename?: 'Meeting';
   id: Scalars['ID'];
@@ -67,14 +72,21 @@ export type Meeting = {
   description?: Maybe<Scalars['String']>;
   owner?: Maybe<User>;
   votations?: Maybe<Array<Maybe<Votation>>>;
-  status: Status;
+  status: MeetingStatus;
   participants: Array<Maybe<Participant>>;
 };
+
+export enum MeetingStatus {
+  Upcoming = 'UPCOMING',
+  Ongoing = 'ONGOING',
+  Ended = 'ENDED'
+}
 
 export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
+  updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
   deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
   createAlternative?: Maybe<Alternative>;
   updateAlternative?: Maybe<Alternative>;
@@ -85,6 +97,7 @@ export type Mutation = {
   deleteMeeting?: Maybe<Meeting>;
   addParticipants?: Maybe<Scalars['Int']>;
   deleteParticipant?: Maybe<DeleteParticipantResult>;
+  changeView?: Maybe<ViewState>;
 };
 
 
@@ -96,6 +109,12 @@ export type MutationCreateVotationsArgs = {
 
 export type MutationUpdateVotationsArgs = {
   votations: Array<UpdateVotationInput>;
+};
+
+
+export type MutationUpdateVotationStatusArgs = {
+  id: Scalars['String'];
+  status: VotationStatus;
 };
 
 
@@ -123,7 +142,6 @@ export type MutationDeleteAlternativesArgs = {
 
 export type MutationCastVoteArgs = {
   alternativeId: Scalars['String'];
-  votationId: Scalars['String'];
 };
 
 
@@ -151,6 +169,18 @@ export type MutationAddParticipantsArgs = {
 export type MutationDeleteParticipantArgs = {
   meetingId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+
+export type MutationChangeViewArgs = {
+  state: ViewState;
+};
+
+/** The payload of newVoteRegistered subscription */
+export type NewVoteRegisteredPayload = {
+  __typename?: 'NewVoteRegisteredPayload';
+  voteCount: Scalars['Int'];
+  votingEligibleCount: Scalars['Int'];
 };
 
 export type OwnerCannotBeRemovedFromParticipantError = {
@@ -184,7 +214,7 @@ export type Query = {
 
 
 export type QueryVotationByIdArgs = {
-  votationId: Scalars['ID'];
+  votationId: Scalars['String'];
 };
 
 
@@ -203,11 +233,28 @@ export enum Role {
   Counter = 'COUNTER'
 }
 
-export enum Status {
-  Upcoming = 'UPCOMING',
-  Ongoing = 'ONGOING',
-  Ended = 'ENDED'
-}
+export type Subscription = {
+  __typename?: 'Subscription';
+  newVoteRegistered?: Maybe<Scalars['Int']>;
+  votationStatusUpdated?: Maybe<VotationStatus>;
+  votationOpenedForMeeting?: Maybe<Scalars['String']>;
+  viewChanged?: Maybe<ViewState>;
+};
+
+
+export type SubscriptionNewVoteRegisteredArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type SubscriptionVotationStatusUpdatedArgs = {
+  id: Scalars['String'];
+};
+
+
+export type SubscriptionVotationOpenedForMeetingArgs = {
+  meetingId: Scalars['String'];
+};
 
 export type UpdateMeetingInput = {
   id: Scalars['String'];
@@ -215,7 +262,7 @@ export type UpdateMeetingInput = {
   title?: Maybe<Scalars['String']>;
   startTime?: Maybe<Scalars['DateTime']>;
   description?: Maybe<Scalars['String']>;
-  status?: Maybe<Status>;
+  status?: Maybe<MeetingStatus>;
 };
 
 export type UpdateVotationInput = {
@@ -231,6 +278,8 @@ export type UpdateVotationInput = {
   alternatives?: Maybe<Array<AlternativeInput>>;
 };
 
+export type UpdateVotationStatusResult = Votation | MaxOneOpenVotationError;
+
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -243,13 +292,32 @@ export type UserNotFoundError = {
   message: Scalars['String'];
 };
 
+/** The payload of viewChanged subscription */
+export type ViewChangedPayload = {
+  __typename?: 'ViewChangedPayload';
+  viewState: ViewState;
+};
+
+/**
+ * LOADING: When the votation is loading for a new votation,
+ * ONGOING: When the Votation is in process,
+ * CLOSED: When the votation has closed and no new votes are allowed,
+ * ENDED: When the votation has ended, the result will be announced and then switch to LOADING
+ */
+export enum ViewState {
+  Loading = 'LOADING',
+  Ongoing = 'ONGOING',
+  Closed = 'CLOSED',
+  Ended = 'ENDED'
+}
+
 export type Votation = {
   __typename?: 'Votation';
   id: Scalars['ID'];
   title: Scalars['String'];
   description: Scalars['String'];
   order?: Maybe<Scalars['Int']>;
-  status: Status;
+  status: VotationStatus;
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   severalVotes: Scalars['Boolean'];
@@ -260,6 +328,13 @@ export type Votation = {
   hasVoted?: Maybe<Array<Maybe<User>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
 };
+
+export enum VotationStatus {
+  Upcoming = 'UPCOMING',
+  Open = 'OPEN',
+  CheckingResult = 'CHECKING_RESULT',
+  PublishedResult = 'PUBLISHED_RESULT'
+}
 
 export type Vote = {
   __typename?: 'Vote';
@@ -365,7 +440,6 @@ export type DeleteAlternativesMutation = (
 
 export type CastVoteMutationVariables = Exact<{
   alternativeId: Scalars['String'];
-  votationId: Scalars['String'];
 }>;
 
 
@@ -401,7 +475,7 @@ export type GetMeetingsQuery = (
   { __typename?: 'Query' }
   & { meetings: Array<Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description'>
+    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime'>
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
@@ -410,7 +484,7 @@ export type GetMeetingsQuery = (
 );
 
 export type GetVotationByIdQueryVariables = Exact<{
-  votationId: Scalars['ID'];
+  votationId: Scalars['String'];
 }>;
 
 
@@ -692,8 +766,8 @@ export type DeleteAlternativesMutationHookResult = ReturnType<typeof useDeleteAl
 export type DeleteAlternativesMutationResult = Apollo.MutationResult<DeleteAlternativesMutation>;
 export type DeleteAlternativesMutationOptions = Apollo.BaseMutationOptions<DeleteAlternativesMutation, DeleteAlternativesMutationVariables>;
 export const CastVoteDocument = gql`
-    mutation CastVote($alternativeId: String!, $votationId: String!) {
-  castVote(alternativeId: $alternativeId, votationId: $votationId) {
+    mutation CastVote($alternativeId: String!) {
+  castVote(alternativeId: $alternativeId) {
     alternative {
       text
     }
@@ -716,7 +790,6 @@ export type CastVoteMutationFn = Apollo.MutationFunction<CastVoteMutation, CastV
  * const [castVoteMutation, { data, loading, error }] = useCastVoteMutation({
  *   variables: {
  *      alternativeId: // value for 'alternativeId'
- *      votationId: // value for 'votationId'
  *   },
  * });
  */
@@ -777,6 +850,9 @@ export const GetMeetingsDocument = gql`
       id
       email
     }
+    organization
+    status
+    startTime
   }
 }
     `;
@@ -808,7 +884,7 @@ export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: ID!) {
+    query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
