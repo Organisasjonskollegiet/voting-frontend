@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
 import AddMeeting from './components/pages/AddMeeting'
 import MyMeetings from './components/pages/MyMeetings';
@@ -9,12 +8,6 @@ import MyMeetings from './components/pages/MyMeetings';
 const App: FC = () => {
   return (
     <Switch>
-      <Route path="/admin">
-        <PageExample page="/admin" />
-      </Route>
-      <Route path="/meetings">
-        <MyMeetings />
-      </Route>
       <Route path="/votation/:id">
         <Votation />
       </Route>
@@ -22,7 +15,7 @@ const App: FC = () => {
         <AddMeeting />
       </Route>
       <Route path="/">
-        <PageExample page="/" />
+        <MyMeetings />
       </Route>
     </Switch>
   );
