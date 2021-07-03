@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormControl, FormLabel, VStack, HStack, Input, Button } from '@chakra-ui/react'
-import RemoveIcon from  './removeIcon.svg'
-import AddIcon from './addIcon.svg'
+import RemoveIcon from  '../../static/removeIcon.svg'
+import AddIcon from '../../static/addIcon.svg';
 import {v4 as uuid} from 'uuid'
 import { labelStyle, inputStyle, pointerStyle } from '../particles/formStyles'
 import { Votation, Alternative } from '../../types/types'

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Divider, VStack, Grid, Button, Box} from '@chakra-ui/react';
-import ArrowLeft from '../pages/arrowLeft.svg';
+import ArrowLeft from '../../static/arrowLeft.svg';
 import AddMeetingStatus from './AddMeetingStatus';
 
 interface IProps {
