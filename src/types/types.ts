@@ -1,4 +1,3 @@
-import { NumberDecrementStepperProps } from '@chakra-ui/number-input';
 import { MajorityType } from '../__generated__/graphql-types';
 
 export interface MeetingWorking {
