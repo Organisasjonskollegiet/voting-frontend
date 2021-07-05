@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { ParticipantInput, useAddParticipantsMutation } from '../../__generated__/graphql-types';
 import { VStack, Heading, Text, useToast } from '@chakra-ui/react';
 import AddMeetingController from './AddMeetingController';
@@ -24,6 +25,7 @@ const AddParticipants: React.FC<IProps> = ({
   const [participants, setParticipants] = useState<ParticipantInput[]>(previouslyAddedParticipants);
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const toast = useToast();
+  const history = useHistory();
   const handleAddParticipants = (newParticipants: ParticipantInput[]) => {
     setParticipants([...participants, ...newParticipants]);
   };
@@ -36,6 +38,7 @@ const AddParticipants: React.FC<IProps> = ({
         participants,
       },
     });
+    history.push('/');
   };
 
   if (addParticipantsResult.data?.addParticipants) {
