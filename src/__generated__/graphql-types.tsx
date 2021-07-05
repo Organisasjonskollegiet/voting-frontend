@@ -460,6 +460,23 @@ export type CastVoteMutation = (
   )> }
 );
 
+export type UpdateVotationStatusMutationVariables = Exact<{
+  id: Scalars['String'];
+  status: VotationStatus;
+}>;
+
+
+export type UpdateVotationStatusMutation = (
+  { __typename?: 'Mutation' }
+  & { updateVotationStatus?: Maybe<(
+    { __typename: 'Votation' }
+    & Pick<Votation, 'title' | 'status'>
+  ) | (
+    { __typename: 'MaxOneOpenVotationError' }
+    & Pick<MaxOneOpenVotationError, 'message'>
+  )> }
+);
+
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -491,6 +508,7 @@ export type GetMeetingsQuery = (
 
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -498,11 +516,21 @@ export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'severalVotes'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
+  )>, meetingsById?: Maybe<(
+    { __typename?: 'Meeting' }
+    & { participants: Array<Maybe<(
+      { __typename?: 'Participant' }
+      & Pick<Participant, 'role'>
+      & { user?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'email'>
+      )> }
+    )>> }
   )> }
 );
 
@@ -833,6 +861,47 @@ export function useCastVoteMutation(baseOptions?: Apollo.MutationHookOptions<Cas
 export type CastVoteMutationHookResult = ReturnType<typeof useCastVoteMutation>;
 export type CastVoteMutationResult = Apollo.MutationResult<CastVoteMutation>;
 export type CastVoteMutationOptions = Apollo.BaseMutationOptions<CastVoteMutation, CastVoteMutationVariables>;
+export const UpdateVotationStatusDocument = gql`
+    mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
+  updateVotationStatus(id: $id, status: $status) {
+    __typename
+    ... on Votation {
+      title
+      status
+    }
+    ... on MaxOneOpenVotationError {
+      message
+    }
+  }
+}
+    `;
+export type UpdateVotationStatusMutationFn = Apollo.MutationFunction<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>;
+
+/**
+ * __useUpdateVotationStatusMutation__
+ *
+ * To run a mutation, you first call `useUpdateVotationStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVotationStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVotationStatusMutation, { data, loading, error }] = useUpdateVotationStatusMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useUpdateVotationStatusMutation(baseOptions?: Apollo.MutationHookOptions<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>(UpdateVotationStatusDocument, options);
+      }
+export type UpdateVotationStatusMutationHookResult = ReturnType<typeof useUpdateVotationStatusMutation>;
+export type UpdateVotationStatusMutationResult = Apollo.MutationResult<UpdateVotationStatusMutation>;
+export type UpdateVotationStatusMutationOptions = Apollo.BaseMutationOptions<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>;
 export const GetUserDocument = gql`
     query GetUser {
   user {
@@ -917,7 +986,7 @@ export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: String!) {
+    query GetVotationById($votationId: String!, $meetingId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -930,6 +999,16 @@ export const GetVotationByIdDocument = gql`
     }
     status
     blankVotes
+    severalVotes
+  }
+  meetingsById(meetingId: $meetingId) {
+    participants {
+      user {
+        id
+        email
+      }
+      role
+    }
   }
 }
     `;
@@ -947,6 +1026,7 @@ export const GetVotationByIdDocument = gql`
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
  *      votationId: // value for 'votationId'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
