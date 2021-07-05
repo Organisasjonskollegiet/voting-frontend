@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/pages/Navbar';
 import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
+import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
 
 const App: FC = () => {
@@ -15,8 +16,11 @@ const App: FC = () => {
       <Route path="/meetings">
         <MyMeetings />
       </Route>
-      <Route path="/votation/:id">
+      <Route path="/meeting/:meetingId/votation/:votationId">
         <Votation />
+      </Route>
+      <Route path="/mote/opprett">
+        <AddMeeting />
       </Route>
       <Route path="/">
         <MyMeetings />

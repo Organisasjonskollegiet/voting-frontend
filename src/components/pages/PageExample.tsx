@@ -10,13 +10,13 @@ interface IProps {
 }
 
 const PageExample: React.FC<IProps> = ({ page }) => {
-  const { isAuthenticated, user, logout, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, logout, loginWithRedirect } = useAuth0();
 
   return (
     <AuthWrapper>
       <h1>{page}</h1>
       <Center>
-        <p>{!isAuthenticated ? 'Vennligst logg inn' : `Welcome ${user.name}`}</p>
+        <p>{!isAuthenticated ? 'Vennligst logg inn' : `Welcome`}</p>
         <Button
           colorScheme="blue"
           onClick={isAuthenticated ? () => logout({ returnTo: window.location.origin }) : () => loginWithRedirect()}
