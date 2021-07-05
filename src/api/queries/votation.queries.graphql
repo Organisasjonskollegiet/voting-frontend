@@ -11,6 +11,16 @@ query GetVotationById($votationId: String!) {
     }
     status
     blankVotes
+    severalVotes
+  }
+
+  meetingsById(meetingId: $meetingId) {
+    participants {
+      user {
+        email
+      }
+      role
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { VStack, Center, Spinner, Text } from '@chakra-ui/react';
+import { darkblue } from '../particles/theme';
 
 export interface LoadingProps {
   text: string;
@@ -11,7 +12,7 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     fontStyle: 'normal',
     fontWeight: 'bold',
     lineHeight: '150%',
-    color: '#718096',
+    color: darkblue,
   };
 
   const overlaySpinnerStyle = {
@@ -23,15 +24,15 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     top: '0',
     backgroundColor: 'rgba(255, 255, 255, 0.4);',
     // opacity: 0.2,
-    zIndex: 10
-  } as React.CSSProperties
+    zIndex: 10,
+  } as React.CSSProperties;
 
   return (
-    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : undefined} >
-      <Center position='relative'>
+    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : undefined}>
+      <Center position="relative">
         <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>
-      <Center position='relative'>
+      <Center position="relative">
         <Text sx={textStyle}>{text}</Text>
       </Center>
     </VStack>
