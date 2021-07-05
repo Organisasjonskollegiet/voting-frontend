@@ -4,9 +4,7 @@ query GetVotationById($votationId: String!) {
     title
     description
     index
-    hasVoted {
-      id
-    }
+    hasVoted
     alternatives {
       id
       text
@@ -14,4 +12,8 @@ query GetVotationById($votationId: String!) {
     status
     blankVotes
   }
+}
+
+query VotingEligibleCount($votationId: String!) {
+  votingEligibleCount(votationId: $votationId)
 }

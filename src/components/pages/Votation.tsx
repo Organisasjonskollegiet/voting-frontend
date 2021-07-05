@@ -4,6 +4,7 @@ import {
   useGetVotationByIdQuery,
   useVotationStatusUpdatedSubscription,
   useNewVoteRegisteredSubscription,
+  useVotingEligibleCountQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -18,6 +19,11 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { id } = useParams<{ id: string }>();
   const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: id } });
+  const {
+    data: votingEligibleCountResult,
+    loading: votingEligibleCountLoading,
+    error: votingEligibleCountError,
+  } = useVotingEligibleCountQuery({ variables: { votationId: id } });
   const { data: newStatusResult, error: statusError } = useVotationStatusUpdatedSubscription({
     variables: { id },
   });
@@ -47,9 +53,9 @@ const Votation: React.FC = () => {
   }, [data, status]);
 
   useEffect(() => {
-    if (newVoteCountResult?.newVoteRegistered && newVoteCountResult?.newVoteRegistered !== voteCount) {
-      setVoteCount(newVoteCountResult?.newVoteRegistered);
-    }
+    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
+    const newVoteCount = newVoteCountResult.newVoteRegistered;
+    setVoteCount(newVoteCount);
   }, [newVoteCountResult, voteCount]);
 
   useEffect(() => {
@@ -57,6 +63,12 @@ const Votation: React.FC = () => {
       setVoteCount(data.votationById.hasVoted.length);
     }
   }, [data, voteCount]);
+
+  useEffect(() => {
+    if (data?.votationById?.hasVoted && user?.sub) {
+      setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
+    }
+  }, [data, user]);
 
   //Gets selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -71,10 +83,10 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (error || statusError || newVoteCountErrror) {
+  if (error || statusError || newVoteCountErrror || votingEligibleCountError) {
     return <Text>Det skjedde noe galt under innlastingen</Text>;
   }
-  if (loading)
+  if (loading || votingEligibleCountLoading)
     return (
       <Center>
         <Loading asOverlay={false} text={'Henter votering'} />
@@ -142,7 +154,7 @@ const Votation: React.FC = () => {
           <VStack mt="3em" spacing="0">
             <Center>
               <Text fontSize="2.25em" fontWeight="bold">
-                {`${voteCount} / `}
+                {`${voteCount} / ${votingEligibleCountResult?.votingEligibleCount}`}
               </Text>
             </Center>
             <Center>
