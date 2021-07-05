@@ -12,14 +12,3 @@ query GetMeetings {
     startTime
   }
 }
-
-query GetParticipantsByMeeting($meetingId: String!) {
-  meetingsById(meetingId: $meetingId){
-    participants {
-      user {
-        email
-      }
-      role
-    }
-  }
-}

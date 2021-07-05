@@ -18,7 +18,6 @@ import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import { darkblue } from '../particles/theme';
-import { createTextChangeRange } from 'typescript';
 import VotationController from '../molecules/VotationController';
 
 const subtitlesStyle = {
@@ -43,11 +42,11 @@ const Votation: React.FC = () => {
     error: votingEligibleCountError,
   } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: newStatusResult, error: statusError } = useVotationStatusUpdatedSubscription({
+  const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
     variables: { id: votationId },
   });
 
-  const { data: newVoteCountResult, error: newVoteCountErrror } = useNewVoteRegisteredSubscription({
+  const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
     variables: { votationId },
   });
   console.log(user);
@@ -59,12 +58,12 @@ const Votation: React.FC = () => {
 
   //Update isAdmin state after data of participants is received
   useEffect(() => {
-    if (data?.meetingsById?.participants) {
+    if (data?.meetingsById?.participants && participantRole === null) {
       const participants = data?.meetingsById?.participants as Array<Participant>;
       const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
       setParticipantRole(participant.role);
     }
-  }, [data?.meetingsById]);
+  }, [data?.meetingsById, user?.sub, participantRole]);
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
