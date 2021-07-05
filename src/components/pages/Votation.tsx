@@ -3,6 +3,7 @@ import {
   useCastVoteMutation,
   useGetVotationByIdQuery,
   useVotationStatusUpdatedSubscription,
+  useNewVoteRegisteredSubscription,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -14,13 +15,21 @@ import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 
 const Votation: React.FC = () => {
+  const { user } = useAuth0();
   const { id } = useParams<{ id: string }>();
   const { data, loading, error } = useGetVotationByIdQuery({ variables: { votationId: id } });
   const { data: newStatusResult, error: statusError } = useVotationStatusUpdatedSubscription({
     variables: { id },
   });
 
+  const { data: newVoteCountResult, error: newVoteCountErrror } = useNewVoteRegisteredSubscription({
+    variables: { votationId: id },
+  });
+  console.log(user);
+
   const [status, setStatus] = useState<VotationStatus | null>(null);
+  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */ false);
+  const [voteCount, setVoteCount] = useState<number>(0);
 
   const votationData = data?.votationById;
 
@@ -37,9 +46,17 @@ const Votation: React.FC = () => {
     }
   }, [data, status]);
 
-  const { user } = useAuth0();
-  console.log(user);
-  const [userHasVoted, setUserHasVoted] = useState<boolean>(/*votationData?.hasVoted?.includes(user) || */ false);
+  useEffect(() => {
+    if (newVoteCountResult?.newVoteRegistered && newVoteCountResult?.newVoteRegistered !== voteCount) {
+      setVoteCount(newVoteCountResult?.newVoteRegistered);
+    }
+  }, [newVoteCountResult, voteCount]);
+
+  useEffect(() => {
+    if (data?.votationById?.hasVoted && data.votationById.hasVoted.length > voteCount) {
+      setVoteCount(data.votationById.hasVoted.length);
+    }
+  }, [data, voteCount]);
 
   //Gets selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -54,7 +71,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (error || statusError) {
+  if (error || statusError || newVoteCountErrror) {
     return <Text>Det skjedde noe galt under innlastingen</Text>;
   }
   if (loading)
@@ -125,7 +142,7 @@ const Votation: React.FC = () => {
           <VStack mt="3em" spacing="0">
             <Center>
               <Text fontSize="2.25em" fontWeight="bold">
-                69 / 80
+                {`${voteCount} / `}
               </Text>
             </Center>
             <Center>

@@ -513,6 +513,16 @@ export type VotationStatusUpdatedSubscription = (
   & Pick<Subscription, 'votationStatusUpdated'>
 );
 
+export type NewVoteRegisteredSubscriptionVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type NewVoteRegisteredSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'newVoteRegistered'>
+);
+
 
 export const CreateMeetingDocument = gql`
     mutation CreateMeeting($meeting: CreateMeetingInput!) {
@@ -968,3 +978,31 @@ export function useVotationStatusUpdatedSubscription(baseOptions: Apollo.Subscri
       }
 export type VotationStatusUpdatedSubscriptionHookResult = ReturnType<typeof useVotationStatusUpdatedSubscription>;
 export type VotationStatusUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationStatusUpdatedSubscription>;
+export const NewVoteRegisteredDocument = gql`
+    subscription NewVoteRegistered($votationId: String!) {
+  newVoteRegistered(votationId: $votationId)
+}
+    `;
+
+/**
+ * __useNewVoteRegisteredSubscription__
+ *
+ * To run a query within a React component, call `useNewVoteRegisteredSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewVoteRegisteredSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewVoteRegisteredSubscription({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useNewVoteRegisteredSubscription(baseOptions: Apollo.SubscriptionHookOptions<NewVoteRegisteredSubscription, NewVoteRegisteredSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NewVoteRegisteredSubscription, NewVoteRegisteredSubscriptionVariables>(NewVoteRegisteredDocument, options);
+      }
+export type NewVoteRegisteredSubscriptionHookResult = ReturnType<typeof useNewVoteRegisteredSubscription>;
+export type NewVoteRegisteredSubscriptionResult = Apollo.SubscriptionResult<NewVoteRegisteredSubscription>;
