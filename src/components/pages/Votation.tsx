@@ -1,121 +1,214 @@
-import React, { useState } from 'react';
-import { Participant, Role, Status, useCastVoteMutation, useChangeVotationStatusMutation, useGetParticipantsByMeetingQuery, useGetVotationByIdQuery } from '../../__generated__/graphql-types';
-import { Heading, Text, Button, Box, Center, VStack, Divider, Spinner, Link } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import {
+  Alternative as AlternativeType,
+  Participant,
+  Role,
+  VotationStatus,
+  useCastVoteMutation,
+  useGetVotationByIdQuery,
+  useVotationStatusUpdatedSubscription,
+  useNewVoteRegisteredSubscription,
+  useVotingEligibleCountQuery,
+} from '../../__generated__/graphql-types';
+import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
-import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
+import { h1Style } from '../particles/formStyles';
 import { darkblue } from '../particles/theme';
+import { createTextChangeRange } from 'typescript';
+import VotationController from '../molecules/VotationController';
 
-const subTitlesStyle = {
+const subtitlesStyle = {
   fontStyle: 'normal',
   fontSize: '16px',
   fontWeight: 'bold',
   lineHeight: '150%',
 } as React.CSSProperties;
 
-const h1Style = {
-  fontSize: '1.5em',
-};
-
 const Votation: React.FC = () => {
-  
-  const { meetingId, votationId } = useParams<{ meetingId: string, votationId: string }>();
-
-  //Get votation data by query
-  const { data: vData, loading: vLoading, error: vError } = useGetVotationByIdQuery({ variables: { votationId: votationId } });
-
-  //Get participants by meeting
-  const { data: mData, loading: mLoading, error: mError } = useGetParticipantsByMeetingQuery({variables: { meetingId: meetingId}})
-
-  //Check if user has voted 
   const { user } = useAuth0();
-  const [hasUserVoted, sethasUserVoted] = useState<boolean>(vData?.votationById?.hasVoted?.includes(user) || false);
+  const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
 
-  //Register vote
+  //Get votation data and participants from meeting
+  const { data, loading, error } = useGetVotationByIdQuery({
+    variables: { votationId: votationId, meetingId: meetingId },
+  });
+
+  const {
+    data: votingEligibleCountResult,
+    loading: votingEligibleCountLoading,
+    error: votingEligibleCountError,
+  } = useVotingEligibleCountQuery({ variables: { votationId } });
+
+  const { data: newStatusResult, error: statusError } = useVotationStatusUpdatedSubscription({
+    variables: { id: votationId },
+  });
+
+  const { data: newVoteCountResult, error: newVoteCountErrror } = useNewVoteRegisteredSubscription({
+    variables: { votationId },
+  });
+  console.log(user);
+
+  const [status, setStatus] = useState<VotationStatus | null>(null);
+  const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
+  const [voteCount, setVoteCount] = useState<number>(0);
+  const [participantRole, setParticipantRole] = useState<Role | null>(null);
+
+  //Update isAdmin state after data of participants is received
+  useEffect(() => {
+    if (data?.meetingsById?.participants) {
+      const participants = data?.meetingsById?.participants as Array<Participant>;
+      const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
+      setParticipantRole(participant.role);
+    }
+  }, [data?.meetingsById]);
+
+  // set initial status of votation when data on votation arrives
+  useEffect(() => {
+    if (data?.votationById && status === null) {
+      setStatus(data.votationById.status);
+    }
+  }, [data, status]);
+
+  // update initial vote count when data arrives on votation
+  useEffect(() => {
+    if (data?.votationById?.hasVoted && data.votationById.hasVoted.length > voteCount) {
+      setVoteCount(data.votationById.hasVoted.length);
+    }
+  }, [data, voteCount]);
+
+  // update initial userHasVoted when data arrives on votation
+  useEffect(() => {
+    if (data?.votationById?.hasVoted && user?.sub) {
+      setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
+    }
+  }, [data, user]);
+
+  // update status of votation when new data arrives on subscription
+  useEffect(() => {
+    const newStatus = newStatusResult?.votationStatusUpdated ?? null;
+    if (newStatus !== null && newStatus !== status) {
+      setStatus(newStatus);
+    }
+  }, [newStatusResult, status]);
+
+  // update vote count when new vote count arrives from subscription
+  useEffect(() => {
+    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
+    const newVoteCount = newVoteCountResult.newVoteRegistered;
+    setVoteCount(newVoteCount);
+  }, [newVoteCountResult, voteCount]);
+
+  //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
-  
+
+  //Register the vote
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
-    if (selectedAlternativeId) {
-      sethasUserVoted(true);
-      castVote({ variables: { votationId: votationId, alternativeId: selectedAlternativeId } });
+    if (selectedAlternativeId !== null) {
+      setUserHasVoted(true);
+      castVote({ variables: { alternativeId: selectedAlternativeId } });
     }
   };
 
-  //Close votation
-  const [updateVotationStatus] = useChangeVotationStatusMutation();
-
-  if (vLoading || mLoading) {
-    return <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Spinner size="xl" m="auto" />
-        </Center>
-      </>
-  }
-
-  if (vError || mError || vData?.votationById?.id === undefined) {
-    return <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-      <Center mt="10vh">
-        <Text>Det skjedde noe galt under innlastingen</Text>
-      </Center>
-    </>
-  }
-
-  //Check if user is admin
-  const participants = mData?.meetingsById?.participants as Array<Participant>;
-  participants.forEach((participant) => console.log(participant))
-  const isUserAdmin = participants?.some((participant) => participant.user?.email === user.email && participant.role === Role.Admin)
-  
-
-  if ( ! mData?.meetingsById?.participants.includes(user)){
+  if (loading || votingEligibleCountLoading) {
     return (
       <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Loading asOverlay={false} text={'Henter votering'} />
+        </Center>
+      </>
+    );
+  }
+
+  if (error?.message === 'Not Authorised!') {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="40vh">
-          <Text>Du har ikke tilgang til denne voteringen, <Link href="/" textDecoration="underline">gå tilbake til hjemmesiden.</Link>
+          <Text>
+            Du har ikke tilgang til denne voteringen,{' '}
+            <Link href="/" textDecoration="underline">
+              gå tilbake til hjemmesiden.
+            </Link>
           </Text>
         </Center>
       </>
-    )
+    );
   }
 
+  if (error || data?.votationById?.id === undefined || votingEligibleCountError) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Det skjedde noe galt under innlastingen</Text>
+        </Center>
+      </>
+    );
+  }
+
+  if (participantRole === null) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="40vh">
+          <Text>
+            Du har ikke tilgang til denne voteringen,{' '}
+            <Link href="/" textDecoration="underline">
+              gå tilbake til hjemmesiden.
+            </Link>
+          </Text>
+        </Center>
+      </>
+    );
+  }
+
+  if (status === VotationStatus.Upcoming) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
+        </Center>
+      </>
+    );
+  }
 
   return (
     <Box>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
         <Heading as="h1" sx={h1Style}>
-          <span style={subTitlesStyle}>Sak {vData.votationById.id /* TODO: bytte ut med løpenummer */}</span> <br />
-          {vData.votationById.title}
+          <span style={subtitlesStyle}>Sak {data.votationById.index}</span> <br />
+          {data.votationById.title}
         </Heading>
 
         <Text mt="1em" mb="2em">
-          {vData.votationById.description}
+          {data.votationById.description}
         </Text>
 
-        {vData.votationById.status !== 'ENDED' ? (
+        {status === VotationStatus.Open && (
           <Box>
-            {!hasUserVoted ? (
-              /* Show alternatives */
+            {!userHasVoted ? (
               <VStack spacing="1.5em" align="left">
-                <Heading as="h2" sx={subTitlesStyle}>
+                <Heading as="h2" sx={subtitlesStyle}>
                   Alternativer
                 </Heading>
                 <AlternativeList
-                  alternatives={ (vData.votationById.alternatives as Array<AlternativeType>) || [] }
+                  alternatives={(data.votationById.alternatives as Array<AlternativeType>) || []}
                   handleSelect={handleSelect}
-                  blankVotes={ vData.votationById.blankVotes || false }
+                  blankVotes={data.votationById.blankVotes || false}
                 />
               </VStack>
             ) : (
               <Box mt="4em">
-                <Loading text={'Votering pågår'} />
+                <Loading asOverlay={false} text={'Votering pågår'} />
               </Box>
             )}
 
@@ -123,55 +216,43 @@ const Votation: React.FC = () => {
 
             {/* Submit button */}
             <Center>
-              {!hasUserVoted ? (
+              {!userHasVoted ? (
                 <Button
-                  onClick={ () => submitVote() }
-                  type="submit"
+                  onClick={() => submitVote()}
                   p="1.5em 4em"
                   borderRadius="16em"
-                  isDisabled={ selectedAlternativeId === null }
+                  isDisabled={selectedAlternativeId === null}
                 >
                   Avgi Stemme
                 </Button>
               ) : (
-                <Heading as="h1" sx={ h1Style }>
+                <Heading as="h1" sx={h1Style}>
                   Din stemme er registrert.
                 </Heading>
               )}
             </Center>
 
-            {/* Show number of votes */}
+            {/* Shows how many participants has voted */}
             <VStack mt="3em" spacing="0">
               <Center>
                 <Text fontSize="2.25em" fontWeight="bold">
-                  69 / 80
+                  {`${voteCount} / ${votingEligibleCountResult?.votingEligibleCount}`}
                 </Text>
               </Center>
               <Center>
-                <Heading as="h2" sx={ subTitlesStyle }>
+                <Heading as="h2" sx={subtitlesStyle}>
                   stemmer
                 </Heading>
               </Center>
             </VStack>
-
-            {/* Close votation button for admin */
-              isUserAdmin && (
-                <Center mt="3em">
-                  <Button
-                    onClick={ () => updateVotationStatus({variables: { votation: {id: votationId, status: Status.Ended} } }) }
-                    p="1.5em 4em"
-                    borderRadius="16em"
-                    bgColor="darkred"
-                    color="white"
-                  >
-                  Steng avstemning
-                  </Button>
-                </Center>
-              )
-            }
-
           </Box>
-        ) : (
+        )}
+        {status === 'CHECKING_RESULT' && (
+          <Box>
+            <Loading asOverlay={false} text={'Resultatene sjekkes'} />
+          </Box>
+        )}
+        {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
             <VotationResult
               text={
@@ -181,8 +262,15 @@ const Votation: React.FC = () => {
             />
           </Box>
         )}
+        {
+          /* Update votation status for admin if votation is open or you are checking results */
+          participantRole === Role.Admin &&
+            (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+              <VotationController votationId={votationId} status={status} />
+            )
+        }
       </Box>
-    </Box> 
+    </Box>
   );
 };
 

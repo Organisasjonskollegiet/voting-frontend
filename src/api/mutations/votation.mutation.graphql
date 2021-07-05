@@ -1,13 +1,64 @@
-mutation CastVote($alternativeId: String!, $votationId: String!) {
-  castVote(alternativeId: $alternativeId, votationId: $votationId) {
+mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
+  createVotations(meetingId: $meetingId, votations: $votations) {
+    id
+    title
+    description
+    index
+    blankVotes
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    alternatives {
+      id
+      text
+    }
+  }
+}
+
+mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
+  updateVotations(votations: $votations) {
+    id
+    title
+    description
+    blankVotes
+    index
+    hiddenVotes
+    severalVotes
+    majorityType
+    majorityThreshold
+    alternatives {
+      id
+      text
+    }
+  }
+}
+
+mutation DeleteVotations($ids: [String!]!) {
+  deleteVotations(ids: $ids)
+}
+
+mutation DeleteAlternatives($ids: [String!]!) {
+  deleteAlternatives(ids: $ids)
+}
+
+mutation CastVote($alternativeId: String!) {
+  castVote(alternativeId: $alternativeId) {
     alternative {
       text
     }
   }
 }
 
-mutation ChangeVotationStatus($votation: UpdateVotationStatusInput!) {
-  updateVotationStatus(votation: $votation){
-    status
+mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
+  updateVotationStatus(id: $id, status: $status) {
+    __typename
+    ... on Votation {
+      title
+      status
+    }
+    ... on MaxOneOpenVotationError {
+      message
+    }
   }
 }

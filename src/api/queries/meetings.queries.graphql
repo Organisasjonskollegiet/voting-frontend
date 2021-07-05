@@ -7,6 +7,9 @@ query GetMeetings {
       id
       email
     }
+    organization
+    status
+    startTime
   }
 }
 
