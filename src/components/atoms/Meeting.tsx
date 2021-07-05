@@ -29,13 +29,7 @@ const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, organi
       </Text>
       <Flex justifyContent="space-between" fontSize="0.75em">
         <Text fontWeight="bold"> {organization} </Text>
-        <Text fontWeight="bold">
-          {startTime
-            .split('T')[0]
-            .split('-')
-            .reverse()
-            .reduce((s1, s2) => s1 + '.' + s2)}
-        </Text>
+        <Text fontWeight="bold">{new Date(startTime).toLocaleDateString('nb-no')}</Text>
       </Flex>
     </Box>
   );
