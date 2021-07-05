@@ -49,3 +49,16 @@ mutation CastVote($alternativeId: String!) {
     }
   }
 }
+
+mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
+  updateVotationStatus(id: $id, status: $status) {
+    __typename
+    ... on Votation {
+      title
+      status
+    }
+    ... on MaxOneOpenVotationError {
+      message
+    }
+  }
+}
