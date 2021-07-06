@@ -27,6 +27,7 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
 
 query VotationsByMeetingId($meetingId: String!) {
   meetingsById(meetingId: $meetingId) {
+    title
     votations {
       id
       status

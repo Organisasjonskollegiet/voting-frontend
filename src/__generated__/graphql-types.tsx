@@ -543,6 +543,7 @@ export type VotationsByMeetingIdQuery = (
   { __typename?: 'Query' }
   & { meetingsById?: Maybe<(
     { __typename?: 'Meeting' }
+    & Pick<Meeting, 'title'>
     & { votations?: Maybe<Array<Maybe<(
       { __typename?: 'Votation' }
       & Pick<Votation, 'id' | 'status'>
@@ -1070,6 +1071,7 @@ export type GetVotationByIdQueryResult = Apollo.QueryResult<GetVotationByIdQuery
 export const VotationsByMeetingIdDocument = gql`
     query VotationsByMeetingId($meetingId: String!) {
   meetingsById(meetingId: $meetingId) {
+    title
     votations {
       id
       status
