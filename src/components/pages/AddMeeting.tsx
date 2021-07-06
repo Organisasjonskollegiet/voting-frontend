@@ -14,7 +14,6 @@ import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
-
   const toast = useToast();
 
   const history = useHistory();

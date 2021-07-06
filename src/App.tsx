@@ -21,11 +21,11 @@ const App: FC = () => {
         <Route path="/meeting/:meetingId/edit">
           <EditMeeting />
         </Route>
+        <Route path="/meeting/new">
+          <AddMeeting />
+        </Route>
         <Route path="/meeting/:meetingId">
           <MeetingLobby />
-        </Route>
-        <Route path="/mote/opprett">
-          <AddMeeting />
         </Route>
         <Route path="/">
           <MyMeetings />
