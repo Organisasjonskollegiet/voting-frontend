@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Center, VStack, useToast } from '@chakra-ui/react';
+import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
 import { ParticipantInput, useUpdateMeetingMutation, useGetMeetingByIdQuery } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
@@ -70,7 +70,7 @@ const AddMeeting: React.FC = () => {
         startTime: new Date(meeting.startTime),
       });
     }
-  }, [data]);
+  }, [data, meeting.id]);
 
   useEffect(() => {
     if (!updateMeetingResult.data?.updateMeeting) return;
@@ -135,6 +135,18 @@ const AddMeeting: React.FC = () => {
       console.log('error', error);
     }
   };
+
+  if (error) {
+    return (
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
+    );
+  }
+
+  if (loading) {
+    return <Loading asOverlay={false} text={'Henter møteinformasjon'} />;
+  }
 
   const outerContainer = {
     paddingTop: '5rem',

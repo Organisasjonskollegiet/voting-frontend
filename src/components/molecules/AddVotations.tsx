@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heading, VStack, Text, useToast } from '@chakra-ui/react';
+import { Heading, VStack, Text, useToast, Center } from '@chakra-ui/react';
 import AddMeetingVotationList from './AddMeetingVotationList';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import {
@@ -262,6 +262,18 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     handleCreateVotations(votationsToCreate);
     handleUpdateVotations(votationsToUpdate);
   };
+
+  if (error) {
+    return (
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
+    );
+  }
+
+  if (loading) {
+    return <Loading asOverlay={false} text={'Henter voteringer'} />;
+  }
 
   if (!isActive) return <></>;
 
