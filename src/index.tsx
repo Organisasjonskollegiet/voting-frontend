@@ -7,6 +7,7 @@ import theme from './components/particles/theme';
 import reportWebVitals from './reportWebVitals';
 import ApolloAuthProvider from './services/apollo/ApolloProvider';
 import Auth0WithHistoryProvider from './services/auth/Auth0ProviderWithHistory';
+import AuthWrapper from './services/auth/AuthWrapper';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,7 +15,9 @@ ReactDOM.render(
       <RouterProvider>
         <Auth0WithHistoryProvider>
           <ApolloAuthProvider>
-            <App />
+            <AuthWrapper>
+              <App />
+            </AuthWrapper>
           </ApolloAuthProvider>
         </Auth0WithHistoryProvider>
       </RouterProvider>
