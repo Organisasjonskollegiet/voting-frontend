@@ -24,7 +24,7 @@ const App: FC = () => {
         <Route path="/meeting/:meetingId">
           <MeetingLobby />
         </Route>
-        <Route path="/meeting/new">
+        <Route path="/mote/opprett">
           <AddMeeting />
         </Route>
         <Route path="/">
