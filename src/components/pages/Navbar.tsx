@@ -7,7 +7,7 @@ import { Link, NavLink } from 'react-router-dom';
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
   ['Min profil', '/profile'],
-  ['Opprett møte', '/mote/opprett'],
+  ['Opprett møte', '/meeting/new'],
 ]);
 const pageNames = Array.from(links.keys());
 
