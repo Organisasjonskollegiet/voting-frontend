@@ -1,4 +1,5 @@
 import { Box, Flex, Heading, Text } from '@chakra-ui/react';
+import { useHistory } from 'react-router';
 import React from 'react';
 
 export interface MeetingProps {
@@ -16,9 +17,10 @@ const styles = {
   padding: '1em 2em',
 } as React.CSSProperties;
 
-const Meeting: React.FC<MeetingProps> = ({ title, startTime, description, organization }) => {
+const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, organization }) => {
+  const history = useHistory();
   return (
-    <Box sx={styles}>
+    <Box sx={styles} _hover={{ cursor: 'pointer' }} onClick={() => history.push(`/meeting/${id}`)}>
       <Heading as="h2" fontSize="1.125em">
         {' '}
         {title}{' '}
