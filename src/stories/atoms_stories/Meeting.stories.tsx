@@ -2,6 +2,7 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import Meeting, { MeetingProps } from '../../components/atoms/Meeting';
 import { Box } from '@chakra-ui/layout';
+import { Role } from '../../__generated__/graphql-types';
 
 export default {
   title: 'Atoms/Meeting',
@@ -21,5 +22,12 @@ Default.args = {
   startTime: '2021-11-05',
   description: 'Quo illum corporis enim repellat totam natus sit.',
   organization: 'Random Linjeforening',
-  participants: [],
+  participants: [
+    {
+      user: {
+        id: '000',
+      },
+      role: Role.Admin,
+    },
+  ],
 };
