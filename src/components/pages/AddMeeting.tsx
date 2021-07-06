@@ -8,20 +8,16 @@ import {
 } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
-import { useAuth0 } from '@auth0/auth0-react';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router';
 import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
-  const { user } = useAuth0();
 
   const toast = useToast();
 
   const history = useHistory();
-
-  console.log(user);
 
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
