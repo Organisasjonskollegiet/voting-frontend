@@ -8,6 +8,7 @@ import {
   useUpdateVotationsMutation,
   useDeleteVotationsMutation,
   useDeleteAlternativesMutation,
+  useVotationsByMeetingIdQuery,
 } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
@@ -57,13 +58,33 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   const [deleteAlternatives, deleteAlternativesResult] = useDeleteAlternativesMutation();
 
-  const [state, setState] = useState({ votations: getEmptyVotation() });
+  const [state, setState] = useState<{ votations: Votation[] }>({ votations: getEmptyVotation() });
 
   const [votationsToDelete, setVotationsToDelete] = useState<string[]>([]);
 
   const [alternativesToDelete, setAlternativesToDelete] = useState<string[]>([]);
 
+  const { data, loading, error } = useVotationsByMeetingIdQuery({
+    variables: {
+      meetingId,
+    },
+  });
+
   const toast = useToast();
+
+  const votationsAreEmpty = () => {
+    if (state.votations.length !== 1) return;
+    const votation = state.votations[0];
+    return votation.title === '' && votation.description === '';
+  };
+
+  useEffect(() => {
+    if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
+      const votations = data.meetingById.votations as Votation[];
+      const formattedVotations = formatVotations(votations) ?? getEmptyVotation();
+      setState({ votations: formattedVotations });
+    }
+  }, [data]);
 
   useEffect(() => {
     if (!deleteVotationsResult.data?.deleteVotations || votationsToDelete.length === 0) return;

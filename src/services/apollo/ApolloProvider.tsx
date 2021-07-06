@@ -35,7 +35,7 @@ const ApolloAuthProvider: React.FC = ({ children }) => {
 
   const authLink = setContext(async () => {
     const token = await getAccessTokenSilently();
-
+    console.log(token);
     return {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -18,3 +18,24 @@ query GetMeetings {
     }
   }
 }
+
+query GetMeetingById($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    id
+    title
+    description
+    owner {
+      id
+      email
+    }
+    organization
+    status
+    startTime
+    participants {
+      user {
+        id
+      }
+      role
+    }
+  }
+}

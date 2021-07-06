@@ -5,6 +5,7 @@ import AddMeetingController from './AddMeetingController';
 import AddParticipantsForm from './AddParticipantsForm';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles';
+import { useHistory } from 'react-router';
 
 interface IProps {
   meetingId: string | undefined;
@@ -24,6 +25,7 @@ const AddParticipants: React.FC<IProps> = ({
   const [participants, setParticipants] = useState<ParticipantInput[]>(previouslyAddedParticipants);
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const toast = useToast();
+  const history = useHistory();
   const handleAddParticipants = (newParticipants: ParticipantInput[]) => {
     setParticipants([...participants, ...newParticipants]);
   };
@@ -36,6 +38,7 @@ const AddParticipants: React.FC<IProps> = ({
         participants,
       },
     });
+    history.push('/');
   };
 
   if (addParticipantsResult.data?.addParticipants) {

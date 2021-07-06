@@ -14,7 +14,7 @@ interface IProps {
 
 const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAlternative }) => {
   const [nextIndex, setNextIndex] = useState<number>(
-    Math.max(...votation.alternatives.map((alternative) => alternative.index)) + 1
+    Math.max(...votation.alternatives.map((alternative, index) => alternative.index ?? index)) + 1
   );
 
   const handleClickRemoveAlterantive = (alternative: Alternative) => {
@@ -30,7 +30,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
       <FormLabel sx={labelStyle}>Svaralternativer</FormLabel>
       <VStack spacing="5" align="left">
         {votation.alternatives
-          .sort((a, b) => a.index - b.index)
+          .sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
           .map((alternative) => (
             <HStack key={alternative.id} spacing="4">
               <Input
