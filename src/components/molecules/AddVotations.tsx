@@ -264,6 +264,8 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
     handleUpdateVotations(votationsToUpdate);
   };
 
+  if (!isActive) return <></>;
+
   if (error) {
     return (
       <Center mt="10vh">
@@ -275,8 +277,6 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   if (loading) {
     return <Loading asOverlay={false} text={'Henter voteringer'} />;
   }
-
-  if (!isActive) return <></>;
 
   return (
     <>

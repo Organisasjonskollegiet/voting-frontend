@@ -4,6 +4,7 @@ import { MeetingInformationFormConfig } from '../molecules/MeetingInformationFor
 
 export const darkblue = '#718096';
 export const lightblue = '#EDF2F7';
+export const offwhite = '#F9F9F9';
 
 const theme = extendTheme({
   fonts: {

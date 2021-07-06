@@ -1,31 +1,37 @@
 import React, { FC } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/pages/Navbar';
 import Votation from './components/pages/Votation';
 import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
+import { Box } from '@chakra-ui/react';
+import { darkblue } from './components/particles/theme';
 import MeetingLobby from './components/pages/MeetingLobby';
 import EditMeeting from './components/pages/EditMeeting';
 
-// The Auth0 provider is here so it can access to the router hooks for location and history
 const App: FC = () => {
+  const location = useLocation();
   return (
-    <Switch>
-      <Route path="/meeting/:meetingId/votation/:votationId">
-        <Votation />
-      </Route>
-      <Route path="/meeting/:meetingId/edit">
-        <EditMeeting />
-      </Route>
-      <Route path="/meeting/:meetingId">
-        <MeetingLobby />
-      </Route>
-      <Route path="/mote/opprett">
-        <AddMeeting />
-      </Route>
-      <Route path="/">
-        <MyMeetings />
-      </Route>
-    </Switch>
+    <>
+      {location.pathname.includes('votation') ? <Box h="57px" w="100vw" bgColor={darkblue}></Box> : <Navbar />}
+      <Switch>
+        <Route path="/meeting/:meetingId/votation/:votationId">
+          <Votation />
+        </Route>
+        <Route path="/meeting/:meetingId/edit">
+          <EditMeeting />
+        </Route>
+        <Route path="/meeting/new">
+          <AddMeeting />
+        </Route>
+        <Route path="/meeting/:meetingId">
+          <MeetingLobby />
+        </Route>
+        <Route path="/">
+          <MyMeetings />
+        </Route>
+      </Switch>
+    </>
   );
 };
 

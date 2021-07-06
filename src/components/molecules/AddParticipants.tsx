@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { ParticipantInput, useAddParticipantsMutation } from '../../__generated__/graphql-types';
 import { VStack, Heading, Text, useToast } from '@chakra-ui/react';
 import AddMeetingController from './AddMeetingController';
 import AddParticipantsForm from './AddParticipantsForm';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles';
-import { useHistory } from 'react-router';
 
 interface IProps {
   meetingId: string | undefined;
