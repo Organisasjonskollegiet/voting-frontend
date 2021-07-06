@@ -21,4 +21,5 @@ Default.args = {
   startTime: '2021-11-05',
   description: 'Quo illum corporis enim repellat totam natus sit.',
   organization: 'Random Linjeforening',
+  participants: [],
 };
