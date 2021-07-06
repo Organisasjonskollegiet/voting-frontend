@@ -2,6 +2,7 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import MeetingList, { MeetingListProps } from '../../components/molecules/MeetingList';
 import { Box } from '@chakra-ui/layout';
+import { Role } from '../../__generated__/graphql-types';
 
 export default {
   title: 'Molecules/MeetingList',
@@ -23,6 +24,14 @@ Default.args = {
       startTime: '2021-11-05',
       description: 'Quo illum corporis enim repellat totam natus sit.',
       organization: 'Random Linjeforening',
+      participants: [
+        {
+          user: {
+            id: '000',
+          },
+          role: Role.Admin,
+        },
+      ],
     },
     {
       id: '2',
@@ -30,6 +39,14 @@ Default.args = {
       startTime: '2021-09-02',
       description: 'Quo illum corporis enim repellat totam natus sit.',
       organization: 'Random Linjeforening',
+      participants: [
+        {
+          user: {
+            id: '000',
+          },
+          role: Role.Admin,
+        },
+      ],
     },
   ],
 };

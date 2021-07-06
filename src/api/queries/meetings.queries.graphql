@@ -10,5 +10,32 @@ query GetMeetings {
     organization
     status
     startTime
+    participants {
+      user {
+        id
+      }
+      role
+    }
+  }
+}
+
+query GetMeetingById($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    id
+    title
+    description
+    owner {
+      id
+      email
+    }
+    organization
+    status
+    startTime
+    participants {
+      user {
+        id
+      }
+      role
+    }
   }
 }

@@ -24,8 +24,8 @@ const MeetingLobby: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (votationData?.meetingsById?.votations && votationData.meetingsById.votations.length > 0) {
-      const openVotations = votationData?.meetingsById?.votations.filter(
+    if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
+      const openVotations = votationData?.meetingById?.votations.filter(
         (votation) => votation?.status === VotationStatus.Open
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
@@ -56,7 +56,7 @@ const MeetingLobby: React.FC = () => {
     </>;
   }
 
-  if (!votationData?.meetingsById || votationLoading) {
+  if (!votationData?.meetingById || votationLoading) {
     return <Loading asOverlay={false} text={'Henter møte'} />;
   }
 
@@ -64,7 +64,7 @@ const MeetingLobby: React.FC = () => {
     <>
       <Box h="57px" w="100vw" bgColor={darkblue}></Box>
       <Box bg="#F9F9F9" w="100vw" pt="10vh" style={styles}>
-        <Heading mb="5" as="h3">{`Velkommen til ${votationData?.meetingsById.title}`}</Heading>
+        <Heading mb="5" as="h3">{`Velkommen til ${votationData?.meetingById.title}`}</Heading>
         <Text fontSize={24}>Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
       </Box>
     </>
