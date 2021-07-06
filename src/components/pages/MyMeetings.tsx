@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
 import { Center, Spinner } from '@chakra-ui/react';
-import { Status, useGetMeetingsQuery } from '../../__generated__/graphql-types';
+import { MeetingStatus, useGetMeetingsQuery } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
 
@@ -31,12 +31,12 @@ const MyMeetings: React.FC = () => {
       </Center>
     );
 
-  const upcomingMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Upcoming);
-  const ongoingMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ongoing);
-  const endedMeetings = meetingsData.filter((meeting) => meeting?.status === Status.Ended);
+  const upcomingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Upcoming);
+  const ongoingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Ongoing);
+  const endedMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Ended);
 
   return (
-    <PageContainer > 
+    <PageContainer>
       <Box w="65vw" m="auto" pt="5em" pb="1.125em">
         {ongoingMeetings.length > 0 && (
           <Box mb="2.625em">

@@ -1,5 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../atoms/Alternative';
+import { MeetingInformationFormConfig } from '../molecules/MeetingInformationForm';
 
 export const darkblue = '#718096';
 export const lightblue = '#EDF2F7';
@@ -15,13 +16,13 @@ const theme = extendTheme({
   },
   components: {
     Alternative: AlternativeConfig,
-
     Button: {
       baseStyle: {
         color: darkblue,
         bg: lightblue,
       },
     },
+    MeetingInformationForm: MeetingInformationFormConfig,
     Spinner: {
       baseStyle: {
         color: darkblue,

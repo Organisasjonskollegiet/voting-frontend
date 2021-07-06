@@ -1,16 +1,30 @@
-query GetVotationById($votationId: String!) {
+query GetVotationById($votationId: String!, $meetingId: String!) {
   votationById(votationId: $votationId) {
     id
     title
     description
-    hasVoted {
-      id
-    }
+    index
+    hasVoted
     alternatives {
       id
       text
     }
     status
     blankVotes
+    severalVotes
   }
+
+  meetingsById(meetingId: $meetingId) {
+    participants {
+      user {
+        id
+        email
+      }
+      role
+    }
+  }
+}
+
+query VotingEligibleCount($votationId: String!) {
+  votingEligibleCount(votationId: $votationId)
 }

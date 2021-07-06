@@ -7,7 +7,7 @@ import { Link, NavLink } from 'react-router-dom';
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
   ['Min profil', '/profile'],
-  ['Opprett møte', '/meeting/new'],
+  ['Opprett møte', '/mote/opprett'],
 ]);
 const pageNames = Array.from(links.keys());
 
@@ -23,7 +23,13 @@ const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box bg={{ base: darkblue, md: 'white' }} px="50px" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" zIndex="2" position="relative">
+    <Box
+      bg={{ base: darkblue, md: 'white' }}
+      px="50px"
+      boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)"
+      zIndex="2"
+      position="relative"
+    >
       <Flex as="nav" h="5.5em" alignItems="center" justifyContent="space-between">
         <Image display={{ base: 'none', md: 'flex' }} src="Orgkol_logo.svg" alt="Organisasjonskollegiet" h="3em" />
 
