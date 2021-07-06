@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/pages/Navbar';
-import PageExample from './components/pages/PageExample';
 import Votation from './components/pages/Votation';
 import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
