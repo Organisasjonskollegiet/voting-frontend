@@ -502,7 +502,14 @@ export type GetMeetingsQuery = (
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
-    )> }
+    )>, participants: Array<Maybe<(
+      { __typename?: 'Participant' }
+      & Pick<Participant, 'role'>
+      & { user?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id'>
+      )> }
+    )>> }
   )>> }
 );
 
@@ -982,6 +989,12 @@ export const GetMeetingsDocument = gql`
     organization
     status
     startTime
+    participants {
+      user {
+        id
+      }
+      role
+    }
   }
 }
     `;

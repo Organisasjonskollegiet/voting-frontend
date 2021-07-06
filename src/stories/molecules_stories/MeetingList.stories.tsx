@@ -23,6 +23,7 @@ Default.args = {
       startTime: '2021-11-05',
       description: 'Quo illum corporis enim repellat totam natus sit.',
       organization: 'Random Linjeforening',
+      participants: [],
     },
     {
       id: '2',
@@ -30,6 +31,7 @@ Default.args = {
       startTime: '2021-09-02',
       description: 'Quo illum corporis enim repellat totam natus sit.',
       organization: 'Random Linjeforening',
+      participants: [],
     },
   ],
 };
