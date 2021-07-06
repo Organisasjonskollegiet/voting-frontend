@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Text, Button } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -29,8 +29,15 @@ const styles = {
 const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, organization, participants }) => {
   const { user } = useAuth0();
   const history = useHistory();
-  const isAdmin =
-    participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0].role === Role.Admin;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user?.sub && participants.length > 0) {
+      setIsAdmin(
+        participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0].role === Role.Admin
+      );
+    }
+  }, [user?.sub, participants]);
 
   // eslint-disable-next-line
   const handleClick = (e: any) => {
