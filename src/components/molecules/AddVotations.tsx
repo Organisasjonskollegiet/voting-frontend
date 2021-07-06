@@ -84,6 +84,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       const formattedVotations = formatVotations(votations) ?? getEmptyVotation();
       setState({ votations: formattedVotations });
     }
+    // eslint-disable-next-line
   }, [data]);
 
   useEffect(() => {
