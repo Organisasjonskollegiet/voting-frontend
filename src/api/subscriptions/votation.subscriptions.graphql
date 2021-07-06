@@ -5,3 +5,7 @@ subscription VotationStatusUpdated($id: String!) {
 subscription NewVoteRegistered($votationId: String!) {
   newVoteRegistered(votationId: $votationId)
 }
+
+subscription VotationOpenedForMeeting($meetingId: String!) {
+  votationOpenedForMeeting(meetingId: $meetingId)
+}

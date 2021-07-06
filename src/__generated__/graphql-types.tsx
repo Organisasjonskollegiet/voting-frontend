@@ -534,6 +534,23 @@ export type GetVotationByIdQuery = (
   )> }
 );
 
+export type VotationsByMeetingIdQueryVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type VotationsByMeetingIdQuery = (
+  { __typename?: 'Query' }
+  & { meetingsById?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'title'>
+    & { votations?: Maybe<Array<Maybe<(
+      { __typename?: 'Votation' }
+      & Pick<Votation, 'id' | 'status'>
+    )>>> }
+  )> }
+);
+
 export type VotingEligibleCountQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
@@ -562,6 +579,16 @@ export type NewVoteRegisteredSubscriptionVariables = Exact<{
 export type NewVoteRegisteredSubscription = (
   { __typename?: 'Subscription' }
   & Pick<Subscription, 'newVoteRegistered'>
+);
+
+export type VotationOpenedForMeetingSubscriptionVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type VotationOpenedForMeetingSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'votationOpenedForMeeting'>
 );
 
 
@@ -1041,6 +1068,45 @@ export function useGetVotationByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetVotationByIdQueryHookResult = ReturnType<typeof useGetVotationByIdQuery>;
 export type GetVotationByIdLazyQueryHookResult = ReturnType<typeof useGetVotationByIdLazyQuery>;
 export type GetVotationByIdQueryResult = Apollo.QueryResult<GetVotationByIdQuery, GetVotationByIdQueryVariables>;
+export const VotationsByMeetingIdDocument = gql`
+    query VotationsByMeetingId($meetingId: String!) {
+  meetingsById(meetingId: $meetingId) {
+    title
+    votations {
+      id
+      status
+    }
+  }
+}
+    `;
+
+/**
+ * __useVotationsByMeetingIdQuery__
+ *
+ * To run a query within a React component, call `useVotationsByMeetingIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVotationsByMeetingIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationsByMeetingIdQuery({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useVotationsByMeetingIdQuery(baseOptions: Apollo.QueryHookOptions<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>(VotationsByMeetingIdDocument, options);
+      }
+export function useVotationsByMeetingIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>(VotationsByMeetingIdDocument, options);
+        }
+export type VotationsByMeetingIdQueryHookResult = ReturnType<typeof useVotationsByMeetingIdQuery>;
+export type VotationsByMeetingIdLazyQueryHookResult = ReturnType<typeof useVotationsByMeetingIdLazyQuery>;
+export type VotationsByMeetingIdQueryResult = Apollo.QueryResult<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>;
 export const VotingEligibleCountDocument = gql`
     query VotingEligibleCount($votationId: String!) {
   votingEligibleCount(votationId: $votationId)
@@ -1130,3 +1196,31 @@ export function useNewVoteRegisteredSubscription(baseOptions: Apollo.Subscriptio
       }
 export type NewVoteRegisteredSubscriptionHookResult = ReturnType<typeof useNewVoteRegisteredSubscription>;
 export type NewVoteRegisteredSubscriptionResult = Apollo.SubscriptionResult<NewVoteRegisteredSubscription>;
+export const VotationOpenedForMeetingDocument = gql`
+    subscription VotationOpenedForMeeting($meetingId: String!) {
+  votationOpenedForMeeting(meetingId: $meetingId)
+}
+    `;
+
+/**
+ * __useVotationOpenedForMeetingSubscription__
+ *
+ * To run a query within a React component, call `useVotationOpenedForMeetingSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useVotationOpenedForMeetingSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationOpenedForMeetingSubscription({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useVotationOpenedForMeetingSubscription(baseOptions: Apollo.SubscriptionHookOptions<VotationOpenedForMeetingSubscription, VotationOpenedForMeetingSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<VotationOpenedForMeetingSubscription, VotationOpenedForMeetingSubscriptionVariables>(VotationOpenedForMeetingDocument, options);
+      }
+export type VotationOpenedForMeetingSubscriptionHookResult = ReturnType<typeof useVotationOpenedForMeetingSubscription>;
+export type VotationOpenedForMeetingSubscriptionResult = Apollo.SubscriptionResult<VotationOpenedForMeetingSubscription>;
