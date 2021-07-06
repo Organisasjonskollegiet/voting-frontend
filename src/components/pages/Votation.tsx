@@ -58,12 +58,12 @@ const Votation: React.FC = () => {
 
   //Update isAdmin state after data of participants is received
   useEffect(() => {
-    if (data?.meetingsById?.participants && participantRole === null) {
-      const participants = data?.meetingsById?.participants as Array<Participant>;
+    if (data?.meetingById?.participants && participantRole === null) {
+      const participants = data?.meetingById?.participants as Array<Participant>;
       const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
       setParticipantRole(participant.role);
     }
-  }, [data?.meetingsById, user?.sub, participantRole]);
+  }, [data?.meetingById, user?.sub, participantRole]);
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {

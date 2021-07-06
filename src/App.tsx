@@ -7,6 +7,8 @@ import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
 import { Box } from '@chakra-ui/react';
 import { darkblue } from './components/particles/theme';
+import MeetingLobby from './components/pages/MeetingLobby';
+import EditMeeting from './components/pages/EditMeeting';
 
 const App: FC = () => {
   const location = useLocation();
@@ -14,17 +16,16 @@ const App: FC = () => {
     <>
       {location.pathname.includes('votation') ? <Box h="57px" w="100vw" bgColor={darkblue}></Box> : <Navbar />}
       <Switch>
-        <Route path="/admin">
-          <Navbar />
-          <PageExample page="/admin" />
-        </Route>
-        <Route path="/meetings">
-          <MyMeetings />
-        </Route>
         <Route path="/meeting/:meetingId/votation/:votationId">
           <Votation />
         </Route>
-        <Route path="/mote/opprett">
+        <Route path="/meeting/:meetingId/edit">
+          <EditMeeting />
+        </Route>
+        <Route path="/meeting/:meetingId">
+          <MeetingLobby />
+        </Route>
+        <Route path="/meeting/new">
           <AddMeeting />
         </Route>
         <Route path="/">

@@ -14,13 +14,36 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     severalVotes
   }
 
-  meetingsById(meetingId: $meetingId) {
+  meetingById(meetingId: $meetingId) {
     participants {
       user {
         id
         email
       }
       role
+    }
+  }
+}
+
+query VotationsByMeetingId($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    id
+    title
+    votations {
+      id
+      title
+      status
+      description
+      blankVotes
+      hiddenVotes
+      severalVotes
+      majorityType
+      majorityThreshold
+      index
+      alternatives {
+        id
+        text
+      }
     }
   }
 }
