@@ -13,7 +13,7 @@ const ApolloAuthProvider: React.FC = ({ children }) => {
   });
 
   const wsLink = new WebSocketLink({
-    uri: process.env.REACT_APP_GRAPHQL_WS || 'ws://localhost:4000/graphql',
+    uri: process.env.REACT_APP_GRAPHQL_WS || 'ws://localhost:4000/subscriptions',
     options: {
       reconnect: true,
     },
@@ -35,6 +35,7 @@ const ApolloAuthProvider: React.FC = ({ children }) => {
 
   const authLink = setContext(async () => {
     const token = await getAccessTokenSilently();
+    console.log(token);
     return {
       headers: {
         Authorization: `Bearer ${token}`,
