@@ -9,6 +9,7 @@ import {
   // useVotationStatusUpdatedSubscription,
   // useNewVoteRegisteredSubscription,
   useVotingEligibleCountQuery,
+  useGetVoteCountQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -43,6 +44,7 @@ const Votation: React.FC = () => {
     error: votingEligibleCountError,
   } = useVotingEligibleCountQuery({ variables: { votationId } });
 
+  const { data: voteCountResult } = useGetVoteCountQuery({ variables: { votationId }, pollInterval: 1000 });
   // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
   //   variables: { id: votationId },
   // });
@@ -56,6 +58,12 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
+      setVoteCount(voteCountResult?.getVoteCount?.voteCount ?? voteCount);
+    }
+  }, [voteCountResult]);
 
   //Update isAdmin state after data of participants is received
   useEffect(() => {
@@ -235,7 +243,7 @@ const Votation: React.FC = () => {
             <VStack mt="3em" spacing="0">
               <Center>
                 <Text fontSize="2.25em" fontWeight="bold">
-                  {`${voteCount} / ${votingEligibleCountResult?.votingEligibleCount}`}
+                  {`${voteCount} / ${voteCountResult?.getVoteCount?.votingEligibleCount}`}
                 </Text>
               </Center>
               <Center>

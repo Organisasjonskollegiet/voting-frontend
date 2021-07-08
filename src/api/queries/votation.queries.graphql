@@ -51,3 +51,10 @@ query VotationsByMeetingId($meetingId: String!) {
 query VotingEligibleCount($votationId: String!) {
   votingEligibleCount(votationId: $votationId)
 }
+
+query GetVoteCount($votationId: String!) {
+  getVoteCount(votationId: $votationId) {
+    votingEligibleCount
+    voteCount
+  }
+}

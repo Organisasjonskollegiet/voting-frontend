@@ -176,13 +176,6 @@ export type MutationChangeViewArgs = {
   state: ViewState;
 };
 
-/** The payload of newVoteRegistered subscription */
-export type NewVoteRegisteredPayload = {
-  __typename?: 'NewVoteRegisteredPayload';
-  voteCount: Scalars['Int'];
-  votingEligibleCount: Scalars['Int'];
-};
-
 export type OwnerCannotBeRemovedFromParticipantError = {
   __typename?: 'OwnerCannotBeRemovedFromParticipantError';
   message: Scalars['String'];
@@ -206,6 +199,7 @@ export type Query = {
   user?: Maybe<GetUserResult>;
   votationById?: Maybe<Votation>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
+  getVoteCount?: Maybe<VoteCountResult>;
   votingEligibleCount?: Maybe<Scalars['Int']>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
@@ -220,6 +214,11 @@ export type QueryVotationByIdArgs = {
 
 
 export type QueryAlternativesByVotationArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetVoteCountArgs = {
   votationId: Scalars['String'];
 };
 
@@ -350,6 +349,13 @@ export type Vote = {
   alternative?: Maybe<Alternative>;
   nextVote?: Maybe<Vote>;
   prevVote?: Maybe<Vote>;
+};
+
+/** The result of getVoteCount */
+export type VoteCountResult = {
+  __typename?: 'VoteCountResult';
+  voteCount: Scalars['Int'];
+  votingEligibleCount: Scalars['Int'];
 };
 
 export type CreateMeetingMutationVariables = Exact<{
@@ -594,6 +600,19 @@ export type VotingEligibleCountQueryVariables = Exact<{
 export type VotingEligibleCountQuery = (
   { __typename?: 'Query' }
   & Pick<Query, 'votingEligibleCount'>
+);
+
+export type GetVoteCountQueryVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type GetVoteCountQuery = (
+  { __typename?: 'Query' }
+  & { getVoteCount?: Maybe<(
+    { __typename?: 'VoteCountResult' }
+    & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
+  )> }
 );
 
 export type VotationStatusUpdatedSubscriptionVariables = Exact<{
@@ -1244,6 +1263,42 @@ export function useVotingEligibleCountLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type VotingEligibleCountQueryHookResult = ReturnType<typeof useVotingEligibleCountQuery>;
 export type VotingEligibleCountLazyQueryHookResult = ReturnType<typeof useVotingEligibleCountLazyQuery>;
 export type VotingEligibleCountQueryResult = Apollo.QueryResult<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>;
+export const GetVoteCountDocument = gql`
+    query GetVoteCount($votationId: String!) {
+  getVoteCount(votationId: $votationId) {
+    votingEligibleCount
+    voteCount
+  }
+}
+    `;
+
+/**
+ * __useGetVoteCountQuery__
+ *
+ * To run a query within a React component, call `useGetVoteCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVoteCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVoteCountQuery({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useGetVoteCountQuery(baseOptions: Apollo.QueryHookOptions<GetVoteCountQuery, GetVoteCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetVoteCountQuery, GetVoteCountQueryVariables>(GetVoteCountDocument, options);
+      }
+export function useGetVoteCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetVoteCountQuery, GetVoteCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetVoteCountQuery, GetVoteCountQueryVariables>(GetVoteCountDocument, options);
+        }
+export type GetVoteCountQueryHookResult = ReturnType<typeof useGetVoteCountQuery>;
+export type GetVoteCountLazyQueryHookResult = ReturnType<typeof useGetVoteCountLazyQuery>;
+export type GetVoteCountQueryResult = Apollo.QueryResult<GetVoteCountQuery, GetVoteCountQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id)
