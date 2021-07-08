@@ -6,9 +6,10 @@ import {
   VotationStatus,
   useCastVoteMutation,
   useGetVotationByIdQuery,
-  useVotationStatusUpdatedSubscription,
-  useNewVoteRegisteredSubscription,
-  useVotingEligibleCountQuery,
+  // useVotationStatusUpdatedSubscription,
+  // useNewVoteRegisteredSubscription,
+  // useVotingEligibleCountQuery,
+  useGetVoteCountQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -34,27 +35,38 @@ const Votation: React.FC = () => {
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
     variables: { votationId: votationId, meetingId: meetingId },
+    pollInterval: 1000,
   });
 
-  const {
-    data: votingEligibleCountResult,
-    loading: votingEligibleCountLoading,
-    error: votingEligibleCountError,
-  } = useVotingEligibleCountQuery({ variables: { votationId } });
+  // const {
+  //   data: votingEligibleCountResult,
+  //   loading: votingEligibleCountLoading,
+  //   error: votingEligibleCountError,
+  // } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
-    variables: { id: votationId },
-  });
-
-  const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
+  const { data: voteCountResult, error: voteCountError } = useGetVoteCountQuery({
     variables: { votationId },
+    pollInterval: 1000,
   });
+  // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
+  //   variables: { id: votationId },
+  // });
+
+  // const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
+  //   variables: { votationId },
+  // });
   console.log(user);
 
   const [status, setStatus] = useState<VotationStatus | null>(null);
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
+      setVoteCount(voteCountResult?.getVoteCount?.voteCount ?? voteCount);
+    }
+  }, [voteCountResult, voteCount]);
 
   //Update isAdmin state after data of participants is received
   useEffect(() => {
@@ -67,7 +79,7 @@ const Votation: React.FC = () => {
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
-    if (data?.votationById && status === null) {
+    if (data?.votationById && status !== data.votationById.status) {
       setStatus(data.votationById.status);
     }
   }, [data, status]);
@@ -87,19 +99,19 @@ const Votation: React.FC = () => {
   }, [data, user]);
 
   // update status of votation when new data arrives on subscription
-  useEffect(() => {
-    const newStatus = newStatusResult?.votationStatusUpdated ?? null;
-    if (newStatus !== null && newStatus !== status) {
-      setStatus(newStatus);
-    }
-  }, [newStatusResult, status]);
+  // useEffect(() => {
+  //   const newStatus = newStatusResult?.votationStatusUpdated ?? null;
+  //   if (newStatus !== null && newStatus !== status) {
+  //     setStatus(newStatus);
+  //   }
+  // }, [newStatusResult, status]);
 
-  // update vote count when new vote count arrives from subscription
-  useEffect(() => {
-    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
-    const newVoteCount = newVoteCountResult.newVoteRegistered;
-    setVoteCount(newVoteCount);
-  }, [newVoteCountResult, voteCount]);
+  // // update vote count when new vote count arrives from subscription
+  // useEffect(() => {
+  //   if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
+  //   const newVoteCount = newVoteCountResult.newVoteRegistered;
+  //   setVoteCount(newVoteCount);
+  // }, [newVoteCountResult, voteCount]);
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -114,7 +126,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (loading || votingEligibleCountLoading) {
+  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -141,7 +153,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (error || data?.votationById?.id === undefined || votingEligibleCountError) {
+  if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -234,7 +246,7 @@ const Votation: React.FC = () => {
             <VStack mt="3em" spacing="0">
               <Center>
                 <Text fontSize="2.25em" fontWeight="bold">
-                  {`${voteCount} / ${votingEligibleCountResult?.votingEligibleCount}`}
+                  {`${voteCount} / ${voteCountResult?.getVoteCount?.votingEligibleCount}`}
                 </Text>
               </Center>
               <Center>
