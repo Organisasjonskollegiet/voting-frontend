@@ -38,6 +38,11 @@ const MyMeetings: React.FC = () => {
   return (
     <PageContainer>
       <Box w="65vw" m="auto" pt="5em" pb="1.125em">
+        {meetingsData.length === 0 && (
+          <Box mb="2.625em">
+            <Text>Du har ingen kommende møter</Text>
+          </Box>
+        )}
         {ongoingMeetings.length > 0 && (
           <Box mb="2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
