@@ -34,6 +34,7 @@ const Votation: React.FC = () => {
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
     variables: { votationId: votationId, meetingId: meetingId },
+    pollInterval: 1000,
   });
 
   const {
@@ -67,7 +68,7 @@ const Votation: React.FC = () => {
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
-    if (data?.votationById && status === null) {
+    if (data?.votationById && status !== data.votationById.status) {
       setStatus(data.votationById.status);
     }
   }, [data, status]);
