@@ -9,9 +9,6 @@ import PageContainer from '../atoms/PageContainer';
 const MyMeetings: React.FC = () => {
   const { data, loading, error } = useGetMeetingsQuery();
   const meetingsData = data?.meetings;
-  console.log(data);
-  console.log(loading);
-  console.log(error);
 
   if (error)
     return (
