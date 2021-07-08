@@ -15,6 +15,7 @@ const MeetingLobby: React.FC = () => {
     variables: {
       meetingId,
     },
+    pollInterval: 1000,
   });
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
   //   variables: {
