@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Center, Box, Heading, Text } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
-  useVotationOpenedForMeetingSubscription,
+  // useVotationOpenedForMeetingSubscription,
   useVotationsByMeetingIdQuery,
   VotationStatus,
 } from '../../__generated__/graphql-types';
@@ -16,11 +16,11 @@ const MeetingLobby: React.FC = () => {
       meetingId,
     },
   });
-  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-    variables: {
-      meetingId,
-    },
-  });
+  // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+  //   variables: {
+  //     meetingId,
+  //   },
+  // });
   const history = useHistory();
 
   useEffect(() => {
@@ -34,11 +34,11 @@ const MeetingLobby: React.FC = () => {
     }
   }, [votationData, history, meetingId]);
 
-  useEffect(() => {
-    if (votationOpened?.votationOpenedForMeeting) {
-      history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
-    }
-  }, [votationOpened, history, meetingId]);
+  // useEffect(() => {
+  //   if (votationOpened?.votationOpenedForMeeting) {
+  //     history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
+  //   }
+  // }, [votationOpened, history, meetingId]);
 
   const styles = {
     height: window.innerHeight,

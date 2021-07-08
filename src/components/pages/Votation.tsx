@@ -6,8 +6,8 @@ import {
   VotationStatus,
   useCastVoteMutation,
   useGetVotationByIdQuery,
-  useVotationStatusUpdatedSubscription,
-  useNewVoteRegisteredSubscription,
+  // useVotationStatusUpdatedSubscription,
+  // useNewVoteRegisteredSubscription,
   useVotingEligibleCountQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
@@ -42,13 +42,13 @@ const Votation: React.FC = () => {
     error: votingEligibleCountError,
   } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
-    variables: { id: votationId },
-  });
+  // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
+  //   variables: { id: votationId },
+  // });
 
-  const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
-    variables: { votationId },
-  });
+  // const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
+  //   variables: { votationId },
+  // });
   console.log(user);
 
   const [status, setStatus] = useState<VotationStatus | null>(null);
@@ -87,19 +87,19 @@ const Votation: React.FC = () => {
   }, [data, user]);
 
   // update status of votation when new data arrives on subscription
-  useEffect(() => {
-    const newStatus = newStatusResult?.votationStatusUpdated ?? null;
-    if (newStatus !== null && newStatus !== status) {
-      setStatus(newStatus);
-    }
-  }, [newStatusResult, status]);
+  // useEffect(() => {
+  //   const newStatus = newStatusResult?.votationStatusUpdated ?? null;
+  //   if (newStatus !== null && newStatus !== status) {
+  //     setStatus(newStatus);
+  //   }
+  // }, [newStatusResult, status]);
 
-  // update vote count when new vote count arrives from subscription
-  useEffect(() => {
-    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
-    const newVoteCount = newVoteCountResult.newVoteRegistered;
-    setVoteCount(newVoteCount);
-  }, [newVoteCountResult, voteCount]);
+  // // update vote count when new vote count arrives from subscription
+  // useEffect(() => {
+  //   if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
+  //   const newVoteCount = newVoteCountResult.newVoteRegistered;
+  //   setVoteCount(newVoteCount);
+  // }, [newVoteCountResult, voteCount]);
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
