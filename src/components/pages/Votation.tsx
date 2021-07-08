@@ -8,7 +8,7 @@ import {
   useGetVotationByIdQuery,
   // useVotationStatusUpdatedSubscription,
   // useNewVoteRegisteredSubscription,
-  useVotingEligibleCountQuery,
+  // useVotingEligibleCountQuery,
   useGetVoteCountQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
@@ -38,13 +38,16 @@ const Votation: React.FC = () => {
     pollInterval: 1000,
   });
 
-  const {
-    data: votingEligibleCountResult,
-    loading: votingEligibleCountLoading,
-    error: votingEligibleCountError,
-  } = useVotingEligibleCountQuery({ variables: { votationId } });
+  // const {
+  //   data: votingEligibleCountResult,
+  //   loading: votingEligibleCountLoading,
+  //   error: votingEligibleCountError,
+  // } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: voteCountResult } = useGetVoteCountQuery({ variables: { votationId }, pollInterval: 1000 });
+  const { data: voteCountResult, error: voteCountError } = useGetVoteCountQuery({
+    variables: { votationId },
+    pollInterval: 1000,
+  });
   // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
   //   variables: { id: votationId },
   // });
@@ -63,7 +66,7 @@ const Votation: React.FC = () => {
     if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
       setVoteCount(voteCountResult?.getVoteCount?.voteCount ?? voteCount);
     }
-  }, [voteCountResult]);
+  }, [voteCountResult, voteCount]);
 
   //Update isAdmin state after data of participants is received
   useEffect(() => {
@@ -123,7 +126,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (loading || votingEligibleCountLoading) {
+  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -150,7 +153,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (error || data?.votationById?.id === undefined || votingEligibleCountError) {
+  if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
