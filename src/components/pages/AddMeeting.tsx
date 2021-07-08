@@ -41,7 +41,6 @@ const AddMeeting: React.FC = () => {
       organization: meeting.organization,
       startTime: new Date(meeting.startTime),
     });
-    setActiveTab(1);
     const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
     toast({
       title: `Møte ${responseKeyWord}`,
@@ -50,6 +49,7 @@ const AddMeeting: React.FC = () => {
       duration: 9000,
       isClosable: true,
     });
+    setActiveTab(1);
   };
 
   useEffect(() => {
