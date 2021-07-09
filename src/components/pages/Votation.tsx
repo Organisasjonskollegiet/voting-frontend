@@ -71,7 +71,7 @@ const Votation: React.FC = () => {
       const result = winnerResult.getWinnerOfVotation;
       setWinner({ id: result.id, text: result.text, votationId: result.votationId });
     }
-  }, [winnerResult]);
+  }, [winnerResult, winner]);
 
   useEffect(() => {
     if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
