@@ -33,6 +33,10 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
     }
   }, [data]);
 
+  const getRoundedPercentage = (share: number) => {
+    return Math.round(share * 100 * 100) / 100;
+  };
+
   return (
     <Box
       mt="4em"
@@ -61,16 +65,16 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
         </HStack>
         {alternatives.map((alternative) => (
           <>
-            <Divider m="3em 0" />
+            <Divider key={alternative.id} m="3em 0" />
             <HStack
-              key={alternative.id}
               width={'100%'}
+              key={alternative.id + 'stack'}
               style={alternative.isWinner ? { color: 'green', fontStyle: 'italic' } : {}}
             >
               <Box width={'25%'}>{alternative.text}</Box>
               <Box width={'25%'}>{alternative.votes}</Box>
-              <Box width={'25%'}>{(alternative.votes ?? 0 / voteCount) * 100}</Box>
-              <Box width={'25%'}>{(alternative.votes ?? 0 / votingEligibleCount) * 100}</Box>
+              <Box width={'25%'}>{getRoundedPercentage(alternative.votes / voteCount)}</Box>
+              <Box width={'25%'}>{getRoundedPercentage(alternative.votes / votingEligibleCount)}</Box>
             </HStack>
           </>
         ))}

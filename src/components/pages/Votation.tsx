@@ -39,7 +39,7 @@ const Votation: React.FC = () => {
     variables: { votationId: votationId, meetingId: meetingId },
     pollInterval: 1000,
   });
-  const { data: winnerResult } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
+  const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
 
   // const {
   //   data: votingEligibleCountResult,
@@ -91,9 +91,12 @@ const Votation: React.FC = () => {
   // set initial status of votation when data on votation arrives
   useEffect(() => {
     if (data?.votationById && status !== data.votationById.status) {
+      if (data.votationById.status === 'PUBLISHED_RESULT') {
+        refetchWinner();
+      }
       setStatus(data.votationById.status);
     }
-  }, [data, status]);
+  }, [data, status, refetchWinner]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {

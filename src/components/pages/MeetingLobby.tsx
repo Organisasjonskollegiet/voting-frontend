@@ -27,7 +27,7 @@ const MeetingLobby: React.FC = () => {
   useEffect(() => {
     if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
       const openVotations = votationData?.meetingById?.votations.filter(
-        (votation) => votation?.status === VotationStatus.Open
+        (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
         history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
