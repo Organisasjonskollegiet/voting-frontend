@@ -10,6 +10,7 @@ import {
   // useNewVoteRegisteredSubscription,
   // useVotingEligibleCountQuery,
   useGetVoteCountQuery,
+  useGetWinnerOfVotationQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -38,6 +39,7 @@ const Votation: React.FC = () => {
     variables: { votationId: votationId, meetingId: meetingId },
     pollInterval: 1000,
   });
+  const { data: winnerResult } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
 
   // const {
   //   data: votingEligibleCountResult,
@@ -62,6 +64,14 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+  const [winner, setWinner] = useState<AlternativeType | null>();
+
+  useEffect(() => {
+    if (winnerResult?.getWinnerOfVotation && winner !== null) {
+      const result = winnerResult.getWinnerOfVotation;
+      setWinner({ id: result.id, text: result.text, votationId: result.votationId });
+    }
+  }, [winnerResult]);
 
   useEffect(() => {
     if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
@@ -266,14 +276,9 @@ const Votation: React.FC = () => {
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
           <CheckResults votationId={votationId} />
         )}
-        {status === 'PUBLISHED_RESULT' && (
+        {status === 'PUBLISHED_RESULT' && winner && (
           <Box mt="4em">
-            <VotationResult
-              text={
-                //TODO: replace with the winning alternatives text property
-                ''
-              }
-            />
+            <VotationResult text={winner.text} />
           </Box>
         )}
         {

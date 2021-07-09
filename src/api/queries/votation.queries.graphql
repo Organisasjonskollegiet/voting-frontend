@@ -71,3 +71,11 @@ query GetVotationResults($id: String!) {
     votingEligibleCount
   }
 }
+
+query GetWinnerOfVotation($id: String!) {
+  getWinnerOfVotation(id: $id) {
+    id
+    text
+    votationId
+  }
+}

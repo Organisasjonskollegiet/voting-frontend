@@ -208,6 +208,7 @@ export type Query = {
   votationById?: Maybe<Votation>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVoteCount?: Maybe<VoteCountResult>;
+  getWinnerOfVotation?: Maybe<Alternative>;
   getVotationResults?: Maybe<VotationResults>;
   votingEligibleCount?: Maybe<Scalars['Int']>;
   /** Find meetings you are participating in */
@@ -229,6 +230,11 @@ export type QueryAlternativesByVotationArgs = {
 
 export type QueryGetVoteCountArgs = {
   votationId: Scalars['String'];
+};
+
+
+export type QueryGetWinnerOfVotationArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -651,6 +657,19 @@ export type GetVotationResultsQuery = (
       { __typename?: 'AlternativeResult' }
       & Pick<AlternativeResult, 'id' | 'text' | 'isWinner' | 'votes'>
     )>> }
+  )> }
+);
+
+export type GetWinnerOfVotationQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetWinnerOfVotationQuery = (
+  { __typename?: 'Query' }
+  & { getWinnerOfVotation?: Maybe<(
+    { __typename?: 'Alternative' }
+    & Pick<Alternative, 'id' | 'text' | 'votationId'>
   )> }
 );
 
@@ -1380,6 +1399,43 @@ export function useGetVotationResultsLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetVotationResultsQueryHookResult = ReturnType<typeof useGetVotationResultsQuery>;
 export type GetVotationResultsLazyQueryHookResult = ReturnType<typeof useGetVotationResultsLazyQuery>;
 export type GetVotationResultsQueryResult = Apollo.QueryResult<GetVotationResultsQuery, GetVotationResultsQueryVariables>;
+export const GetWinnerOfVotationDocument = gql`
+    query GetWinnerOfVotation($id: String!) {
+  getWinnerOfVotation(id: $id) {
+    id
+    text
+    votationId
+  }
+}
+    `;
+
+/**
+ * __useGetWinnerOfVotationQuery__
+ *
+ * To run a query within a React component, call `useGetWinnerOfVotationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWinnerOfVotationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWinnerOfVotationQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetWinnerOfVotationQuery(baseOptions: Apollo.QueryHookOptions<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>(GetWinnerOfVotationDocument, options);
+      }
+export function useGetWinnerOfVotationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>(GetWinnerOfVotationDocument, options);
+        }
+export type GetWinnerOfVotationQueryHookResult = ReturnType<typeof useGetWinnerOfVotationQuery>;
+export type GetWinnerOfVotationLazyQueryHookResult = ReturnType<typeof useGetWinnerOfVotationLazyQuery>;
+export type GetWinnerOfVotationQueryResult = Apollo.QueryResult<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id)
