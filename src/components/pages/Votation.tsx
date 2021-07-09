@@ -20,6 +20,7 @@ import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import { darkblue } from '../particles/theme';
 import VotationController from '../molecules/VotationController';
+import CheckResults from '../molecules/CheckResults';
 
 const subtitlesStyle = {
   fontStyle: 'normal',
@@ -257,10 +258,13 @@ const Votation: React.FC = () => {
             </VStack>
           </Box>
         )}
-        {status === 'CHECKING_RESULT' && (
+        {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
           <Box>
             <Loading asOverlay={false} text={'Resultatene sjekkes'} />
           </Box>
+        )}
+        {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
+          <CheckResults votationId={votationId} />
         )}
         {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
