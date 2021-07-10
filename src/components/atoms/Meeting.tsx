@@ -55,15 +55,14 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   const handleClick = (e: any) => {
     // check if the button clicked was the edit or delete button and if so,
     // avoid navigating to the meeting
-    if (
-      e.target.name === 'edit-meeting' ||
-      e.target.closest('button').name === 'edit-meeting' ||
-      e.target.name === 'delete-meeting' ||
-      e.target.closest('button').name === 'delete-meeting'
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    } else {
+    // if e.target.closest('button').name gives an error, that is because you are pressing
+    // div or text inside, so you should navigate to meeting
+    try {
+      if (e.target.closest('button').name === 'edit-meeting' || e.target.closest('button').name === 'delete-meeting') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    } catch (error) {
       history.push(`/meeting/${id}`);
     }
   };
