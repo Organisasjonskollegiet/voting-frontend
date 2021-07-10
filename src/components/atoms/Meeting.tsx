@@ -1,8 +1,10 @@
-import { Box, Flex, Heading, Text, Button } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Button, HStack } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import React, { useEffect, useState } from 'react';
 import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
+import DeleteIcon from '../../static/deleteIcon.svg';
+import EditIcon from '../../static/editIcon.svg';
 
 interface ParticipantResult {
   user: {
@@ -26,7 +28,15 @@ const styles = {
   padding: '1em 2em',
 } as React.CSSProperties;
 
-const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, organization, participants }) => {
+const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => void }> = ({
+  id,
+  title,
+  startTime,
+  description,
+  organization,
+  participants,
+  handleDeleteMeeting,
+}) => {
   const { user } = useAuth0();
   const history = useHistory();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -41,7 +51,14 @@ const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, or
 
   // eslint-disable-next-line
   const handleClick = (e: any) => {
-    if (e.target.name === 'edit-meeting') {
+    // check if the button clicked was the edit or delete button and if so,
+    // avoid navigating to the meeting
+    if (
+      e.target.name === 'edit-meeting' ||
+      e.target.closest('button').name === 'edit-meeting' ||
+      e.target.name === 'delete-meeting' ||
+      e.target.closest('button').name === 'delete-meeting'
+    ) {
       e.preventDefault();
       e.stopPropagation();
     } else {
@@ -50,9 +67,9 @@ const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, or
   };
 
   return (
-    <Box sx={styles} _hover={{ cursor: 'pointer' }} onClick={handleClick}>
+    <Box _hover={{ cursor: 'pointer' }} onClick={handleClick} sx={styles}>
       <Flex justifyContent="space-between">
-        <Box>
+        <Box width="100%">
           <Heading as="h2" fontSize="1.125em">
             {' '}
             {title}{' '}
@@ -64,9 +81,18 @@ const Meeting: React.FC<MeetingProps> = ({ id, title, startTime, description, or
         </Box>
 
         {isAdmin && (
-          <Button name="edit-meeting" onClick={() => history.push(`/meeting/${id}/edit`)}>
-            Edit
-          </Button>
+          <HStack>
+            <Button
+              name="edit-meeting"
+              leftIcon={<img src={EditIcon} alt="edit" />}
+              onClick={() => history.push(`/meeting/${id}/edit`)}
+            />
+            <Button
+              name="delete-meeting"
+              leftIcon={<img src={DeleteIcon} alt="delete" />}
+              onClick={() => handleDeleteMeeting(id)}
+            />
+          </HStack>
         )}
       </Flex>
       <Flex justifyContent="space-between" fontSize="0.75em">

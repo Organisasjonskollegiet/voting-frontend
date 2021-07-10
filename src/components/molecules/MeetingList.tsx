@@ -4,13 +4,14 @@ import { SimpleGrid } from '@chakra-ui/layout';
 
 export interface MeetingListProps {
   meetings: Array<MeetingProps>;
+  handleDeleteMeeting: (id: string) => void;
 }
 
-const MeetingList: React.FC<MeetingListProps> = ({ meetings }) => {
+const MeetingList: React.FC<MeetingListProps> = ({ meetings, handleDeleteMeeting }) => {
   return (
     <SimpleGrid col="1" gap="1.5em">
       {meetings.map((meeting) => (
-        <Meeting {...meeting} key={meeting.id} />
+        <Meeting {...meeting} handleDeleteMeeting={handleDeleteMeeting} key={meeting.id} />
       ))}
     </SimpleGrid>
   );

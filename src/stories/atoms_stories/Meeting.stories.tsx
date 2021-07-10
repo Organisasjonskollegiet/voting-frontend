@@ -9,9 +9,13 @@ export default {
   component: Meeting,
 } as Meta;
 
+const handleDeleteMeeting = (id: string) => {
+  return;
+};
+
 const Template: Story<MeetingProps> = (args) => (
   <Box width="600px">
-    <Meeting {...args} />
+    <Meeting handleDeleteMeeting={handleDeleteMeeting} {...args} />
   </Box>
 );
 

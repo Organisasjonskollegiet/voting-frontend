@@ -117,9 +117,11 @@ const MeetingLobby: React.FC = () => {
           <Center width="100%">
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
           </Center>
-          <Heading as="h1" fontSize="1em" mb="1.125em">
-            Kommende møter
-          </Heading>
+          {votations.length > 0 && (
+            <Heading as="h1" fontSize="1em" mb="1.125em">
+              Kommende avstemninger
+            </Heading>
+          )}
           {votations
             .filter((votation) => votation.status === VotationStatus.Upcoming)
             .map((votation) => (

@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
 import { Center, Spinner } from '@chakra-ui/react';
-import { MeetingStatus, useGetMeetingsQuery } from '../../__generated__/graphql-types';
+import { MeetingStatus, useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
 
 const MyMeetings: React.FC = () => {
-  const { data, loading, error } = useGetMeetingsQuery();
+  const { data, loading, error, refetch } = useGetMeetingsQuery();
+  const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
+
   const meetingsData = data?.meetings;
+
+  const handleDeleteMeeting = (id: string) => {
+    deleteMeeting({ variables: { id } });
+  };
+
+  useEffect(() => {
+    if (deleteMeetingResult.data?.deleteMeeting) {
+      if (meetingsData?.map((meeting) => meeting?.id).includes(deleteMeetingResult.data.deleteMeeting.id)) {
+        refetch();
+      }
+    }
+  }, [deleteMeetingResult, meetingsData, refetch]);
 
   if (error)
     return (
@@ -48,7 +62,7 @@ const MyMeetings: React.FC = () => {
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Pågående møter
             </Heading>
-            <MeetingList meetings={ongoingMeetings as Array<MeetingProps>} />
+            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={ongoingMeetings as Array<MeetingProps>} />
           </Box>
         )}
         {upcomingMeetings.length > 0 && (
@@ -56,7 +70,7 @@ const MyMeetings: React.FC = () => {
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Kommende møter
             </Heading>
-            <MeetingList meetings={upcomingMeetings as Array<MeetingProps>} />
+            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={upcomingMeetings as Array<MeetingProps>} />
           </Box>
         )}
         {endedMeetings.length > 0 && (
@@ -65,7 +79,7 @@ const MyMeetings: React.FC = () => {
               {' '}
               Tidligere møter
             </Heading>
-            <MeetingList meetings={endedMeetings as Array<MeetingProps>} />
+            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={endedMeetings as Array<MeetingProps>} />
           </Box>
         )}
       </Box>

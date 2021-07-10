@@ -4,14 +4,12 @@ import AddVotations from '../molecules/AddVotations';
 import { ParticipantInput, useUpdateMeetingMutation, useGetMeetingByIdQuery } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
-import { useAuth0 } from '@auth0/auth0-react';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory, useParams } from 'react-router';
 import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
-  const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data, loading, error } = useGetMeetingByIdQuery({
     variables: {
@@ -22,8 +20,6 @@ const AddMeeting: React.FC = () => {
   const toast = useToast();
 
   const history = useHistory();
-
-  console.log(user);
 
   const emptyMeeting = {
     title: '',
