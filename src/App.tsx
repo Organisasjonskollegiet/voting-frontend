@@ -1,16 +1,13 @@
 import React, { FC } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/pages/Navbar';
 import Votation from './components/pages/Votation';
 import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
-import { Box } from '@chakra-ui/react';
-import { darkblue } from './components/particles/theme';
 import MeetingLobby from './components/pages/MeetingLobby';
 import EditMeeting from './components/pages/EditMeeting';
 
 const App: FC = () => {
-  const location = useLocation();
   return (
     <>
       <Navbar />

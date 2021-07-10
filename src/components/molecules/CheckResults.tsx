@@ -18,7 +18,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
       const sortedAlternatives = newAlternatives.slice().sort((a, b) => b.votes - a.votes);
       setAlternatives(sortedAlternatives);
     }
-  }, [data?.getVotationResults?.alternatives]);
+  }, [data?.getVotationResults?.alternatives, alternatives.length]);
 
   useEffect(() => {
     const newVotingEligibleCount = data?.getVotationResults?.votingEligibleCount;
@@ -28,7 +28,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
   }, [data?.getVotationResults?.votingEligibleCount, votingEligibleCount]);
 
   useEffect(() => {
-    const newVoteCount = data?.getVotationResults?.votingEligibleCount;
+    const newVoteCount = data?.getVotationResults?.voteCount;
     if (newVoteCount && newVoteCount !== voteCount) {
       setVoteCount(newVoteCount);
     }
