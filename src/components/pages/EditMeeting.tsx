@@ -23,8 +23,6 @@ const AddMeeting: React.FC = () => {
 
   const history = useHistory();
 
-  console.log(user);
-
   const emptyMeeting = {
     title: '',
     organization: '',

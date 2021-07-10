@@ -58,7 +58,6 @@ const Votation: React.FC = () => {
   // const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
   //   variables: { votationId },
   // });
-  console.log(user);
 
   const [status, setStatus] = useState<VotationStatus | null>(null);
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);

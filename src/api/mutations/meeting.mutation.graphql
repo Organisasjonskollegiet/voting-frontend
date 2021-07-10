@@ -23,3 +23,9 @@ mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
 mutation AddParticipants($meetingId: String!, $participants: [ParticipantInput!]!) {
   addParticipants(meetingId: $meetingId, participants: $participants)
 }
+
+mutation DeleteMeeting($id: String!) {
+  deleteMeeting(id: $id) {
+    id
+  }
+}

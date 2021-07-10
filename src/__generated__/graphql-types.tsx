@@ -423,6 +423,19 @@ export type AddParticipantsMutation = (
   & Pick<Mutation, 'addParticipants'>
 );
 
+export type DeleteMeetingMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteMeetingMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteMeeting?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'id'>
+  )> }
+);
+
 export type CreateVotationsMutationVariables = Exact<{
   meetingId: Scalars['String'];
   votations: Array<CreateVotationInput> | CreateVotationInput;
@@ -832,6 +845,39 @@ export function useAddParticipantsMutation(baseOptions?: Apollo.MutationHookOpti
 export type AddParticipantsMutationHookResult = ReturnType<typeof useAddParticipantsMutation>;
 export type AddParticipantsMutationResult = Apollo.MutationResult<AddParticipantsMutation>;
 export type AddParticipantsMutationOptions = Apollo.BaseMutationOptions<AddParticipantsMutation, AddParticipantsMutationVariables>;
+export const DeleteMeetingDocument = gql`
+    mutation DeleteMeeting($id: String!) {
+  deleteMeeting(id: $id) {
+    id
+  }
+}
+    `;
+export type DeleteMeetingMutationFn = Apollo.MutationFunction<DeleteMeetingMutation, DeleteMeetingMutationVariables>;
+
+/**
+ * __useDeleteMeetingMutation__
+ *
+ * To run a mutation, you first call `useDeleteMeetingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMeetingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMeetingMutation, { data, loading, error }] = useDeleteMeetingMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteMeetingMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMeetingMutation, DeleteMeetingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMeetingMutation, DeleteMeetingMutationVariables>(DeleteMeetingDocument, options);
+      }
+export type DeleteMeetingMutationHookResult = ReturnType<typeof useDeleteMeetingMutation>;
+export type DeleteMeetingMutationResult = Apollo.MutationResult<DeleteMeetingMutation>;
+export type DeleteMeetingMutationOptions = Apollo.BaseMutationOptions<DeleteMeetingMutation, DeleteMeetingMutationVariables>;
 export const CreateVotationsDocument = gql`
     mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
   createVotations(meetingId: $meetingId, votations: $votations) {
