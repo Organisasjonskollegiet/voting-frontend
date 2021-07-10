@@ -3,6 +3,7 @@ import { Box, Flex, Avatar, HStack, IconButton, useDisclosure, Stack, Image } fr
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { darkblue, lightblue } from '../particles/theme';
 import { Link, NavLink } from 'react-router-dom';
+import Logo from '../../static/logo.svg';
 
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
@@ -31,7 +32,7 @@ const Navbar: React.FC = () => {
       position="relative"
     >
       <Flex as="nav" h="5.5em" alignItems="center" justifyContent="space-between">
-        <Image display={{ base: 'none', md: 'flex' }} src="Orgkol_logo.svg" alt="Organisasjonskollegiet" h="3em" />
+        <Image display={{ base: 'none', md: 'flex' }} src={Logo} alt="Organisasjonskollegiet" h="3em" />
 
         <HStack as={'nav'} spacing="5.5em" display={{ base: 'none', md: 'flex' }}>
           {pageNames.map((page) => (
