@@ -19,6 +19,17 @@ query GetMeetings {
   }
 }
 
+query GetRole($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    participants {
+      user {
+        id
+      }
+      role
+    }
+  }
+}
+
 query GetMeetingById($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
     id
