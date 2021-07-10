@@ -47,7 +47,7 @@ const MeetingLobby: React.FC = () => {
         isClosable: true,
       });
     }
-  }, [updateVotationStatusResult.data?.updateVotationStatus]);
+  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
