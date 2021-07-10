@@ -11,7 +11,6 @@ import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
-  const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data, loading, error } = useGetMeetingByIdQuery({
     variables: {
