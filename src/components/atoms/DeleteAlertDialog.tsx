@@ -13,12 +13,19 @@ interface DeleteAlertDialogProps {
   dialogIsOpen: boolean;
   handleCancelDelete: () => void;
   handleConfirmDelete: () => void;
+  type: 'meeting' | 'votation';
 }
+
+const meetingBody =
+  'Er du sikker på at du vil slette møte? All informasjon knyttet til møtet, inkludert avstemninger og stemmer vil bli slettet for godt.';
+const votationBody =
+  'Er du sikker på at du vil slette saken? All informasjon knyttet til saken, inkludert avstemninger og stemmer vil bli slettet for godt.';
 
 const DeleteAlertDialog: React.FC<DeleteAlertDialogProps> = ({
   dialogIsOpen,
   handleCancelDelete,
   handleConfirmDelete,
+  type,
 }) => {
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
@@ -27,13 +34,10 @@ const DeleteAlertDialog: React.FC<DeleteAlertDialogProps> = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Slett møte
+            {`Slett ${type === 'meeting' ? 'møte' : 'sak'}`}
           </AlertDialogHeader>
 
-          <AlertDialogBody>
-            Er du sikker på at du vil slette møte? All informasjon knyttet til møtet, inkludert avstemninger og stemmer
-            vil bli slettet for godt.
-          </AlertDialogBody>
+          <AlertDialogBody>{type === 'meeting' ? meetingBody : votationBody}</AlertDialogBody>
 
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={handleCancelDelete}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box } from '@chakra-ui/react';
 import MoveIcon from '../../static/moveIcon.svg';
 import DeleteIcon from '../../static/deleteIcon.svg';
@@ -11,6 +11,7 @@ import VotationCheckboxes from './VotationCheckboxes';
 import VotationInfoForm from './VotationInfoForm';
 import { collapsedStyle, hightlightedStyle, containerStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
+import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
 interface IProps {
   index: number;
@@ -33,6 +34,12 @@ const AddVotationForm: React.FC<IProps> = ({
   duplicateVotation,
   deleteAlternative,
 }) => {
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+
+  const handleConfirmDelete = () => {
+    deleteVotation(votation);
+  };
+
   const updateVotationFromSelect = (value: string) => {
     switch (value) {
       case 'SIMPLE':
@@ -105,7 +112,7 @@ const AddVotationForm: React.FC<IProps> = ({
             <IconButton
               aria-label="Slett møtesak"
               bg={'white'}
-              onClick={() => deleteVotation(votation)}
+              onClick={() => setDialogIsOpen(true)}
               icon={<img alt="delete" src={DeleteIcon} />}
             />
             <IconButton
@@ -115,6 +122,12 @@ const AddVotationForm: React.FC<IProps> = ({
               icon={<img alt="duplicate" src={DuplicateIcon} />}
             />
           </Box>
+          <DeleteAlertDialog
+            dialogIsOpen={dialogIsOpen}
+            handleConfirmDelete={handleConfirmDelete}
+            handleCancelDelete={() => setDialogIsOpen(false)}
+            type="votation"
+          />
         </VStack>
       )}
     </Draggable>
