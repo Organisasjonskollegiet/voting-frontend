@@ -15,6 +15,7 @@ import {
 import { MeetingStatus, useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
+import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
 const MyMeetings: React.FC = () => {
   const { data, loading, error, refetch } = useGetMeetingsQuery();
@@ -110,29 +111,11 @@ const MyMeetings: React.FC = () => {
           </Box>
         )}
       </Box>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={dialogIsOpen} onClose={() => setDialogIsOpen(false)}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Slett møte
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              Er du sikker på at du vil slette møte? All informasjon knyttet til møtet, inkludert avstemninger og
-              stemmer vil bli slettet for godt.
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={handleCancelDeleteMeeting}>
-                Avbryt
-              </Button>
-              <Button colorScheme="red" onClick={handleConfirmDeleteMeeting} ml={3}>
-                Slett
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      <DeleteAlertDialog
+        dialogIsOpen={dialogIsOpen}
+        handleCancelDelete={handleCancelDeleteMeeting}
+        handleConfirmDelete={handleConfirmDeleteMeeting}
+      />
     </PageContainer>
   );
 };
