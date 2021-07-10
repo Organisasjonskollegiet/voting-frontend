@@ -96,12 +96,12 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   useEffect(() => {
     if (!deleteAlternativesResult.data?.deleteAlternatives || alternativesToDelete.length === 0) return;
-    setAlternativesToDelete(
-      alternativesToDelete.filter(
-        (alternative) => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)
-      )
+    const rest = alternativesToDelete.filter(
+      (alternative) => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)
     );
-  }, [deleteAlternativesResult.data?.deleteAlternatives, setAlternativesToDelete, alternativesToDelete]);
+    setAlternativesToDelete(rest);
+    // eslint-disable-next-line
+  }, [deleteAlternativesResult.data?.deleteAlternatives]);
 
   useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
