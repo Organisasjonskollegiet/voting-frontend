@@ -10,6 +10,7 @@ import {
   // useNewVoteRegisteredSubscription,
   // useVotingEligibleCountQuery,
   useGetVoteCountQuery,
+  useGetWinnerOfVotationQuery,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import AlternativeList from '../molecules/AlternativeList';
@@ -20,6 +21,7 @@ import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import { darkblue } from '../particles/theme';
 import VotationController from '../molecules/VotationController';
+import CheckResults from '../molecules/CheckResults';
 
 const subtitlesStyle = {
   fontStyle: 'normal',
@@ -37,6 +39,7 @@ const Votation: React.FC = () => {
     variables: { votationId: votationId, meetingId: meetingId },
     pollInterval: 1000,
   });
+  const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
 
   // const {
   //   data: votingEligibleCountResult,
@@ -61,6 +64,14 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+  const [winner, setWinner] = useState<AlternativeType | null>();
+
+  useEffect(() => {
+    if (winnerResult?.getWinnerOfVotation && winner !== null) {
+      const result = winnerResult.getWinnerOfVotation;
+      setWinner({ id: result.id, text: result.text, votationId: result.votationId });
+    }
+  }, [winnerResult, winner]);
 
   useEffect(() => {
     if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
@@ -80,9 +91,12 @@ const Votation: React.FC = () => {
   // set initial status of votation when data on votation arrives
   useEffect(() => {
     if (data?.votationById && status !== data.votationById.status) {
+      if (data.votationById.status === 'PUBLISHED_RESULT') {
+        refetchWinner();
+      }
       setStatus(data.votationById.status);
     }
-  }, [data, status]);
+  }, [data, status, refetchWinner]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
@@ -126,18 +140,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
-    return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Loading asOverlay={false} text={'Henter votering'} />
-        </Center>
-      </>
-    );
-  }
-
-  if (error?.message === 'Not Authorised!') {
+  if (error?.message === 'Not Authorised!' || participantRole === null) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -164,17 +167,12 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (participantRole === null) {
+  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="40vh">
-          <Text>
-            Du har ikke tilgang til denne voteringen,{' '}
-            <Link href="/" textDecoration="underline">
-              gå tilbake til hjemmesiden.
-            </Link>
-          </Text>
+        <Center mt="10vh">
+          <Loading asOverlay={false} text={'Henter votering'} />
         </Center>
       </>
     );
@@ -257,19 +255,17 @@ const Votation: React.FC = () => {
             </VStack>
           </Box>
         )}
-        {status === 'CHECKING_RESULT' && (
+        {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
           <Box>
             <Loading asOverlay={false} text={'Resultatene sjekkes'} />
           </Box>
         )}
-        {status === 'PUBLISHED_RESULT' && (
+        {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
+          <CheckResults votationId={votationId} />
+        )}
+        {status === 'PUBLISHED_RESULT' && winner && (
           <Box mt="4em">
-            <VotationResult
-              text={
-                //TODO: replace with the winning alternatives text property
-                ''
-              }
-            />
+            <VotationResult text={winner.text} />
           </Box>
         )}
         {

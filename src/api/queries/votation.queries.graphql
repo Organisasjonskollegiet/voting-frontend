@@ -58,3 +58,24 @@ query GetVoteCount($votationId: String!) {
     voteCount
   }
 }
+
+query GetVotationResults($id: String!) {
+  getVotationResults(id: $id) {
+    alternatives {
+      id
+      text
+      isWinner
+      votes
+    }
+    voteCount
+    votingEligibleCount
+  }
+}
+
+query GetWinnerOfVotation($id: String!) {
+  getWinnerOfVotation(id: $id) {
+    id
+    text
+    votationId
+  }
+}

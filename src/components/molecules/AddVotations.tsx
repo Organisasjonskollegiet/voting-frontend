@@ -267,7 +267,6 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
   if (!isActive) return <></>;
 
   if (error) {
-    console.log(error);
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
