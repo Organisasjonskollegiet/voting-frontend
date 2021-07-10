@@ -37,7 +37,7 @@ const MyMeetings: React.FC = () => {
 
   return (
     <PageContainer>
-      <Box w="65vw" m="auto" pt="5em" pb="1.125em">
+      <Box w="65vw" m="auto" pt="5em" pb="1.125em" maxWidth="700px">
         {meetingsData.length === 0 && (
           <Center mb="2.625em">
             <Text>Du har ingen kommende møter</Text>
