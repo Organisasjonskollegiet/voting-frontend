@@ -13,14 +13,26 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
   const [voteCount, setVoteCount] = useState<number>(0);
 
   useEffect(() => {
-    if (data && data.getVotationResults?.alternatives) {
-      const alternatives = data.getVotationResults.alternatives as AlternativeResult[];
-      const sortedAlternatives = alternatives.slice().sort((a, b) => b.votes - a.votes);
+    const newAlternatives = data?.getVotationResults?.alternatives as AlternativeResult[];
+    if (newAlternatives && newAlternatives.length !== alternatives.length) {
+      const sortedAlternatives = newAlternatives.slice().sort((a, b) => b.votes - a.votes);
       setAlternatives(sortedAlternatives);
-      setVotingEligibleCount(data.getVotationResults.votingEligibleCount);
-      setVoteCount(data.getVotationResults.voteCount);
     }
-  }, [data]);
+  }, [data?.getVotationResults?.alternatives]);
+
+  useEffect(() => {
+    const newVotingEligibleCount = data?.getVotationResults?.votingEligibleCount;
+    if (newVotingEligibleCount && newVotingEligibleCount !== votingEligibleCount) {
+      setVotingEligibleCount(newVotingEligibleCount);
+    }
+  }, [data?.getVotationResults?.votingEligibleCount, votingEligibleCount]);
+
+  useEffect(() => {
+    const newVoteCount = data?.getVotationResults?.votingEligibleCount;
+    if (newVoteCount && newVoteCount !== voteCount) {
+      setVoteCount(newVoteCount);
+    }
+  }, [data?.getVotationResults?.voteCount, voteCount]);
 
   const getRoundedPercentage = (share: number) => {
     return Math.round(share * 100 * 100) / 100;
@@ -40,10 +52,10 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
         <Divider m="3em 0" />
         <HStack width={'100%'}>
           <Box style={styles} width={'25%'}>
-            Antall stemmer
+            Alternativ
           </Box>
           <Box style={styles} width={'25%'}>
-            Alternativ
+            Antall stemmer
           </Box>
           <Box style={styles} width={'25%'}>
             % av stemmene

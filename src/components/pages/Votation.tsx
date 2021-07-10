@@ -67,15 +67,16 @@ const Votation: React.FC = () => {
   const [winner, setWinner] = useState<AlternativeType | null>();
 
   useEffect(() => {
-    if (winnerResult?.getWinnerOfVotation && winner !== null) {
+    if (winnerResult?.getWinnerOfVotation && !winner) {
       const result = winnerResult.getWinnerOfVotation;
       setWinner({ id: result.id, text: result.text, votationId: result.votationId });
     }
   }, [winnerResult, winner]);
 
   useEffect(() => {
-    if (voteCountResult?.getVoteCount?.voteCount !== voteCount) {
-      setVoteCount(voteCountResult?.getVoteCount?.voteCount ?? voteCount);
+    const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
+    if (newVoteCount && newVoteCount !== voteCount) {
+      setVoteCount(newVoteCount);
     }
   }, [voteCountResult, voteCount]);
 

@@ -13,7 +13,7 @@ const App: FC = () => {
   const location = useLocation();
   return (
     <>
-      {location.pathname.includes('votation') ? <Box h="57px" w="100vw" bgColor={darkblue}></Box> : <Navbar />}
+      <Navbar />
       <Switch>
         <Route path="/meeting/:meetingId/votation/:votationId">
           <Votation />
