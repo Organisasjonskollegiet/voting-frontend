@@ -12,10 +12,6 @@ const MyMeetings: React.FC = () => {
 
   const meetingsData = data?.meetings;
 
-  const handleDeleteMeeting = (id: string) => {
-    deleteMeeting({ variables: { id } });
-  };
-
   useEffect(() => {
     if (deleteMeetingResult.data?.deleteMeeting) {
       if (meetingsData?.map((meeting) => meeting?.id).includes(deleteMeetingResult.data.deleteMeeting.id)) {
@@ -62,7 +58,10 @@ const MyMeetings: React.FC = () => {
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Pågående møter
             </Heading>
-            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={ongoingMeetings as Array<MeetingProps>} />
+            <MeetingList
+              handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
+              meetings={ongoingMeetings as Array<MeetingProps>}
+            />
           </Box>
         )}
         {upcomingMeetings.length > 0 && (
@@ -70,7 +69,10 @@ const MyMeetings: React.FC = () => {
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Kommende møter
             </Heading>
-            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={upcomingMeetings as Array<MeetingProps>} />
+            <MeetingList
+              handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
+              meetings={upcomingMeetings as Array<MeetingProps>}
+            />
           </Box>
         )}
         {endedMeetings.length > 0 && (
@@ -79,7 +81,10 @@ const MyMeetings: React.FC = () => {
               {' '}
               Tidligere møter
             </Heading>
-            <MeetingList handleDeleteMeeting={handleDeleteMeeting} meetings={endedMeetings as Array<MeetingProps>} />
+            <MeetingList
+              handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
+              meetings={endedMeetings as Array<MeetingProps>}
+            />
           </Box>
         )}
       </Box>

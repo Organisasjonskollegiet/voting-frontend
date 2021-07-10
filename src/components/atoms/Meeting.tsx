@@ -5,6 +5,7 @@ import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
+import DeleteAlertDialog from './DeleteAlertDialog';
 
 interface ParticipantResult {
   user: {
@@ -40,6 +41,7 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   const { user } = useAuth0();
   const history = useHistory();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
   useEffect(() => {
     if (user?.sub && participants.length > 0) {
@@ -53,15 +55,14 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   const handleClick = (e: any) => {
     // check if the button clicked was the edit or delete button and if so,
     // avoid navigating to the meeting
-    if (
-      e.target.name === 'edit-meeting' ||
-      e.target.closest('button').name === 'edit-meeting' ||
-      e.target.name === 'delete-meeting' ||
-      e.target.closest('button').name === 'delete-meeting'
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    } else {
+    // if e.target.closest('button').name gives an error, that is because you are pressing
+    // div or text inside, so you should navigate to meeting
+    try {
+      if (e.target.closest('button').name === 'edit-meeting' || e.target.closest('button').name === 'delete-meeting') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    } catch (error) {
       history.push(`/meeting/${id}`);
     }
   };
@@ -90,7 +91,7 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
             <Button
               name="delete-meeting"
               leftIcon={<img src={DeleteIcon} alt="delete" />}
-              onClick={() => handleDeleteMeeting(id)}
+              onClick={() => setDialogIsOpen(true)}
             />
           </HStack>
         )}
@@ -99,6 +100,12 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
         <Text fontWeight="bold"> {organization} </Text>
         <Text fontWeight="bold">{new Date(startTime).toLocaleDateString('nb-no')}</Text>
       </Flex>
+      <DeleteAlertDialog
+        dialogIsOpen={dialogIsOpen}
+        handleConfirmDelete={() => handleDeleteMeeting(id)}
+        handleCancelDelete={() => setDialogIsOpen(false)}
+        type="meeting"
+      />
     </Box>
   );
 };
