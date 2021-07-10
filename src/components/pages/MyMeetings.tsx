@@ -1,19 +1,46 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
-import { Center, Spinner } from '@chakra-ui/react';
+import {
+  Center,
+  Spinner,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogBody,
+  Button,
+} from '@chakra-ui/react';
 import { MeetingStatus, useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
 
 const MyMeetings: React.FC = () => {
   const { data, loading, error, refetch } = useGetMeetingsQuery();
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
+  const [meetingToDelete, setMeetingToDelete] = useState<string>('');
+  const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
 
   const meetingsData = data?.meetings;
 
   const handleDeleteMeeting = (id: string) => {
-    deleteMeeting({ variables: { id } });
+    setMeetingToDelete(id);
+    setDialogIsOpen(true);
+  };
+
+  const handleConfirmDeleteMeeting = () => {
+    if (meetingToDelete && meetingToDelete.length > 0) {
+      deleteMeeting({ variables: { id: meetingToDelete } });
+      setMeetingToDelete('');
+      setDialogIsOpen(false);
+    }
+  };
+
+  const handleCancelDeleteMeeting = () => {
+    setMeetingToDelete('');
+    setDialogIsOpen(false);
   };
 
   useEffect(() => {
@@ -83,6 +110,29 @@ const MyMeetings: React.FC = () => {
           </Box>
         )}
       </Box>
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={dialogIsOpen} onClose={() => setDialogIsOpen(false)}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Slett møte
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Er du sikker på at du vil slette møte? All informasjon knyttet til møtet, inkludert avstemninger og
+              stemmer vil bli slettet for godt.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={handleCancelDeleteMeeting}>
+                Avbryt
+              </Button>
+              <Button colorScheme="red" onClick={handleConfirmDeleteMeeting} ml={3}>
+                Slett
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   );
 };
