@@ -140,18 +140,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
-    return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Loading asOverlay={false} text={'Henter votering'} />
-        </Center>
-      </>
-    );
-  }
-
-  if (error?.message === 'Not Authorised!') {
+  if (error?.message === 'Not Authorised!' || participantRole === null) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -178,17 +167,12 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (participantRole === null) {
+  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="40vh">
-          <Text>
-            Du har ikke tilgang til denne voteringen,{' '}
-            <Link href="/" textDecoration="underline">
-              gå tilbake til hjemmesiden.
-            </Link>
-          </Text>
+        <Center mt="10vh">
+          <Loading asOverlay={false} text={'Henter votering'} />
         </Center>
       </>
     );

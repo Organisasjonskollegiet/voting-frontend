@@ -39,9 +39,9 @@ const MyMeetings: React.FC = () => {
     <PageContainer>
       <Box w="65vw" m="auto" pt="5em" pb="1.125em">
         {meetingsData.length === 0 && (
-          <Box mb="2.625em">
+          <Center mb="2.625em">
             <Text>Du har ingen kommende møter</Text>
-          </Box>
+          </Center>
         )}
         {ongoingMeetings.length > 0 && (
           <Box mb="2.625em">

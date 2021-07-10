@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Divider, HStack } from '@chakra-ui/react';
-import {
-  AlternativeResult,
-  // useVotationStatusUpdatedSubscription,
-  // useNewVoteRegisteredSubscription,
-  // useVotingEligibleCountQuery,
-  useGetVotationResultsQuery,
-} from '../../__generated__/graphql-types';
+import { AlternativeResult, useGetVotationResultsQuery } from '../../__generated__/graphql-types';
 
 interface CheckResultsProps {
   votationId: string;
-  // majorityType: MajorityType;
-  // majorityThreshold: number;
-  // votingEligibleCount: number;
-  // voteCount: number;
-  // alternatives: AlternativeType[];
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
