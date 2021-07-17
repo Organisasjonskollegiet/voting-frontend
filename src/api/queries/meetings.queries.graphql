@@ -42,11 +42,12 @@ query GetMeetingById($meetingId: String!) {
     organization
     status
     startTime
-    participants {
-      user {
-        id
-      }
-      role
-    }
+  }
+
+  participants(meetingId: $meetingId) {
+    email
+    role
+    isVotingEligible
+    userExists
   }
 }
