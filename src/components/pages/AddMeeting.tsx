@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
-import {
-  ParticipantInput,
-  useCreateMeetingMutation,
-  useUpdateMeetingMutation,
-} from '../../__generated__/graphql-types';
+import { useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router';
-import { MeetingWorking } from '../../types/types';
+import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
@@ -25,7 +21,7 @@ const AddMeeting: React.FC = () => {
     description: '',
   });
 
-  const [participants, setParticipants] = useState<ParticipantInput[]>([]);
+  const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
 
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
 
@@ -116,7 +112,7 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const handlePrevFromParticipants = (participants: ParticipantInput[]) => {
+  const handlePrevFromParticipants = (participants: ParticipantWorking[]) => {
     try {
       setActiveTab(activeTab - 1);
       setParticipants(participants);
@@ -171,7 +167,6 @@ const AddMeeting: React.FC = () => {
             onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
           />
-          {/* { meetingTabs[activeTab] } */}
         </VStack>
       </Center>
     </AuthWrapper>
