@@ -24,6 +24,10 @@ mutation AddParticipants($meetingId: String!, $participants: [ParticipantInput!]
   addParticipants(meetingId: $meetingId, participants: $participants)
 }
 
+mutation DeleteParticipants($meetingId: String!, $emails: [String!]!) {
+  deleteParticipants(meetingId: $meetingId, emails: $emails)
+}
+
 mutation DeleteMeeting($id: String!) {
   deleteMeeting(id: $id) {
     id
