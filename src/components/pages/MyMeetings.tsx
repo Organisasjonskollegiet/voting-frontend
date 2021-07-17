@@ -20,26 +20,28 @@ const MyMeetings: React.FC = () => {
     }
   }, [deleteMeetingResult, meetingsData, refetch]);
 
-  if (error)
+  if (error) {
     return (
       <Center mt="20vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
       </Center>
     );
-
-  if (loading)
+  }
+  if (loading) {
     return (
       <Center mt="15vh">
         <Spinner size="xl" />
       </Center>
     );
+  }
 
-  if (!meetingsData)
+  if (!meetingsData) {
     return (
       <Center mt="20vh">
         <Text>Du har ingen møter</Text>
       </Center>
     );
+  }
 
   const upcomingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Upcoming);
   const ongoingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Ongoing);
