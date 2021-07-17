@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { ParticipantInput, useAddParticipantsMutation } from '../../__generated__/graphql-types';
+import { useAddParticipantsMutation, useDeleteParticipantsMutation } from '../../__generated__/graphql-types';
 import { VStack, Heading, Text, useToast } from '@chakra-ui/react';
 import AddMeetingController from './AddMeetingController';
 import AddParticipantsForm from './AddParticipantsForm';
 import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles';
+import { ParticipantWorking } from '../../types/types';
 
 interface IProps {
   meetingId: string | undefined;
   onParticipantsAdded: () => void;
-  handlePrevious: (participants: ParticipantInput[]) => void;
-  previouslyAddedParticipants: ParticipantInput[];
+  handlePrevious: (participants: ParticipantWorking[]) => void;
+  previouslyAddedParticipants: ParticipantWorking[];
   isActive: boolean;
 }
 
@@ -22,23 +23,76 @@ const AddParticipants: React.FC<IProps> = ({
   previouslyAddedParticipants,
   handlePrevious,
 }) => {
-  const [participants, setParticipants] = useState<ParticipantInput[]>(previouslyAddedParticipants);
+  const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
+  const [deleteParticipants] = useDeleteParticipantsMutation();
+  const [participantsToAddOrUpdate, setParticipantsToAddOrUpdate] = useState<ParticipantWorking[]>([]);
+  const [participantsToDelete, setParticipantsToDelete] = useState<string[]>([]);
   const toast = useToast();
   const history = useHistory();
-  const handleAddParticipants = (newParticipants: ParticipantInput[]) => {
-    setParticipants([...participants, ...newParticipants]);
-  };
+
+  useEffect(() => {
+    if (previouslyAddedParticipants.length > 0) {
+      const participantEmails = participants.map((participant: ParticipantWorking) => participant.email);
+      setParticipants([
+        ...participants,
+        ...previouslyAddedParticipants.filter((participant) => !participantEmails.includes(participant.email)),
+      ]);
+    }
+    // eslint-disable-next-line
+  }, [previouslyAddedParticipants]);
 
   const handleNext = () => {
     if (!meetingId) return;
-    addParticipants({
-      variables: {
-        meetingId,
-        participants,
-      },
-    });
+    if (participantsToAddOrUpdate.length > 0) {
+      addParticipants({
+        variables: {
+          meetingId,
+          participants: participantsToAddOrUpdate.map((participant) => {
+            return {
+              email: participant.email,
+              role: participant.role,
+              isVotingEligible: participant.isVotingEligible,
+            };
+          }),
+        },
+      });
+    }
+    if (participantsToDelete.length > 0) {
+      deleteParticipants({ variables: { meetingId, emails: participantsToDelete } });
+    }
     history.push('/');
+  };
+
+  const handleAddOrUpdateParticipants = (addedOrUpdatedParticipants: ParticipantWorking[]) => {
+    const nonUpdatedParticipants: ParticipantWorking[] = [];
+    const addedOrUpdatedParticipantEmails = addedOrUpdatedParticipants.map((participant) => participant.email);
+    participants.forEach((participant) => {
+      if (!addedOrUpdatedParticipantEmails.includes(participant.email)) {
+        nonUpdatedParticipants.push(participant);
+      }
+    });
+    // If a participant currently on the delete-list is added, it should be removed from the delete-list
+    setParticipantsToDelete(
+      participantsToDelete.filter(
+        (participantToDelete) => !addedOrUpdatedParticipantEmails.includes(participantToDelete)
+      )
+    );
+    setParticipantsToAddOrUpdate([
+      ...participantsToAddOrUpdate.filter(
+        (participant) => !addedOrUpdatedParticipantEmails.includes(participant.email)
+      ),
+      ...addedOrUpdatedParticipants,
+    ]);
+    setParticipants([...nonUpdatedParticipants, ...addedOrUpdatedParticipants]);
+  };
+
+  const deleteParticipant = (participant: ParticipantWorking) => {
+    setParticipants(participants.filter((existingParticipant) => existingParticipant.email !== participant.email));
+    setParticipantsToAddOrUpdate(
+      participantsToAddOrUpdate.filter((existingParticipant) => existingParticipant.email !== participant.email)
+    );
+    if (participant.existsInDb) setParticipantsToDelete([...participantsToDelete, participant.email]);
   };
 
   if (addParticipantsResult.data?.addParticipants) {
@@ -67,7 +121,11 @@ const AddParticipants: React.FC<IProps> = ({
         </Heading>
         <Text fontSize="20px">Her kan du invitere deltagere og gi redigeringstilgang</Text>
       </VStack>
-      <AddParticipantsForm participants={participants} handleAddParticipants={handleAddParticipants} />
+      <AddParticipantsForm
+        participants={participants}
+        addOrUpdateParticipants={handleAddOrUpdateParticipants}
+        deleteParticipant={deleteParticipant}
+      />
       <AddMeetingController
         handleNext={handleNext}
         showPrev={true}
