@@ -1,13 +1,15 @@
 import React, { ReactNode } from 'react';
-import { Box, Flex, Avatar, HStack, IconButton, useDisclosure, Stack, Image } from '@chakra-ui/react';
+import { Box, Flex, /*Avatar,*/ HStack, IconButton, useDisclosure, Stack, Image, Button } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { darkblue, lightblue } from '../particles/theme';
-import { Link, NavLink } from 'react-router-dom';
+import { /*Link,*/ NavLink } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import Logo from '../../static/logo.svg';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
-  ['Min profil', '/profile'],
+  // ['Min profil', '/profile'],
   ['Opprett møte', '/meeting/new'],
 ]);
 const pageNames = Array.from(links.keys());
@@ -22,6 +24,8 @@ const NavigationLink = ({ children, link }: { children: ReactNode; link: string 
 
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { logout } = useAuth0();
+  const history = useHistory();
 
   return (
     <Box
@@ -32,7 +36,14 @@ const Navbar: React.FC = () => {
       position="relative"
     >
       <Flex as="nav" h="5.5em" alignItems="center" justifyContent="space-between">
-        <Image display={{ base: 'none', md: 'flex' }} src={Logo} alt="Organisasjonskollegiet" h="3em" />
+        <Image
+          _hover={{ cursor: 'pointer' }}
+          onClick={() => history.push('/')}
+          display={{ base: 'none', md: 'flex' }}
+          src={Logo}
+          alt="Organisasjonskollegiet"
+          h="3em"
+        />
 
         <HStack as={'nav'} spacing="5.5em" display={{ base: 'none', md: 'flex' }}>
           {pageNames.map((page) => (
@@ -42,11 +53,12 @@ const Navbar: React.FC = () => {
           ))}
         </HStack>
 
-        <Box display={{ base: 'none', md: 'flex' }}>
-          <Link to={links.get('Min profil') || ''}>
+        {/* <Box display={{ base: 'none', md: 'flex' }}> */}
+        {/* <Link to={links.get('Min profil') || ''}>
             <Avatar size="sm" />
-          </Link>
-        </Box>
+          </Link> */}
+        <Button onClick={() => logout({ returnTo: window.location.origin })}>Logg ut</Button>
+        {/* </Box> */}
 
         {/* Button to toggle hamburger menu */}
         <IconButton
