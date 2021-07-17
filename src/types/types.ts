@@ -1,4 +1,4 @@
-import { MajorityType } from '../__generated__/graphql-types';
+import { MajorityType, ParticipantInput } from '../__generated__/graphql-types';
 
 export interface MeetingWorking {
   id?: string;
@@ -7,6 +7,10 @@ export interface MeetingWorking {
   startTime: Date;
   description: string;
 }
+
+export type ParticipantWorking = ParticipantInput & {
+  existsInDb: boolean;
+};
 
 export interface Alternative {
   id: string;

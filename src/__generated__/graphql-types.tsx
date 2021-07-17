@@ -104,7 +104,8 @@ export type Mutation = {
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
   addParticipants?: Maybe<Scalars['Int']>;
-  deleteParticipant?: Maybe<DeleteParticipantResult>;
+  updateParticipants?: Maybe<Scalars['Int']>;
+  deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
   changeView?: Maybe<ViewState>;
 };
 
@@ -174,9 +175,15 @@ export type MutationAddParticipantsArgs = {
 };
 
 
-export type MutationDeleteParticipantArgs = {
+export type MutationUpdateParticipantsArgs = {
   meetingId: Scalars['String'];
-  userId: Scalars['String'];
+  participants: Array<UpdateParticipantInput>;
+};
+
+
+export type MutationDeleteParticipantsArgs = {
+  meetingId: Scalars['String'];
+  emails: Array<Scalars['String']>;
 };
 
 
@@ -202,6 +209,14 @@ export type ParticipantInput = {
   isVotingEligible: Scalars['Boolean'];
 };
 
+export type ParticipantOrInvite = {
+  __typename?: 'ParticipantOrInvite';
+  email: Scalars['String'];
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
+  userExists: Scalars['Boolean'];
+};
+
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
@@ -215,6 +230,8 @@ export type Query = {
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
   meetingById?: Maybe<Meeting>;
+  /** Return relevant information about invites and participants connected to meeting */
+  participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
 };
 
 
@@ -249,6 +266,11 @@ export type QueryVotingEligibleCountArgs = {
 
 
 export type QueryMeetingByIdArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryParticipantsArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -288,6 +310,13 @@ export type UpdateMeetingInput = {
   startTime?: Maybe<Scalars['DateTime']>;
   description?: Maybe<Scalars['String']>;
   status?: Maybe<MeetingStatus>;
+};
+
+export type UpdateParticipantInput = {
+  email: Scalars['String'];
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
+  userExists: Scalars['Boolean'];
 };
 
 export type UpdateVotationInput = {
@@ -421,6 +450,17 @@ export type AddParticipantsMutationVariables = Exact<{
 export type AddParticipantsMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'addParticipants'>
+);
+
+export type DeleteParticipantsMutationVariables = Exact<{
+  meetingId: Scalars['String'];
+  emails: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteParticipantsMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteParticipants'>
 );
 
 export type DeleteMeetingMutationVariables = Exact<{
@@ -593,15 +633,11 @@ export type GetMeetingByIdQuery = (
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
-    )>, participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id'>
-      )> }
-    )>> }
-  )> }
+    )> }
+  )>, participants?: Maybe<Array<Maybe<(
+    { __typename?: 'ParticipantOrInvite' }
+    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible' | 'userExists'>
+  )>>> }
 );
 
 export type GetVotationByIdQueryVariables = Exact<{
@@ -845,6 +881,38 @@ export function useAddParticipantsMutation(baseOptions?: Apollo.MutationHookOpti
 export type AddParticipantsMutationHookResult = ReturnType<typeof useAddParticipantsMutation>;
 export type AddParticipantsMutationResult = Apollo.MutationResult<AddParticipantsMutation>;
 export type AddParticipantsMutationOptions = Apollo.BaseMutationOptions<AddParticipantsMutation, AddParticipantsMutationVariables>;
+export const DeleteParticipantsDocument = gql`
+    mutation DeleteParticipants($meetingId: String!, $emails: [String!]!) {
+  deleteParticipants(meetingId: $meetingId, emails: $emails)
+}
+    `;
+export type DeleteParticipantsMutationFn = Apollo.MutationFunction<DeleteParticipantsMutation, DeleteParticipantsMutationVariables>;
+
+/**
+ * __useDeleteParticipantsMutation__
+ *
+ * To run a mutation, you first call `useDeleteParticipantsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteParticipantsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteParticipantsMutation, { data, loading, error }] = useDeleteParticipantsMutation({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *      emails: // value for 'emails'
+ *   },
+ * });
+ */
+export function useDeleteParticipantsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteParticipantsMutation, DeleteParticipantsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteParticipantsMutation, DeleteParticipantsMutationVariables>(DeleteParticipantsDocument, options);
+      }
+export type DeleteParticipantsMutationHookResult = ReturnType<typeof useDeleteParticipantsMutation>;
+export type DeleteParticipantsMutationResult = Apollo.MutationResult<DeleteParticipantsMutation>;
+export type DeleteParticipantsMutationOptions = Apollo.BaseMutationOptions<DeleteParticipantsMutation, DeleteParticipantsMutationVariables>;
 export const DeleteMeetingDocument = gql`
     mutation DeleteMeeting($id: String!) {
   deleteMeeting(id: $id) {
@@ -1249,12 +1317,12 @@ export const GetMeetingByIdDocument = gql`
     organization
     status
     startTime
-    participants {
-      user {
-        id
-      }
-      role
-    }
+  }
+  participants(meetingId: $meetingId) {
+    email
+    role
+    isVotingEligible
+    userExists
   }
 }
     `;

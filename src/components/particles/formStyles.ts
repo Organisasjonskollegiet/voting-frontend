@@ -30,7 +30,7 @@ export const collapsedStyle = {
 
 export const inputStyle = {
   background: '#fff',
-  boxShadow: ' 0px 0px 10px rgba(0, 0, 0, 0.1);',
+  boxShadow: ' 0px 0px 10px rgba(0, 0, 0, 0.1)',
   border: 'none',
 } as React.CSSProperties;
 

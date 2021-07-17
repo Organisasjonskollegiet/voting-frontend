@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
-import { ParticipantInput, useUpdateMeetingMutation, useGetMeetingByIdQuery } from '../../__generated__/graphql-types';
+import { useUpdateMeetingMutation, useGetMeetingByIdQuery } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory, useParams } from 'react-router';
-import { MeetingWorking } from '../../types/types';
+import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 const AddMeeting: React.FC = () => {
@@ -30,7 +30,7 @@ const AddMeeting: React.FC = () => {
 
   const [meeting, setMeeting] = useState<MeetingWorking>(emptyMeeting);
 
-  const [participants, setParticipants] = useState<ParticipantInput[]>([]);
+  const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
 
   const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
 
@@ -65,6 +65,16 @@ const AddMeeting: React.FC = () => {
         organization: meeting.organization,
         startTime: new Date(meeting.startTime),
       });
+      if (data.participants) {
+        setParticipants(
+          data.participants.map((participant) => {
+            return {
+              ...participant,
+              existsInDb: true,
+            };
+          }) as ParticipantWorking[]
+        );
+      }
     }
   }, [data, meeting.id]);
 
@@ -123,7 +133,7 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const handlePrevFromParticipants = (participants: ParticipantInput[]) => {
+  const handlePrevFromParticipants = (participants: ParticipantWorking[]) => {
     try {
       setActiveTab(activeTab - 1);
       setParticipants(participants);
@@ -181,7 +191,6 @@ const AddMeeting: React.FC = () => {
             onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
           />
-          {/* { meetingTabs[activeTab] } */}
         </VStack>
       </Center>
     </AuthWrapper>
