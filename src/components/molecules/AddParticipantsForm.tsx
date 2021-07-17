@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Role } from '../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Input, Divider, Button, Text, HStack, Select, Box } from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Input, Divider, Button, Text, HStack, Select } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
