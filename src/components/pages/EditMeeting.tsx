@@ -190,6 +190,7 @@ const AddMeeting: React.FC = () => {
             meetingId={meeting?.id ?? undefined}
             onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
+            ownerEmail={data?.meetingById?.owner?.email}
           />
         </VStack>
       </Center>

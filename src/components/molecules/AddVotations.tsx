@@ -257,7 +257,11 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
         ids: alternativesToDelete,
       },
     });
-    if (validVotations.length === 0) return;
+    if (validVotations.length === 0) {
+      // this navigates to add participant page
+      onVotationsCreated();
+      return;
+    }
     const votationsToCreate = validVotations.filter((votation) => !votation.existsInDb);
     const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
     handleCreateVotations(votationsToCreate);

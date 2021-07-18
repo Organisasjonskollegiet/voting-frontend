@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
-import { useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
+import { Role, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
 import { useHistory } from 'react-router';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const AddMeeting: React.FC = () => {
+  const { user } = useAuth0();
+
   const toast = useToast();
 
   const history = useHistory();
@@ -30,6 +33,10 @@ const AddMeeting: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
+    setParticipants([
+      ...participants,
+      { email: user?.email ?? '', role: Role.Admin, isVotingEligible: true, existsInDb: true },
+    ]);
     setMeeting({
       id: meeting.id,
       title: meeting.title,
@@ -166,6 +173,7 @@ const AddMeeting: React.FC = () => {
             meetingId={meeting?.id ?? undefined}
             onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
+            ownerEmail={user?.email}
           />
         </VStack>
       </Center>
