@@ -84,11 +84,13 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
         {isAdmin && (
           <HStack>
             <Button
+              bg="transparent"
               name="edit-meeting"
               leftIcon={<img src={EditIcon} alt="edit" />}
               onClick={() => history.push(`/meeting/${id}/edit`)}
             />
             <Button
+              bg="transparent"
               name="delete-meeting"
               leftIcon={<img src={DeleteIcon} alt="delete" />}
               onClick={() => setDialogIsOpen(true)}
