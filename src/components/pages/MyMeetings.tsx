@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
 import { Center, Spinner } from '@chakra-ui/react';
-import { MeetingStatus, useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
+import { useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
 
@@ -43,9 +43,21 @@ const MyMeetings: React.FC = () => {
     );
   }
 
-  const upcomingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Upcoming);
-  const ongoingMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Ongoing);
-  const endedMeetings = meetingsData.filter((meeting) => meeting?.status === MeetingStatus.Ended);
+  const upcomingMeetings = meetingsData.filter((meeting) => new Date() < new Date(meeting?.startTime));
+  const ongoingMeetings = meetingsData.filter((meeting) => {
+    const start = new Date(meeting?.startTime);
+    const nextMorning = new Date(meeting?.startTime);
+    const now = new Date();
+    nextMorning.setDate(nextMorning.getDate() + 1);
+    nextMorning.setHours(6);
+    return start < now && now < nextMorning;
+  });
+  const endedMeetings = meetingsData.filter((meeting) => {
+    const nextMorning = new Date(meeting?.startTime);
+    nextMorning.setDate(nextMorning.getDate() + 1);
+    nextMorning.setHours(6);
+    return nextMorning < new Date();
+  });
 
   return (
     <PageContainer>
