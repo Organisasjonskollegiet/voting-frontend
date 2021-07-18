@@ -117,7 +117,7 @@ const MeetingLobby: React.FC = () => {
           <Center width="100%">
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
           </Center>
-          {votations.length > 0 && (
+          {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Kommende avstemninger
             </Heading>
@@ -125,7 +125,7 @@ const MeetingLobby: React.FC = () => {
           {votations
             .filter((votation) => votation.status === VotationStatus.Upcoming)
             .map((votation) => (
-              <HStack style={votationStyles} width="100%" justifyContent="space-between">
+              <HStack key={votation.id} style={votationStyles} width="100%" justifyContent="space-between">
                 <VStack align="start">
                   <Heading as="h2" fontSize="1.125em">
                     {' '}

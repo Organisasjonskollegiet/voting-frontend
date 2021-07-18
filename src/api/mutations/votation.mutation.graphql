@@ -1,6 +1,7 @@
 mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
   createVotations(meetingId: $meetingId, votations: $votations) {
     id
+    meetingId
     title
     description
     index

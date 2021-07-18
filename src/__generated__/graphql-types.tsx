@@ -104,7 +104,6 @@ export type Mutation = {
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
   addParticipants?: Maybe<Scalars['Int']>;
-  updateParticipants?: Maybe<Scalars['Int']>;
   deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
   changeView?: Maybe<ViewState>;
 };
@@ -172,12 +171,6 @@ export type MutationDeleteMeetingArgs = {
 export type MutationAddParticipantsArgs = {
   meetingId: Scalars['String'];
   participants: Array<ParticipantInput>;
-};
-
-
-export type MutationUpdateParticipantsArgs = {
-  meetingId: Scalars['String'];
-  participants: Array<UpdateParticipantInput>;
 };
 
 
@@ -395,7 +388,8 @@ export enum VotationStatus {
   Upcoming = 'UPCOMING',
   Open = 'OPEN',
   CheckingResult = 'CHECKING_RESULT',
-  PublishedResult = 'PUBLISHED_RESULT'
+  PublishedResult = 'PUBLISHED_RESULT',
+  Invalid = 'INVALID'
 }
 
 export type Vote = {
@@ -486,7 +480,7 @@ export type CreateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { createVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
+    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -650,10 +644,10 @@ export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'severalVotes'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'severalVotes' | 'hiddenVotes' | 'majorityType' | 'majorityThreshold' | 'meetingId'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text'>
+      & Pick<Alternative, 'id' | 'text' | 'votationId'>
     )>>> }
   )>, meetingById?: Maybe<(
     { __typename?: 'Meeting' }
@@ -950,6 +944,7 @@ export const CreateVotationsDocument = gql`
     mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
   createVotations(meetingId: $meetingId, votations: $votations) {
     id
+    meetingId
     title
     description
     index
@@ -1365,10 +1360,15 @@ export const GetVotationByIdDocument = gql`
     alternatives {
       id
       text
+      votationId
     }
     status
     blankVotes
     severalVotes
+    hiddenVotes
+    majorityType
+    majorityThreshold
+    meetingId
   }
   meetingById(meetingId: $meetingId) {
     participants {
