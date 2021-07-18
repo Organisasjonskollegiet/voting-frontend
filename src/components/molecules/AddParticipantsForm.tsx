@@ -11,9 +11,15 @@ interface IProps {
   participants: ParticipantWorking[];
   addOrUpdateParticipants: (addedParticipants: ParticipantWorking[]) => void;
   deleteParticipant: (participant: ParticipantWorking) => void;
+  ownerEmail: string | undefined;
 }
 
-const AddParticipantsForm: React.FC<IProps> = ({ participants, addOrUpdateParticipants, deleteParticipant }) => {
+const AddParticipantsForm: React.FC<IProps> = ({
+  participants,
+  addOrUpdateParticipants,
+  deleteParticipant,
+  ownerEmail,
+}) => {
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
 
@@ -146,6 +152,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ participants, addOrUpdatePartic
                     <Text>{participant.email}</Text>
                     <HStack>
                       <Select
+                        disabled={ownerEmail === participant.email}
                         width="10em"
                         value={participant.role}
                         onChange={(e) =>
@@ -165,6 +172,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ participants, addOrUpdatePartic
                         <option value={Role.Participant}>Deltaker</option>
                       </Select>
                       <Button
+                        disabled={ownerEmail === participant.email}
                         background="transparent"
                         _hover={{ background: 'transparent' }}
                         isActive={false}

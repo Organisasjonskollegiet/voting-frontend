@@ -14,6 +14,7 @@ interface IProps {
   handlePrevious: (participants: ParticipantWorking[]) => void;
   previouslyAddedParticipants: ParticipantWorking[];
   isActive: boolean;
+  ownerEmail: string | undefined;
 }
 
 const AddParticipants: React.FC<IProps> = ({
@@ -22,6 +23,7 @@ const AddParticipants: React.FC<IProps> = ({
   onParticipantsAdded,
   previouslyAddedParticipants,
   handlePrevious,
+  ownerEmail,
 }) => {
   const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
@@ -125,6 +127,7 @@ const AddParticipants: React.FC<IProps> = ({
         participants={participants}
         addOrUpdateParticipants={handleAddOrUpdateParticipants}
         deleteParticipant={deleteParticipant}
+        ownerEmail={ownerEmail}
       />
       <AddMeetingController
         handleNext={handleNext}
