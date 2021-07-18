@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Box, VStack, Divider, HStack } from '@chakra-ui/react';
-import { AlternativeResult, useGetVotationResultsQuery } from '../../__generated__/graphql-types';
+import { Box, VStack, Divider, HStack, Button } from '@chakra-ui/react';
+import {
+  AlternativeResult,
+  useGetVotationResultsQuery,
+  useUpdateVotationStatusMutation,
+  VotationStatus,
+} from '../../__generated__/graphql-types';
+import { useHistory } from 'react-router';
 
 interface CheckResultsProps {
   votationId: string;
+  meetingId: string;
 }
 
-const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
+const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId }) => {
   const { data } = useGetVotationResultsQuery({ variables: { id: votationId } });
   const [alternatives, setAlternatives] = useState<AlternativeResult[]>([]);
+  const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [votingEligibleCount, setVotingEligibleCount] = useState<number>(0);
   const [voteCount, setVoteCount] = useState<number>(0);
+  const history = useHistory();
 
   useEffect(() => {
     const newAlternatives = data?.getVotationResults?.alternatives as AlternativeResult[];
@@ -36,6 +45,11 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
 
   const getRoundedPercentage = (share: number) => {
     return Math.round(share * 100 * 100) / 100;
+  };
+
+  const handleInvalidResult = () => {
+    updateVotationStatus({ variables: { id: votationId, status: VotationStatus.Invalid } });
+    history.push(`/meeting/${meetingId}/edit`);
   };
 
   return (
@@ -79,6 +93,9 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId }) => {
             </HStack>
           </>
         ))}
+        <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => handleInvalidResult()}>
+          Erklær resultat ugyldig og gå til møteadministrering
+        </Button>
       </VStack>
     </Box>
   );

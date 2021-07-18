@@ -8,10 +8,15 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     alternatives {
       id
       text
+      votationId
     }
     status
     blankVotes
     severalVotes
+    hiddenVotes
+    majorityType
+    majorityThreshold
+    meetingId
   }
 
   meetingById(meetingId: $meetingId) {
