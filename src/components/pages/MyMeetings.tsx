@@ -1,24 +1,32 @@
 import React, { useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
 import MeetingList from '../molecules/MeetingList';
-import { Center, Spinner } from '@chakra-ui/react';
+import { Center, Spinner, useToast } from '@chakra-ui/react';
 import { useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
 import { MeetingProps } from '../atoms/Meeting';
 import PageContainer from '../atoms/PageContainer';
+import Loading from '../atoms/Loading';
 
 const MyMeetings: React.FC = () => {
   const { data, loading, error, refetch } = useGetMeetingsQuery();
   const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
-
+  const toast = useToast();
   const meetingsData = data?.meetings;
 
   useEffect(() => {
     if (deleteMeetingResult.data?.deleteMeeting) {
       if (meetingsData?.map((meeting) => meeting?.id).includes(deleteMeetingResult.data.deleteMeeting.id)) {
         refetch();
+        toast({
+          title: 'Møtet ble slettet',
+          description: '',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
       }
     }
-  }, [deleteMeetingResult, meetingsData, refetch]);
+  }, [deleteMeetingResult.data, meetingsData, refetch, toast]);
 
   if (error) {
     return (
@@ -52,6 +60,7 @@ const MyMeetings: React.FC = () => {
     nextMorning.setHours(6);
     return start < now && now < nextMorning;
   });
+
   const endedMeetings = meetingsData.filter((meeting) => {
     const nextMorning = new Date(meeting?.startTime);
     nextMorning.setDate(nextMorning.getDate() + 1);
@@ -61,6 +70,7 @@ const MyMeetings: React.FC = () => {
 
   return (
     <PageContainer>
+      {deleteMeetingResult.loading && <Loading asOverlay={true} text="Sletter møte" />}
       <Box w="65vw" m="auto" pt="5em" pb="1.125em" maxWidth="700px">
         {meetingsData.length === 0 && (
           <Center mb="2.625em">
