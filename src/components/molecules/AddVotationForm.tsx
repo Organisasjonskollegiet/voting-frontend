@@ -93,7 +93,7 @@ const AddVotationForm: React.FC<IProps> = ({
     <Draggable isDragDisabled={true} draggableId={votation.id} index={index}>
       {(provided) => (
         <VStack sx={containerStyle} ref={provided.innerRef} {...provided.draggableProps} width="100%" spacing="5">
-          <HStack spacing="10" width="100%" align="start">
+          <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">
             <VStack spacing="7" flex="2">
               <VotationInfoForm votation={votation} updateVotation={updateVotation} />
               <AlternativesForm
