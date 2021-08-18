@@ -22,7 +22,7 @@ const AddMeetingStatus: React.FC<IProps> = ({ active }) => {
       <HStack width="100%" spacing="4" marginBottom="32px">
         <Text sx={active === 0 ? activeStyle : undefined}>Opprette møte</Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 1 ? activeStyle : undefined}>Legge til møtesaker</Text>
+        <Text sx={active === 1 ? activeStyle : undefined}>Legge til voteringer</Text>
         <Divider sx={dividerStyle} />
         <Text sx={active === 2 ? activeStyle : undefined}>Invitere møtedeltakere</Text>
       </HStack>

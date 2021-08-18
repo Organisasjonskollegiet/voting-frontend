@@ -289,10 +289,10 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
       )}
       <VStack spacing="5" align="left">
         <Heading sx={h1Style} as="h1">
-          Legg til møtesaker
+          Legg til voteringer
         </Heading>
         <Text fontSize="20px">
-          Her kan du legge til informasjon om møtet. Saker kan også legges til på et senere tidspunkt.
+          Her kan du legge til informasjon om møtet. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="list">

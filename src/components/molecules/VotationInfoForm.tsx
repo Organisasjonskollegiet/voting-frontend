@@ -12,7 +12,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
   return (
     <>
       <FormControl>
-        <FormLabel sx={labelStyle}>Sakstittel</FormLabel>
+        <FormLabel sx={labelStyle}>Tittel</FormLabel>
         <Input
           sx={inputStyle}
           onChange={(e) =>
