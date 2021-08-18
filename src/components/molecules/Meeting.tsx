@@ -5,7 +5,7 @@ import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
-import DeleteAlertDialog from './DeleteAlertDialog';
+import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
 interface ParticipantResult {
   user: {

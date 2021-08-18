@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import MeetingList, { MeetingListProps } from '../../components/molecules/MeetingList';
+import MeetingList, { MeetingListProps } from '../../components/particles/MeetingList';
 import { Box } from '@chakra-ui/layout';
 import { Role } from '../../__generated__/graphql-types';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Heading, VStack, Text, useToast, Center } from '@chakra-ui/react';
-import AddMeetingVotationList from './AddMeetingVotationList';
+import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import {
   MajorityType,
@@ -10,9 +10,9 @@ import {
   useDeleteAlternativesMutation,
   useVotationsByMeetingIdLazyQuery,
 } from '../../__generated__/graphql-types';
-import AddMeetingController from './AddMeetingController';
+import AddMeetingController from '../molecules/AddMeetingController';
 import Loading from '../atoms/Loading';
-import { h1Style } from '../particles/formStyles';
+import { h1Style } from './formStyles';
 import { v4 as uuid } from 'uuid';
 import { Votation, Alternative } from '../../types/types';
 
