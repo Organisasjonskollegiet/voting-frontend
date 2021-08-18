@@ -31,6 +31,8 @@ const AddMeeting: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number>(0);
 
+  const [votationsMayExist, setVotationsMayExist] = useState<boolean>(false);
+
   const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
     setParticipants([
       ...participants,
@@ -101,6 +103,7 @@ const AddMeeting: React.FC = () => {
   const handlePrevFromVotation = () => {
     try {
       setActiveTab(activeTab - 1);
+      setVotationsMayExist(true);
     } catch (error) {
       console.log('error', error);
     }
@@ -153,6 +156,7 @@ const AddMeeting: React.FC = () => {
           />
           <AddVotations
             isActive={activeTab === 1}
+            votationsMayExist={votationsMayExist}
             onVotationsCreated={onVotationsCreated}
             meetingId={meeting?.id ?? ''}
             handlePrevious={handlePrevFromVotation}
