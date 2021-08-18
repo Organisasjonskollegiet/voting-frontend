@@ -5,7 +5,7 @@ import { useUpdateMeetingMutation, useGetMeetingByIdQuery } from '../../__genera
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
-import { useHistory, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 

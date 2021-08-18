@@ -5,7 +5,6 @@ import { Role, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
-import { useHistory } from 'react-router';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
