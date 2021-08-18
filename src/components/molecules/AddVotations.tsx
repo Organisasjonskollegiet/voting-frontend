@@ -39,7 +39,7 @@ const getEmptyVotation = () => {
         },
       ],
       blankVotes: false,
-      hiddenVotes: false,
+      hiddenVotes: true,
       severalVotes: false,
       majorityType: 'SIMPLE' as MajorityType,
       majorityThreshold: 50,

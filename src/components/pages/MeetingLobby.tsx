@@ -16,7 +16,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
-  console.log(user)
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
     variables: {
