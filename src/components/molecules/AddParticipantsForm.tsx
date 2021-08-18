@@ -36,27 +36,35 @@ const AddParticipantsForm: React.FC<IProps> = ({
     setParticipants(sortedParticipants);
     const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     input.value = '';
-    toast({
-        title: 'Deltakerlisten ble oppdatert',
-        description: '',
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      });
+    const toastId = 'participantsUpdated';
+    if (! toast.isActive(toastId)) {
+      toast({
+          id: toastId,
+          title: 'Deltakerlisten ble oppdatert',
+          description: '',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+    }
+    // eslint-disable-next-line
   }, [addParticipantsResult.data])
   
   useEffect(() => {
     if (!participants || !deleteParticipantsResult.data) return;
-    console.log(deleteParticipantsResult)
     setParticipants(participants.filter(p => !deleteParticipantsResult.data?.deleteParticipants?.includes(p.email)))
+    const toastId = 'participantDeleted'
+    if (!toast.isActive(toastId))
     toast({
-         title: `Deltakeren ble slettet.`,
+        id: toastId,
+        title: `Deltakeren ble slettet.`,
         description: '',
         status: 'success',
         duration: 9000,
         isClosable: true,
      
     })
+    // eslint-disable-next-line
   }, [deleteParticipantsResult.data])
 
   const getRole = (role: string) => {
