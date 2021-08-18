@@ -6,7 +6,6 @@ import AddMeetingStatus from './AddMeetingStatus';
 interface IProps {
   handleNavigation: (nextIndex: number) => void;
   showPrev: boolean;
-  // handlePrev?: () => void;
   activeTab: number;
 }
 
