@@ -90,16 +90,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
           }]
         }
       })
-      // addOrUpdateParticipants([
-      //   {
-      //     email,
-      //     role: inputRole,
-      //     isVotingEligible: true,
-      //     existsInDb: false,
-      //   },
-      // ]);
     }
-    // input.value = '';
   };
 
   const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +129,6 @@ const AddParticipantsForm: React.FC<IProps> = ({
           participants: newParticipants
         }
       })
-      // addOrUpdateParticipants([...newParticipants]);
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
@@ -224,14 +214,6 @@ const AddParticipantsForm: React.FC<IProps> = ({
                             }
                           })
                         }
-                          // addOrUpdateParticipants([
-                          //   {
-                          //     email: participant.email,
-                          //     role: e.target.value as Role,
-                          //     isVotingEligible: true,
-                          //     existsInDb: participant.existsInDb,
-                          //   },
-                          // ])
                         }
                         style={{ border: 'none' }}
                       >
