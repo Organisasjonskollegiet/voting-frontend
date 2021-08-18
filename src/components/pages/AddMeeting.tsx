@@ -75,7 +75,7 @@ const AddMeeting: React.FC = () => {
     return meeting.organization !== '' && meeting.title !== '' && meeting.description !== '';
   };
 
-  const handleNextFromMeeting = () => {
+  const handleNextFromMeeting = (nextIndex: number) => {
     const isValid = isMeetingInformationValid();
     if (!isValid) {
       toast({
@@ -92,7 +92,7 @@ const AddMeeting: React.FC = () => {
     } else if (meetingHasBeenEdited && meeting.id) {
       updateMeeting({ variables: { meeting: { ...meeting, id: meeting.id } } });
     } else {
-      setActiveTab(1);
+      setActiveTab(nextIndex);
     }
   };
 
@@ -109,9 +109,9 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const handlePrevFromParticipants = (participants: ParticipantWorking[]) => {
+  const handlePrevFromParticipants = (participants: ParticipantWorking[], nextIndex: number) => {
     try {
-      setActiveTab(activeTab - 1);
+      setActiveTab(nextIndex);
       setParticipants(participants);
     } catch (error) {
       console.log('error', error);
@@ -152,7 +152,7 @@ const AddMeeting: React.FC = () => {
               setMeetingHasBeenEdited(true);
               setMeeting(meeting);
             }}
-            handleNext={handleNextFromMeeting}
+            handleNavigation={handleNextFromMeeting}
           />
           <AddVotations
             isActive={activeTab === 1}
@@ -165,7 +165,7 @@ const AddMeeting: React.FC = () => {
             isActive={activeTab === 2}
             previouslyAddedParticipants={participants}
             meetingId={meeting?.id ?? undefined}
-            handlePrevious={handlePrevFromParticipants}
+            handleNavigation={handlePrevFromParticipants}
             ownerEmail={user?.email}
           />
         </VStack>

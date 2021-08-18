@@ -254,6 +254,14 @@ const AddVotations: React.FC<IProps> = ({
     updateVotations({ variables: { votations: preparedVotations } });
   };
 
+  const handleNavigation = (nextIndex: number) => {
+    if (nextIndex === 0) {
+      handlePrevious();
+    } else if (nextIndex === 2) {
+      handleNext();
+    }
+  };
+
   const handleNext = () => {
     if (votationsToDelete.length > 0) {
       deleteVotations({
@@ -323,7 +331,7 @@ const AddVotations: React.FC<IProps> = ({
           </Droppable>
         </DragDropContext>
       </VStack>
-      <AddMeetingController handleNext={handleNext} showPrev={true} handlePrev={handlePrevious} activeTab={1} />
+      <AddMeetingController handleNavigation={handleNavigation} showPrev={true} activeTab={1} />
     </>
   );
 };

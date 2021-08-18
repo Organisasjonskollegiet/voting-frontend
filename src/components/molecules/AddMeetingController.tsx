@@ -4,13 +4,12 @@ import ArrowLeft from '../../static/arrowLeft.svg';
 import AddMeetingStatus from './AddMeetingStatus';
 
 interface IProps {
-  handleNext: () => void;
+  handleNavigation: (nextIndex: number) => void;
   showPrev: boolean;
-  handlePrev?: () => void;
   activeTab: number;
 }
 
-const AddMeetingController: React.FC<IProps> = ({ handleNext, showPrev, activeTab, handlePrev }) => {
+const AddMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, activeTab }) => {
   const buttonStyle = {
     p: '1.5em 4em',
     borderRadius: '16em',
@@ -31,18 +30,18 @@ const AddMeetingController: React.FC<IProps> = ({ handleNext, showPrev, activeTa
               maxWidth="100px"
               fontWeight="normal"
               bg="#f9f9f9"
-              onClick={handlePrev}
+              onClick={() => handleNavigation(activeTab - 1)}
             >
               Forrige
             </Button>
           ) : (
             <Box />
           )}
-          <Button sx={buttonStyle} onClick={handleNext}>
+          <Button sx={buttonStyle} onClick={() => handleNavigation(activeTab + 1)}>
             {activeTab !== 2 ? 'Neste' : 'Fullfør'}
           </Button>
         </Grid>
-        <AddMeetingStatus active={activeTab} />
+        <AddMeetingStatus handleNavigation={handleNavigation} active={activeTab} />
       </VStack>
     </>
   );

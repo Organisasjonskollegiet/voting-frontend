@@ -8,7 +8,7 @@ import { ParticipantWorking } from '../../types/types';
 
 interface IProps {
   meetingId: string | undefined;
-  handlePrevious: (participants: ParticipantWorking[]) => void;
+  handleNavigation: (participants: ParticipantWorking[], nextIndex: number) => void;
   previouslyAddedParticipants: ParticipantWorking[];
   isActive: boolean;
   ownerEmail: string | undefined;
@@ -18,7 +18,7 @@ const AddParticipants: React.FC<IProps> = ({
   isActive,
   meetingId,
   previouslyAddedParticipants,
-  handlePrevious,
+  handleNavigation,
   ownerEmail,
 }) => {
   const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
@@ -35,10 +35,13 @@ const AddParticipants: React.FC<IProps> = ({
     // eslint-disable-next-line
   }, [previouslyAddedParticipants]);
 
-  const handleNext = () => {
-    history.push('/');
+  const handleNavigationClick = (nextIndex: number) => {
+    if (nextIndex > 2) {
+      history.push('/');
+    } else {
+      handleNavigation(participants, nextIndex);
+    }
   };
-
 
   if (!isActive) return <></>;
 
@@ -56,12 +59,7 @@ const AddParticipants: React.FC<IProps> = ({
         setParticipants={setParticipants}
         ownerEmail={ownerEmail}
       />
-      <AddMeetingController
-        handleNext={handleNext}
-        showPrev={true}
-        activeTab={2}
-        handlePrev={() => handlePrevious(participants)}
-      />
+      <AddMeetingController showPrev={true} activeTab={2} handleNavigation={handleNavigationClick} />
     </>
   );
 };
