@@ -1,27 +1,71 @@
 import React, { useState } from 'react';
-import { Role } from '../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Input, Divider, Button, Text, HStack, Select } from '@chakra-ui/react';
+import { Role, useAddParticipantsMutation, useDeleteParticipantsMutation } from '../../__generated__/graphql-types';
+import { VStack, FormControl, FormLabel, Input, Divider, Button, Text, HStack, Select, useToast } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
 import RemoveIcon from '../../static/removeIcon.svg';
 import { ParticipantWorking } from '../../types/types';
+import { useEffect } from 'react';
 
 interface IProps {
+  meetingId: string | undefined;
   participants: ParticipantWorking[];
-  addOrUpdateParticipants: (addedParticipants: ParticipantWorking[]) => void;
-  deleteParticipant: (participant: ParticipantWorking) => void;
+  setParticipants: (participants: ParticipantWorking[]) => void;
   ownerEmail: string | undefined;
 }
 
 const AddParticipantsForm: React.FC<IProps> = ({
+  meetingId,
   participants,
-  addOrUpdateParticipants,
-  deleteParticipant,
+  setParticipants,
   ownerEmail,
 }) => {
+  const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
+  const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
+  const toast = useToast();
+  const participantInputElementId = 'participantInput';
+
+  useEffect(() => {
+    if (!participants || !addParticipantsResult.data) return;
+    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantWorking[];
+    const nonUpdatedParticipants = participants.filter(participant => !newParticipants.map(p => p.email).includes(participant.email))
+    const sortedParticipants = [...nonUpdatedParticipants, ...newParticipants].sort((a, b) => a.email.localeCompare(b.email))
+    setParticipants(sortedParticipants);
+    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
+    input.value = '';
+    const toastId = 'participantsUpdated';
+    if (! toast.isActive(toastId)) {
+      toast({
+          id: toastId,
+          title: 'Deltakerlisten ble oppdatert',
+          description: '',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+    }
+    // eslint-disable-next-line
+  }, [addParticipantsResult.data])
+  
+  useEffect(() => {
+    if (!participants || !deleteParticipantsResult.data) return;
+    setParticipants(participants.filter(p => !deleteParticipantsResult.data?.deleteParticipants?.includes(p.email)))
+    const toastId = 'participantDeleted'
+    if (!toast.isActive(toastId))
+    toast({
+        id: toastId,
+        title: `Deltakeren ble slettet.`,
+        description: '',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+     
+    })
+    // eslint-disable-next-line
+  }, [deleteParticipantsResult.data])
 
   const getRole = (role: string) => {
     switch (role.toLowerCase().trim()) {
@@ -36,31 +80,32 @@ const AddParticipantsForm: React.FC<IProps> = ({
 
   const handleEnterPressed = (
     event: React.KeyboardEvent<HTMLInputElement>,
-    elementId: string,
     participants: ParticipantWorking[]
   ) => {
     if (event.code !== 'Enter') return;
-    const input = document.getElementById(elementId) as HTMLInputElement;
+    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     if (!input || !input.value || input.value.trim().length === 0) return;
     const email = input.value;
     const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
-    if (!emailAlreadyAdded) {
-      addOrUpdateParticipants([
-        {
-          email,
-          role: inputRole,
-          isVotingEligible: true,
-          existsInDb: false,
-        },
-      ]);
+    if (!emailAlreadyAdded && meetingId) {
+      addParticipants({
+        variables: {
+          meetingId,
+          participants: [{
+            email,
+            role: inputRole,
+            isVotingEligible: true,
+          }]
+        }
+      })
     }
-    input.value = '';
   };
 
   const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setReadingFiles(true);
     const input = event.target as HTMLInputElement;
     if (!(input.files && input.files.length > 0)) return;
+    if (!meetingId) throw new Error('Meeting id not defined')
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
@@ -86,7 +131,12 @@ const AddParticipantsForm: React.FC<IProps> = ({
           });
         }
       }
-      addOrUpdateParticipants([...newParticipants]);
+      addParticipants({
+        variables: {
+          meetingId,
+          participants: newParticipants
+        }
+      })
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
@@ -95,11 +145,13 @@ const AddParticipantsForm: React.FC<IProps> = ({
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
+      {addParticipantsResult.loading && <Loading asOverlay={true} text="Legger til deltaker" />}
+      {deleteParticipantsResult.loading && <Loading asOverlay={true} text="Sletter deltaker" />}
       <VStack spacing="7">
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
           <FormLabel maxWidth="320px" w="30vw">
-            <Input display="none" type="file" accept="text/csv" onChange={onFileUpload} />
+            <Input disabled={!meetingId} display="none" type="file" accept="text/csv" onChange={onFileUpload} />
             <HStack sx={inputStyle} _hover={{ cursor: 'pointer' }} padding="8px" justify="center" borderRadius="4px">
               <img alt="upload" src={UploadIcon} />
               <Text>Last opp deltagerliste fra CSV-fil</Text>
@@ -115,14 +167,16 @@ const AddParticipantsForm: React.FC<IProps> = ({
             }}
           >
             <Input
-              id="participantInput"
+              id={participantInputElementId}
+              disabled={!meetingId}
               width="80%"
               style={{ border: 'none' }}
               placeholder="Inviter deltaker med epostadresse"
-              onKeyDown={(event) => handleEnterPressed(event, 'participantInput', participants)}
+              onKeyDown={(event) => handleEnterPressed(event, participants)}
             />
             <Select
               value={inputRole}
+              disabled={!meetingId}
               onChange={(e) => setInputRole(e.target.value as Role)}
               style={{ border: 'none' }}
               width="20%"
@@ -152,18 +206,22 @@ const AddParticipantsForm: React.FC<IProps> = ({
                     <Text>{participant.email}</Text>
                     <HStack>
                       <Select
-                        disabled={ownerEmail === participant.email}
+                        disabled={ownerEmail === participant.email || !meetingId}
                         width="10em"
                         value={participant.role}
-                        onChange={(e) =>
-                          addOrUpdateParticipants([
-                            {
-                              email: participant.email,
-                              role: e.target.value as Role,
-                              isVotingEligible: true,
-                              existsInDb: participant.existsInDb,
-                            },
-                          ])
+                        onChange={(e) => {
+                          if (!meetingId) return;
+                          addParticipants({
+                            variables: {
+                              meetingId,
+                              participants: [{
+                                email: participant.email,
+                                role: e.target.value as Role,
+                                isVotingEligible: true
+                              }]
+                            }
+                          })
+                        }
                         }
                         style={{ border: 'none' }}
                       >
@@ -172,11 +230,13 @@ const AddParticipantsForm: React.FC<IProps> = ({
                         <option value={Role.Participant}>Deltaker</option>
                       </Select>
                       <Button
-                        disabled={ownerEmail === participant.email}
+                        disabled={ownerEmail === participant.email || !meetingId}
                         background="transparent"
                         _hover={{ background: 'transparent' }}
                         isActive={false}
-                        leftIcon={<img alt="remove" src={RemoveIcon} onClick={() => deleteParticipant(participant)} />}
+                        leftIcon={<img alt="remove" src={RemoveIcon} onClick={() => {
+                          if (!meetingId) return;
+                          deleteParticipants({variables: {meetingId, emails: [participant.email]}})}} />}
                       />
                     </HStack>
                   </HStack>

@@ -5,7 +5,6 @@ import { Role, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
-import { useHistory } from 'react-router';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -14,8 +13,6 @@ const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
 
   const toast = useToast();
-
-  const history = useHistory();
 
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
@@ -96,21 +93,6 @@ const AddMeeting: React.FC = () => {
     setActiveTab(2);
   };
 
-  const onParticipantsAdded = () => {
-    const toastId = 'participants-toast';
-    if (toast.isActive(toastId)) {
-      toast({
-        id: toastId,
-        title: 'Deltakere lagt til.',
-        description: 'Deltakerne har blitt lagt til møtet',
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-    history.push('/');
-  };
-
   const handlePrevFromVotation = () => {
     try {
       setActiveTab(activeTab - 1);
@@ -171,7 +153,6 @@ const AddMeeting: React.FC = () => {
             isActive={activeTab === 2}
             previouslyAddedParticipants={participants}
             meetingId={meeting?.id ?? undefined}
-            onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
             ownerEmail={user?.email}
           />
