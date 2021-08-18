@@ -3,9 +3,10 @@ import { HStack, Text, Divider, Center } from '@chakra-ui/react';
 
 interface IProps {
   active: number;
+  handleNavigation: (nextIndex: number) => void;
 }
 
-const AddMeetingStatus: React.FC<IProps> = ({ active }) => {
+const AddMeetingStatus: React.FC<IProps> = ({ active, handleNavigation }) => {
   const dividerStyle = {
     border: '2px solid',
     width: '46px',
@@ -20,11 +21,29 @@ const AddMeetingStatus: React.FC<IProps> = ({ active }) => {
   return (
     <Center>
       <HStack width="100%" spacing="4" marginBottom="32px">
-        <Text sx={active === 0 ? activeStyle : undefined}>Opprette møte</Text>
+        <Text
+          onClick={() => handleNavigation(0)}
+          _hover={{ cursor: 'pointer' }}
+          sx={active === 0 ? activeStyle : undefined}
+        >
+          Opprette møte
+        </Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 1 ? activeStyle : undefined}>Legge til voteringer</Text>
+        <Text
+          onClick={() => handleNavigation(1)}
+          _hover={{ cursor: 'pointer' }}
+          sx={active === 1 ? activeStyle : undefined}
+        >
+          Legge til voteringer
+        </Text>
         <Divider sx={dividerStyle} />
-        <Text sx={active === 2 ? activeStyle : undefined}>Invitere møtedeltakere</Text>
+        <Text
+          onClick={() => handleNavigation(2)}
+          _hover={{ cursor: 'pointer' }}
+          sx={active === 2 ? activeStyle : undefined}
+        >
+          Invitere møtedeltakere
+        </Text>
       </HStack>
     </Center>
   );

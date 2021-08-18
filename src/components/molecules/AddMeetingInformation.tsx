@@ -8,11 +8,11 @@ import { MeetingWorking } from '../../types/types';
 interface IProps {
   meeting: MeetingWorking;
   updateMeeting: (meeting: MeetingWorking) => void;
-  handleNext: () => void;
+  handleNavigation: (nextIndex: number) => void;
   isActive: boolean;
 }
 
-const AddMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, meeting, handleNext }) => {
+const AddMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, meeting, handleNavigation }) => {
   const onChange = (meeting: MeetingWorking) => {
     updateMeeting(meeting);
   };
@@ -28,7 +28,7 @@ const AddMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, meet
         <Text fontSize="20px">Her kan du legge til informasjon om møtet </Text>
       </VStack>
       <MeetingInformationForm meeting={meeting} onChange={onChange} />
-      <AddMeetingController handleNext={handleNext} showPrev={false} activeTab={0} />
+      <AddMeetingController handleNavigation={handleNavigation} showPrev={false} activeTab={0} />
     </>
   );
 };
