@@ -1,5 +1,5 @@
 import React from 'react';
-import Meeting, { MeetingProps } from '../atoms/Meeting';
+import Meeting, { MeetingProps } from '../molecules/Meeting';
 import { SimpleGrid } from '@chakra-ui/layout';
 
 export interface MeetingListProps {

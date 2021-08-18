@@ -1,8 +1,8 @@
 import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
-import MeetingInformationForm from './MeetingInformationForm';
-import AddMeetingController from './AddMeetingController';
-import { h1Style } from '../particles/formStyles';
+import MeetingInformationForm from '../molecules/MeetingInformationForm';
+import AddMeetingController from '../molecules/AddMeetingController';
+import { h1Style } from './formStyles';
 import { MeetingWorking } from '../../types/types';
 
 interface IProps {

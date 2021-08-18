@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast, Text } from '@chakra-ui/react';
-import AddVotations from '../molecules/AddVotations';
+import AddVotations from '../particles/AddVotations';
 import {
   Role,
   useCreateMeetingMutation,
   useGetMeetingByIdLazyQuery,
   useUpdateMeetingMutation,
 } from '../../__generated__/graphql-types';
-import AddMeetingInformation from '../molecules/AddMeetingInformation';
+import AddMeetingInformation from '../particles/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
-import AddParticipants from '../molecules/AddParticipants';
+import AddParticipants from '../particles/AddParticipants';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';

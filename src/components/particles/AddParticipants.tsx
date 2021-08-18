@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { VStack, Heading, Text } from '@chakra-ui/react';
-import AddMeetingController from './AddMeetingController';
-import AddParticipantsForm from './AddParticipantsForm';
-import { h1Style } from '../particles/formStyles';
+import AddMeetingController from '../molecules/AddMeetingController';
+import AddParticipantsForm from '../molecules/AddParticipantsForm';
+import { h1Style } from './formStyles';
 import { ParticipantWorking } from '../../types/types';
 
 interface IProps {

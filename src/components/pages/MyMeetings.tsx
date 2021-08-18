@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Box, Heading, Text } from '@chakra-ui/layout';
-import MeetingList from '../molecules/MeetingList';
+import MeetingList from '../particles/MeetingList';
 import { Center, Spinner, useToast } from '@chakra-ui/react';
 import { useGetMeetingsQuery, useDeleteMeetingMutation } from '../../__generated__/graphql-types';
-import { MeetingProps } from '../atoms/Meeting';
+import { MeetingProps } from '../molecules/Meeting';
 import PageContainer from '../atoms/PageContainer';
 import Loading from '../atoms/Loading';
 
