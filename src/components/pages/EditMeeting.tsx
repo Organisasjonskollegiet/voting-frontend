@@ -110,21 +110,6 @@ const AddMeeting: React.FC = () => {
     setActiveTab(2);
   };
 
-  const onParticipantsAdded = () => {
-    const toastId = 'participants-toast';
-    if (toast.isActive(toastId)) {
-      toast({
-        id: toastId,
-        title: 'Deltakere lagt til.',
-        description: 'Deltakerne har blitt lagt til møtet',
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-    history.push('/');
-  };
-
   const handlePrevFromVotation = () => {
     try {
       setActiveTab(activeTab - 1);
@@ -188,7 +173,6 @@ const AddMeeting: React.FC = () => {
             isActive={activeTab === 2}
             previouslyAddedParticipants={participants}
             meetingId={meeting?.id ?? undefined}
-            onParticipantsAdded={onParticipantsAdded}
             handlePrevious={handlePrevFromParticipants}
             ownerEmail={data?.meetingById?.owner?.email}
           />

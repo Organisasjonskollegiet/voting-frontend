@@ -103,7 +103,7 @@ export type Mutation = {
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
-  addParticipants?: Maybe<Scalars['Int']>;
+  addParticipants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
   deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
   changeView?: Maybe<ViewState>;
 };
@@ -207,7 +207,6 @@ export type ParticipantOrInvite = {
   email: Scalars['String'];
   role: Role;
   isVotingEligible: Scalars['Boolean'];
-  userExists: Scalars['Boolean'];
 };
 
 export type Query = {
@@ -218,7 +217,6 @@ export type Query = {
   getVoteCount?: Maybe<VoteCountResult>;
   getWinnerOfVotation?: Maybe<Alternative>;
   getVotationResults?: Maybe<VotationResults>;
-  votingEligibleCount?: Maybe<Scalars['Int']>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -250,11 +248,6 @@ export type QueryGetWinnerOfVotationArgs = {
 
 export type QueryGetVotationResultsArgs = {
   id: Scalars['String'];
-};
-
-
-export type QueryVotingEligibleCountArgs = {
-  votationId: Scalars['String'];
 };
 
 
@@ -443,7 +436,10 @@ export type AddParticipantsMutationVariables = Exact<{
 
 export type AddParticipantsMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'addParticipants'>
+  & { addParticipants?: Maybe<Array<Maybe<(
+    { __typename?: 'ParticipantOrInvite' }
+    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
+  )>>> }
 );
 
 export type DeleteParticipantsMutationVariables = Exact<{
@@ -630,7 +626,7 @@ export type GetMeetingByIdQuery = (
     )> }
   )>, participants?: Maybe<Array<Maybe<(
     { __typename?: 'ParticipantOrInvite' }
-    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible' | 'userExists'>
+    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
   )>>> }
 );
 
@@ -681,16 +677,6 @@ export type VotationsByMeetingIdQuery = (
       )>>> }
     )>>> }
   )> }
-);
-
-export type VotingEligibleCountQueryVariables = Exact<{
-  votationId: Scalars['String'];
-}>;
-
-
-export type VotingEligibleCountQuery = (
-  { __typename?: 'Query' }
-  & Pick<Query, 'votingEligibleCount'>
 );
 
 export type GetVoteCountQueryVariables = Exact<{
@@ -845,7 +831,11 @@ export type UpdateMeetingMutationResult = Apollo.MutationResult<UpdateMeetingMut
 export type UpdateMeetingMutationOptions = Apollo.BaseMutationOptions<UpdateMeetingMutation, UpdateMeetingMutationVariables>;
 export const AddParticipantsDocument = gql`
     mutation AddParticipants($meetingId: String!, $participants: [ParticipantInput!]!) {
-  addParticipants(meetingId: $meetingId, participants: $participants)
+  addParticipants(meetingId: $meetingId, participants: $participants) {
+    email
+    role
+    isVotingEligible
+  }
 }
     `;
 export type AddParticipantsMutationFn = Apollo.MutationFunction<AddParticipantsMutation, AddParticipantsMutationVariables>;
@@ -1317,7 +1307,6 @@ export const GetMeetingByIdDocument = gql`
     email
     role
     isVotingEligible
-    userExists
   }
 }
     `;
@@ -1462,39 +1451,6 @@ export function useVotationsByMeetingIdLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type VotationsByMeetingIdQueryHookResult = ReturnType<typeof useVotationsByMeetingIdQuery>;
 export type VotationsByMeetingIdLazyQueryHookResult = ReturnType<typeof useVotationsByMeetingIdLazyQuery>;
 export type VotationsByMeetingIdQueryResult = Apollo.QueryResult<VotationsByMeetingIdQuery, VotationsByMeetingIdQueryVariables>;
-export const VotingEligibleCountDocument = gql`
-    query VotingEligibleCount($votationId: String!) {
-  votingEligibleCount(votationId: $votationId)
-}
-    `;
-
-/**
- * __useVotingEligibleCountQuery__
- *
- * To run a query within a React component, call `useVotingEligibleCountQuery` and pass it any options that fit your needs.
- * When your component renders, `useVotingEligibleCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useVotingEligibleCountQuery({
- *   variables: {
- *      votationId: // value for 'votationId'
- *   },
- * });
- */
-export function useVotingEligibleCountQuery(baseOptions: Apollo.QueryHookOptions<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>(VotingEligibleCountDocument, options);
-      }
-export function useVotingEligibleCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>(VotingEligibleCountDocument, options);
-        }
-export type VotingEligibleCountQueryHookResult = ReturnType<typeof useVotingEligibleCountQuery>;
-export type VotingEligibleCountLazyQueryHookResult = ReturnType<typeof useVotingEligibleCountLazyQuery>;
-export type VotingEligibleCountQueryResult = Apollo.QueryResult<VotingEligibleCountQuery, VotingEligibleCountQueryVariables>;
 export const GetVoteCountDocument = gql`
     query GetVoteCount($votationId: String!) {
   getVoteCount(votationId: $votationId) {
