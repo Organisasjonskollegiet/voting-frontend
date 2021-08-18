@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Center, VStack, useToast } from '@chakra-ui/react';
+import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import AddVotations from '../molecules/AddVotations';
-import { Role, useCreateMeetingMutation, useUpdateMeetingMutation } from '../../__generated__/graphql-types';
+import {
+  Role,
+  useCreateMeetingMutation,
+  useGetMeetingByIdLazyQuery,
+  useUpdateMeetingMutation,
+} from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../molecules/AddMeetingInformation';
 import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../molecules/AddParticipants';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useParams } from 'react-router';
 
 const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
+  const { meetingId } = useParams<{ meetingId: string }>();
+  const [getMeeting, { data, loading, error }] = useGetMeetingByIdLazyQuery({
+    variables: {
+      meetingId,
+    },
+  });
 
   const toast = useToast();
 
@@ -56,6 +68,35 @@ const AddMeeting: React.FC = () => {
     });
     setActiveTab(1);
   };
+
+  useEffect(() => {
+    if (meetingId && !data) {
+      getMeeting();
+    }
+  }, [meetingId, getMeeting, data]);
+
+  useEffect(() => {
+    if (data?.meetingById && !meeting.id) {
+      const meeting = data.meetingById;
+      setMeeting({
+        id: meeting.id,
+        title: meeting.title,
+        description: meeting.description ?? '',
+        organization: meeting.organization,
+        startTime: new Date(meeting.startTime),
+      });
+      if (data.participants) {
+        setParticipants(
+          data.participants.map((participant) => {
+            return {
+              ...participant,
+              existsInDb: true,
+            };
+          }) as ParticipantWorking[]
+        );
+      }
+    }
+  }, [data, meeting.id]);
 
   useEffect(() => {
     if (!updateMeetingResult.data?.updateMeeting) return;
@@ -136,6 +177,18 @@ const AddMeeting: React.FC = () => {
       title: 'Kunne ikke oppette møte',
       description: 'Det var et problem med å opprette møtet',
     });
+  }
+
+  if (loading) {
+    return <Loading asOverlay={false} text={'Henter møteinformasjon'} />;
+  }
+
+  if (error) {
+    return (
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
+    );
   }
 
   return (
