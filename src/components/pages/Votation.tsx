@@ -47,7 +47,7 @@ const Votation: React.FC = () => {
   //   error: votingEligibleCountError,
   // } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: voteCountResult, error: voteCountError } = useGetVoteCountQuery({
+  const { data: voteCountResult, error: voteCountError, loading: voteCountLoading } = useGetVoteCountQuery({
     variables: { votationId },
     pollInterval: 1000,
   });
@@ -79,7 +79,7 @@ const Votation: React.FC = () => {
     }
   }, [voteCountResult, voteCount]);
 
-  //Update isAdmin state after data of participants is received
+  //Update role after data of participants is received
   useEffect(() => {
     if (data?.meetingById?.participants && participantRole === null) {
       const participants = data?.meetingById?.participants as Array<Participant>;
@@ -140,7 +140,7 @@ const Votation: React.FC = () => {
     }
   };
 
-  if (error?.message === 'Not Authorised!' || participantRole === null) {
+  if (error?.message === 'Not Authorised!') {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
@@ -156,23 +156,23 @@ const Votation: React.FC = () => {
     );
   }
 
+  if (loading || voteCountLoading) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Loading asOverlay={false} text={'Henter votering'} />
+        </Center>
+      </>
+    );
+  }
+
   if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
       <>
         <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
           <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
-    );
-  }
-
-  if (loading || !voteCountResult?.getVoteCount?.votingEligibleCount) {
-    return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Loading asOverlay={false} text={'Henter votering'} />
         </Center>
       </>
     );

@@ -96,17 +96,19 @@ const MeetingLobby: React.FC = () => {
     marginBottom: '1em',
   } as React.CSSProperties;
 
-  if (votationError || roleError) {
-    <>
-      <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-      <Center mt="10vh">
-        <Text>Det skjedde noe galt under innlastingen</Text>
-      </Center>
-    </>;
+  if (votationLoading) {
+    return <Loading asOverlay={false} text={'Henter møte'} />;
   }
 
-  if (!votationData?.meetingById || votationLoading) {
-    return <Loading asOverlay={false} text={'Henter møte'} />;
+  if (!votationData?.meetingById || votationError || roleError) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Det skjedde noe galt under innlastingen</Text>
+        </Center>
+      </>
+    );
   }
 
   return (
