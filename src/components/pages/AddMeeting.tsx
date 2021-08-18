@@ -25,6 +25,8 @@ const AddMeeting: React.FC = () => {
 
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
 
+  const [meetingHasBeenEdited, setMeetingHasBeenEdited] = useState<boolean>(false);
+
   const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
 
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -41,6 +43,7 @@ const AddMeeting: React.FC = () => {
       organization: meeting.organization,
       startTime: new Date(meeting.startTime),
     });
+    setMeetingHasBeenEdited(false);
     const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
     toast({
       title: `Møte ${responseKeyWord}`,
@@ -82,10 +85,12 @@ const AddMeeting: React.FC = () => {
       });
       return;
     }
-    if (!meeting.id) {
+    if (meetingHasBeenEdited && !meeting.id) {
       createMeeting({ variables: { meeting } });
-    } else {
+    } else if (meetingHasBeenEdited && meeting.id) {
       updateMeeting({ variables: { meeting: { ...meeting, id: meeting.id } } });
+    } else {
+      setActiveTab(1);
     }
   };
 
@@ -140,7 +145,10 @@ const AddMeeting: React.FC = () => {
           <AddMeetingInformation
             isActive={activeTab === 0}
             meeting={meeting}
-            updateMeeting={(meeting: MeetingWorking) => setMeeting(meeting)}
+            updateMeeting={(meeting: MeetingWorking) => {
+              setMeetingHasBeenEdited(true);
+              setMeeting(meeting);
+            }}
             handleNext={handleNextFromMeeting}
           />
           <AddVotations
