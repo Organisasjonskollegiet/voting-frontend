@@ -5,7 +5,6 @@ import Votation from './components/pages/Votation';
 import AddMeeting from './components/pages/AddMeeting';
 import MyMeetings from './components/pages/MyMeetings';
 import MeetingLobby from './components/pages/MeetingLobby';
-import EditMeeting from './components/pages/EditMeeting';
 
 const App: FC = () => {
   return (
@@ -15,10 +14,10 @@ const App: FC = () => {
         <Route path="/meeting/:meetingId/votation/:votationId">
           <Votation />
         </Route>
-        <Route path="/meeting/:meetingId/edit">
-          <EditMeeting />
+        <Route key="edit-meeting" path="/meeting/:meetingId/edit">
+          <AddMeeting />
         </Route>
-        <Route path="/meeting/new">
+        <Route key="add-meeting" path="/meeting/new">
           <AddMeeting />
         </Route>
         <Route path="/meeting/:meetingId">
