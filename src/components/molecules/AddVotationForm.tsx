@@ -79,7 +79,7 @@ const AddVotationForm: React.FC<IProps> = ({
             onClick={toggleCollapsedVotation}
           >
             <HStack spacing="8">
-              <Text sx={hightlightedStyle}>{`Sak ${index + 1}`}</Text>
+              <Text sx={hightlightedStyle}>{`Votering ${index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
             <img alt="move" {...provided.dragHandleProps} src={MoveIcon} />
@@ -110,13 +110,13 @@ const AddVotationForm: React.FC<IProps> = ({
           <Divider m="3em 0" />
           <Box align="right" width="100%">
             <IconButton
-              aria-label="Slett møtesak"
+              aria-label="Slett votering"
               bg={'white'}
               onClick={() => setDialogIsOpen(true)}
               icon={<img alt="delete" src={DeleteIcon} />}
             />
             <IconButton
-              aria-label="Dupliser møtesak"
+              aria-label="Dupliser votering"
               bg={'white'}
               onClick={() => duplicateVotation(votation)}
               icon={<img alt="duplicate" src={DuplicateIcon} />}

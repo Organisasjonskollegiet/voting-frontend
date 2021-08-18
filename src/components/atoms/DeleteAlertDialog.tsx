@@ -19,7 +19,7 @@ interface DeleteAlertDialogProps {
 const meetingBody =
   'Er du sikker på at du vil slette møte? All informasjon knyttet til møtet, inkludert avstemninger og stemmer vil bli slettet for godt.';
 const votationBody =
-  'Er du sikker på at du vil slette saken? All informasjon knyttet til saken, inkludert avstemninger og stemmer vil bli slettet for godt.';
+  'Er du sikker på at du vil slette voteringen? All informasjon knyttet til voteringen, stemmer vil bli slettet for godt.';
 
 const DeleteAlertDialog: React.FC<DeleteAlertDialogProps> = ({
   dialogIsOpen,
@@ -34,7 +34,7 @@ const DeleteAlertDialog: React.FC<DeleteAlertDialogProps> = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {`Slett ${type === 'meeting' ? 'møte' : 'sak'}`}
+            {`Slett ${type === 'meeting' ? 'møte' : 'votering'}`}
           </AlertDialogHeader>
 
           <AlertDialogBody>{type === 'meeting' ? meetingBody : votationBody}</AlertDialogBody>
