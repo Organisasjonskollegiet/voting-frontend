@@ -8,7 +8,7 @@ import {
   useUpdateVotationsMutation,
   useDeleteVotationsMutation,
   useDeleteAlternativesMutation,
-  useVotationsByMeetingIdQuery,
+  useVotationsByMeetingIdLazyQuery,
 } from '../../__generated__/graphql-types';
 import AddMeetingController from './AddMeetingController';
 import Loading from '../atoms/Loading';
@@ -21,6 +21,7 @@ interface IProps {
   onVotationsCreated: () => void;
   handlePrevious: () => void;
   isActive: boolean;
+  votationsMayExist: boolean; // If votations may exists, we fetch votations from backend
 }
 
 const getEmptyVotation = () => {
@@ -49,7 +50,13 @@ const getEmptyVotation = () => {
   ];
 };
 
-const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, onVotationsCreated }) => {
+const AddVotations: React.FC<IProps> = ({
+  isActive,
+  meetingId,
+  handlePrevious,
+  onVotationsCreated,
+  votationsMayExist,
+}) => {
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
@@ -64,13 +71,19 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   const [alternativesToDelete, setAlternativesToDelete] = useState<string[]>([]);
 
-  const { data, loading, error } = useVotationsByMeetingIdQuery({
+  const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
     },
   });
 
   const toast = useToast();
+
+  useEffect(() => {
+    if (votationsMayExist) {
+      getVotationsByMeetingId();
+    }
+  }, [votationsMayExist, getVotationsByMeetingId]);
 
   const votationsAreEmpty = () => {
     if (state.votations.length !== 1) return;
@@ -270,7 +283,7 @@ const AddVotations: React.FC<IProps> = ({ isActive, meetingId, handlePrevious, o
 
   if (!isActive) return <></>;
 
-  if (error) {
+  if (error && !loading) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>

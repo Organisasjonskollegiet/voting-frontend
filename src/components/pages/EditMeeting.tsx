@@ -105,7 +105,7 @@ const AddMeeting: React.FC = () => {
     if (meeting.id && meetingHasBeenEdited) {
       updateMeeting({ variables: { meeting: { ...meeting, id: meeting.id } } });
     } else {
-      setActiveTab(1)
+      setActiveTab(1);
     }
   };
 
@@ -164,12 +164,13 @@ const AddMeeting: React.FC = () => {
             isActive={activeTab === 0}
             meeting={meeting}
             updateMeeting={(meeting: MeetingWorking) => {
-              setMeeting(meeting); 
+              setMeeting(meeting);
               setMeetingHasBeenEdited(true);
             }}
             handleNext={handleNextFromMeeting}
           />
           <AddVotations
+            votationsMayExist={true}
             isActive={activeTab === 1}
             onVotationsCreated={onVotationsCreated}
             meetingId={meeting?.id ?? ''}
