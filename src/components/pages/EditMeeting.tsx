@@ -163,7 +163,10 @@ const AddMeeting: React.FC = () => {
           <AddMeetingInformation
             isActive={activeTab === 0}
             meeting={meeting}
-            updateMeeting={(meeting: MeetingWorking) => {setMeeting(meeting); setMeetingHasBeenEdited(true);}}
+            updateMeeting={(meeting: MeetingWorking) => {
+              setMeeting(meeting); 
+              setMeetingHasBeenEdited(true);
+            }}
             handleNext={handleNextFromMeeting}
           />
           <AddVotations
