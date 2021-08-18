@@ -15,8 +15,6 @@ const AddMeeting: React.FC = () => {
 
   const toast = useToast();
 
-  const history = useHistory();
-
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
     organization: '',

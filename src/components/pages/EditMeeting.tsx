@@ -19,8 +19,6 @@ const AddMeeting: React.FC = () => {
 
   const toast = useToast();
 
-  const history = useHistory();
-
   const emptyMeeting = {
     title: '',
     organization: '',
