@@ -104,7 +104,10 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
       </Flex>
       <DeleteAlertDialog
         dialogIsOpen={dialogIsOpen}
-        handleConfirmDelete={() => handleDeleteMeeting(id)}
+        handleConfirmDelete={() => {
+          setDialogIsOpen(false);
+          handleDeleteMeeting(id);
+        }}
         handleCancelDelete={() => setDialogIsOpen(false)}
         type="meeting"
       />
