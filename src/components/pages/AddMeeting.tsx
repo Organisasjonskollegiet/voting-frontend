@@ -43,7 +43,7 @@ const AddMeeting: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  const [votationsMayExist, setVotationsMayExist] = useState<boolean>(false);
+  const [votationsMayExist, setVotationsMayExist] = useState<boolean>(!!meetingId);
 
   const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
     setParticipants([
