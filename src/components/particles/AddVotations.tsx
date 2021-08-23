@@ -188,7 +188,7 @@ const AddVotations: React.FC<IProps> = ({
   };
 
   const isValidVotation = (votation: Votation) => {
-    return votation.title !== '' && votation.description !== '';
+    return votation.title !== '';
   };
 
   const handleCreateVotations = (votations: Votation[]) => {
@@ -207,6 +207,7 @@ const AddVotations: React.FC<IProps> = ({
           .filter((alternative) => alternative !== ''),
       };
     });
+    console.log(preparedVotations);
     createVotations({ variables: { votations: preparedVotations, meetingId } });
   };
 

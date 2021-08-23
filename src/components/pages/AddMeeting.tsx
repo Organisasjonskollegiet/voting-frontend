@@ -113,7 +113,7 @@ const AddMeeting: React.FC = () => {
   }, [createMeetingResult.data?.createMeeting]);
 
   const isMeetingInformationValid = () => {
-    return meeting.organization !== '' && meeting.title !== '' && meeting.description !== '';
+    return meeting.organization !== '' && meeting.title !== '';
   };
 
   const handleNextFromMeeting = (nextIndex: number) => {
