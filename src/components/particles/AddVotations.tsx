@@ -343,6 +343,7 @@ const AddVotations: React.FC<IProps> = ({
         <Button
           w={'250px'}
           rightIcon={<AddIcon w={3} h={3} />}
+          borderRadius={'16em'}
           onClick={() => {
             const id = uuid();
             setState({ votations: [...state.votations, { ...getEmptyVotation(id), index: nextVotationIndex }] });

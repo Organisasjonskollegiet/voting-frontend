@@ -20,7 +20,7 @@ const theme = extendTheme({
       baseStyle: {
         color: darkblue,
         bg: lightblue,
-        borderRadius: '16em',
+        p: '1.5em 4em',
       },
     },
     MeetingInformationForm: MeetingInformationFormConfig,
