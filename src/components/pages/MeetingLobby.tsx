@@ -13,6 +13,7 @@ import {
 import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
+import { h1Style } from '../particles/formStyles';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -114,41 +115,43 @@ const MeetingLobby: React.FC = () => {
   return (
     <>
       <Box bg="#F9F9F9" w="100vw" pt="10vh" style={styles}>
-        <Heading mb="10" as="h3">{`Velkommen til ${votationData?.meetingById.title}`}</Heading>{' '}
-        <VStack width="90vw" maxWidth="700px" align="start">
-          <Center width="100%">
+        <VStack w="90vw" maxWidth="700px" alignItems="left">
+          <Heading sx={h1Style} as="h1">
+            {votationData?.meetingById.title}
+          </Heading>
+          <VStack align="start">
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-          </Center>
-          {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
-            <Heading as="h1" fontSize="1em" mb="1.125em">
-              Kommende avstemninger
-            </Heading>
-          )}
-          {votations
-            .filter((votation) => votation.status === VotationStatus.Upcoming)
-            .map((votation) => (
-              <HStack key={votation.id} style={votationStyles} width="100%" justifyContent="space-between">
-                <VStack align="start">
-                  <Heading as="h2" fontSize="1.125em">
-                    {' '}
-                    {votation.title}{' '}
-                  </Heading>
-                  <Text mb="1em" fontSize="0.75em">
-                    {' '}
-                    {votation.description}{' '}
-                  </Text>
-                </VStack>
-                {role === Role.Admin && (
-                  <Button
-                    onClick={() =>
-                      updateVotationStatus({ variables: { id: votation.id, status: VotationStatus.Open } })
-                    }
-                  >
-                    Start
-                  </Button>
-                )}
-              </HStack>
-            ))}
+            {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
+              <Heading as="h1" fontSize="1em" mb="1.125em">
+                Kommende avstemninger
+              </Heading>
+            )}
+            {votations
+              .filter((votation) => votation.status === VotationStatus.Upcoming)
+              .map((votation) => (
+                <HStack key={votation.id} style={votationStyles} width="100%" justifyContent="space-between">
+                  <VStack align="start">
+                    <Heading as="h2" fontSize="1.125em">
+                      {' '}
+                      {votation.title}{' '}
+                    </Heading>
+                    <Text mb="1em" fontSize="0.75em">
+                      {' '}
+                      {votation.description}{' '}
+                    </Text>
+                  </VStack>
+                  {role === Role.Admin && (
+                    <Button
+                      onClick={() =>
+                        updateVotationStatus({ variables: { id: votation.id, status: VotationStatus.Open } })
+                      }
+                    >
+                      Start
+                    </Button>
+                  )}
+                </HStack>
+              ))}
+          </VStack>
         </VStack>
       </Box>
     </>
