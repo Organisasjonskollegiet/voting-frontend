@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heading, VStack, Text, useToast, Center } from '@chakra-ui/react';
+import { Heading, VStack, Text, useToast, Center, Button } from '@chakra-ui/react';
 import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import {
@@ -15,6 +15,7 @@ import Loading from '../atoms/Loading';
 import { h1Style } from './formStyles';
 import { v4 as uuid } from 'uuid';
 import { Votation, Alternative } from '../../types/types';
+import { AddIcon } from '@chakra-ui/icons';
 
 interface IProps {
   meetingId: string;
@@ -24,30 +25,28 @@ interface IProps {
   votationsMayExist: boolean; // If votations may exists, we fetch votations from backend
 }
 
-const getEmptyVotation = () => {
-  return [
-    {
-      id: uuid(),
-      title: '',
-      description: '',
-      index: 1,
-      alternatives: [
-        {
-          id: uuid(),
-          text: '',
-          index: 0,
-          existsInDb: false,
-        },
-      ],
-      blankVotes: false,
-      hiddenVotes: true,
-      severalVotes: false,
-      majorityType: 'SIMPLE' as MajorityType,
-      majorityThreshold: 50,
-      existsInDb: false,
-      isEdited: false,
-    },
-  ];
+const getEmptyVotation = (id?: string) => {
+  return {
+    id: id ?? uuid(),
+    title: '',
+    description: '',
+    index: 1,
+    alternatives: [
+      {
+        id: uuid(),
+        text: '',
+        index: 0,
+        existsInDb: false,
+      },
+    ],
+    blankVotes: false,
+    hiddenVotes: true,
+    severalVotes: false,
+    majorityType: 'SIMPLE' as MajorityType,
+    majorityThreshold: 50,
+    existsInDb: false,
+    isEdited: false,
+  };
 };
 
 const AddVotations: React.FC<IProps> = ({
@@ -65,11 +64,15 @@ const AddVotations: React.FC<IProps> = ({
 
   const [deleteAlternatives, deleteAlternativesResult] = useDeleteAlternativesMutation();
 
-  const [state, setState] = useState<{ votations: Votation[] }>({ votations: getEmptyVotation() });
+  const [state, setState] = useState<{ votations: Votation[] }>({ votations: [getEmptyVotation()] });
 
   const [votationsToDelete, setVotationsToDelete] = useState<string[]>([]);
 
   const [alternativesToDelete, setAlternativesToDelete] = useState<string[]>([]);
+
+  const [nextVotationIndex, setNextVotationIndex] = useState<number>(0);
+
+  const [activeVotationId, setActiveVotationId] = useState<string>(state.votations[0].id);
 
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
@@ -94,8 +97,10 @@ const AddVotations: React.FC<IProps> = ({
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
-      const formattedVotations = formatVotations(votations) ?? getEmptyVotation();
+      const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
+      setNextVotationIndex(Math.max(...votations.map((votation) => votation.index)) + 1);
       setState({ votations: formattedVotations });
+      setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
     // eslint-disable-next-line
   }, [data]);
@@ -220,7 +225,7 @@ const AddVotations: React.FC<IProps> = ({
       });
     } else {
       setState({
-        votations: getEmptyVotation(),
+        votations: [getEmptyVotation()],
       });
     }
   };
@@ -325,12 +330,28 @@ const AddVotations: React.FC<IProps> = ({
                   deleteVotation={deleteVotation}
                   updateVotations={onVotationsUpdated}
                   deleteAlternative={deleteAlternative}
+                  nextIndex={nextVotationIndex}
+                  setNextIndex={setNextVotationIndex}
+                  activeVotationId={activeVotationId}
+                  setActiveVotationId={setActiveVotationId}
                 />
                 {provided.placeholder}
               </div>
             )}
           </Droppable>
         </DragDropContext>
+        <Button
+          w={'250px'}
+          rightIcon={<AddIcon w={3} h={3} />}
+          onClick={() => {
+            const id = uuid();
+            setState({ votations: [...state.votations, { ...getEmptyVotation(id), index: nextVotationIndex }] });
+            setNextVotationIndex(nextVotationIndex + 1);
+            setActiveVotationId(id);
+          }}
+        >
+          Legg til votering
+        </Button>
       </VStack>
       <AddMeetingController handleNavigation={handleNavigation} showPrev={true} activeTab={1} />
     </>
