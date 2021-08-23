@@ -201,8 +201,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           backgroundColor="white"
           borderRadius="4px"
           boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
-          m="3em 0"
-          p="0.5em 0"
+          spacing="0"
         >
           {participants.length > 0 ? (
             participants
