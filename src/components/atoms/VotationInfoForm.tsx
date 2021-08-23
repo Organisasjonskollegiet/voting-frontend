@@ -2,6 +2,7 @@ import React from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
 import { labelStyle, inputStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
+import { AutoResizeTextarea } from './AutosizeTextArea';
 
 interface IProps {
   votation: Votation;
@@ -28,15 +29,16 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
       </FormControl>
       <FormControl>
         <FormLabel sx={labelStyle}>Beskrivelse</FormLabel>
-        <Input
+        <AutoResizeTextarea
           sx={inputStyle}
-          onChange={(e) =>
+          onChange={(e: any) =>
             updateVotation({
               ...votation,
               description: e.target.value,
               isEdited: true,
             })
           }
+          minRows={1}
           value={votation.description}
           placeholder="Eg. Valg av neste styreleder"
         />

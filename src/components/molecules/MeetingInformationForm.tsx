@@ -11,6 +11,7 @@ import {
 import DatePicker from '../atoms/DatePicker/DatePicker';
 import { labelStyle, inputStyle } from '../particles/formStyles';
 import { MeetingWorking } from '../../types/types';
+import { AutoResizeTextarea } from '../atoms/AutosizeTextArea';
 
 interface IProps {
   meeting: MeetingWorking;
@@ -69,7 +70,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
       </FormControl>
       <FormControl>
         <FormLabel sx={labelStyle}>Beskrivelse av møte</FormLabel>
-        <Textarea
+        <AutoResizeTextarea
           sx={inputStyle}
           isRequired
           value={meeting.description}
