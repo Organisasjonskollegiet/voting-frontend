@@ -174,7 +174,7 @@ const AddMeeting: React.FC = () => {
 
   if (createMeetingResult.error) {
     toast({
-      title: 'Kunne ikke oppette møte',
+      title: 'Kunne ikke opprette møte',
       description: 'Det var et problem med å opprette møtet',
     });
   }
