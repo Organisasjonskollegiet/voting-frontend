@@ -8,6 +8,10 @@ interface VotationListProps {
   updateVotations: (votations: Votation[]) => void;
   deleteVotation: (votation: Votation) => void;
   deleteAlternative: (id: string) => void;
+  nextIndex: number;
+  setNextIndex: (index: number) => void;
+  activeVotationId: string;
+  setActiveVotationId: (id: string) => void;
 }
 
 const AddMeetingVotationList: React.FC<VotationListProps> = ({
@@ -15,9 +19,13 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
   updateVotations,
   deleteVotation,
   deleteAlternative,
+  nextIndex,
+  setNextIndex,
+  activeVotationId,
+  setActiveVotationId,
 }) => {
-  const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
-  const [nextIndex, setNextIndex] = useState<number>(Math.max(...votations.map((votation) => votation.index)) + 1);
+  // const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
+  // const [nextIndex, setNextIndex] = useState<number>(Math.max(...votations.map((votation) => votation.index)) + 1);
 
   const updateVotation = (votation: Votation) => {
     const indexOfUpdatedVotation = votations.findIndex((v) => v.id === votation.id);
