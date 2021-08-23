@@ -11,10 +11,10 @@ interface IProps {
 
 const AddMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, activeTab }) => {
   const buttonStyle = {
-    p: '1.5em 4em',
     bg: 'gray.500',
     color: 'white',
     width: '245px',
+    borderRadius: '16em',
   } as React.CSSProperties;
 
   return (
