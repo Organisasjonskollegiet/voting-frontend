@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { labelStyle, inputStyle } from '../particles/formStyles';
+import { labelStyle, inputStyle, highlightedInputStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
 import { AutoResizeTextarea } from './AutosizeTextArea';
 
@@ -23,6 +23,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
               isEdited: true,
             })
           }
+          _focus={highlightedInputStyle}
           value={votation.title}
           placeholder="Eg. Valg av neste styreleder"
         />
@@ -38,6 +39,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
               isEdited: true,
             })
           }
+          _focus={highlightedInputStyle}
           minRows={1}
           value={votation.description}
           placeholder="Eg. Valg av neste styreleder"
