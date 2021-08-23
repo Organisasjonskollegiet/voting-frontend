@@ -16,7 +16,7 @@ import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chak
 import AlternativeList from '../molecules/AlternativeList';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import { darkblue } from '../particles/theme';
@@ -33,6 +33,7 @@ const subtitlesStyle = {
 const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
+  const history = useHistory();
 
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
@@ -138,6 +139,10 @@ const Votation: React.FC = () => {
       setUserHasVoted(true);
       castVote({ variables: { alternativeId: selectedAlternativeId } });
     }
+  };
+
+  const backToVotationList = () => {
+    history.push(`/meeting/${meetingId}`);
   };
 
   if (error?.message === 'Not Authorised!') {
@@ -265,7 +270,7 @@ const Votation: React.FC = () => {
         )}
         {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
-            <VotationResult text={winner?.text} />
+            <VotationResult backToVotationList={backToVotationList} text={winner?.text} />
           </Box>
         )}
         {

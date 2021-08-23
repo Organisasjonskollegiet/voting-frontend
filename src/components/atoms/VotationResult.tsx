@@ -1,12 +1,14 @@
 import React from 'react';
-import { Center, VStack, Text } from '@chakra-ui/react';
+import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export interface VotationResultProps {
   text?: string;
+  backToVotationList: () => void;
 }
 
-const VotationResult: React.FC<VotationResultProps> = ({ text }) => {
+const VotationResult: React.FC<VotationResultProps> = ({ text, backToVotationList }) => {
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
@@ -27,6 +29,10 @@ const VotationResult: React.FC<VotationResultProps> = ({ text }) => {
           )}
         </VStack>
       </Center>
+      <Divider m="3em 0" />
+      <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+        Gå tilbake til liste over voteringer
+      </Button>
     </VStack>
   );
 };
