@@ -321,25 +321,17 @@ const AddVotations: React.FC<IProps> = ({
         <Text fontSize="20px">
           Her kan du legge til informasjon om møtet. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="list">
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                <AddMeetingVotationList
-                  votations={state.votations}
-                  deleteVotation={deleteVotation}
-                  updateVotations={onVotationsUpdated}
-                  deleteAlternative={deleteAlternative}
-                  nextIndex={nextVotationIndex}
-                  setNextIndex={setNextVotationIndex}
-                  activeVotationId={activeVotationId}
-                  setActiveVotationId={setActiveVotationId}
-                />
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <AddMeetingVotationList
+          votations={state.votations}
+          deleteVotation={deleteVotation}
+          updateVotations={onVotationsUpdated}
+          deleteAlternative={deleteAlternative}
+          nextIndex={nextVotationIndex}
+          setNextIndex={setNextVotationIndex}
+          activeVotationId={activeVotationId}
+          setActiveVotationId={setActiveVotationId}
+          onDragEnd={onDragEnd}
+        />
         <Button
           w={'250px'}
           rightIcon={<AddIcon w={3} h={3} />}
