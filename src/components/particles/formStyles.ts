@@ -1,4 +1,8 @@
-export const hightlightedStyle = {
+import React from 'react';
+
+export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+
+export const highlightedStyle = {
   fontStyle: 'normal',
   fontSize: '16px',
   fontWeight: 'bold',
@@ -6,11 +10,9 @@ export const hightlightedStyle = {
 } as React.CSSProperties;
 
 export const labelStyle = {
-  ...hightlightedStyle,
+  ...highlightedStyle,
   marginBottom: '10px',
 } as React.CSSProperties;
-
-export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
 
 export const containerStyle = {
   boxShadow,
@@ -27,6 +29,12 @@ export const collapsedStyle = {
   borderRadius: '4px',
   cursor: 'pointer',
 };
+
+export const highlightedInputStyle = {
+  zIndex: 1,
+  borderColor: 'blue.600',
+  boxShadow: '0px 0px 5px #3182ce',
+} as React.CSSProperties;
 
 export const inputStyle = {
   background: '#fff',

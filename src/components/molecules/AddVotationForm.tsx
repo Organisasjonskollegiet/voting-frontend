@@ -9,7 +9,7 @@ import AlternativesForm from '../atoms/AlternativesForm';
 import VotationTypeSelect from '../atoms/VotationTypeSelect';
 import VotationCheckboxes from '../atoms/VotationCheckboxes';
 import VotationInfoForm from '../atoms/VotationInfoForm';
-import { collapsedStyle, hightlightedStyle, containerStyle } from '../particles/formStyles';
+import { collapsedStyle, highlightedStyle, containerStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
@@ -79,7 +79,7 @@ const AddVotationForm: React.FC<IProps> = ({
             onClick={toggleCollapsedVotation}
           >
             <HStack spacing="8">
-              <Text sx={hightlightedStyle}>{`Votering ${index + 1}`}</Text>
+              <Text sx={highlightedStyle}>{`Votering ${index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
             <img alt="move" {...provided.dragHandleProps} src={MoveIcon} />
