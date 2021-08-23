@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box } from '@chakra-ui/react';
-import MoveIcon from '../../static/moveIcon.svg';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
 import { MajorityType } from '../../__generated__/graphql-types';
@@ -12,6 +11,7 @@ import VotationInfoForm from '../atoms/VotationInfoForm';
 import { collapsedStyle, highlightedStyle, containerStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import { DragHandleIcon } from '@chakra-ui/icons';
 
 interface IProps {
   index: number;
@@ -79,10 +79,12 @@ const AddVotationForm: React.FC<IProps> = ({
             onClick={toggleCollapsedVotation}
           >
             <HStack spacing="8">
-              <Text sx={highlightedStyle}>{`Votering ${index + 1}`}</Text>
+              <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
-            <img alt="move" {...provided.dragHandleProps} src={MoveIcon} />
+            <Box {...provided.dragHandleProps}>
+              <DragHandleIcon />
+            </Box>
           </HStack>
         )}
       </Draggable>
