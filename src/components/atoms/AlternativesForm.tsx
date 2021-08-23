@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { KeyboardEvent, useState } from 'react';
 import { FormControl, FormLabel, VStack, HStack, Input, Button } from '@chakra-ui/react';
 import RemoveIcon from '../../static/removeIcon.svg';
 import AddIcon from '../../static/addIcon.svg';
@@ -25,6 +25,21 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
     if (alternative.existsInDb) deleteAlternative(alternative.id);
   };
 
+  function submitAlternative() {
+    if (votation.alternatives[votation.alternatives.length - 1].text) {
+      updateVotation({
+        ...votation,
+        isEdited: true,
+        alternatives: [...votation.alternatives, { id: uuid(), text: '', existsInDb: false, index: nextIndex }],
+      });
+      setNextIndex(nextIndex + 1);
+    }
+  }
+
+  const onEnterSubmitAlternative = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') submitAlternative();
+  };
+
   return (
     <FormControl>
       <FormLabel sx={labelStyle}>Svaralternativer</FormLabel>
@@ -36,6 +51,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
               <Input
                 key={alternative.id}
                 id={alternative.id}
+                onKeyDown={onEnterSubmitAlternative}
                 onChange={(event) => {
                   updateVotation({
                     ...votation,
@@ -56,12 +72,9 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
                 _focus={highlightedInputStyle}
                 placeholder="Navn på alternativ"
               />
-              <img
-                alt="remove"
-                style={pointerStyle}
-                src={RemoveIcon}
-                onClick={() => handleClickRemoveAlterantive(alternative)}
-              />
+              <button onClick={() => handleClickRemoveAlterantive(alternative)}>
+                <img alt="remove" style={pointerStyle} src={RemoveIcon} />
+              </button>
             </HStack>
           ))}
         <Button
@@ -70,14 +83,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           leftIcon={<img alt="add" src={AddIcon} />}
           bg="white"
           variant="link"
-          onClick={() => {
-            updateVotation({
-              ...votation,
-              isEdited: true,
-              alternatives: [...votation.alternatives, { id: uuid(), text: '', existsInDb: false, index: nextIndex }],
-            });
-            setNextIndex(nextIndex + 1);
-          }}
+          onClick={() => submitAlternative()}
         >
           Legg til svaralternativ
         </Button>
