@@ -70,7 +70,7 @@ const Votation: React.FC = () => {
       const result = winnerResult.getWinnerOfVotation;
       if (result.text) {
         setWinner({ id: result.id, text: result.text, votationId: result.votationId });
-      }  
+      }
     }
   }, [winnerResult, winner]);
 
@@ -265,9 +265,9 @@ const Votation: React.FC = () => {
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
           <CheckResults votationId={votationId} meetingId={meetingId} />
         )}
-        {status === 'PUBLISHED_RESULT' && winner && (
+        {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
-            <VotationResult text={winner.text} />
+            <VotationResult text={winner?.text} />
           </Box>
         )}
         {
