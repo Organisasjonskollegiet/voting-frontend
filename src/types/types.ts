@@ -1,4 +1,4 @@
-import { MajorityType, ParticipantInput } from '../__generated__/graphql-types';
+import { MajorityType, ParticipantInput, VotationStatus } from '../__generated__/graphql-types';
 
 export interface MeetingWorking {
   id?: string;
@@ -23,6 +23,7 @@ export interface Votation {
   title: string;
   description: string;
   index: number;
+  status: VotationStatus;
   alternatives: Alternative[];
   blankVotes: boolean;
   hiddenVotes: boolean;

@@ -476,7 +476,7 @@ export type CreateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { createVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
+    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -493,7 +493,7 @@ export type UpdateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { updateVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold' | 'status'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -939,6 +939,7 @@ export const CreateVotationsDocument = gql`
     description
     index
     blankVotes
+    status
     hiddenVotes
     severalVotes
     majorityType
@@ -989,6 +990,7 @@ export const UpdateVotationsDocument = gql`
     severalVotes
     majorityType
     majorityThreshold
+    status
     alternatives {
       id
       text

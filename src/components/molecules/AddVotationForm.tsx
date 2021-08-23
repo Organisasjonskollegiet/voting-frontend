@@ -19,9 +19,10 @@ interface IProps {
   votation: Votation;
   toggleCollapsedVotation: () => void;
   updateVotation: (votation: Votation) => void;
-  deleteVotation: (votation: Votation) => void;
+  deleteVotation: (votationId: string, existsInDb: boolean, index: number) => void;
   duplicateVotation: (votation: Votation) => void;
-  deleteAlternative: (id: string) => void;
+  deleteAlternative: (alternativeId: string, votationId: string) => void;
+  updateOrCreateIfValid: (votation: Votation) => void;
 }
 
 const AddVotationForm: React.FC<IProps> = ({
@@ -33,11 +34,12 @@ const AddVotationForm: React.FC<IProps> = ({
   deleteVotation,
   duplicateVotation,
   deleteAlternative,
+  updateOrCreateIfValid,
 }) => {
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
   const handleConfirmDelete = () => {
-    deleteVotation(votation);
+    deleteVotation(votation.id, votation.existsInDb ?? false, votation.index);
   };
 
   const updateVotationFromSelect = (value: string) => {
@@ -71,6 +73,8 @@ const AddVotationForm: React.FC<IProps> = ({
       <Draggable draggableId={votation.id} index={index}>
         {(provided) => (
           <HStack
+            w="90vw"
+            maxWidth="700px"
             ref={provided.innerRef}
             {...provided.draggableProps}
             justify="space-between"
@@ -94,7 +98,15 @@ const AddVotationForm: React.FC<IProps> = ({
   return (
     <Draggable isDragDisabled={true} draggableId={votation.id} index={index}>
       {(provided) => (
-        <VStack sx={containerStyle} ref={provided.innerRef} {...provided.draggableProps} width="100%" spacing="5">
+        <VStack
+          onBlur={() => updateOrCreateIfValid(votation)}
+          sx={containerStyle}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          width="90vw"
+          maxWidth="700px"
+          spacing="5"
+        >
           <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">
             <VStack spacing="7" flex="2">
               <VotationInfoForm votation={votation} updateVotation={updateVotation} />

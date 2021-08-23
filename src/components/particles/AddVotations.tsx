@@ -9,6 +9,7 @@ import {
   useDeleteVotationsMutation,
   useDeleteAlternativesMutation,
   useVotationsByMeetingIdLazyQuery,
+  VotationStatus,
 } from '../../__generated__/graphql-types';
 import AddMeetingController from '../molecules/AddMeetingController';
 import Loading from '../atoms/Loading';
@@ -40,6 +41,7 @@ const getEmptyVotation = (id?: string) => {
       },
     ],
     blankVotes: false,
+    status: VotationStatus.Upcoming,
     hiddenVotes: true,
     severalVotes: false,
     majorityType: 'SIMPLE' as MajorityType,
@@ -212,7 +214,6 @@ const AddVotations: React.FC<IProps> = ({
           .filter((alternative) => alternative !== ''),
       };
     });
-    console.log(preparedVotations);
     createVotations({ variables: { votations: preparedVotations, meetingId } });
   };
 
@@ -314,7 +315,7 @@ const AddVotations: React.FC<IProps> = ({
       {(createVotationsResult.loading || updateVotationsResult.loading) && (
         <Loading asOverlay={true} text="Oppdaterer voteringer" />
       )}
-      <VStack spacing="5" align="left">
+      <VStack spacing="5" w="90vw" maxWidth="700px" align="left">
         <Heading sx={h1Style} as="h1">
           Legg til voteringer
         </Heading>
@@ -331,8 +332,10 @@ const AddVotations: React.FC<IProps> = ({
           activeVotationId={activeVotationId}
           setActiveVotationId={setActiveVotationId}
           onDragEnd={onDragEnd}
+          meetingId={meetingId}
+          votationsMayExist={votationsMayExist}
         />
-        <Button
+        {/* <Button
           w={'250px'}
           rightIcon={<AddIcon w={3} h={3} />}
           borderRadius={'16em'}
@@ -344,7 +347,7 @@ const AddVotations: React.FC<IProps> = ({
           }}
         >
           Legg til votering
-        </Button>
+        </Button> */}
       </VStack>
       <AddMeetingController handleNavigation={handleNavigation} showPrev={true} activeTab={1} />
     </>

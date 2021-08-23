@@ -9,7 +9,7 @@ import { Votation, Alternative } from '../../types/types';
 interface IProps {
   votation: Votation;
   updateVotation: (votation: Votation) => void;
-  deleteAlternative: (id: string) => void;
+  deleteAlternative: (alternativeId: string, votationId: string) => void;
 }
 
 const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAlternative }) => {
@@ -22,7 +22,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
       ...votation,
       alternatives: votation.alternatives.filter((a) => a.id !== alternative.id),
     });
-    if (alternative.existsInDb) deleteAlternative(alternative.id);
+    if (alternative.existsInDb) deleteAlternative(alternative.id, votation.id);
   };
 
   return (
