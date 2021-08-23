@@ -3,7 +3,7 @@ import { Center, VStack, Text } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 
 export interface VotationResultProps {
-  text: string;
+  text?: string;
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ text }) => {
@@ -14,8 +14,17 @@ const VotationResult: React.FC<VotationResultProps> = ({ text }) => {
       </Center>
       <Center fontWeight="bold">
         <VStack spacing="0">
-          <Text>Vinner av valget er</Text>
-          <Text fontSize="2.25em">{text}</Text>
+          {text ? (
+            <>
+              <Text>Vinner av valget er</Text>
+              <Text fontSize="2.25em">{text}</Text>
+            </>
+          ) : (
+            <>
+              <Text fontSize="2.25em">Uavgjort</Text>
+              <Text>Ingen av alternativnene oppnådde flertall</Text>
+            </>
+          )}
         </VStack>
       </Center>
     </VStack>
