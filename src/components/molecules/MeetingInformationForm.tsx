@@ -67,7 +67,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
           showPopperArrow={true}
         />
       </FormControl>
-      <FormControl isRequired>
+      <FormControl>
         <FormLabel sx={labelStyle}>Beskrivelse av møte</FormLabel>
         <Textarea
           sx={inputStyle}

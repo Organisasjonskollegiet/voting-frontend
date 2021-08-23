@@ -12,6 +12,7 @@ const MyMeetings: React.FC = () => {
   const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
   const toast = useToast();
   const meetingsData = data?.meetings;
+  console.log(data);
 
   useEffect(() => {
     if (deleteMeetingResult.data?.deleteMeeting) {
@@ -52,6 +53,7 @@ const MyMeetings: React.FC = () => {
   }
 
   const upcomingMeetings = meetingsData.filter((meeting) => new Date() < new Date(meeting?.startTime));
+
   const ongoingMeetings = meetingsData.filter((meeting) => {
     const start = new Date(meeting?.startTime);
     const nextMorning = new Date(meeting?.startTime);

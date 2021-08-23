@@ -41,12 +41,12 @@ export type CreateMeetingInput = {
   organization: Scalars['String'];
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
-  description?: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type CreateVotationInput = {
   title: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   severalVotes: Scalars['Boolean'];
@@ -308,7 +308,7 @@ export type UpdateParticipantInput = {
 export type UpdateVotationInput = {
   id: Scalars['String'];
   title: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   severalVotes: Scalars['Boolean'];
@@ -355,7 +355,7 @@ export type Votation = {
   __typename?: 'Votation';
   id: Scalars['ID'];
   title: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   order?: Maybe<Scalars['Int']>;
   status: VotationStatus;
   blankVotes: Scalars['Boolean'];

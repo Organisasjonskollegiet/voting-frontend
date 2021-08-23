@@ -75,10 +75,12 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
             {' '}
             {title}{' '}
           </Heading>
-          <Text mb="1em" fontSize="0.75em">
-            {' '}
-            {description}{' '}
-          </Text>
+          {description && (
+            <Text mb="1em" fontSize="0.75em">
+              {' '}
+              {description}{' '}
+            </Text>
+          )}
         </Box>
 
         {isAdmin && (
