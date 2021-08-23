@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { Role, useAddParticipantsMutation, useDeleteParticipantsMutation } from '../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Input, Divider, Button, Text, HStack, Select, useToast } from '@chakra-ui/react';
+import {
+  VStack,
+  FormControl,
+  FormLabel,
+  Input,
+  Divider,
+  Button,
+  Text,
+  HStack,
+  Select,
+  useToast,
+} from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
@@ -15,12 +26,7 @@ interface IProps {
   ownerEmail: string | undefined;
 }
 
-const AddParticipantsForm: React.FC<IProps> = ({
-  meetingId,
-  participants,
-  setParticipants,
-  ownerEmail,
-}) => {
+const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
@@ -29,43 +35,46 @@ const AddParticipantsForm: React.FC<IProps> = ({
   const participantInputElementId = 'participantInput';
 
   useEffect(() => {
-    if (!participants || !addParticipantsResult.data) return;
+    if (!participants || !addParticipantsResult.data) return;
     const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantWorking[];
-    const nonUpdatedParticipants = participants.filter(participant => !newParticipants.map(p => p.email).includes(participant.email))
-    const sortedParticipants = [...nonUpdatedParticipants, ...newParticipants].sort((a, b) => a.email.localeCompare(b.email))
+    const nonUpdatedParticipants = participants.filter(
+      (participant) => !newParticipants.map((p) => p.email).includes(participant.email)
+    );
+    const sortedParticipants = [...nonUpdatedParticipants, ...newParticipants].sort((a, b) =>
+      a.email.localeCompare(b.email)
+    );
     setParticipants(sortedParticipants);
     const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     input.value = '';
     const toastId = 'participantsUpdated';
-    if (! toast.isActive(toastId)) {
+    if (!toast.isActive(toastId)) {
       toast({
-          id: toastId,
-          title: 'Deltakerlisten ble oppdatert',
-          description: '',
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
-        });
+        id: toastId,
+        title: 'Deltakerlisten ble oppdatert',
+        description: '',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
     }
     // eslint-disable-next-line
-  }, [addParticipantsResult.data])
-  
+  }, [addParticipantsResult.data]);
+
   useEffect(() => {
-    if (!participants || !deleteParticipantsResult.data) return;
-    setParticipants(participants.filter(p => !deleteParticipantsResult.data?.deleteParticipants?.includes(p.email)))
-    const toastId = 'participantDeleted'
+    if (!participants || !deleteParticipantsResult.data) return;
+    setParticipants(participants.filter((p) => !deleteParticipantsResult.data?.deleteParticipants?.includes(p.email)));
+    const toastId = 'participantDeleted';
     if (!toast.isActive(toastId))
-    toast({
+      toast({
         id: toastId,
         title: `Deltakeren ble slettet.`,
         description: '',
         status: 'success',
         duration: 9000,
         isClosable: true,
-     
-    })
+      });
     // eslint-disable-next-line
-  }, [deleteParticipantsResult.data])
+  }, [deleteParticipantsResult.data]);
 
   const getRole = (role: string) => {
     switch (role.toLowerCase().trim()) {
@@ -78,10 +87,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
     }
   };
 
-  const handleEnterPressed = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    participants: ParticipantWorking[]
-  ) => {
+  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantWorking[]) => {
     if (event.code !== 'Enter') return;
     const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     if (!input || !input.value || input.value.trim().length === 0) return;
@@ -91,13 +97,15 @@ const AddParticipantsForm: React.FC<IProps> = ({
       addParticipants({
         variables: {
           meetingId,
-          participants: [{
-            email,
-            role: inputRole,
-            isVotingEligible: true,
-          }]
-        }
-      })
+          participants: [
+            {
+              email,
+              role: inputRole,
+              isVotingEligible: true,
+            },
+          ],
+        },
+      });
     }
   };
 
@@ -105,7 +113,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
     setReadingFiles(true);
     const input = event.target as HTMLInputElement;
     if (!(input.files && input.files.length > 0)) return;
-    if (!meetingId) throw new Error('Meeting id not defined')
+    if (!meetingId) throw new Error('Meeting id not defined');
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
@@ -134,9 +142,9 @@ const AddParticipantsForm: React.FC<IProps> = ({
       addParticipants({
         variables: {
           meetingId,
-          participants: newParticipants
-        }
-      })
+          participants: newParticipants,
+        },
+      });
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
@@ -193,8 +201,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
           backgroundColor="white"
           borderRadius="4px"
           boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
-          m="3em 0"
-          p="0.5em 0"
+          spacing="0"
         >
           {participants.length > 0 ? (
             participants
@@ -212,17 +219,18 @@ const AddParticipantsForm: React.FC<IProps> = ({
                         onChange={(e) => {
                           if (!meetingId) return;
                           addParticipants({
-                            variables: {
+                            variables: {
                               meetingId,
-                              participants: [{
-                                email: participant.email,
-                                role: e.target.value as Role,
-                                isVotingEligible: true
-                              }]
-                            }
-                          })
-                        }
-                        }
+                              participants: [
+                                {
+                                  email: participant.email,
+                                  role: e.target.value as Role,
+                                  isVotingEligible: true,
+                                },
+                              ],
+                            },
+                          });
+                        }}
                         style={{ border: 'none' }}
                       >
                         <option value={Role.Admin}>Administrator</option>
@@ -234,9 +242,16 @@ const AddParticipantsForm: React.FC<IProps> = ({
                         background="transparent"
                         _hover={{ background: 'transparent' }}
                         isActive={false}
-                        leftIcon={<img alt="remove" src={RemoveIcon} onClick={() => {
-                          if (!meetingId) return;
-                          deleteParticipants({variables: {meetingId, emails: [participant.email]}})}} />}
+                        leftIcon={
+                          <img
+                            alt="remove"
+                            src={RemoveIcon}
+                            onClick={() => {
+                              if (!meetingId) return;
+                              deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
+                            }}
+                          />
+                        }
                       />
                     </HStack>
                   </HStack>
