@@ -145,6 +145,10 @@ const Votation: React.FC = () => {
     history.push(`/meeting/${meetingId}`);
   };
 
+  const openNextVotation = () => {
+    return null;
+  };
+
   if (error?.message === 'Not Authorised!') {
     return (
       <>
@@ -270,7 +274,12 @@ const Votation: React.FC = () => {
         )}
         {status === 'PUBLISHED_RESULT' && winner && (
           <Box mt="4em">
-            <VotationResult backToVotationList={backToVotationList} text={winner.text} />
+            <VotationResult
+              openNextVotation={openNextVotation}
+              role={participantRole}
+              backToVotationList={backToVotationList}
+              text={winner.text}
+            />
           </Box>
         )}
         {

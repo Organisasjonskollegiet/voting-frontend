@@ -2,13 +2,16 @@ import React from 'react';
 import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Role } from '../../__generated__/graphql-types';
 
 export interface VotationResultProps {
   text: string;
   backToVotationList: () => void;
+  openNextVotation: () => void;
+  role: Role | null;
 }
 
-const VotationResult: React.FC<VotationResultProps> = ({ text, backToVotationList }) => {
+const VotationResult: React.FC<VotationResultProps> = ({ text, backToVotationList, openNextVotation, role }) => {
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
@@ -21,8 +24,21 @@ const VotationResult: React.FC<VotationResultProps> = ({ text, backToVotationLis
         </VStack>
       </Center>
       <Divider m="3em 0" />
-      <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-        Gå tilbake til liste over voteringer
+      {role === Role.Admin && (
+        <Button w="250px" borderRadius={'16em'} onClick={openNextVotation}>
+          Åpne neste votering
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        borderRadius={'16em'}
+        bg="white"
+        fontSize="0.9em"
+        fontWeight={'normal'}
+        onClick={backToVotationList}
+        leftIcon={<ArrowBackIcon />}
+      >
+        <Text decoration="underline">Tilbake til liste over voteringer</Text>
       </Button>
     </VStack>
   );
