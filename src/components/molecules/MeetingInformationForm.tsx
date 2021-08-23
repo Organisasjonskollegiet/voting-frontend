@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyleConfig, FormControl, FormLabel, Input, ComponentStyleConfig, VStack } from '@chakra-ui/react';
 import DatePicker from '../atoms/DatePicker/DatePicker';
-import { labelStyle, inputStyle } from '../particles/formStyles';
+import { labelStyle, inputStyle, highlightedInputStyle } from '../particles/formStyles';
 import { MeetingWorking } from '../../types/types';
 import { AutoResizeTextarea } from '../atoms/AutosizeTextArea';
 
@@ -35,6 +35,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         <Input
           sx={inputStyle}
           isRequired
+          _focus={highlightedInputStyle}
           value={meeting.organization}
           placeholder="Hva heter organisasjonen møtet arrangeres av?"
           onChange={onOrganizationChange}
@@ -45,6 +46,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         <Input
           sx={inputStyle}
           isRequired
+          _focus={highlightedInputStyle}
           value={meeting.title}
           placeholder="Hva skal tittelen på møtet være?"
           onChange={onTitleChange}
@@ -65,6 +67,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         <AutoResizeTextarea
           sx={inputStyle}
           isRequired
+          _focus={highlightedInputStyle}
           value={meeting.description}
           placeholder="Skriv gjerne en god beskrivelse av hva møte skal handle om."
           resize="none"
