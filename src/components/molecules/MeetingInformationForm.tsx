@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  useStyleConfig,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  ComponentStyleConfig,
-  VStack,
-} from '@chakra-ui/react';
+import { useStyleConfig, FormControl, FormLabel, Input, ComponentStyleConfig, VStack } from '@chakra-ui/react';
 import DatePicker from '../atoms/DatePicker/DatePicker';
 import { labelStyle, inputStyle } from '../particles/formStyles';
 import { MeetingWorking } from '../../types/types';

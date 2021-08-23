@@ -31,7 +31,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
         <FormLabel sx={labelStyle}>Beskrivelse</FormLabel>
         <AutoResizeTextarea
           sx={inputStyle}
-          onChange={(e: any) =>
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
             updateVotation({
               ...votation,
               description: e.target.value,
