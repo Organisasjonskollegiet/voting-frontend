@@ -1,23 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import AddVotationForm from './AddVotationForm';
-import { v4 as uuid } from 'uuid';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
-import {
-  MajorityType,
-  useCreateVotationsMutation,
-  useDeleteAlternativesMutation,
-  useDeleteVotationsMutation,
-  useUpdateVotationsMutation,
-  useUpdateVotationStatusMutation,
-  useVotationsByMeetingIdLazyQuery,
-  VotationStatus,
-} from '../../__generated__/graphql-types';
-import { Votation, Alternative } from '../../types/types';
-import Loading from '../atoms/Loading';
-import { darkblue } from '../particles/theme';
-import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
+import { Droppable } from 'react-beautiful-dnd';
+import { Button, Heading, VStack } from '@chakra-ui/react';
+
+import { Votation } from '../../types/types';
 
 interface VotationListSectionProps {
   votations: Votation[];
@@ -31,6 +17,7 @@ interface VotationListSectionProps {
   showStartNextButton: boolean;
   heading?: string;
   droppableId: string;
+  disabled: boolean;
 }
 
 const VotationListSection: React.FC<VotationListSectionProps> = ({
@@ -45,6 +32,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
   showStartNextButton,
   heading,
   droppableId,
+  disabled,
 }) => {
   return (
     <VStack spacing="16px" alignItems="start">
@@ -53,7 +41,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
           {heading}
         </Heading>
       )}
-      <Droppable droppableId={droppableId}>
+      <Droppable droppableId={droppableId} isDropDisabled={disabled}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {votations.map((votation: Votation) => (
@@ -67,6 +55,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
                 deleteVotation={handleDeleteVotation}
                 deleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
+                disabled={true}
               />
             ))}
             {provided.placeholder}

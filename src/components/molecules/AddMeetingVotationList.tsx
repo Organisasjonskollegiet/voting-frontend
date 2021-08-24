@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import AddVotationForm from './AddVotationForm';
 import { v4 as uuid } from 'uuid';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   MajorityType,
+  Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
   useDeleteVotationsMutation,
@@ -19,12 +19,12 @@ import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
 import VotationListSection from './VotationListSection';
-import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
 interface VotationListProps {
   meetingId: string;
   votationsMayExist: boolean;
   isMeetingLobby: boolean;
+  role: Role | undefined;
 }
 
 const getEmptyAlternative = () => {
@@ -54,7 +54,12 @@ const getEmptyVotation = (id?: string, index?: number) => {
   };
 };
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist, isMeetingLobby }) => {
+const AddMeetingVotationList: React.FC<VotationListProps> = ({
+  meetingId,
+  votationsMayExist,
+  isMeetingLobby,
+  role,
+}) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
@@ -66,8 +71,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
   const [deleteVotations] = useDeleteVotationsMutation();
-
-  // const [nextVotationIndex, setNextVotationIndex] = useState<number>(1);
 
   const [votations, setVotations] = useState<Votation[]>([getEmptyVotation()]);
 
@@ -93,6 +96,19 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
   }, [votationsMayExist, getVotationsByMeetingId]);
 
   useEffect(() => {
+    const toastId = 'votationOpened';
+    if (updateVotationStatusResult.data?.updateVotationStatus && !toast.isActive(toastId)) {
+      toast({
+        id: 'votationOpened',
+        title: 'Voteringen ble åpnet.',
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
+
+  useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
       const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
@@ -101,11 +117,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
         !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
       if (shouldAddEmpty) {
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
-        // setNextVotationIndex(nextVotationIndex);
       }
-      // else {
-      //   setNextVotationIndex(nextVotationIndex + 1);
-      // }
       setVotations(formattedVotations.sort((a, b) => a.index - b.index));
       setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
@@ -273,7 +285,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
     const newId = uuid();
     const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
     setVotations([...votations, { ...votation, id: newId, existsInDb: false, index: nextVotationIndex }]);
-    // setNextVotationIndex(nextVotationIndex + 1);
     setActiveVotationId(newId);
   };
 
@@ -344,8 +355,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
     );
   }
 
-  console.log(votations);
-
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
   const endedVotations = votations.filter((v) => v.status !== VotationStatus.Upcoming);
 
@@ -368,8 +377,9 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
                 openVotation={() =>
                   updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
                 }
-                showStartNextButton={true}
+                showStartNextButton={role === Role.Admin}
                 heading={'Neste votering'}
+                disabled={role !== Role.Admin}
               />
               <VotationListSection
                 droppableId={'bottom-list'}
@@ -385,6 +395,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
                 }
                 showStartNextButton={false}
                 heading={'Kommende voteringer'}
+                disabled={role !== Role.Admin}
               />
             </>
           ) : (
@@ -402,36 +413,38 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
               }
               showStartNextButton={false}
               heading={'Kommende voteringer'}
+              disabled={role !== Role.Admin}
             />
           )}
         </DragDropContext>
       )}
-      <HStack w="100%" justifyContent="space-between">
-        <Button
-          w={'250px'}
-          rightIcon={<AddIcon w={3} h={3} />}
-          borderRadius={'16em'}
-          onClick={() => {
-            const id = uuid();
-            const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-            setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
-            // setNextVotationIndex(nextVotationIndex + 1);
-            setActiveVotationId(id);
-          }}
-        >
-          Legg til votering
-        </Button>
-        <Button
-          disabled={votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length === 0}
-          bg="gray.500"
-          color="white"
-          w={'250px'}
-          borderRadius={'16em'}
-          onClick={() => handleSave(votations)}
-        >
-          Lagre endringer
-        </Button>
-      </HStack>
+      {role === Role.Admin && (
+        <HStack w="100%" justifyContent="space-between">
+          <Button
+            w={'250px'}
+            rightIcon={<AddIcon w={3} h={3} />}
+            borderRadius={'16em'}
+            onClick={() => {
+              const id = uuid();
+              const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+              setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
+              setActiveVotationId(id);
+            }}
+          >
+            Legg til votering
+          </Button>
+          <Button
+            disabled={votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length === 0}
+            bg="gray.500"
+            color="white"
+            w={'250px'}
+            borderRadius={'16em'}
+            onClick={() => handleSave(votations)}
+          >
+            Lagre endringer
+          </Button>
+        </HStack>
+      )}
       {endedVotations.length > 0 && (
         <VStack spacing="16px" alignItems="start">
           <Heading as="h1" fontSize="1em" mb="1.125em">

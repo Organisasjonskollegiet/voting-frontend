@@ -22,7 +22,7 @@ interface IProps {
   deleteVotation: (votation: Votation) => void;
   duplicateVotation: (votation: Votation) => void;
   deleteAlternative: (alternativeId: string, votationId: string) => void;
-  // updateOrCreateIfValid: (votation: Votation) => void;
+  disabled: boolean;
 }
 
 const AddVotationForm: React.FC<IProps> = ({
@@ -34,10 +34,9 @@ const AddVotationForm: React.FC<IProps> = ({
   deleteVotation,
   duplicateVotation,
   deleteAlternative,
-  // updateOrCreateIfValid,
+  disabled,
 }) => {
   const [votationDialogIsOpen, setVotationDialogIsOpen] = useState(false);
-  const [alternativeDialogIsOpen, setAlternativeDialogIsOpen] = useState(false);
 
   const handleConfirmDelete = () => {
     deleteVotation(votation);
@@ -71,7 +70,7 @@ const AddVotationForm: React.FC<IProps> = ({
 
   if (!isActive) {
     return (
-      <Draggable draggableId={votation.id} index={index}>
+      <Draggable isDragDisabled={disabled} draggableId={votation.id} index={index}>
         {(provided) => (
           <HStack
             w="90vw"
@@ -101,7 +100,6 @@ const AddVotationForm: React.FC<IProps> = ({
     <Draggable isDragDisabled={true} draggableId={votation.id} index={index}>
       {(provided) => (
         <VStack
-          // onBlur={() => updateOrCreateIfValid(votation)}
           sx={containerStyle}
           ref={provided.innerRef}
           {...provided.draggableProps}

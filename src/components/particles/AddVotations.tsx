@@ -10,6 +10,7 @@ import {
   useDeleteAlternativesMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
+  Role,
 } from '../../__generated__/graphql-types';
 import AddMeetingController from '../molecules/AddMeetingController';
 import Loading from '../atoms/Loading';
@@ -323,20 +324,12 @@ const AddVotations: React.FC<IProps> = ({
         <Text fontSize="20px">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
-        <AddMeetingVotationList isMeetingLobby={false} meetingId={meetingId} votationsMayExist={votationsMayExist} />
-        {/* <Button
-          w={'250px'}
-          rightIcon={<AddIcon w={3} h={3} />}
-          borderRadius={'16em'}
-          onClick={() => {
-            const id = uuid();
-            setState({ votations: [...state.votations, { ...getEmptyVotation(id), index: nextVotationIndex }] });
-            setNextVotationIndex(nextVotationIndex + 1);
-            setActiveVotationId(id);
-          }}
-        >
-          Legg til votering
-        </Button> */}
+        <AddMeetingVotationList
+          role={Role.Admin}
+          isMeetingLobby={false}
+          meetingId={meetingId}
+          votationsMayExist={votationsMayExist}
+        />
       </VStack>
       <AddMeetingController handleNavigation={handleNavigation} showPrev={true} activeTab={1} />
     </>

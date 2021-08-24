@@ -26,7 +26,6 @@ const MeetingLobby: React.FC = () => {
     pollInterval: 1000,
   });
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
-  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
@@ -37,19 +36,6 @@ const MeetingLobby: React.FC = () => {
 
   const history = useHistory();
   const toast = useToast();
-
-  useEffect(() => {
-    const toastId = 'votationOpened';
-    if (updateVotationStatusResult.data?.updateVotationStatus && !toast.isActive(toastId)) {
-      toast({
-        id: 'votationOpened',
-        title: 'Voteringen ble åpnet.',
-        status: 'success',
-        duration: 4000,
-        isClosable: true,
-      });
-    }
-  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
@@ -77,14 +63,7 @@ const MeetingLobby: React.FC = () => {
     }
   }, [votationData, history, meetingId, votations.length]);
 
-  // useEffect(() => {
-  //   if (votationOpened?.votationOpenedForMeeting) {
-  //     history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
-  //   }
-  // }, [votationOpened, history, meetingId]);
-
   const styles = {
-    // height: window.innerHeight,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -122,37 +101,7 @@ const MeetingLobby: React.FC = () => {
           </Heading>
           <VStack align="start">
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-            {/* {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
-              <Heading as="h1" fontSize="1em" mb="1.125em">
-                Neste votering
-              </Heading>
-            )} */}
-            <AddMeetingVotationList isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
-            {/* {votations
-              .filter((votation) => votation.status === VotationStatus.Upcoming)
-              .map((votation) => (
-                <HStack key={votation.id} style={votationStyles} width="100%" justifyContent="space-between">
-                  <VStack align="start">
-                    <Heading as="h2" fontSize="1.125em">
-                      {' '}
-                      {votation.title}{' '}
-                    </Heading>
-                    <Text mb="1em" fontSize="0.75em">
-                      {' '}
-                      {votation.description}{' '}
-                    </Text>
-                  </VStack>
-                  {role === Role.Admin && (
-                    <Button
-                      onClick={() =>
-                        updateVotationStatus({ variables: { id: votation.id, status: VotationStatus.Open } })
-                      }
-                    >
-                      Start
-                    </Button>
-                  )}
-                </HStack>
-              ))} */}
+            <AddMeetingVotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
           </VStack>
         </VStack>
       </Box>
