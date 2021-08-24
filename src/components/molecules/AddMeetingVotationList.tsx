@@ -12,21 +12,11 @@ import {
   useUpdateVotationsMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
-  Votation as VotationResult,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../atoms/Loading';
 
 interface VotationListProps {
-  votations: Votation[];
-  updateVotations: (votations: Votation[]) => void;
-  deleteVotation: (votation: Votation) => void;
-  deleteAlternative: (id: string) => void;
-  nextIndex: number;
-  setNextIndex: (index: number) => void;
-  activeVotationId: string;
-  setActiveVotationId: (id: string) => void;
-  onDragEnd: (result: DropResult) => void;
   meetingId: string;
   votationsMayExist: boolean;
 }
@@ -44,7 +34,6 @@ const getEmptyVotation = (id?: string) => {
   return {
     id: id ?? uuid(),
     title: '',
-    // key: key ?? uuid(),
     description: '',
     index: 1,
     alternatives: [getEmptyAlternative()],
@@ -59,20 +48,8 @@ const getEmptyVotation = (id?: string) => {
   };
 };
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({
-  // votations,
-  // updateVotations,
-  // deleteVotation,
-  // deleteAlternative,
-  // nextIndex,
-  // setNextIndex,
-  // activeVotationId,
-  // setActiveVotationId,
-  // onDragEnd,
-  meetingId,
-  votationsMayExist,
-}) => {
-  const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
+const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist }) => {
+  const [getVotationsByMeetingId, { data }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
     },
@@ -82,7 +59,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
 
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
-  const [deleteVotations, deleteVotationsResult] = useDeleteVotationsMutation();
+  const [deleteVotations] = useDeleteVotationsMutation();
 
   const [nextVotationIndex, setNextVotationIndex] = useState<number>(0);
 
@@ -90,7 +67,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
 
   const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
 
-  const [deleteAlternatives, deleteAlternativesResult] = useDeleteAlternativesMutation();
+  const [deleteAlternatives] = useDeleteAlternativesMutation();
 
   const toast = useToast();
 
@@ -109,15 +86,10 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
 
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
-      const votations = data.meetingById.votations.map((v) => {
-        return {
-          ...v,
-          key: v!.id,
-        };
-      }) as Votation[];
+      const votations = data.meetingById.votations as Votation[];
       const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
       setNextVotationIndex(Math.max(...votations.map((votation) => votation.index)) + 1);
-      setVotations(formattedVotations);
+      setVotations(formattedVotations.sort((a, b) => a.index - b.index));
       setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
     // eslint-disable-next-line
@@ -141,28 +113,12 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     setVotations(newVotations.sort((a, b) => a.index - b.index));
     // eslint-disable-next-line
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations]);
-  // useEffect(() => {
-  //   const votationsFromResponse = updateVotationsResult.data?.updateVotations as Votation[];
-  //   const updatedVotations = votations.map((votation) => {
-  //     const index = votationsFromResponse.map((v) => v.id).indexOf(votation.id);
-  //     if (
-  //       index === -1 ||
-  //       (votationsFromResponse.length > index && !votationsAreEqual(votation, votationsFromResponse[index]))
-  //     ) {
-  //       return votation;
-  //     } else {
-  //       return formatVotation(votationsFromResponse[index]);
-  //     }
-  //   });
-  //   setVotations(updatedVotations);
-  // }, [updateVotationsResult.data?.updateVotations, votations]);
 
   const formatVotation = (votation: Votation) => {
     return {
       ...votation,
       existsInDb: true,
       isEdited: false,
-      // key: key,
       alternatives:
         votation.alternatives.length > 0
           ? votation.alternatives.map((alternative: Alternative, index: number) => {
@@ -180,16 +136,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     if (!votations) return;
     return votations.map((votation) => formatVotation(votation));
   };
-
-  // useEffect(() => {
-  //   const alternativeIds = votations.
-  //   if (deleteAlternativesResult.data?.deleteAlternatives && deleteAlternativesResult.data.deleteAlternatives.filter(a => a && ) return;
-  //   const rest = alternativesToDelete.filter(
-  //     (alternative) => !deleteAlternativesResult.data?.deleteAlternatives?.includes(alternative)
-  //   );
-  //   setAlternativesToDelete(rest);
-  //   // eslint-disable-next-line
-  // }, [deleteAlternativesResult.data?.deleteAlternatives]);
 
   const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -218,8 +164,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
       };
     });
     setVotations(updatedVotations);
-    // const filteredVotations = updatedVotations.filter((v) => v.title !== '' && v.id);
-    // handleUpdateVotation(filteredVotations);
   }
 
   const handleDeleteVotation = async (votation: Votation) => {
@@ -285,9 +229,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     }
   };
 
-  // const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
-  // const [nextIndex, setNextIndex] = useState<number>(Math.max(...votations.map((votation) => votation.index)) + 1);
-
   const updateVotation = (votation: Votation) => {
     const votationsCopy = Array.from(votations);
     const indexOfUpdatedVotation = votations.findIndex((v) => v.id === votation.id);
@@ -300,38 +241,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     setVotations([...votations, { ...votation, id: '', existsInDb: false, index: nextVotationIndex }]);
     setNextVotationIndex(nextVotationIndex + 1);
     setActiveVotationId(newKey);
-  };
-
-  const alternativesAreEqual = (a: Alternative, b: Alternative) => {
-    return a.id === b.id && a.text === b.text;
-  };
-
-  const alternativeListsAreEqual = (a: Alternative[], b: Alternative[]) => {
-    let areEqual = true;
-    a.forEach((a) => {
-      const index = b.map((b) => b.id).indexOf(a.id);
-      if (index === -1) {
-        areEqual = false;
-      } else {
-        areEqual = areEqual && alternativesAreEqual(a, b[index]);
-      }
-    });
-    return a.length === b.length && areEqual;
-  };
-
-  const votationsAreEqual = (a: Votation, b: Votation) => {
-    return (
-      a.id === b.id &&
-      a.title === b.title &&
-      a.description === b.description &&
-      a.index === b.index &&
-      a.blankVotes === b.blankVotes &&
-      a.hiddenVotes === b.hiddenVotes &&
-      a.severalVotes === b.severalVotes &&
-      a.majorityType === b.majorityType &&
-      a.majorityThreshold === b.majorityThreshold &&
-      alternativeListsAreEqual(a.alternatives, b.alternatives)
-    );
   };
 
   const handleUpdateVotations = (votations: Votation[]) => {
@@ -358,62 +267,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     });
     updateVotations({ variables: { votations: preparedVotations } });
   };
-  // const handleUpdateVotation = async (votationsToUpdate: Votation[]) => {
-  //   const preparedVotations = votationsToUpdate.map((votation) => {
-  //     return {
-  //       id: votation.id,
-  //       title: votation.title,
-  //       description: votation.description,
-  //       index: votation.index,
-  //       blankVotes: votation.blankVotes,
-  //       hiddenVotes: votation.hiddenVotes,
-  //       severalVotes: votation.severalVotes,
-  //       majorityType: votation.majorityType,
-  //       majorityThreshold: votation.majorityThreshold,
-  //       alternatives: votation.alternatives
-  //         .map((alternative) => {
-  //           return {
-  //             id: alternative.id,
-  //             text: alternative.text,
-  //           };
-  //         })
-  //         .filter((alternative) => alternative.text !== ''),
-  //     };
-  //   });
-  //   try {
-  //     console.log(preparedVotations);
-  //     const response = await updateVotations({
-  //       variables: {
-  //         votations: preparedVotations,
-  //       },
-  //     });
-  //     // const votationsFromResponse = response.data?.updateVotations as Votation[];
-  //     // const idsUpdated = votationsFromResponse.map((v) => v.id);
-  //     // const updatedVotations = votations.map((votation) => {
-  //     //   const index = votationsFromResponse.map((v) => v.id).indexOf(votation.id);
-  //     //   if (
-  //     //     index === -1 ||
-  //     //     (votationsFromResponse.length > index && !votationsAreEqual(votation, votationsFromResponse[index]))
-  //     //   ) {
-  //     //     return votation;
-  //     //   } else {
-  //     //     return formatVotation(votationsFromResponse[index]);
-  //     //   }
-  //     // });
-  //     // setVotations([
-  //     //   ...votations.filter((v) => !idsUpdated.includes(v.id)),
-  //     //   ...(formatVotations(votationsFromResponse) ?? []),
-  //     // ]);
-  //   } catch (error) {
-  //     toast({
-  //       title: 'Det oppstod et problem.',
-  //       description: `Vi kunne ikke oppdatere voteringene. Prøv å laste inn siden på nytt.`,
-  //       status: 'error',
-  //       duration: 9000,
-  //       isClosable: true,
-  //     });
-  //   }
-  // };
 
   const handleCreateVotations = async (votations: Votation[]) => {
     const preparedVotations = votations.map((votation) => {
@@ -442,30 +295,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     handleUpdateVotations(votationsToUpdate);
   };
 
-  // const updateOrCreateIfValid = (votation: Votation) => {
-  //   if (!votation.title) return;
-  //   if (votation.existsInDb && votation.isEdited && !createVotationsResult.loading) {
-  //     setVotations(
-  //       [
-  //         ...votations.filter((v) => v.id !== votation.id),
-  //         {
-  //           ...votation,
-  //           isEdited: false,
-  //           alternatives: votation.alternatives.map((a) => {
-  //             return {
-  //               ...a,
-  //               existsInDb: true,
-  //             };
-  //           }),
-  //         },
-  //       ].sort((a, b) => a.index - b.index)
-  //     );
-  //     handleUpdateVotation([votation]);
-  //   } else if (votation.isEdited && !createVotationsResult.loading) {
-  //     handleCreateVotation(votation);
-  //   }
-  // };
-
   return (
     <VStack w="100%" alignItems="start">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
@@ -484,7 +313,6 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
                   deleteVotation={handleDeleteVotation}
                   deleteAlternative={handleDeleteAlternative}
                   duplicateVotation={duplicateVotation}
-                  // updateOrCreateIfValid={updateOrCreateIfValid}
                 />
               ))}
               {provided.placeholder}

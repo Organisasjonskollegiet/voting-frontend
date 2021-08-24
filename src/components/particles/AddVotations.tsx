@@ -323,19 +323,7 @@ const AddVotations: React.FC<IProps> = ({
         <Text fontSize="20px">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
-        <AddMeetingVotationList
-          votations={state.votations}
-          deleteVotation={deleteVotation}
-          updateVotations={onVotationsUpdated}
-          deleteAlternative={deleteAlternative}
-          nextIndex={nextVotationIndex}
-          setNextIndex={setNextVotationIndex}
-          activeVotationId={activeVotationId}
-          setActiveVotationId={setActiveVotationId}
-          onDragEnd={onDragEnd}
-          meetingId={meetingId}
-          votationsMayExist={votationsMayExist}
-        />
+        <AddMeetingVotationList meetingId={meetingId} votationsMayExist={votationsMayExist} />
         {/* <Button
           w={'250px'}
           rightIcon={<AddIcon w={3} h={3} />}
