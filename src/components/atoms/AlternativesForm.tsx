@@ -5,6 +5,7 @@ import AddIcon from '../../static/addIcon.svg';
 import { v4 as uuid } from 'uuid';
 import { labelStyle, inputStyle, pointerStyle, highlightedInputStyle } from '../particles/formStyles';
 import { Votation, Alternative } from '../../types/types';
+import { useEffect } from 'react';
 
 interface IProps {
   votation: Votation;
@@ -25,13 +26,23 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
     if (alternative.existsInDb) deleteAlternative(alternative.id);
   };
 
+  const [alternativeFocus, setAlternativeFocus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (alternativeFocus) {
+      document.getElementById(alternativeFocus)?.focus();
+    }
+  }, [alternativeFocus, votation]);
+
   function submitAlternative() {
     if (votation.alternatives[votation.alternatives.length - 1].text) {
+      const newId = uuid();
       updateVotation({
         ...votation,
         isEdited: true,
-        alternatives: [...votation.alternatives, { id: uuid(), text: '', existsInDb: false, index: nextIndex }],
+        alternatives: [...votation.alternatives, { id: newId, text: '', existsInDb: false, index: nextIndex }],
       });
+      setAlternativeFocus(newId);
       setNextIndex(nextIndex + 1);
     }
   }
