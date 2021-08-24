@@ -198,7 +198,7 @@ const Votation: React.FC = () => {
     <Box>
       <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
         <Heading as="h1" sx={h1Style}>
-          <span style={subtitlesStyle}>Votering {data.votationById.index}</span> <br />
+          <span style={subtitlesStyle}>Votering {data.votationById.index + 1}</span> <br />
           {data.votationById.title}
         </Heading>
 
@@ -266,7 +266,7 @@ const Votation: React.FC = () => {
           </Box>
         )}
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
-          <CheckResults votationId={votationId} meetingId={meetingId} />
+          <CheckResults role={participantRole} votationId={votationId} meetingId={meetingId} />
         )}
         {status === 'PUBLISHED_RESULT' && winner && (
           <Box mt="4em">

@@ -17,6 +17,7 @@ import { useParams } from 'react-router';
 
 const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
+  console.log(user);
   const { meetingId } = useParams<{ meetingId: string }>();
   const [getMeeting, { data, loading, error }] = useGetMeetingByIdLazyQuery({
     variables: {
@@ -169,7 +170,7 @@ const AddMeeting: React.FC = () => {
   const centerContainer = {
     minWidth: '320px',
     width: '100%',
-    maxWidth: '800px',
+    maxWidth: '700px',
   } as React.CSSProperties;
 
   if (createMeetingResult.error) {

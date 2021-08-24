@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box } from '@chakra-ui/react';
-import MoveIcon from '../../static/moveIcon.svg';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
 import { MajorityType } from '../../__generated__/graphql-types';
@@ -12,6 +11,7 @@ import VotationInfoForm from '../atoms/VotationInfoForm';
 import { collapsedStyle, highlightedStyle, containerStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import { DragHandleIcon } from '@chakra-ui/icons';
 
 interface IProps {
   index: number;
@@ -21,7 +21,8 @@ interface IProps {
   updateVotation: (votation: Votation) => void;
   deleteVotation: (votation: Votation) => void;
   duplicateVotation: (votation: Votation) => void;
-  deleteAlternative: (id: string) => void;
+  deleteAlternative: (alternativeId: string, votationId: string) => void;
+  isAdmin: boolean;
 }
 
 const AddVotationForm: React.FC<IProps> = ({
@@ -33,8 +34,9 @@ const AddVotationForm: React.FC<IProps> = ({
   deleteVotation,
   duplicateVotation,
   deleteAlternative,
+  isAdmin,
 }) => {
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+  const [votationDialogIsOpen, setVotationDialogIsOpen] = useState(false);
 
   const handleConfirmDelete = () => {
     deleteVotation(votation);
@@ -66,23 +68,30 @@ const AddVotationForm: React.FC<IProps> = ({
     }
   };
 
-  if (!isActive) {
+  if (!isActive || !isAdmin) {
     return (
-      <Draggable draggableId={votation.id} index={index}>
+      <Draggable isDragDisabled={!isAdmin} draggableId={votation.id} index={index}>
         {(provided) => (
           <HStack
+            w="90vw"
+            maxWidth="700px"
             ref={provided.innerRef}
             {...provided.draggableProps}
             justify="space-between"
             marginBottom="16px"
             sx={collapsedStyle}
+            cursor="pointer"
             onClick={toggleCollapsedVotation}
           >
             <HStack spacing="8">
-              <Text sx={highlightedStyle}>{`Votering ${index + 1}`}</Text>
+              <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
-            <img alt="move" {...provided.dragHandleProps} src={MoveIcon} />
+            {isAdmin && (
+              <Box {...provided.dragHandleProps}>
+                <DragHandleIcon />
+              </Box>
+            )}
           </HStack>
         )}
       </Draggable>
@@ -92,7 +101,14 @@ const AddVotationForm: React.FC<IProps> = ({
   return (
     <Draggable isDragDisabled={true} draggableId={votation.id} index={index}>
       {(provided) => (
-        <VStack sx={containerStyle} ref={provided.innerRef} {...provided.draggableProps} width="100%" spacing="5">
+        <VStack
+          sx={containerStyle}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          width="90vw"
+          maxWidth="700px"
+          spacing="5"
+        >
           <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">
             <VStack spacing="7" flex="2">
               <VotationInfoForm votation={votation} updateVotation={updateVotation} />
@@ -112,7 +128,7 @@ const AddVotationForm: React.FC<IProps> = ({
             <IconButton
               aria-label="Slett votering"
               bg={'white'}
-              onClick={() => setDialogIsOpen(true)}
+              onClick={() => setVotationDialogIsOpen(true)}
               icon={<img alt="delete" src={DeleteIcon} />}
             />
             <IconButton
@@ -123,9 +139,9 @@ const AddVotationForm: React.FC<IProps> = ({
             />
           </Box>
           <DeleteAlertDialog
-            dialogIsOpen={dialogIsOpen}
+            dialogIsOpen={votationDialogIsOpen}
             handleConfirmDelete={handleConfirmDelete}
-            handleCancelDelete={() => setDialogIsOpen(false)}
+            handleCancelDelete={() => setVotationDialogIsOpen(false)}
             type="votation"
           />
         </VStack>
