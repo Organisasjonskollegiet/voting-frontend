@@ -28,7 +28,8 @@ interface IProps {
 
 const getEmptyVotation = (id?: string) => {
   return {
-    id: id ?? uuid(),
+    id: '',
+    key: uuid(),
     title: '',
     description: '',
     index: 1,
@@ -132,7 +133,7 @@ const AddVotations: React.FC<IProps> = ({
       duration: 9000,
       isClosable: true,
     });
-    const createResults = createVotationsResult.data.createVotations as Votation[];
+    const createResults = { ...createVotationsResult.data.createVotations } as Votation[];
     const updateResults = updateVotationsResult.data.updateVotations as Votation[];
     const createdVotations = formatVotations(createResults) as Votation[];
     const updatedVotations = formatVotations(updateResults) as Votation[];
@@ -320,7 +321,7 @@ const AddVotations: React.FC<IProps> = ({
           Legg til voteringer
         </Heading>
         <Text fontSize="20px">
-          Her kan du legge til informasjon om møtet. Voteringer kan også legges til på et senere tidspunkt.
+          Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
         <AddMeetingVotationList
           votations={state.votations}

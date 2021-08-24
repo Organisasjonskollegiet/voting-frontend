@@ -20,6 +20,7 @@ export interface Alternative {
 }
 export interface Votation {
   id: string;
+  // key: string;
   title: string;
   description: string;
   index: number;
