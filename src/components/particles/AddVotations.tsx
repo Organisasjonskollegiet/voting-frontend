@@ -323,7 +323,7 @@ const AddVotations: React.FC<IProps> = ({
         <Text fontSize="20px">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
-        <AddMeetingVotationList meetingId={meetingId} votationsMayExist={votationsMayExist} />
+        <AddMeetingVotationList isMeetingLobby={false} meetingId={meetingId} votationsMayExist={votationsMayExist} />
         {/* <Button
           w={'250px'}
           rightIcon={<AddIcon w={3} h={3} />}

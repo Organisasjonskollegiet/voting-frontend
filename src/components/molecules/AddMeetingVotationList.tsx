@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AddVotationForm from './AddVotationForm';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { Button, HStack, useToast, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   MajorityType,
@@ -10,15 +10,21 @@ import {
   useDeleteAlternativesMutation,
   useDeleteVotationsMutation,
   useUpdateVotationsMutation,
+  useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../atoms/Loading';
+import { darkblue } from '../particles/theme';
+import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
+import VotationListSection from './VotationListSection';
+import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 
 interface VotationListProps {
   meetingId: string;
   votationsMayExist: boolean;
+  isMeetingLobby: boolean;
 }
 
 const getEmptyAlternative = () => {
@@ -30,12 +36,12 @@ const getEmptyAlternative = () => {
   };
 };
 
-const getEmptyVotation = (id?: string) => {
+const getEmptyVotation = (id?: string, index?: number) => {
   return {
     id: id ?? uuid(),
     title: '',
     description: '',
-    index: 1,
+    index: index ?? 0,
     alternatives: [getEmptyAlternative()],
     blankVotes: false,
     status: VotationStatus.Upcoming,
@@ -48,8 +54,8 @@ const getEmptyVotation = (id?: string) => {
   };
 };
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist }) => {
-  const [getVotationsByMeetingId, { data }] = useVotationsByMeetingIdLazyQuery({
+const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist, isMeetingLobby }) => {
+  const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
     },
@@ -68,6 +74,8 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
   const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
 
   const [deleteAlternatives] = useDeleteAlternativesMutation();
+
+  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
 
   const toast = useToast();
 
@@ -88,7 +96,15 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
       const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
-      setNextVotationIndex(Math.max(...votations.map((votation) => votation.index)) + 1);
+      const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+      const shouldAddEmpty =
+        !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
+      if (shouldAddEmpty) {
+        formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
+        setNextVotationIndex(nextVotationIndex);
+      } else {
+        setNextVotationIndex(nextVotationIndex + 1);
+      }
       setVotations(formattedVotations.sort((a, b) => a.index - b.index));
       setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
@@ -160,7 +176,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
       return {
         ...votation,
         index: index,
-        isEdited: false,
+        isEdited: true,
       };
     });
     setVotations(updatedVotations);
@@ -218,6 +234,12 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
       if (updatedVotation.length > 0) {
         updateVotation(updatedVotation[0]);
       }
+      toast({
+        title: 'Alternativ slettet.',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
       toast({
         title: 'Det oppstod et problem.',
@@ -237,10 +259,10 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
   };
 
   const duplicateVotation = (votation: Votation) => {
-    const newKey = uuid();
-    setVotations([...votations, { ...votation, id: '', existsInDb: false, index: nextVotationIndex }]);
+    const newId = uuid();
+    setVotations([...votations, { ...votation, id: newId, existsInDb: false, index: nextVotationIndex }]);
     setNextVotationIndex(nextVotationIndex + 1);
-    setActiveVotationId(newKey);
+    setActiveVotationId(newId);
   };
 
   const handleUpdateVotations = (votations: Votation[]) => {
@@ -295,31 +317,83 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
     handleUpdateVotations(votationsToUpdate);
   };
 
+  if (loading) {
+    return <Loading asOverlay={false} text={'Henter møte'} />;
+  }
+
+  if (error) {
+    return (
+      <>
+        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
+        <Center mt="10vh">
+          <Text>Det skjedde noe galt under innlastingen</Text>
+        </Center>
+      </>
+    );
+  }
+
+  console.log(votations);
+
+  const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
+  const endedVotations = votations.filter((v) => v.status !== VotationStatus.Upcoming);
+
   return (
-    <VStack w="100%" h="100%" alignItems="start">
+    <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="list">
-          {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {votations.map((votation: Votation, index: number) => (
-                <AddVotationForm
-                  toggleCollapsedVotation={() => setActiveVotationId(votation.id)}
-                  isActive={votation.id === activeVotationId}
-                  votation={votation}
-                  index={index}
-                  key={votation.id}
-                  updateVotation={updateVotation}
-                  deleteVotation={handleDeleteVotation}
-                  deleteAlternative={handleDeleteAlternative}
-                  duplicateVotation={duplicateVotation}
-                />
-              ))}
-              {provided.placeholder}
-            </div>
+      {upcomingVotations.length > 0 && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          {isMeetingLobby ? (
+            <>
+              <VotationListSection
+                droppableId={'top-list'}
+                votations={upcomingVotations.slice(0, 1)}
+                setActiveVotationId={setActiveVotationId}
+                activeVotationId={activeVotationId}
+                updateVotation={updateVotation}
+                handleDeleteVotation={handleDeleteVotation}
+                handleDeleteAlternative={handleDeleteAlternative}
+                duplicateVotation={duplicateVotation}
+                openVotation={() =>
+                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
+                }
+                showStartNextButton={true}
+                heading={'Neste votering'}
+              />
+              <VotationListSection
+                droppableId={'bottom-list'}
+                votations={upcomingVotations.slice(1)}
+                setActiveVotationId={setActiveVotationId}
+                activeVotationId={activeVotationId}
+                updateVotation={updateVotation}
+                handleDeleteVotation={handleDeleteVotation}
+                handleDeleteAlternative={handleDeleteAlternative}
+                duplicateVotation={duplicateVotation}
+                openVotation={() =>
+                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
+                }
+                showStartNextButton={false}
+                heading={'Kommende voteringer'}
+              />
+            </>
+          ) : (
+            <VotationListSection
+              droppableId={'list'}
+              votations={upcomingVotations}
+              setActiveVotationId={setActiveVotationId}
+              activeVotationId={activeVotationId}
+              updateVotation={updateVotation}
+              handleDeleteVotation={handleDeleteVotation}
+              handleDeleteAlternative={handleDeleteAlternative}
+              duplicateVotation={duplicateVotation}
+              openVotation={() =>
+                updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
+              }
+              showStartNextButton={false}
+              heading={'Kommende voteringer'}
+            />
           )}
-        </Droppable>
-      </DragDropContext>
+        </DragDropContext>
+      )}
       <HStack w="100%" justifyContent="space-between">
         <Button
           w={'250px'}
@@ -345,6 +419,29 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
           Lagre endringer
         </Button>
       </HStack>
+      {endedVotations.length > 0 && (
+        <VStack spacing="16px" alignItems="start">
+          <Heading as="h1" fontSize="1em" mb="1.125em">
+            Avsluttede voteringer
+          </Heading>
+          {endedVotations.map((votation, index) => (
+            <HStack
+              w="90vw"
+              maxWidth="700px"
+              justify="space-between"
+              marginBottom="16px"
+              sx={collapsedStyle}
+              cursor="default"
+              opacity="0.5"
+            >
+              <HStack spacing="8">
+                <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
+                <Text>{votation.title}</Text>
+              </HStack>
+            </HStack>
+          ))}
+        </VStack>
+      )}
     </VStack>
   );
 };

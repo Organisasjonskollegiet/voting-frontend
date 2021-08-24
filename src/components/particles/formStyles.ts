@@ -27,7 +27,7 @@ export const collapsedStyle = {
   backgroundColor: 'white',
   padding: '16px 40px',
   borderRadius: '4px',
-  cursor: 'pointer',
+  // cursor: 'pointer',
 };
 
 export const highlightedInputStyle = {
@@ -49,7 +49,7 @@ export const checkboxStyle = {
   padding: '16px',
   borderRadius: '8px',
   fontSize: '16px',
-  fontWeight: 'bold',
+  fontWeight: 'normal',
 } as React.CSSProperties;
 
 export const pointerStyle = {

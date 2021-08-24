@@ -122,12 +122,12 @@ const MeetingLobby: React.FC = () => {
           </Heading>
           <VStack align="start">
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-            {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
+            {/* {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
               <Heading as="h1" fontSize="1em" mb="1.125em">
                 Neste votering
               </Heading>
-            )}
-            <AddMeetingVotationList votationsMayExist={true} meetingId={meetingId} />
+            )} */}
+            <AddMeetingVotationList isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
             {/* {votations
               .filter((votation) => votation.status === VotationStatus.Upcoming)
               .map((votation) => (

@@ -36,7 +36,8 @@ const AddVotationForm: React.FC<IProps> = ({
   deleteAlternative,
   // updateOrCreateIfValid,
 }) => {
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+  const [votationDialogIsOpen, setVotationDialogIsOpen] = useState(false);
+  const [alternativeDialogIsOpen, setAlternativeDialogIsOpen] = useState(false);
 
   const handleConfirmDelete = () => {
     deleteVotation(votation);
@@ -80,6 +81,7 @@ const AddVotationForm: React.FC<IProps> = ({
             justify="space-between"
             marginBottom="16px"
             sx={collapsedStyle}
+            cursor="pointer"
             onClick={toggleCollapsedVotation}
           >
             <HStack spacing="8">
@@ -126,7 +128,7 @@ const AddVotationForm: React.FC<IProps> = ({
             <IconButton
               aria-label="Slett votering"
               bg={'white'}
-              onClick={() => setDialogIsOpen(true)}
+              onClick={() => setVotationDialogIsOpen(true)}
               icon={<img alt="delete" src={DeleteIcon} />}
             />
             <IconButton
@@ -137,9 +139,9 @@ const AddVotationForm: React.FC<IProps> = ({
             />
           </Box>
           <DeleteAlertDialog
-            dialogIsOpen={dialogIsOpen}
+            dialogIsOpen={votationDialogIsOpen}
             handleConfirmDelete={handleConfirmDelete}
-            handleCancelDelete={() => setDialogIsOpen(false)}
+            handleCancelDelete={() => setVotationDialogIsOpen(false)}
             type="votation"
           />
         </VStack>
