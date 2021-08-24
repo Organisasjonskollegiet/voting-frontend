@@ -67,7 +67,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
 
   const [deleteVotations] = useDeleteVotationsMutation();
 
-  const [nextVotationIndex, setNextVotationIndex] = useState<number>(0);
+  // const [nextVotationIndex, setNextVotationIndex] = useState<number>(1);
 
   const [votations, setVotations] = useState<Votation[]>([getEmptyVotation()]);
 
@@ -101,10 +101,11 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
         !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
       if (shouldAddEmpty) {
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
-        setNextVotationIndex(nextVotationIndex);
-      } else {
-        setNextVotationIndex(nextVotationIndex + 1);
+        // setNextVotationIndex(nextVotationIndex);
       }
+      // else {
+      //   setNextVotationIndex(nextVotationIndex + 1);
+      // }
       setVotations(formattedVotations.sort((a, b) => a.index - b.index));
       setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
@@ -191,8 +192,18 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
           },
         });
       }
-      const remainingVotations = votations.filter((v) => v.id !== votation.id);
+      const remainingVotations = votations
+        .filter((v) => v.id !== votation.id)
+        .sort((a, b) => a.index - b.index)
+        .map((v, index) => {
+          return {
+            ...v,
+            index,
+            isEdited: true,
+          };
+        });
       const keyOfEmptyVotation = uuid();
+      handleSave(remainingVotations);
       setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId(
         remainingVotations.length > votation.index
@@ -260,8 +271,9 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
 
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
+    const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
     setVotations([...votations, { ...votation, id: newId, existsInDb: false, index: nextVotationIndex }]);
-    setNextVotationIndex(nextVotationIndex + 1);
+    // setNextVotationIndex(nextVotationIndex + 1);
     setActiveVotationId(newId);
   };
 
@@ -309,7 +321,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
     createVotations({ variables: { votations: preparedVotations, meetingId } });
   };
 
-  const handleSave = () => {
+  const handleSave = (votations: Votation[]) => {
     const validVotations = votations.filter((v) => v.title !== '');
     const votationsToCreate = validVotations.filter((votation) => !votation.existsInDb);
     const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
@@ -401,8 +413,9 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
           borderRadius={'16em'}
           onClick={() => {
             const id = uuid();
+            const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
             setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
-            setNextVotationIndex(nextVotationIndex + 1);
+            // setNextVotationIndex(nextVotationIndex + 1);
             setActiveVotationId(id);
           }}
         >
@@ -414,7 +427,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
           color="white"
           w={'250px'}
           borderRadius={'16em'}
-          onClick={handleSave}
+          onClick={() => handleSave(votations)}
         >
           Lagre endringer
         </Button>
