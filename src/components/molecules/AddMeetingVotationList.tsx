@@ -506,7 +506,14 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
         >
           Legg til votering
         </Button>
-        <Button bg="gray.500" color="white" w={'250px'} borderRadius={'16em'} onClick={handleSave}>
+        <Button
+          disabled={votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length === 0}
+          bg="gray.500"
+          color="white"
+          w={'250px'}
+          borderRadius={'16em'}
+          onClick={handleSave}
+        >
           Lagre endringer
         </Button>
       </HStack>
