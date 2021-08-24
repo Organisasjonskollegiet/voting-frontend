@@ -62,7 +62,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
           </div>
         )}
       </Droppable>
-      {showStartNextButton && (
+      {showStartNextButton && votations.length > 0 && votations[0].existsInDb && (
         <Button onClick={openVotation} w={'250px'} bg="green" color="white" borderRadius={'16em'}>
           Start neste votering
         </Button>

@@ -49,9 +49,9 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
     return Math.round(share * 100 * 100) / 100;
   };
 
-  const handleInvalidResult = () => {
-    updateVotationStatus({ variables: { id: votationId, status: VotationStatus.Invalid } });
-    history.push(`/meeting/${meetingId}/edit`);
+  const handleInvalidResult = async () => {
+    await updateVotationStatus({ variables: { id: votationId, status: VotationStatus.Invalid } });
+    history.push(`/meeting/${meetingId}`);
   };
 
   return (
