@@ -296,7 +296,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({ meetingId, votati
   };
 
   return (
-    <VStack w="100%" alignItems="start">
+    <VStack w="100%" h="100%" alignItems="start">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="list">

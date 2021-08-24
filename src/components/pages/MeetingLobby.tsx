@@ -14,6 +14,7 @@ import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
+import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -83,7 +84,7 @@ const MeetingLobby: React.FC = () => {
   // }, [votationOpened, history, meetingId]);
 
   const styles = {
-    height: window.innerHeight,
+    // height: window.innerHeight,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -114,7 +115,7 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg="#F9F9F9" w="100vw" pt="10vh" style={styles}>
+      <Box bg="#F9F9F9" w="100vw" p="10vh 0" color="gray.500" style={styles}>
         <VStack w="90vw" maxWidth="700px" alignItems="left">
           <Heading sx={h1Style} as="h1">
             {votationData?.meetingById.title}
@@ -123,10 +124,11 @@ const MeetingLobby: React.FC = () => {
             <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
             {votations.filter((votation) => votation.status === VotationStatus.Upcoming).length > 0 && (
               <Heading as="h1" fontSize="1em" mb="1.125em">
-                Kommende avstemninger
+                Neste votering
               </Heading>
             )}
-            {votations
+            <AddMeetingVotationList votationsMayExist={true} meetingId={meetingId} />
+            {/* {votations
               .filter((votation) => votation.status === VotationStatus.Upcoming)
               .map((votation) => (
                 <HStack key={votation.id} style={votationStyles} width="100%" justifyContent="space-between">
@@ -150,7 +152,7 @@ const MeetingLobby: React.FC = () => {
                     </Button>
                   )}
                 </HStack>
-              ))}
+              ))} */}
           </VStack>
         </VStack>
       </Box>
