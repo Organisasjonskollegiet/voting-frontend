@@ -34,7 +34,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
     }
   }, [alternativeFocus, votation]);
 
-  function submitAlternative() {
+  function addNewAlternative() {
     if (votation.alternatives[votation.alternatives.length - 1].text) {
       const newId = uuid();
       updateVotation({
@@ -48,7 +48,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
   }
 
   const onEnterSubmitAlternative = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') submitAlternative();
+    if (e.key === 'Enter') addNewAlternative();
   };
 
   return (
@@ -94,7 +94,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           leftIcon={<img alt="add" src={AddIcon} />}
           bg="white"
           variant="link"
-          onClick={() => submitAlternative()}
+          onClick={() => addNewAlternative()}
         >
           Legg til svaralternativ
         </Button>
