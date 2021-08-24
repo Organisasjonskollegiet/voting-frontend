@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Center, Box, Heading, Text, VStack, HStack, Button, useToast } from '@chakra-ui/react';
+import { Center, Box, Heading, Text, VStack, Divider, Button } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
   // useVotationOpenedForMeetingSubscription,
@@ -8,13 +8,13 @@ import {
   useGetRoleQuery,
   Role,
   Votation,
-  useUpdateVotationStatusMutation,
 } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -35,7 +35,6 @@ const MeetingLobby: React.FC = () => {
   // });
 
   const history = useHistory();
-  const toast = useToast();
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
@@ -63,18 +62,14 @@ const MeetingLobby: React.FC = () => {
     }
   }, [votationData, history, meetingId, votations.length]);
 
+  const backToVotationList = () => {
+    history.push('/');
+  };
+
   const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  } as React.CSSProperties;
-
-  const votationStyles = {
-    backgroundColor: 'white',
-    boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
-    borderRadius: '4px',
-    padding: '1em 2em',
-    marginBottom: '1em',
   } as React.CSSProperties;
 
   if (votationLoading) {
@@ -95,13 +90,34 @@ const MeetingLobby: React.FC = () => {
   return (
     <>
       <Box bg="#F9F9F9" w="100vw" p="10vh 0" color="gray.500" style={styles}>
-        <VStack w="90vw" maxWidth="700px" alignItems="left">
-          <Heading sx={h1Style} as="h1">
-            {votationData?.meetingById.title}
-          </Heading>
-          <VStack align="start">
-            <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-            <AddMeetingVotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
+        <VStack w="90vw" maxWidth="700px" alignItems="left" spacing="3em">
+          <VStack alignItems="left">
+            <Heading sx={h1Style} as="h1">
+              {votationData?.meetingById.title}
+            </Heading>
+            <VStack align="start">
+              <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
+              <AddMeetingVotationList
+                role={role}
+                isMeetingLobby={true}
+                votationsMayExist={true}
+                meetingId={meetingId}
+              />
+            </VStack>
+          </VStack>
+          <VStack alignItems="left" spacing="1em">
+            <Divider />
+            <Button
+              borderRadius={'16em'}
+              bg="transparent"
+              w="fit-content"
+              onClick={backToVotationList}
+              leftIcon={<ArrowBackIcon />}
+            >
+              <Text fontWeight="normal" fontSize="16px" decoration="underline">
+                Tilbake til møteoversikt
+              </Text>
+            </Button>
           </VStack>
         </VStack>
       </Box>

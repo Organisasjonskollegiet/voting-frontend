@@ -379,7 +379,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
                 }
                 showStartNextButton={role === Role.Admin}
                 heading={'Neste votering'}
-                disabled={role !== Role.Admin}
+                isAdmin={role === Role.Admin}
               />
               <VotationListSection
                 droppableId={'bottom-list'}
@@ -395,7 +395,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
                 }
                 showStartNextButton={false}
                 heading={'Kommende voteringer'}
-                disabled={role !== Role.Admin}
+                isAdmin={role === Role.Admin}
               />
             </>
           ) : (
@@ -413,7 +413,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
               }
               showStartNextButton={false}
               heading={'Kommende voteringer'}
-              disabled={role !== Role.Admin}
+              isAdmin={role === Role.Admin}
             />
           )}
         </DragDropContext>

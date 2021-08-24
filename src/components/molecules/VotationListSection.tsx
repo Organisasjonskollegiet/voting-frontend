@@ -17,7 +17,7 @@ interface VotationListSectionProps {
   showStartNextButton: boolean;
   heading?: string;
   droppableId: string;
-  disabled: boolean;
+  isAdmin: boolean;
 }
 
 const VotationListSection: React.FC<VotationListSectionProps> = ({
@@ -32,16 +32,16 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
   showStartNextButton,
   heading,
   droppableId,
-  disabled,
+  isAdmin,
 }) => {
   return (
     <VStack spacing="16px" alignItems="start">
-      {heading && (
+      {heading && votations.length > 0 && (
         <Heading as="h1" fontSize="1em" mb="1.125em">
           {heading}
         </Heading>
       )}
-      <Droppable droppableId={droppableId} isDropDisabled={disabled}>
+      <Droppable droppableId={droppableId} isDropDisabled={!isAdmin}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {votations.map((votation: Votation) => (
@@ -55,7 +55,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
                 deleteVotation={handleDeleteVotation}
                 deleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
-                disabled={true}
+                isAdmin={isAdmin}
               />
             ))}
             {provided.placeholder}
