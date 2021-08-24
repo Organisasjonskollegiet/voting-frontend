@@ -170,7 +170,7 @@ const AddMeeting: React.FC = () => {
   const centerContainer = {
     minWidth: '320px',
     width: '100%',
-    maxWidth: '800px',
+    maxWidth: '700px',
   } as React.CSSProperties;
 
   if (createMeetingResult.error) {
