@@ -10,7 +10,7 @@ export default {
 
 const Template: Story<AlternativeProps> = (args) => (
   <Box maxWidth="320px">
-    <Alternative {...args} />
+    <Alternative {...args} isStv={false} />
   </Box>
 );
 
@@ -20,6 +20,7 @@ Default.args = {
     id: '1',
     text: 'Test',
     votationId: '2',
+    index: 0,
   },
   selected: false,
 };
@@ -30,6 +31,7 @@ Selected.args = {
     id: '1',
     text: 'Test',
     votationId: '2',
+    index: 0,
   },
   selected: true,
 };

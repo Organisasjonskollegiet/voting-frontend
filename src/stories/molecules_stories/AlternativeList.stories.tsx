@@ -35,6 +35,7 @@ Default.args = {
   handleSelect: () => {
     return;
   },
+  isStv: false,
 };
 
 export const Blank = Template.bind({});
@@ -63,4 +64,5 @@ Blank.args = {
   handleSelect: () => {
     return;
   },
+  isStv: false,
 };

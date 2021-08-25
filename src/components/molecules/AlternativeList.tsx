@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Alternative from '../atoms/Alternative';
-import { useStyleConfig, Grid } from '@chakra-ui/react';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { VStack } from '@chakra-ui/react';
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { AlternativeWithIndex } from '../pages/Votation';
 
 export interface AlternativeListProps {
@@ -57,29 +56,35 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
     updateAlternatives(updatedAlternatives);
   }
 
-  const alternativeStyle = useStyleConfig('Alternative');
-
   return (
-    <Grid gap="1.5em" w="100%" templateColumns={`repeat(auto-fit, minmax(${alternativeStyle.minWidth}, 1fr))`}>
-      <DragDropContext onDragEnd={onDragEnd}>
-        {alternatives.map((alt) => (
-          <Alternative
-            alternative={alt}
-            key={alt.id}
-            selected={alt.id === selectedAlternativeId}
-            onClick={() => updateSelected(alt.id)}
-          />
-        ))}
-      </DragDropContext>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="alternatives">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            <VStack spacing="1em">
+              {alternatives.map((alt, index) => (
+                <Alternative
+                  alternative={alt}
+                  selected={selectedAlternativeId === alt.id}
+                  onClick={() => updateSelected(alt.id)}
+                  isStv={isStv}
+                />
+              ))}
+            </VStack>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       {blankVotes && (
         <Alternative
-          alternative={{ id: '0', text: 'Stem blankt', votationId: '0' }}
+          alternative={{ id: '0', text: 'Stem blankt', votationId: '0', index: 12 }}
           key={0}
           selected={'0' === selectedAlternativeId}
           onClick={() => updateSelected('0')}
+          isStv={isStv}
         />
       )}
-    </Grid>
+    </DragDropContext>
   );
 };
 
