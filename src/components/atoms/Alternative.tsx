@@ -32,7 +32,9 @@ const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClic
             </HStack>
           ) : (
             <Button w="100%" boxShadow={boxShadow} justifyContent="left" onClick={onClick} sx={styles}>
-              <Text isTruncated>{alternative.text}</Text>
+              <Text color={selected ? 'white' : 'inherit'} isTruncated>
+                {alternative.text}
+              </Text>
             </Button>
           )}
         </HStack>
@@ -53,7 +55,6 @@ export const AlternativeConfig: ComponentStyleConfig = {
   },
   variants: {
     selected: {
-      color: 'white',
       bg: '#718096',
       _hover: { bg: '#8d99ab' },
     },
