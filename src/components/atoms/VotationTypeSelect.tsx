@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormControl, FormLabel, Select } from '@chakra-ui/react';
-import { labelStyle, boxShadow } from '../particles/formStyles';
+import { labelStyle } from '../particles/formStyles';
+import { boxShadow } from '../particles/formStyles';
 import { Votation } from '../../types/types';
 
 interface IProps {

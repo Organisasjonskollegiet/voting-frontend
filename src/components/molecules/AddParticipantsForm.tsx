@@ -18,6 +18,7 @@ import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
 import { ParticipantWorking } from '../../types/types';
 import { useEffect } from 'react';
+import { boxShadow } from '../particles/formStyles';
 
 interface IProps {
   meetingId: string | undefined;
@@ -169,7 +170,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             width="100%"
             style={{
               borderRadius: '4px',
-              boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+              boxShadow,
               background: '#fff',
               zIndex: 10,
             }}
@@ -196,13 +197,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           </HStack>
         </FormControl>
         <Divider m="3em 0" />
-        <VStack
-          width="100%"
-          backgroundColor="white"
-          borderRadius="4px"
-          boxShadow="0px 0px 10px rgba(0, 0, 0, 0.1)"
-          spacing="0"
-        >
+        <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
           {participants.length > 0 ? (
             participants
               .sort((a, b) => a.email.localeCompare(b.email))

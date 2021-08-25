@@ -8,6 +8,7 @@ import {
   VotationStatus,
 } from '../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
+import { boxShadow } from '../particles/formStyles';
 
 interface CheckResultsProps {
   votationId: string;
@@ -55,11 +56,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
   };
 
   return (
-    <Box
-      mt="4em"
-      width={'80vw'}
-      style={{ borderRadius: '4px', padding: '30px', boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' }}
-    >
+    <Box mt="4em" width={'100%'} style={{ borderRadius: '4px', padding: '30px', boxShadow }}>
       <VStack width={'100%'}>
         <HStack width={'100%'} justifyContent="space-around">
           <Box>{`Antall stemmeberettigede deltakere: ${votingEligibleCount}`}</Box>

@@ -8,12 +8,12 @@ import {
   useUpdateMeetingMutation,
 } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../particles/AddMeetingInformation';
-import AuthWrapper from '../../services/auth/AuthWrapper';
 import AddParticipants from '../particles/AddParticipants';
 import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
+import { outerContainer, centerContainer } from '../particles/containerStyles';
 
 const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
@@ -160,19 +160,6 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const outerContainer = {
-    paddingTop: '5rem',
-    width: '100%',
-    bg: '#f9f9f9',
-    color: '#718096',
-  } as React.CSSProperties;
-
-  const centerContainer = {
-    minWidth: '320px',
-    width: '100%',
-    maxWidth: '700px',
-  } as React.CSSProperties;
-
   if (createMeetingResult.error) {
     toast({
       title: 'Kunne ikke opprette møte',
@@ -193,38 +180,36 @@ const AddMeeting: React.FC = () => {
   }
 
   return (
-    <AuthWrapper>
-      <Center sx={outerContainer}>
-        {(createMeetingResult.loading || updateMeetingResult.loading) && (
-          <Loading asOverlay={true} text="Oppretter møte" />
-        )}
-        <VStack spacing="10" align="left" sx={centerContainer}>
-          <AddMeetingInformation
-            isActive={activeTab === 0}
-            meeting={meeting}
-            updateMeeting={(meeting: MeetingWorking) => {
-              setMeetingHasBeenEdited(true);
-              setMeeting(meeting);
-            }}
-            handleNavigation={handleNextFromMeeting}
-          />
-          <AddVotations
-            isActive={activeTab === 1}
-            votationsMayExist={votationsMayExist}
-            onVotationsCreated={onVotationsCreated}
-            meetingId={meeting?.id ?? ''}
-            handlePrevious={handlePrevFromVotation}
-          />
-          <AddParticipants
-            isActive={activeTab === 2}
-            previouslyAddedParticipants={participants}
-            meetingId={meeting?.id ?? undefined}
-            handleNavigation={handlePrevFromParticipants}
-            ownerEmail={user?.email}
-          />
-        </VStack>
-      </Center>
-    </AuthWrapper>
+    <Center sx={outerContainer}>
+      {(createMeetingResult.loading || updateMeetingResult.loading) && (
+        <Loading asOverlay={true} text="Oppretter møte" />
+      )}
+      <VStack spacing="10" align="left" maxWidth="700px" sx={centerContainer}>
+        <AddMeetingInformation
+          isActive={activeTab === 0}
+          meeting={meeting}
+          updateMeeting={(meeting: MeetingWorking) => {
+            setMeetingHasBeenEdited(true);
+            setMeeting(meeting);
+          }}
+          handleNavigation={handleNextFromMeeting}
+        />
+        <AddVotations
+          isActive={activeTab === 1}
+          votationsMayExist={votationsMayExist}
+          onVotationsCreated={onVotationsCreated}
+          meetingId={meeting?.id ?? ''}
+          handlePrevious={handlePrevFromVotation}
+        />
+        <AddParticipants
+          isActive={activeTab === 2}
+          previouslyAddedParticipants={participants}
+          meetingId={meeting?.id ?? undefined}
+          handleNavigation={handlePrevFromParticipants}
+          ownerEmail={user?.email}
+        />
+      </VStack>
+    </Center>
   );
 };
 

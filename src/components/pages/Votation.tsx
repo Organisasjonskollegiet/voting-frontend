@@ -12,23 +12,29 @@ import {
   useGetVoteCountQuery,
   useGetWinnerOfVotationQuery,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Button, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
-import AlternativeList from '../molecules/AlternativeList';
+import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
-import { darkblue } from '../particles/theme';
 import VotationController from '../molecules/VotationController';
 import CheckResults from '../molecules/CheckResults';
+import { centerContainer, outerContainer } from '../particles/containerStyles';
+import CastVote from '../molecules/CastVote';
 
-const subtitlesStyle = {
+export const subtitlesStyle = {
   fontStyle: 'normal',
   fontSize: '16px',
   fontWeight: 'bold',
   lineHeight: '150%',
 } as React.CSSProperties;
+
+export type AlternativeWithIndex = AlternativeType & {
+  // id: string;
+  // text: string;
+  index: number;
+};
 
 const Votation: React.FC = () => {
   const { user } = useAuth0();
@@ -66,6 +72,11 @@ const Votation: React.FC = () => {
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
   const [winner, setWinner] = useState<AlternativeType | null>();
 
+  //Handle selected Alternative
+  const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
+  const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
+  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
+
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winner) {
       const result = winnerResult.getWinnerOfVotation;
@@ -99,6 +110,20 @@ const Votation: React.FC = () => {
     }
   }, [data, status, refetchWinner]);
 
+  useEffect(() => {
+    if (data?.votationById?.alternatives && !alternatives) {
+      const alternatives = data.votationById.alternatives.filter((a) => a) as AlternativeType[];
+      setAlternatives(
+        alternatives.map((a, index) => {
+          return {
+            ...a,
+            index,
+          };
+        })
+      );
+    }
+  }, [data, alternatives]);
+
   // update initial vote count when data arrives on votation
   useEffect(() => {
     if (data?.votationById?.hasVoted && data.votationById.hasVoted.length > voteCount) {
@@ -128,10 +153,6 @@ const Votation: React.FC = () => {
   //   setVoteCount(newVoteCount);
   // }, [newVoteCountResult, voteCount]);
 
-  //Handle selected Alternative
-  const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
-  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
-
   //Register the vote
   const [castVote] = useCastVoteMutation();
   const submitVote = () => {
@@ -148,7 +169,6 @@ const Votation: React.FC = () => {
   if (error?.message === 'Not Authorised!') {
     return (
       <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="40vh">
           <Text>
             Du har ikke tilgang til denne voteringen,{' '}
@@ -164,7 +184,6 @@ const Votation: React.FC = () => {
   if (loading || voteCountLoading) {
     return (
       <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
           <Loading asOverlay={false} text={'Henter votering'} />
         </Center>
@@ -175,7 +194,6 @@ const Votation: React.FC = () => {
   if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
       <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
           <Text>Det skjedde noe galt under innlastingen</Text>
         </Center>
@@ -186,7 +204,6 @@ const Votation: React.FC = () => {
   if (status === VotationStatus.Upcoming) {
     return (
       <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
         <Center mt="10vh">
           <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
         </Center>
@@ -195,70 +212,48 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <Box>
-      <Box pb="3em" w="80vw" maxW="max-content" m="auto" color={darkblue} mt="8vh">
-        <Heading as="h1" sx={h1Style}>
-          <span style={subtitlesStyle}>Votering {data.votationById.index + 1}</span> <br />
-          {data.votationById.title}
-        </Heading>
+    <Center sx={outerContainer}>
+      <VStack sx={centerContainer} maxWidth="700px" alignItems="left" spacing="3em">
+        <VStack alignItems="left" spacing="0.5rem">
+          <Heading as="h1" style={subtitlesStyle}>
+            Votering {data.votationById.index + 1}
+          </Heading>
+          <Heading as="h1" sx={h1Style}>
+            {data.votationById.title}
+          </Heading>
 
-        <Text mt="1em" mb="2em">
-          {data.votationById.description}
-        </Text>
+          <Text mt="1em" mb="2em">
+            {data.votationById.description}
+          </Text>
+        </VStack>
 
         {status === VotationStatus.Open && (
-          <Box>
+          <>
             {!userHasVoted ? (
-              <VStack spacing="1.5em" align="left">
-                <Heading as="h2" sx={subtitlesStyle}>
-                  Alternativer
-                </Heading>
-                <AlternativeList
-                  alternatives={(data.votationById.alternatives as Array<AlternativeType>) || []}
-                  handleSelect={handleSelect}
-                  blankVotes={data.votationById.blankVotes || false}
-                />
-              </VStack>
+              <CastVote
+                alternatives={alternatives || []}
+                handleSelect={handleSelect}
+                blankVotes={data.votationById.blankVotes || false}
+                submitVote={submitVote}
+                submitButtonDisabled={selectedAlternativeId === null}
+                voteCount={voteCount}
+                votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
+                isStv={data.votationById.severalVotes}
+                updateAlternatives={setAlternatives}
+              />
             ) : (
               <Box mt="4em">
                 <Loading asOverlay={false} text={'Votering pågår'} />
+                <Center>
+                  <Heading as="h1" sx={h1Style}>
+                    Din stemme er registrert.
+                  </Heading>
+                </Center>
               </Box>
             )}
 
-            <Divider m="3em 0" />
-
-            {/* Submit button */}
-            <Center>
-              {!userHasVoted ? (
-                <Button
-                  onClick={() => submitVote()}
-                  p="1.5em 4em"
-                  borderRadius="16em"
-                  isDisabled={selectedAlternativeId === null}
-                >
-                  Avgi Stemme
-                </Button>
-              ) : (
-                <Heading as="h1" sx={h1Style}>
-                  Din stemme er registrert.
-                </Heading>
-              )}
-            </Center>
-
             {/* Shows how many participants has voted */}
-            <VStack mt="3em" spacing="0">
-              <Center>
-                <Text fontSize="2.25em" fontWeight="bold">
-                  {`${voteCount} / ${voteCountResult?.getVoteCount?.votingEligibleCount}`}
-                </Text>
-              </Center>
-              <Center>
-                <Heading as="h2" sx={subtitlesStyle}>
-                  stemmer
-                </Heading>
-              </Center>
-            </VStack>
-          </Box>
+          </>
         )}
         {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
           <Box>
@@ -277,11 +272,14 @@ const Votation: React.FC = () => {
           /* Update votation status for admin if votation is open or you are checking results */
           participantRole === Role.Admin &&
             (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-              <VotationController votationId={votationId} status={status} />
+              <VStack>
+                <Divider />
+                <VotationController votationId={votationId} status={status} />
+              </VStack>
             )
         }
-      </Box>
-    </Box>
+      </VStack>
+    </Center>
   );
 };
 

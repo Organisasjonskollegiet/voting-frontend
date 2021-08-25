@@ -1,6 +1,7 @@
 import React from 'react';
-import { Center, Button } from '@chakra-ui/react';
+import { Button, HStack } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation } from '../../__generated__/graphql-types';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 interface VotationControllerProps {
   votationId: string;
@@ -31,7 +32,7 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
   };
 
   return (
-    <Center mt="3em">
+    <HStack w="100%" justifyContent="flex-end">
       <Button
         onClick={() =>
           updateVotationStatus({
@@ -40,12 +41,12 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
         }
         p="1.5em 4em"
         borderRadius="16em"
-        bgColor="darkred"
-        color="white"
+        bg="transparent"
+        rightIcon={<ArrowForwardIcon />}
       >
         {getText()}
       </Button>
-    </Center>
+    </HStack>
   );
 };
 

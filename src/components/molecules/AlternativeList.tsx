@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import Alternative from '../atoms/Alternative';
-import { useStyleConfig, Grid } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { AlternativeWithIndex } from '../pages/Votation';
 
 export interface AlternativeListProps {
-  alternatives: Array<AlternativeType>;
+  alternatives: AlternativeWithIndex[];
   blankVotes: boolean;
   handleSelect: (id: string | null) => void;
+  isStv: boolean;
+  updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
 }
 
-const AlternativeList: React.FC<AlternativeListProps> = ({ alternatives, blankVotes, handleSelect }) => {
+const AlternativeList: React.FC<AlternativeListProps> = ({
+  alternatives,
+  updateAlternatives,
+  blankVotes,
+  handleSelect,
+  isStv,
+}) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   function updateSelected(id: string) {
@@ -18,27 +27,64 @@ const AlternativeList: React.FC<AlternativeListProps> = ({ alternatives, blankVo
     handleSelect(newId);
   }
 
-  const alternativeStyle = useStyleConfig('Alternative');
+  const reorder = (list: AlternativeWithIndex[], startIndex: number, endIndex: number) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  async function onDragEnd(result: DropResult) {
+    if (!result.destination) {
+      return;
+    }
+
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+
+    const reorderedAlternatives = reorder(alternatives, result.source.index, result.destination.index);
+
+    const updatedAlternatives: AlternativeWithIndex[] = reorderedAlternatives.map((votation, index) => {
+      return {
+        ...votation,
+        index: index,
+        isEdited: true,
+      };
+    });
+    updateAlternatives(updatedAlternatives);
+  }
 
   return (
-    <Grid gap="1.5em" w="100%" templateColumns={`repeat(auto-fit, minmax(${alternativeStyle.minWidth}, 1fr))`}>
-      {alternatives.map((alt) => (
-        <Alternative
-          alternative={alt}
-          key={alt.id}
-          selected={alt.id === selectedAlternativeId}
-          onClick={() => updateSelected(alt.id)}
-        ></Alternative>
-      ))}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="alternatives">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            <VStack spacing="1em">
+              {alternatives.map((alt, index) => (
+                <Alternative
+                  alternative={alt}
+                  selected={selectedAlternativeId === alt.id}
+                  onClick={() => updateSelected(alt.id)}
+                  isStv={isStv}
+                />
+              ))}
+            </VStack>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       {blankVotes && (
         <Alternative
-          alternative={{ id: '0', text: 'Stem blankt', votationId: '0' }}
+          alternative={{ id: '0', text: 'Stem blankt', votationId: '0', index: 12 }}
           key={0}
           selected={'0' === selectedAlternativeId}
           onClick={() => updateSelected('0')}
-        ></Alternative>
+          isStv={isStv}
+        />
       )}
-    </Grid>
+    </DragDropContext>
   );
 };
 
