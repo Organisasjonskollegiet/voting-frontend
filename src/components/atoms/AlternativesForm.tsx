@@ -62,8 +62,9 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
     if (e.key === 'Enter') addNewAlternative();
   };
 
-  const handleAlternativeChange = (alternative: Alternative, event: any) => {
-    if (event.target.value.length < 256) {
+  const handleAlternativeChange = (alternative: Alternative, event: React.ChangeEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    if (target.value.length < 256) {
       updateVotation({
         ...votation,
         isEdited: true,
