@@ -246,7 +246,7 @@ const Votation: React.FC = () => {
                   submitButtonDisabled={selectedAlternativeId === null}
                   voteCount={voteCount}
                   votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
-                  isStv={data.votationById.severalVotes}
+                  isStv={true}
                   updateAlternatives={setAlternatives}
                 />
               ) : (

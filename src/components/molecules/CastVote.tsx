@@ -31,7 +31,7 @@ const CastVote: React.FC<CastVoteProps> = ({
 }) => {
   return (
     <WrapStack w="100%" justifyContent="space-between">
-      <VStack h="100%" w="100%" maxW="300px" justifyContent="top" spacing="1.5em" alignItems="left">
+      <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
