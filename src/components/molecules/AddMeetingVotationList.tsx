@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  HStack,
+  useToast,
+  VStack,
+  Text,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionIcon,
+} from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   MajorityType,
@@ -19,6 +32,7 @@ import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
 import VotationListSection from './VotationListSection';
+import Hammer from '../../static/hammer.svg';
 
 interface VotationListProps {
   meetingId: string;
@@ -111,6 +125,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
+      console.log(votations);
       const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
       const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
       const shouldAddEmpty =
@@ -450,22 +465,47 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
           <Heading as="h1" fontSize="1em" mb="1.125em">
             Avsluttede voteringer
           </Heading>
-          {endedVotations.map((votation, index) => (
-            <HStack
-              w="90vw"
-              maxWidth="700px"
-              justify="space-between"
-              marginBottom="16px"
-              sx={collapsedStyle}
-              cursor="default"
-              opacity="0.5"
-            >
-              <HStack spacing="8">
-                <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-                <Text>{votation.title}</Text>
-              </HStack>
-            </HStack>
-          ))}
+          <Accordion allowToggle>
+            {endedVotations.map((votation, index) => (
+              <AccordionItem
+                key={votation.id}
+                borderStyle="none"
+                isDisabled={votation.alternatives.filter((a) => a.isWinner).length > 1}
+              >
+                <AccordionButton
+                  w="90vw"
+                  maxWidth="700px"
+                  justify="space-between"
+                  marginBottom="16px"
+                  sx={collapsedStyle}
+                  cursor="default"
+                  opacity="0.5"
+                  _hover={votation.alternatives.filter((a) => a.isWinner).length > 1 ? {} : { bg: 'white' }}
+                >
+                  <HStack w="100%" justifyContent="space-between">
+                    <HStack spacing="8">
+                      <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
+                      <Text>{votation.title}</Text>
+                    </HStack>
+                    {votation.status === VotationStatus.PublishedResult && (
+                      <HStack>
+                        {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
+                          <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
+                        )}
+                        {votation.alternatives
+                          .filter((a) => a.isWinner)
+                          .map((a) => (
+                            <Text key={a.id}>{a.text}</Text>
+                          ))}
+                      </HStack>
+                    )}
+                  </HStack>
+                  {votation.status === VotationStatus.PublishedResult &&
+                    votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon />}
+                </AccordionButton>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </VStack>
       )}
     </VStack>
