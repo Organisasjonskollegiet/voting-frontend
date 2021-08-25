@@ -31,7 +31,7 @@ const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClic
               </HStack>
             </HStack>
           ) : (
-            <Button boxShadow={boxShadow} justifyContent="left" onClick={onClick} sx={styles}>
+            <Button w="100%" boxShadow={boxShadow} justifyContent="left" onClick={onClick} sx={styles}>
               <Text isTruncated>{alternative.text}</Text>
             </Button>
           )}
