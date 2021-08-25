@@ -56,7 +56,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
   };
 
   return (
-    <Box mt="4em" width={'80vw'} style={{ borderRadius: '4px', padding: '30px', boxShadow }}>
+    <Box mt="4em" width={'100%'} style={{ borderRadius: '4px', padding: '30px', boxShadow }}>
       <VStack width={'100%'}>
         <HStack width={'100%'} justifyContent="space-around">
           <Box>{`Antall stemmeberettigede deltakere: ${votingEligibleCount}`}</Box>
