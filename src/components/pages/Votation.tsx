@@ -12,14 +12,12 @@ import {
   useGetVoteCountQuery,
   useGetWinnerOfVotationQuery,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Button, Box, Center, VStack, Divider, Link, HStack } from '@chakra-ui/react';
-import AlternativeList from '../molecules/AlternativeList';
+import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
 import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
-import { darkblue } from '../particles/theme';
 import VotationController from '../molecules/VotationController';
 import CheckResults from '../molecules/CheckResults';
 import AuthWrapper from '../../services/auth/AuthWrapper';
@@ -75,6 +73,11 @@ const Votation: React.FC = () => {
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
   const [winner, setWinner] = useState<AlternativeType | null>();
 
+  //Handle selected Alternative
+  const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
+  const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
+  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
+
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winner) {
       const result = winnerResult.getWinnerOfVotation;
@@ -120,7 +123,7 @@ const Votation: React.FC = () => {
         })
       );
     }
-  }, [data]);
+  }, [data, alternatives]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
@@ -150,11 +153,6 @@ const Votation: React.FC = () => {
   //   const newVoteCount = newVoteCountResult.newVoteRegistered;
   //   setVoteCount(newVoteCount);
   // }, [newVoteCountResult, voteCount]);
-
-  //Handle selected Alternative
-  const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
-  const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
-  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
   //Register the vote
   const [castVote] = useCastVoteMutation();

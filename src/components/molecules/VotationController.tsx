@@ -1,5 +1,5 @@
 import React from 'react';
-import { Center, Button, HStack, Text } from '@chakra-ui/react';
+import { Button, HStack } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
