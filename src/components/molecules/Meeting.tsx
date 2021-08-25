@@ -6,7 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
-import { expandAndLift } from '../particles/styles';
+import { expandAndLift, transition } from '../particles/styles';
 
 interface ParticipantResult {
   user: {
@@ -28,6 +28,7 @@ const styles = {
   borderRadius: '4px',
   boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
   padding: '1em 2em',
+  ...transition,
 } as React.CSSProperties;
 
 const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => void }> = ({

@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const transition = {
-    transition: "all .2s ease-in-out;"
+    transition: "all .1s"
 } as React.CSSProperties
 
 export const expandAndLift = {
