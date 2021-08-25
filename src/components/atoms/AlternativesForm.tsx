@@ -35,7 +35,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
   }, [alternativeFocus, votation]);
 
   function addNewAlternative() {
-    if (votation.alternatives[votation.alternatives.length - 1].text) {
+    if (votation.alternatives.length === 0 || votation.alternatives[votation.alternatives.length - 1].text) {
       const newId = uuid();
       updateVotation({
         ...votation,
