@@ -20,7 +20,6 @@ import VotationResult from '../atoms/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import VotationController from '../molecules/VotationController';
 import CheckResults from '../molecules/CheckResults';
-import AuthWrapper from '../../services/auth/AuthWrapper';
 import { centerContainer, outerContainer } from '../particles/containerStyles';
 import CastVote from '../molecules/CastVote';
 
@@ -170,7 +169,6 @@ const Votation: React.FC = () => {
   if (error?.message === 'Not Authorised!') {
     return (
       <>
-        {/* <Box h="57px" w="100vw" bgColor={darkblue}></Box> */}
         <Center mt="40vh">
           <Text>
             Du har ikke tilgang til denne voteringen,{' '}
@@ -186,7 +184,6 @@ const Votation: React.FC = () => {
   if (loading || voteCountLoading) {
     return (
       <>
-        {/* <Box h="57px" w="100vw" bgColor={darkblue}></Box> */}
         <Center mt="10vh">
           <Loading asOverlay={false} text={'Henter votering'} />
         </Center>
@@ -197,7 +194,6 @@ const Votation: React.FC = () => {
   if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
       <>
-        {/* <Box h="57px" w="100vw" bgColor={darkblue}></Box> */}
         <Center mt="10vh">
           <Text>Det skjedde noe galt under innlastingen</Text>
         </Center>
@@ -208,7 +204,6 @@ const Votation: React.FC = () => {
   if (status === VotationStatus.Upcoming) {
     return (
       <>
-        {/* <Box h="57px" w="100vw" bgColor={darkblue}></Box> */}
         <Center mt="10vh">
           <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
         </Center>
@@ -217,76 +212,74 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <AuthWrapper>
-      <Center sx={outerContainer}>
-        <VStack sx={centerContainer} maxWidth="700px" alignItems="left" spacing="3em">
-          <VStack alignItems="left" spacing="0.5rem">
-            <Heading as="h1" style={subtitlesStyle}>
-              Votering {data.votationById.index + 1}
-            </Heading>
-            <Heading as="h1" sx={h1Style}>
-              {data.votationById.title}
-            </Heading>
+    <Center sx={outerContainer}>
+      <VStack sx={centerContainer} maxWidth="700px" alignItems="left" spacing="3em">
+        <VStack alignItems="left" spacing="0.5rem">
+          <Heading as="h1" style={subtitlesStyle}>
+            Votering {data.votationById.index + 1}
+          </Heading>
+          <Heading as="h1" sx={h1Style}>
+            {data.votationById.title}
+          </Heading>
 
-            <Text mt="1em" mb="2em">
-              {data.votationById.description}
-            </Text>
-          </VStack>
-
-          {status === VotationStatus.Open && (
-            <>
-              {!userHasVoted ? (
-                <CastVote
-                  alternatives={alternatives || []}
-                  handleSelect={handleSelect}
-                  blankVotes={data.votationById.blankVotes || false}
-                  submitVote={submitVote}
-                  submitButtonDisabled={selectedAlternativeId === null}
-                  voteCount={voteCount}
-                  votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
-                  isStv={data.votationById.severalVotes}
-                  updateAlternatives={setAlternatives}
-                />
-              ) : (
-                <Box mt="4em">
-                  <Loading asOverlay={false} text={'Votering pågår'} />
-                  <Center>
-                    <Heading as="h1" sx={h1Style}>
-                      Din stemme er registrert.
-                    </Heading>
-                  </Center>
-                </Box>
-              )}
-
-              {/* Shows how many participants has voted */}
-            </>
-          )}
-          {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
-            <Box>
-              <Loading asOverlay={false} text={'Resultatene sjekkes'} />
-            </Box>
-          )}
-          {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
-            <CheckResults role={participantRole} votationId={votationId} meetingId={meetingId} />
-          )}
-          {status === 'PUBLISHED_RESULT' && (
-            <Box mt="4em">
-              <VotationResult backToVotationList={backToVotationList} text={winner?.text} />
-            </Box>
-          )}
-          {
-            /* Update votation status for admin if votation is open or you are checking results */
-            participantRole === Role.Admin &&
-              (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-                <VStack>
-                  <Divider />
-                  <VotationController votationId={votationId} status={status} />
-                </VStack>
-              )
-          }
+          <Text mt="1em" mb="2em">
+            {data.votationById.description}
+          </Text>
         </VStack>
-      </Center>
-    </AuthWrapper>
+
+        {status === VotationStatus.Open && (
+          <>
+            {!userHasVoted ? (
+              <CastVote
+                alternatives={alternatives || []}
+                handleSelect={handleSelect}
+                blankVotes={data.votationById.blankVotes || false}
+                submitVote={submitVote}
+                submitButtonDisabled={selectedAlternativeId === null}
+                voteCount={voteCount}
+                votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
+                isStv={data.votationById.severalVotes}
+                updateAlternatives={setAlternatives}
+              />
+            ) : (
+              <Box mt="4em">
+                <Loading asOverlay={false} text={'Votering pågår'} />
+                <Center>
+                  <Heading as="h1" sx={h1Style}>
+                    Din stemme er registrert.
+                  </Heading>
+                </Center>
+              </Box>
+            )}
+
+            {/* Shows how many participants has voted */}
+          </>
+        )}
+        {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
+          <Box>
+            <Loading asOverlay={false} text={'Resultatene sjekkes'} />
+          </Box>
+        )}
+        {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
+          <CheckResults role={participantRole} votationId={votationId} meetingId={meetingId} />
+        )}
+        {status === 'PUBLISHED_RESULT' && (
+          <Box mt="4em">
+            <VotationResult backToVotationList={backToVotationList} text={winner?.text} />
+          </Box>
+        )}
+        {
+          /* Update votation status for admin if votation is open or you are checking results */
+          participantRole === Role.Admin &&
+            (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+              <VStack>
+                <Divider />
+                <VotationController votationId={votationId} status={status} />
+              </VStack>
+            )
+        }
+      </VStack>
+    </Center>
   );
 };
 

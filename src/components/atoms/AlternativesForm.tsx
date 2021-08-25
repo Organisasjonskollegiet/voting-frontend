@@ -1,5 +1,15 @@
 import React, { KeyboardEvent, useState } from 'react';
-import { FormControl, FormLabel, VStack, HStack, Input, Button, Tooltip, CloseButton } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormLabel,
+  VStack,
+  HStack,
+  Input,
+  Button,
+  Tooltip,
+  CloseButton,
+  useToast,
+} from '@chakra-ui/react';
 import AddIcon from '../../static/addIcon.svg';
 import { v4 as uuid } from 'uuid';
 import { labelStyle, inputStyle, highlightedInputStyle } from '../particles/formStyles';
@@ -27,6 +37,8 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
 
   const [alternativeFocus, setAlternativeFocus] = useState<string | null>(null);
 
+  const toast = useToast();
+
   useEffect(() => {
     if (alternativeFocus) {
       document.getElementById(alternativeFocus)?.focus();
@@ -50,6 +62,31 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
     if (e.key === 'Enter') addNewAlternative();
   };
 
+  const handleAlternativeChange = (alternative: Alternative, event: any) => {
+    if (event.target.value.length < 256) {
+      updateVotation({
+        ...votation,
+        isEdited: true,
+        alternatives: [
+          ...votation.alternatives.filter((a) => a.id !== alternative.id),
+          {
+            id: alternative.id,
+            existsInDb: alternative.existsInDb,
+            text: event.target.value,
+            index: alternative.index,
+          },
+        ],
+      });
+    } else {
+      toast({
+        title: 'Alternativer kan maks ha 255 bokstaver.',
+        status: 'warning',
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <FormControl>
       <FormLabel sx={labelStyle}>Svaralternativer</FormLabel>
@@ -62,21 +99,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
                 key={alternative.id}
                 id={alternative.id}
                 onKeyDown={onEnterSubmitAlternative}
-                onChange={(event) => {
-                  updateVotation({
-                    ...votation,
-                    isEdited: true,
-                    alternatives: [
-                      ...votation.alternatives.filter((a) => a.id !== alternative.id),
-                      {
-                        id: alternative.id,
-                        existsInDb: alternative.existsInDb,
-                        text: event.target.value,
-                        index: alternative.index,
-                      },
-                    ],
-                  });
-                }}
+                onChange={(e) => handleAlternativeChange(alternative, e)}
                 value={alternative.text}
                 sx={inputStyle}
                 _focus={highlightedInputStyle}

@@ -20,7 +20,7 @@ const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClic
         <HStack w="100%" minWidth="320px" ref={provided.innerRef} {...provided.draggableProps}>
           {isStv ? (
             <HStack w="100%">
-              <Text fontSize="24px" fontWeight="bold" opacity="0.5">
+              <Text isTruncated fontSize="24px" fontWeight="bold" opacity="0.5">
                 {alternative.index}
               </Text>
               <HStack w="100%" justifyContent="space-between" sx={styles}>
@@ -32,7 +32,7 @@ const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClic
             </HStack>
           ) : (
             <Button boxShadow={boxShadow} justifyContent="left" onClick={onClick} sx={styles}>
-              {alternative.text}
+              <Text isTruncated>{alternative.text}</Text>
             </Button>
           )}
         </HStack>
