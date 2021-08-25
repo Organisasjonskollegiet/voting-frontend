@@ -90,8 +90,10 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
             >
               <Box width={'25%'}>{alternative.text}</Box>
               <Box width={'25%'}>{alternative.votes}</Box>
-              <Box width={'25%'}>{getRoundedPercentage(alternative.votes / voteCount)}</Box>
-              <Box width={'25%'}>{getRoundedPercentage(alternative.votes / votingEligibleCount)}</Box>
+              <Box width={'25%'}>{voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount) : 0}</Box>
+              <Box width={'25%'}>
+                {votingEligibleCount > 0 ? getRoundedPercentage(alternative.votes / votingEligibleCount) : 0}
+              </Box>
             </HStack>
           </>
         ))}
