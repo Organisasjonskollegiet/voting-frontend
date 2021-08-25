@@ -268,9 +268,9 @@ const Votation: React.FC = () => {
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
           <CheckResults role={participantRole} votationId={votationId} meetingId={meetingId} />
         )}
-        {status === 'PUBLISHED_RESULT' && winner && (
+        {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
-            <VotationResult backToVotationList={backToVotationList} text={winner.text} />
+            <VotationResult backToVotationList={backToVotationList} text={winner?.text} />
           </Box>
         )}
         {

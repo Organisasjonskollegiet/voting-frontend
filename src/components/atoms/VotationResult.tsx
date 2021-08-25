@@ -4,7 +4,7 @@ import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export interface VotationResultProps {
-  text: string;
+  text?: string;
   backToVotationList: () => void;
 }
 
@@ -16,8 +16,17 @@ const VotationResult: React.FC<VotationResultProps> = ({ text, backToVotationLis
       </Center>
       <Center fontWeight="bold">
         <VStack spacing="0">
-          <Text>Vinner av valget er</Text>
-          <Text fontSize="2.25em">{text}</Text>
+          {text ? (
+            <>
+              <Text>Vinner av valget er</Text>
+              <Text fontSize="2.25em">{text}</Text>
+            </>
+          ) : (
+            <>
+              <Text fontSize="2.25em">Uavgjort</Text>
+              <Text>Ingen av alternativnene oppnådde flertall</Text>
+            </>
+          )}
         </VStack>
       </Center>
       <Divider m="3em 0" />
