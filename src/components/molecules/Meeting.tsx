@@ -7,6 +7,7 @@ import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 import { boxShadow } from '../particles/formStyles';
+import { expandAndLift, transition } from '../particles/styles';
 
 interface ParticipantResult {
   user: {
@@ -28,6 +29,7 @@ const styles = {
   borderRadius: '4px',
   boxShadow,
   padding: '1em 2em',
+  ...transition,
 } as React.CSSProperties;
 
 const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => void }> = ({
@@ -62,6 +64,8 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
       if (e.target.closest('button').name === 'edit-meeting' || e.target.closest('button').name === 'delete-meeting') {
         e.preventDefault();
         e.stopPropagation();
+      } else {
+        history.push(`/meeting/${id}`);
       }
     } catch (error) {
       history.push(`/meeting/${id}`);
@@ -69,13 +73,15 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   };
 
   return (
-    <Box _hover={{ cursor: 'pointer' }} onClick={handleClick} sx={styles}>
+    <Box _hover={{ cursor: 'pointer', ...expandAndLift }} onClick={handleClick} sx={styles}>
       <Flex justifyContent="space-between">
         <Box width="100%">
-          <Heading as="h2" fontSize="1.125em">
-            {' '}
-            {title}{' '}
-          </Heading>
+          <button onClick={handleClick}>
+            <Heading as="h2" fontSize="1.125em">
+              {' '}
+              {title}{' '}
+            </Heading>
+          </button>
           {description && (
             <Text mb="1em" fontSize="0.75em">
               {' '}
