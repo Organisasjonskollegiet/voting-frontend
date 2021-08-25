@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import { expandAndLift } from '../particles/styles';
 
 interface ParticipantResult {
   user: {
@@ -61,6 +62,8 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
       if (e.target.closest('button').name === 'edit-meeting' || e.target.closest('button').name === 'delete-meeting') {
         e.preventDefault();
         e.stopPropagation();
+      } else {
+        history.push(`/meeting/${id}`);
       }
     } catch (error) {
       history.push(`/meeting/${id}`);
@@ -68,13 +71,15 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   };
 
   return (
-    <Box _hover={{ cursor: 'pointer' }} onClick={handleClick} sx={styles}>
+    <Box _hover={{ cursor: 'pointer', ...expandAndLift }} onClick={handleClick} sx={styles}>
       <Flex justifyContent="space-between">
         <Box width="100%">
-          <Heading as="h2" fontSize="1.125em">
-            {' '}
-            {title}{' '}
-          </Heading>
+          <button onClick={handleClick}>
+            <Heading as="h2" fontSize="1.125em">
+              {' '}
+              {title}{' '}
+            </Heading>
+          </button>
           {description && (
             <Text mb="1em" fontSize="0.75em">
               {' '}
