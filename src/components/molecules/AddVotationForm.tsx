@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Divider, HStack, Text, IconButton, Box } from '@chakra-ui/react';
+import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
 import { MajorityType } from '../../__generated__/graphql-types';
@@ -125,18 +125,22 @@ const AddVotationForm: React.FC<IProps> = ({
           </HStack>
           <Divider m="3em 0" />
           <Box align="right" width="100%">
-            <IconButton
-              aria-label="Slett votering"
-              bg={'white'}
-              onClick={() => setVotationDialogIsOpen(true)}
-              icon={<img alt="delete" src={DeleteIcon} />}
-            />
-            <IconButton
-              aria-label="Dupliser votering"
-              bg={'white'}
-              onClick={() => duplicateVotation(votation)}
-              icon={<img alt="duplicate" src={DuplicateIcon} />}
-            />
+            <Tooltip label="Slett votering">
+              <IconButton
+                aria-label="Slett votering"
+                bg={'white'}
+                onClick={() => setVotationDialogIsOpen(true)}
+                icon={<img alt="delete" src={DeleteIcon} />}
+              />
+            </Tooltip>
+            <Tooltip label="Dupliser votering">
+              <IconButton
+                aria-label="Dupliser votering"
+                bg={'white'}
+                onClick={() => duplicateVotation(votation)}
+                icon={<img alt="duplicate" src={DuplicateIcon} />}
+              />
+            </Tooltip>
           </Box>
           <DeleteAlertDialog
             dialogIsOpen={votationDialogIsOpen}
