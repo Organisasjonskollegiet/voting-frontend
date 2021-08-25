@@ -6,16 +6,16 @@ import {
   FormLabel,
   Input,
   Divider,
-  Button,
   Text,
   HStack,
   Select,
   useToast,
+  Tooltip,
+  CloseButton,
 } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
-import RemoveIcon from '../../static/removeIcon.svg';
 import { ParticipantWorking } from '../../types/types';
 import { useEffect } from 'react';
 
@@ -237,22 +237,18 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
                         <option value={Role.Counter}>Teller</option>
                         <option value={Role.Participant}>Deltaker</option>
                       </Select>
-                      <Button
-                        disabled={ownerEmail === participant.email || !meetingId}
-                        background="transparent"
-                        _hover={{ background: 'transparent' }}
-                        isActive={false}
-                        leftIcon={
-                          <img
-                            alt="remove"
-                            src={RemoveIcon}
-                            onClick={() => {
-                              if (!meetingId) return;
-                              deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
-                            }}
-                          />
-                        }
-                      />
+                      <Tooltip label="Fjern deltager">
+                        <CloseButton
+                          onClick={() => {
+                            if (!meetingId) return;
+                            deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
+                          }}
+                          disabled={ownerEmail === participant.email || !meetingId}
+                          background="transparent"
+                          _hover={{ background: 'transparent' }}
+                          isActive={false}
+                        ></CloseButton>
+                      </Tooltip>
                     </HStack>
                   </HStack>
                 </React.Fragment>

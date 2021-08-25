@@ -1,9 +1,8 @@
 import React, { KeyboardEvent, useState } from 'react';
-import { FormControl, FormLabel, VStack, HStack, Input, Button } from '@chakra-ui/react';
-import RemoveIcon from '../../static/removeIcon.svg';
+import { FormControl, FormLabel, VStack, HStack, Input, Button, Tooltip, CloseButton } from '@chakra-ui/react';
 import AddIcon from '../../static/addIcon.svg';
 import { v4 as uuid } from 'uuid';
-import { labelStyle, inputStyle, pointerStyle, highlightedInputStyle } from '../particles/formStyles';
+import { labelStyle, inputStyle, highlightedInputStyle } from '../particles/formStyles';
 import { Votation, Alternative } from '../../types/types';
 import { useEffect } from 'react';
 
@@ -58,7 +57,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
         {votation.alternatives
           .sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
           .map((alternative) => (
-            <HStack key={alternative.id} spacing="4">
+            <HStack key={alternative.id}>
               <Input
                 key={alternative.id}
                 id={alternative.id}
@@ -83,9 +82,9 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
                 _focus={highlightedInputStyle}
                 placeholder="Navn på alternativ"
               />
-              <button onClick={() => handleClickRemoveAlterantive(alternative)}>
-                <img alt="remove" style={pointerStyle} src={RemoveIcon} />
-              </button>
+              <Tooltip label={'Fjern alternativ'}>
+                <CloseButton onClick={() => handleClickRemoveAlterantive(alternative)}></CloseButton>
+              </Tooltip>
             </HStack>
           ))}
         <Button
