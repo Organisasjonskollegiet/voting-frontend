@@ -12,6 +12,7 @@ import { collapsedStyle, highlightedStyle, containerStyle } from '../particles/f
 import { Votation } from '../../types/types';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
 import { DragHandleIcon } from '@chakra-ui/icons';
+import { expandAndLift } from '../particles/styles';
 
 interface IProps {
   index: number;
@@ -82,6 +83,7 @@ const AddVotationForm: React.FC<IProps> = ({
             sx={collapsedStyle}
             cursor="pointer"
             onClick={toggleCollapsedVotation}
+            _hover={expandAndLift}
           >
             <HStack spacing="8">
               <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
