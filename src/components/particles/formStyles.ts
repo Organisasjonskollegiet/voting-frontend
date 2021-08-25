@@ -1,7 +1,6 @@
 import React from 'react';
 
 export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-
 export const highlightedStyle = {
   fontStyle: 'normal',
   fontSize: '16px',
@@ -38,7 +37,7 @@ export const highlightedInputStyle = {
 
 export const inputStyle = {
   background: '#fff',
-  boxShadow: ' 0px 0px 10px rgba(0, 0, 0, 0.1)',
+  boxShadow,
   border: 'none',
 } as React.CSSProperties;
 

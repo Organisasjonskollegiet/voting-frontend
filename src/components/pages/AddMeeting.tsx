@@ -14,6 +14,7 @@ import { MeetingWorking, ParticipantWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
+import { outerContainer, centerContainer } from '../particles/containerStyles';
 
 const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
@@ -160,19 +161,6 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const outerContainer = {
-    paddingTop: '5rem',
-    width: '100%',
-    bg: '#f9f9f9',
-    color: '#718096',
-  } as React.CSSProperties;
-
-  const centerContainer = {
-    minWidth: '320px',
-    width: '100%',
-    maxWidth: '700px',
-  } as React.CSSProperties;
-
   if (createMeetingResult.error) {
     toast({
       title: 'Kunne ikke opprette møte',
@@ -198,7 +186,7 @@ const AddMeeting: React.FC = () => {
         {(createMeetingResult.loading || updateMeetingResult.loading) && (
           <Loading asOverlay={true} text="Oppretter møte" />
         )}
-        <VStack spacing="10" align="left" sx={centerContainer}>
+        <VStack spacing="10" align="left" maxWidth="700px" sx={centerContainer}>
           <AddMeetingInformation
             isActive={activeTab === 0}
             meeting={meeting}

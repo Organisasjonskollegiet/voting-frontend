@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
 import { Button, ComponentStyleConfig, useStyleConfig } from '@chakra-ui/react';
+import { boxShadow } from '../particles/formStyles';
 
 export interface AlternativeProps {
   alternative: AlternativeType;
@@ -11,7 +12,7 @@ export interface AlternativeProps {
 const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClick }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
   return (
-    <Button onClick={onClick} sx={styles}>
+    <Button boxShadow={boxShadow} onClick={onClick} sx={styles}>
       {alternative.text}
     </Button>
   );
@@ -27,6 +28,7 @@ export const AlternativeConfig: ComponentStyleConfig = {
     fontSize: '18px',
     fontWeight: '700',
     justifyContent: 'left',
+    bg: 'white',
   },
   variants: {
     selected: {

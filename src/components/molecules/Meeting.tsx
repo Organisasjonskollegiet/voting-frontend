@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
 import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import { boxShadow } from '../particles/formStyles';
 
 interface ParticipantResult {
   user: {
@@ -25,7 +26,7 @@ export interface MeetingProps {
 const styles = {
   width: '100%',
   borderRadius: '4px',
-  boxShadow: '0px 0px 10px rgba(0,0,0,0.1)',
+  boxShadow,
   padding: '1em 2em',
 } as React.CSSProperties;
 
