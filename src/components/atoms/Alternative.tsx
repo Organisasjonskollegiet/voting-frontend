@@ -15,10 +15,10 @@ export interface AlternativeProps {
 const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClick, isStv }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
   return (
-    <Draggable isDragDisabled={false} key={alternative.id} draggableId={alternative.id} index={alternative.index}>
+    <Draggable isDragDisabled={!isStv} key={alternative.id} draggableId={alternative.id} index={alternative.index}>
       {(provided) => (
         <HStack w="100%" minWidth="320px" ref={provided.innerRef} {...provided.draggableProps}>
-          {true ? (
+          {isStv ? (
             <HStack w="100%" justifyContent="space-between" sx={styles}>
               <Text>{alternative.text}</Text>
               <Box {...provided.dragHandleProps}>

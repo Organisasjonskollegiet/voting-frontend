@@ -4,6 +4,7 @@ import { subtitlesStyle } from '../pages/Votation';
 import AlternativeList from './AlternativeList';
 import VoteCount from '../atoms/VoteCount';
 import { AlternativeWithIndex } from '../pages/Votation';
+import WrapStack from './WrapStack';
 
 interface CastVoteProps {
   handleSelect: (id: string | null) => void;
@@ -29,8 +30,8 @@ const CastVote: React.FC<CastVoteProps> = ({
   updateAlternatives,
 }) => {
   return (
-    <HStack w="100%" h="fit-content" justifyContent="space-between">
-      <VStack h="100%" justifyContent="top" spacing="1.5em" alignItems="left">
+    <WrapStack w="100%" justifyContent="space-between">
+      <VStack h="100%" w="100%" maxW="300px" justifyContent="top" spacing="1.5em" alignItems="left">
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
@@ -56,7 +57,7 @@ const CastVote: React.FC<CastVoteProps> = ({
           Avgi Stemme
         </Button>
       </VStack>
-    </HStack>
+    </WrapStack>
   );
 };
 

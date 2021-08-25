@@ -1,5 +1,6 @@
 export const outerContainer = {
   paddingTop: '5rem',
+  padding: '5rem 2rem 1rem 2rem',
   width: '100%',
   bg: '#f9f9f9',
   color: '#718096',
