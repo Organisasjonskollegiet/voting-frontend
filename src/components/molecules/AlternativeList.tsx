@@ -10,6 +10,8 @@ export interface AlternativeListProps {
   handleSelect: (id: string | null) => void;
   isStv: boolean;
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
+  userHasVoted: boolean;
+  hideVote: boolean;
 }
 
 const AlternativeList: React.FC<AlternativeListProps> = ({
@@ -18,6 +20,8 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
   blankVotes,
   handleSelect,
   isStv,
+  userHasVoted,
+  hideVote,
 }) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
@@ -56,17 +60,23 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
     updateAlternatives(updatedAlternatives);
   }
 
+  const handleUpdateSelected = (id: string) => {
+    if (!userHasVoted) {
+      updateSelected(id);
+    }
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="alternatives">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <VStack spacing="1em">
+            <VStack spacing="1em" opacity={userHasVoted ? 0.5 : 1}>
               {alternatives.map((alt, index) => (
                 <Alternative
                   alternative={alt}
-                  selected={selectedAlternativeId === alt.id}
-                  onClick={() => updateSelected(alt.id)}
+                  selected={(!userHasVoted || !hideVote) && selectedAlternativeId === alt.id}
+                  onClick={() => handleUpdateSelected(alt.id)}
                   isStv={isStv}
                 />
               ))}

@@ -479,7 +479,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
               >
                 <AccordionButton
                   w="90vw"
-                  maxWidth="700px"
+                  maxWidth="800px"
                   justify="space-between"
                   marginBottom="16px"
                   sx={collapsedStyle}

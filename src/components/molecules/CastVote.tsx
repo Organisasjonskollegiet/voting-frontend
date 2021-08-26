@@ -1,11 +1,10 @@
-import { Box, Button, Center, Heading, VStack } from '@chakra-ui/react';
+import { Button, Center, Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../pages/Votation';
 import AlternativeList from './AlternativeList';
 import VoteCount from '../atoms/VoteCount';
 import { AlternativeWithIndex } from '../pages/Votation';
 import WrapStack from './WrapStack';
-import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles';
 
 interface CastVoteProps {
@@ -19,6 +18,7 @@ interface CastVoteProps {
   isStv: boolean;
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
+  hideVote: boolean;
 }
 
 const CastVote: React.FC<CastVoteProps> = ({
@@ -32,9 +32,10 @@ const CastVote: React.FC<CastVoteProps> = ({
   isStv,
   updateAlternatives,
   userHasVoted,
+  hideVote,
 }) => {
   return (
-    <WrapStack w="100%" justifyContent="space-between">
+    <WrapStack breakpoint={730} w="100%" justifyContent="space-between">
       <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
@@ -45,18 +46,17 @@ const CastVote: React.FC<CastVoteProps> = ({
           handleSelect={handleSelect}
           blankVotes={blankVotes}
           updateAlternatives={updateAlternatives}
+          userHasVoted={userHasVoted}
+          hideVote={hideVote}
         />
       </VStack>
       <VStack h="100%" justifyContent="flex-end" spacing="1em">
         {userHasVoted && (
-          <Box mt="4em">
-            <Loading asOverlay={false} text={'Votering pågår'} />
-            <Center>
-              <Heading as="h1" sx={h1Style}>
-                Din stemme er registrert.
-              </Heading>
-            </Center>
-          </Box>
+          <Center w="300px" mt="4em">
+            <Heading as="h1" sx={h1Style}>
+              Din stemme er registrert.
+            </Heading>
+          </Center>
         )}
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
         {!userHasVoted && (
