@@ -11,6 +11,7 @@ import {
   // useVotingEligibleCountQuery,
   useGetVoteCountQuery,
   useGetWinnerOfVotationQuery,
+  VotationType,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -236,7 +237,7 @@ const Votation: React.FC = () => {
             submitButtonDisabled={selectedAlternativeId === null}
             voteCount={voteCount}
             votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
-            isStv={data.votationById.severalVotes}
+            isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
           />

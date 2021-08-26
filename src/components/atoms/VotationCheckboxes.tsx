@@ -47,22 +47,6 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
           >
             Skjult stemmeresultat
           </Checkbox>
-          {/* SHOULD BE UNCOMMENTED WHEN SINGLE TRANSFERRABLE VOTE ARE IMPLEMENTED */}
-          {/* <Checkbox
-            sx={checkboxStyle}
-            isChecked={votation.severalVotes}
-            onChange={() =>
-              updateVotation({
-                ...votation,
-                isEdited: true,
-                severalVotes: !votation.severalVotes,
-              })
-            }
-            colorScheme="gray"
-            spacing="16px"
-          >
-            Tillat flere stemmer
-          </Checkbox> */}
         </VStack>
       </CheckboxGroup>
     </FormControl>

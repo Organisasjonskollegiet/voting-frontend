@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
-import { MajorityType } from '../../__generated__/graphql-types';
+import { VotationType } from '../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
 import AlternativesForm from '../atoms/AlternativesForm';
 import VotationTypeSelect from '../atoms/VotationTypeSelect';
@@ -46,13 +46,13 @@ const AddVotationForm: React.FC<IProps> = ({
   const updateVotationFromSelect = (value: string) => {
     switch (value) {
       case 'SIMPLE':
-        updateVotation({ ...votation, isEdited: true, majorityType: 'SIMPLE' as MajorityType });
+        updateVotation({ ...votation, isEdited: true, type: 'SIMPLE' as VotationType });
         break;
       case 'QUALIFIED50':
         updateVotation({
           ...votation,
           isEdited: true,
-          majorityType: 'QUALIFIED' as MajorityType,
+          type: 'QUALIFIED' as VotationType,
           majorityThreshold: 50,
         });
         break;
@@ -60,7 +60,7 @@ const AddVotationForm: React.FC<IProps> = ({
         updateVotation({
           ...votation,
           isEdited: true,
-          majorityType: 'QUALIFIED' as MajorityType,
+          type: 'QUALIFIED' as VotationType,
           majorityThreshold: 67,
         });
         break;

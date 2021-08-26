@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
-  MajorityType,
+  VotationType,
   Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
@@ -60,8 +60,8 @@ const getEmptyVotation = (id?: string, index?: number) => {
     blankVotes: false,
     status: VotationStatus.Upcoming,
     hiddenVotes: true,
-    severalVotes: false,
-    majorityType: 'SIMPLE' as MajorityType,
+    type: 'SIMPLE' as VotationType,
+    numberOfWinners: 1,
     majorityThreshold: 50,
     existsInDb: false,
     isEdited: false,
@@ -317,8 +317,8 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
-        severalVotes: votation.severalVotes,
-        majorityType: votation.majorityType,
+        type: votation.type,
+        numberOfWinners: votation.numberOfWinners,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => {
@@ -341,8 +341,8 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
-        severalVotes: votation.severalVotes,
-        majorityType: votation.majorityType,
+        type: votation.type,
+        numberOfWinners: votation.numberOfWinners,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => alternative.text)
