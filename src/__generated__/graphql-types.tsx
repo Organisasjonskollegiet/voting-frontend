@@ -20,7 +20,6 @@ export type Alternative = {
   __typename?: 'Alternative';
   id: Scalars['ID'];
   text: Scalars['String'];
-  isWinner?: Maybe<Scalars['Boolean']>;
   votationId: Scalars['String'];
 };
 
@@ -226,7 +225,7 @@ export type Query = {
   getWinnerOfVotation?: Maybe<Alternative>;
   getVotationResults?: Maybe<VotationResults>;
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
-  winnersOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
+  resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -261,7 +260,7 @@ export type QueryGetVotationResultsArgs = {
 };
 
 
-export type QueryWinnersOfPublishedVotationsArgs = {
+export type QueryResultsOfPublishedVotationsArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -666,14 +665,7 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text' | 'votationId'>
     )>>> }
-  )>, winnersOfPublishedVotations?: Maybe<Array<Maybe<(
-    { __typename?: 'VotationWithWinner' }
-    & Pick<VotationWithWinner, 'id'>
-    & { alternatives: Array<Maybe<(
-      { __typename?: 'AlternativeWithWinner' }
-      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
-    )>> }
-  )>>>, meetingById?: Maybe<(
+  )>, meetingById?: Maybe<(
     { __typename?: 'Meeting' }
     & { participants: Array<Maybe<(
       { __typename?: 'Participant' }
@@ -701,10 +693,17 @@ export type VotationsByMeetingIdQuery = (
       & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'id' | 'text' | 'isWinner'>
+        & Pick<Alternative, 'id' | 'text'>
       )>>> }
     )>>> }
-  )> }
+  )>, resultsOfPublishedVotations?: Maybe<Array<Maybe<(
+    { __typename?: 'VotationWithWinner' }
+    & Pick<VotationWithWinner, 'id'>
+    & { alternatives: Array<Maybe<(
+      { __typename?: 'AlternativeWithWinner' }
+      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
+    )>> }
+  )>>> }
 );
 
 export type GetVoteCountQueryVariables = Exact<{
@@ -1389,14 +1388,6 @@ export const GetVotationByIdDocument = gql`
     majorityThreshold
     meetingId
   }
-  winnersOfPublishedVotations(meetingId: $meetingId) {
-    id
-    alternatives {
-      id
-      text
-      isWinner
-    }
-  }
   meetingById(meetingId: $meetingId) {
     participants {
       user {
@@ -1456,8 +1447,15 @@ export const VotationsByMeetingIdDocument = gql`
       alternatives {
         id
         text
-        isWinner
       }
+    }
+  }
+  resultsOfPublishedVotations(meetingId: $meetingId) {
+    id
+    alternatives {
+      id
+      text
+      isWinner
     }
   }
 }

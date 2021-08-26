@@ -19,15 +19,6 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     meetingId
   }
 
-  winnersOfPublishedVotations(meetingId: $meetingId) {
-    id
-    alternatives {
-      id
-      text
-      isWinner
-    }
-  }
-
   meetingById(meetingId: $meetingId) {
     participants {
       user {
@@ -57,8 +48,16 @@ query VotationsByMeetingId($meetingId: String!) {
       alternatives {
         id
         text
-        isWinner
       }
+    }
+  }
+
+  resultsOfPublishedVotations(meetingId: $meetingId) {
+    id
+    alternatives {
+      id
+      text
+      isWinner
     }
   }
 }

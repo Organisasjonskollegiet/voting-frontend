@@ -120,8 +120,8 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
-      console.log(votations);
-      const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
+      const winners = data.resultsOfPublishedVotations as Votation[];
+      const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
       const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
       const shouldAddEmpty =
         !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
@@ -153,27 +153,37 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
     // eslint-disable-next-line
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations]);
 
-  const formatVotation = (votation: Votation) => {
+  const alternativeMapper = (alternative: Alternative, index: number) => {
+    return {
+      ...alternative,
+      index: index,
+      existsInDb: true,
+    };
+  };
+
+  const formatVotation = (votation: Votation, alternatives?: Alternative[]) => {
     return {
       ...votation,
       existsInDb: true,
       isEdited: false,
       alternatives:
-        votation.alternatives.length > 0
-          ? votation.alternatives.map((alternative: Alternative, index: number) => {
-              return {
-                ...alternative,
-                index: index,
-                existsInDb: true,
-              };
-            })
+        alternatives && alternatives.length > 0
+          ? alternatives.map(alternativeMapper)
+          : votation.alternatives.length > 0
+          ? votation.alternatives.map(alternativeMapper)
           : [getEmptyAlternative()],
     };
   };
 
-  const formatVotations = (votations: Votation[]) => {
+  const formatVotations = (votations: Votation[], winners?: Votation[]) => {
     if (!votations) return;
-    return votations.map((votation) => formatVotation(votation));
+    return votations.map((votation) => {
+      if (winners && votation.status === VotationStatus.PublishedResult) {
+        const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
+        if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
+      }
+      return formatVotation(votation);
+    });
   };
 
   const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
@@ -487,11 +497,16 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                         {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
                           <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
                         )}
-                        {votation.alternatives
-                          .filter((a) => a.isWinner)
-                          .map((a) => (
-                            <Text key={a.id}>{a.text}</Text>
-                          ))}
+                        <Text isTruncated maxWidth="100px">
+                          {votation.alternatives
+                            .filter((a) => a.isWinner)
+                            .map(
+                              (a, index) =>
+                                `${a.text}${
+                                  index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''
+                                }`
+                            )}
+                        </Text>
                       </HStack>
                     )}
                   </HStack>
