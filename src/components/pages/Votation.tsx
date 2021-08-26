@@ -228,32 +228,33 @@ const Votation: React.FC = () => {
         </VStack>
 
         {status === VotationStatus.Open && (
-          <>
-            {!userHasVoted ? (
-              <CastVote
-                alternatives={alternatives || []}
-                handleSelect={handleSelect}
-                blankVotes={data.votationById.blankVotes || false}
-                submitVote={submitVote}
-                submitButtonDisabled={selectedAlternativeId === null}
-                voteCount={voteCount}
-                votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
-                isStv={data.votationById.severalVotes}
-                updateAlternatives={setAlternatives}
-              />
-            ) : (
-              <Box mt="4em">
-                <Loading asOverlay={false} text={'Votering pågår'} />
-                <Center>
-                  <Heading as="h1" sx={h1Style}>
-                    Din stemme er registrert.
-                  </Heading>
-                </Center>
-              </Box>
-            )}
+          // <>
+          //   {!userHasVoted ? (
+          <CastVote
+            alternatives={alternatives || []}
+            handleSelect={handleSelect}
+            blankVotes={data.votationById.blankVotes || false}
+            submitVote={submitVote}
+            submitButtonDisabled={selectedAlternativeId === null}
+            voteCount={voteCount}
+            votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
+            isStv={data.votationById.severalVotes}
+            updateAlternatives={setAlternatives}
+            userHasVoted={userHasVoted}
+          />
+          // ) : (
+          //   <Box mt="4em">
+          //     <Loading asOverlay={false} text={'Votering pågår'} />
+          //     <Center>
+          //       <Heading as="h1" sx={h1Style}>
+          //         Din stemme er registrert.
+          //       </Heading>
+          //     </Center>
+          //   </Box>
+          // )}
 
-            {/* Shows how many participants has voted */}
-          </>
+          // Shows how many participants has voted
+          // </>
         )}
         {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
           <Box>
