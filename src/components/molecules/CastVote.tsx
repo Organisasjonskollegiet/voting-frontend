@@ -47,16 +47,13 @@ const CastVote: React.FC<CastVoteProps> = ({
           updateAlternatives={updateAlternatives}
         />
       </VStack>
-      <VStack h="100%" justifyContent="flex-end" spacing="1em">
+      <VStack h="100%" justifyContent="top" spacing="1em">
         {userHasVoted && (
-          <Box mt="4em">
-            <Loading asOverlay={false} text={'Votering pågår'} />
-            <Center>
-              <Heading as="h1" sx={h1Style}>
-                Din stemme er registrert.
-              </Heading>
-            </Center>
-          </Box>
+          <Center mt="4em">
+            <Heading as="h1" sx={h1Style}>
+              Din stemme er registrert.
+            </Heading>
+          </Center>
         )}
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
         {!userHasVoted && (

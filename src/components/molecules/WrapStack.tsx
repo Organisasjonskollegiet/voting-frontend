@@ -12,7 +12,7 @@ const WrapStack: React.FC<StackProps> = (props) => {
   }, []);
 
   if (screenWidth > 550) {
-    return <HStack {...props} />;
+    return <HStack spacing="5em" {...props} />;
   } else {
     return <VStack {...props} />;
   }
