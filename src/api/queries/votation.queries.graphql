@@ -57,6 +57,7 @@ query VotationsByMeetingId($meetingId: String!) {
       alternatives {
         id
         text
+        isWinner
       }
     }
   }

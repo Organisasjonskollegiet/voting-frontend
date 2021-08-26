@@ -18,6 +18,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
+  console.log(user);
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
     variables: {

@@ -20,6 +20,7 @@ export type Alternative = {
   __typename?: 'Alternative';
   id: Scalars['ID'];
   text: Scalars['String'];
+  isWinner?: Maybe<Scalars['Boolean']>;
   votationId: Scalars['String'];
 };
 
@@ -700,7 +701,7 @@ export type VotationsByMeetingIdQuery = (
       & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'severalVotes' | 'majorityType' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'id' | 'text'>
+        & Pick<Alternative, 'id' | 'text' | 'isWinner'>
       )>>> }
     )>>> }
   )> }
@@ -1455,6 +1456,7 @@ export const VotationsByMeetingIdDocument = gql`
       alternatives {
         id
         text
+        isWinner
       }
     }
   }
