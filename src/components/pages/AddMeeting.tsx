@@ -17,7 +17,6 @@ import { outerContainer, centerContainer } from '../particles/containerStyles';
 
 const AddMeeting: React.FC = () => {
   const { user } = useAuth0();
-  console.log(user);
   const { meetingId } = useParams<{ meetingId: string }>();
   const [getMeeting, { data, loading, error }] = useGetMeetingByIdLazyQuery({
     variables: {
