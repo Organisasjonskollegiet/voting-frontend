@@ -1,11 +1,10 @@
-import { Box, Button, Center, Heading, VStack } from '@chakra-ui/react';
+import { Button, Center, Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../pages/Votation';
 import AlternativeList from './AlternativeList';
 import VoteCount from '../atoms/VoteCount';
 import { AlternativeWithIndex } from '../pages/Votation';
 import WrapStack from './WrapStack';
-import Loading from '../atoms/Loading';
 import { h1Style } from '../particles/formStyles';
 
 interface CastVoteProps {
