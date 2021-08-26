@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import WrapStack from './WrapStack';
@@ -36,12 +36,16 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
 
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
-      <FormControl display="flex" width="fit-content">
-        <Switch id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
-        <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
-          Skjul min stemme
-        </FormLabel>
-      </FormControl>
+      {status === VotationStatus.Open ? (
+        <FormControl display="flex" width="fit-content">
+          <Switch id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
+          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
+            Skjul min stemme
+          </FormLabel>
+        </FormControl>
+      ) : (
+        <Box></Box>
+      )}
       <Button
         w="fit-content"
         _hover={{ bg: 'transparent' }}
