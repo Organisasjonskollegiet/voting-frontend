@@ -17,6 +17,8 @@ import {
   useToast,
   Tooltip,
   CloseButton,
+  InputGroup,
+  InputLeftElement,
 } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
@@ -24,6 +26,7 @@ import Loading from '../atoms/Loading';
 // import { ParticipantOrInvite } from '../../types/types';
 import { useEffect } from 'react';
 import { boxShadow } from '../particles/formStyles';
+import { SearchIcon } from '@chakra-ui/icons';
 
 interface IProps {
   meetingId: string | undefined;
@@ -202,6 +205,19 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           </HStack>
         </FormControl>
         <Divider m="3em 0" />
+        <FormControl>
+          <FormLabel>Administrer deltagere</FormLabel>
+          <HStack justifyContent="space-between" spacing="1em">
+            <InputGroup boxShadow={boxShadow} w="60%">
+              <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
+              <Input bg="white" placeholder="Søk etter deltager"></Input>
+            </InputGroup>
+            <Select onChange={(e) => console.log('Do something')} bg="white" boxShadow={boxShadow} w="200px">
+              <option value="true">A-Å</option>
+              <option value="false">Å-A</option>
+            </Select>
+          </HStack>
+        </FormControl>
         <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
           {participants.map((participant, index) => (
             <React.Fragment key={participant.email}>
@@ -243,7 +259,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
                       disabled={ownerEmail === participant.email || !meetingId}
                       background="transparent"
                       _hover={{ background: 'transparent' }}
-                      isActive={false}
+                      // isActive={false}
                     ></CloseButton>
                   </Tooltip>
                 </HStack>
