@@ -495,7 +495,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 sx={{ ...collapsedStyle, padding: '0' }}
                 mb="1.5em"
               >
-                <HStack w="90vw" maxWidth="700px" justifyContent="space-between">
+                <HStack w="90vw" maxWidth="800px" justifyContent="space-between">
                   <AccordionButton
                     cursor="default"
                     p="1em"
