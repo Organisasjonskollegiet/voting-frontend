@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import AddVotations from '../particles/AddVotations';
 import {
-  ParticipantOrInvite,
-  Role,
   useCreateMeetingMutation,
   useGetMeetingByIdLazyQuery,
   useUpdateMeetingMutation,
