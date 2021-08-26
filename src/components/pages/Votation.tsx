@@ -228,8 +228,6 @@ const Votation: React.FC = () => {
         </VStack>
 
         {status === VotationStatus.Open && (
-          // <>
-          //   {!userHasVoted ? (
           <CastVote
             alternatives={alternatives || []}
             handleSelect={handleSelect}
@@ -242,19 +240,6 @@ const Votation: React.FC = () => {
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
           />
-          // ) : (
-          //   <Box mt="4em">
-          //     <Loading asOverlay={false} text={'Votering pågår'} />
-          //     <Center>
-          //       <Heading as="h1" sx={h1Style}>
-          //         Din stemme er registrert.
-          //       </Heading>
-          //     </Center>
-          //   </Box>
-          // )}
-
-          // Shows how many participants has voted
-          // </>
         )}
         {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
           <Box>
