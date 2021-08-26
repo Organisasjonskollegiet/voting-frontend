@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Center, Box, Heading, Text, VStack, Divider, Button } from '@chakra-ui/react';
+import { Center, Box, Heading, Text, VStack, Divider, Button, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
   // useVotationOpenedForMeetingSubscription,
@@ -15,6 +15,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import ParticipantModal from '../molecules/ParticipantModal';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -103,17 +104,14 @@ const MeetingLobby: React.FC = () => {
           </VStack>
           <VStack alignItems="left" spacing="1em">
             <Divider />
-            <Button
-              borderRadius={'16em'}
-              bg="transparent"
-              w="fit-content"
-              onClick={backToVotationList}
-              leftIcon={<ArrowBackIcon />}
-            >
-              <Text fontWeight="normal" fontSize="16px" decoration="underline">
-                Tilbake til møteoversikt
-              </Text>
-            </Button>
+            <HStack justifyContent="space-between">
+              <Button bg="transparent" w="fit-content" onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+                <Text fontWeight="normal" fontSize="16px" decoration="underline">
+                  Tilbake til møteoversikt
+                </Text>
+              </Button>
+              <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+            </HStack>
           </VStack>
         </VStack>
       </Box>

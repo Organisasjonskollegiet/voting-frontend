@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import AddVotations from '../particles/AddVotations';
 import {
+  ParticipantOrInvite,
   Role,
   useCreateMeetingMutation,
   useGetMeetingByIdLazyQuery,
@@ -9,7 +10,7 @@ import {
 } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../particles/AddMeetingInformation';
 import AddParticipants from '../particles/AddParticipants';
-import { MeetingWorking, ParticipantWorking } from '../../types/types';
+import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
@@ -33,8 +34,6 @@ const AddMeeting: React.FC = () => {
     description: '',
   });
 
-  const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
-
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
 
   const [meetingHasBeenEdited, setMeetingHasBeenEdited] = useState<boolean>(false);
@@ -46,10 +45,6 @@ const AddMeeting: React.FC = () => {
   const [votationsMayExist, setVotationsMayExist] = useState<boolean>(!!meetingId);
 
   const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
-    setParticipants([
-      ...participants,
-      { email: user?.email ?? '', role: Role.Admin, isVotingEligible: true, existsInDb: true },
-    ]);
     setMeeting({
       id: meeting.id,
       title: meeting.title,
@@ -85,16 +80,6 @@ const AddMeeting: React.FC = () => {
         organization: meeting.organization,
         startTime: new Date(meeting.startTime),
       });
-      if (data.participants) {
-        setParticipants(
-          data.participants.map((participant) => {
-            return {
-              ...participant,
-              existsInDb: true,
-            };
-          }) as ParticipantWorking[]
-        );
-      }
     }
   }, [data, meeting.id]);
 
@@ -150,10 +135,9 @@ const AddMeeting: React.FC = () => {
     }
   };
 
-  const handlePrevFromParticipants = (participants: ParticipantWorking[], nextIndex: number) => {
+  const handlePrevFromParticipants = (nextIndex: number) => {
     try {
       setActiveTab(nextIndex);
-      setParticipants(participants);
     } catch (error) {
       console.log('error', error);
     }
@@ -202,8 +186,7 @@ const AddMeeting: React.FC = () => {
         />
         <AddParticipants
           isActive={activeTab === 2}
-          previouslyAddedParticipants={participants}
-          meetingId={meeting?.id ?? undefined}
+          meetingId={meeting?.id ?? ''}
           handleNavigation={handlePrevFromParticipants}
           ownerEmail={user?.email}
         />

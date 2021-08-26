@@ -1,45 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { VStack, Heading, Text } from '@chakra-ui/react';
+import { VStack, Heading, Text, Center } from '@chakra-ui/react';
 import AddMeetingController from '../molecules/AddMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
 import { h1Style } from './formStyles';
-import { ParticipantWorking } from '../../types/types';
+import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../__generated__/graphql-types';
+import Loading from '../atoms/Loading';
 
 interface IProps {
-  meetingId: string | undefined;
-  handleNavigation: (participants: ParticipantWorking[], nextIndex: number) => void;
-  previouslyAddedParticipants: ParticipantWorking[];
-  isActive: boolean;
+  meetingId: string;
+  handleNavigation?: (nextIndex: number) => void;
+  isActive?: boolean;
   ownerEmail: string | undefined;
 }
 
-const AddParticipants: React.FC<IProps> = ({
-  isActive,
-  meetingId,
-  previouslyAddedParticipants,
-  handleNavigation,
-  ownerEmail,
-}) => {
-  const [participants, setParticipants] = useState<ParticipantWorking[]>([]);
+const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail }) => {
   const history = useHistory();
+  const [getParticipantsByMeetingId, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
+    variables: { meetingId },
+  });
 
   useEffect(() => {
-    if (previouslyAddedParticipants.length > 0) {
-      const participantEmails = participants.map((participant: ParticipantWorking) => participant.email);
-      setParticipants([
-        ...participants,
-        ...previouslyAddedParticipants.filter((participant) => !participantEmails.includes(participant.email)),
-      ]);
+    if (!data || !loading || !error) {
+      getParticipantsByMeetingId();
     }
-    // eslint-disable-next-line
-  }, [previouslyAddedParticipants]);
+  }, [getParticipantsByMeetingId]);
+
+  const [participants, setParticipants] = useState<ParticipantOrInvite[]>([]);
+
+  useEffect(() => {
+    if (data?.participants) {
+      setParticipants(data.participants as ParticipantOrInvite[]);
+    }
+  }, [data]);
+
+  if (loading) {
+    return <Loading text="henter deltagere" asOverlay={false} />;
+  }
+
+  if (error || data?.participants === undefined) {
+    return (
+      <Center>
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
+    );
+  }
 
   const handleNavigationClick = (nextIndex: number) => {
-    if (nextIndex > 2) {
-      history.push('/');
-    } else {
-      handleNavigation(participants, nextIndex);
+    if (handleNavigation) {
+      if (nextIndex > 2) {
+        history.push('/');
+      } else {
+        handleNavigation(nextIndex);
+      }
     }
   };
 
@@ -59,7 +72,9 @@ const AddParticipants: React.FC<IProps> = ({
         setParticipants={setParticipants}
         ownerEmail={ownerEmail}
       />
-      <AddMeetingController showPrev={true} activeTab={2} handleNavigation={handleNavigationClick} />
+      {handleNavigation && (
+        <AddMeetingController showPrev={true} activeTab={2} handleNavigation={handleNavigationClick} />
+      )}
     </>
   );
 };

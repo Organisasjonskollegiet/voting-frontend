@@ -651,6 +651,19 @@ export type GetMeetingByIdQuery = (
   )>>> }
 );
 
+export type GetParticipantsByMeetingIdQueryVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type GetParticipantsByMeetingIdQuery = (
+  { __typename?: 'Query' }
+  & { participants?: Maybe<Array<Maybe<(
+    { __typename?: 'ParticipantOrInvite' }
+    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
+  )>>> }
+);
+
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
   meetingId: Scalars['String'];
@@ -689,7 +702,10 @@ export type VotationsByMeetingIdQuery = (
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id' | 'title'>
-    & { votations?: Maybe<Array<Maybe<(
+    & { owner?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'email'>
+    )>, votations?: Maybe<Array<Maybe<(
       { __typename?: 'Votation' }
       & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
@@ -1368,6 +1384,43 @@ export function useGetMeetingByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetMeetingByIdQueryHookResult = ReturnType<typeof useGetMeetingByIdQuery>;
 export type GetMeetingByIdLazyQueryHookResult = ReturnType<typeof useGetMeetingByIdLazyQuery>;
 export type GetMeetingByIdQueryResult = Apollo.QueryResult<GetMeetingByIdQuery, GetMeetingByIdQueryVariables>;
+export const GetParticipantsByMeetingIdDocument = gql`
+    query GetParticipantsByMeetingId($meetingId: String!) {
+  participants(meetingId: $meetingId) {
+    email
+    role
+    isVotingEligible
+  }
+}
+    `;
+
+/**
+ * __useGetParticipantsByMeetingIdQuery__
+ *
+ * To run a query within a React component, call `useGetParticipantsByMeetingIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetParticipantsByMeetingIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetParticipantsByMeetingIdQuery({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useGetParticipantsByMeetingIdQuery(baseOptions: Apollo.QueryHookOptions<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>(GetParticipantsByMeetingIdDocument, options);
+      }
+export function useGetParticipantsByMeetingIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>(GetParticipantsByMeetingIdDocument, options);
+        }
+export type GetParticipantsByMeetingIdQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingIdQuery>;
+export type GetParticipantsByMeetingIdLazyQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingIdLazyQuery>;
+export type GetParticipantsByMeetingIdQueryResult = Apollo.QueryResult<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>;
 export const GetVotationByIdDocument = gql`
     query GetVotationById($votationId: String!, $meetingId: String!) {
   votationById(votationId: $votationId) {
@@ -1434,6 +1487,9 @@ export const VotationsByMeetingIdDocument = gql`
   meetingById(meetingId: $meetingId) {
     id
     title
+    owner {
+      email
+    }
     votations {
       id
       title

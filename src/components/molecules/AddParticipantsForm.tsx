@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Role, useAddParticipantsMutation, useDeleteParticipantsMutation } from '../../__generated__/graphql-types';
+import {
+  ParticipantOrInvite,
+  Role,
+  useAddParticipantsMutation,
+  useDeleteParticipantsMutation,
+} from '../../__generated__/graphql-types';
 import {
   VStack,
   FormControl,
@@ -16,14 +21,14 @@ import {
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
 import Loading from '../atoms/Loading';
-import { ParticipantWorking } from '../../types/types';
+// import { ParticipantOrInvite } from '../../types/types';
 import { useEffect } from 'react';
 import { boxShadow } from '../particles/formStyles';
 
 interface IProps {
   meetingId: string | undefined;
-  participants: ParticipantWorking[];
-  setParticipants: (participants: ParticipantWorking[]) => void;
+  participants: ParticipantOrInvite[];
+  setParticipants: (participants: ParticipantOrInvite[]) => void;
   ownerEmail: string | undefined;
 }
 
@@ -37,7 +42,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   useEffect(() => {
     if (!participants || !addParticipantsResult.data) return;
-    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantWorking[];
+    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantOrInvite[];
     const nonUpdatedParticipants = participants.filter(
       (participant) => !newParticipants.map((p) => p.email).includes(participant.email)
     );
@@ -88,7 +93,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantWorking[]) => {
+  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantOrInvite[]) => {
     if (event.code !== 'Enter') return;
     const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     if (!input || !input.value || input.value.trim().length === 0) return;
@@ -118,7 +123,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
-      const newParticipants: ParticipantWorking[] = [];
+      const newParticipants: ParticipantOrInvite[] = [];
       if (!evt.target) return;
       const content = evt.target.result as string;
       if (!content) return;
@@ -136,7 +141,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             email,
             role,
             isVotingEligible: true,
-            existsInDb: false,
+            // existsInDb: false,
           });
         }
       }

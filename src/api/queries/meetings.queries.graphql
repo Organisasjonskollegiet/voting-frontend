@@ -50,3 +50,11 @@ query GetMeetingById($meetingId: String!) {
     isVotingEligible
   }
 }
+
+query GetParticipantsByMeetingId($meetingId: String!) {
+  participants(meetingId: $meetingId) {
+    email
+    role
+    isVotingEligible
+  }
+}
