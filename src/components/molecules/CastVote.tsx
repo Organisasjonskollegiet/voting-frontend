@@ -48,7 +48,7 @@ const CastVote: React.FC<CastVoteProps> = ({
       </VStack>
       <VStack h="100%" justifyContent="top" spacing="1em">
         {userHasVoted && (
-          <Center mt="4em">
+          <Center w="300px" mt="4em">
             <Heading as="h1" sx={h1Style}>
               Din stemme er registrert.
             </Heading>

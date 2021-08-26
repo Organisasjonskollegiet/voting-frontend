@@ -214,7 +214,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
-      <VStack sx={centerContainer} maxWidth="700px" alignItems="left" spacing="3em">
+      <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
             Votering {data.votationById.index + 1}
