@@ -37,6 +37,13 @@ export type AlternativeResult = {
   votes: Scalars['Int'];
 };
 
+export type AlternativeWithWinner = {
+  __typename?: 'AlternativeWithWinner';
+  id: Scalars['ID'];
+  text: Scalars['String'];
+  isWinner: Scalars['Boolean'];
+};
+
 export type CreateMeetingInput = {
   organization: Scalars['String'];
   title: Scalars['String'];
@@ -217,6 +224,8 @@ export type Query = {
   getVoteCount?: Maybe<VoteCountResult>;
   getWinnerOfVotation?: Maybe<Alternative>;
   getVotationResults?: Maybe<VotationResults>;
+  /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
+  winnersOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -248,6 +257,11 @@ export type QueryGetWinnerOfVotationArgs = {
 
 export type QueryGetVotationResultsArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryWinnersOfPublishedVotationsArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -384,6 +398,12 @@ export enum VotationStatus {
   PublishedResult = 'PUBLISHED_RESULT',
   Invalid = 'INVALID'
 }
+
+export type VotationWithWinner = {
+  __typename?: 'VotationWithWinner';
+  id: Scalars['ID'];
+  alternatives: Array<Maybe<AlternativeWithWinner>>;
+};
 
 export type Vote = {
   __typename?: 'Vote';
@@ -645,7 +665,14 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text' | 'votationId'>
     )>>> }
-  )>, meetingById?: Maybe<(
+  )>, winnersOfPublishedVotations?: Maybe<Array<Maybe<(
+    { __typename?: 'VotationWithWinner' }
+    & Pick<VotationWithWinner, 'id'>
+    & { alternatives: Array<Maybe<(
+      { __typename?: 'AlternativeWithWinner' }
+      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
+    )>> }
+  )>>>, meetingById?: Maybe<(
     { __typename?: 'Meeting' }
     & { participants: Array<Maybe<(
       { __typename?: 'Participant' }
@@ -1360,6 +1387,14 @@ export const GetVotationByIdDocument = gql`
     majorityType
     majorityThreshold
     meetingId
+  }
+  winnersOfPublishedVotations(meetingId: $meetingId) {
+    id
+    alternatives {
+      id
+      text
+      isWinner
+    }
   }
   meetingById(meetingId: $meetingId) {
     participants {

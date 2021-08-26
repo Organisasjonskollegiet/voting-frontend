@@ -54,12 +54,7 @@ const getEmptyVotation = (id?: string, index?: number) => {
   };
 };
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({
-  meetingId,
-  votationsMayExist,
-  isMeetingLobby,
-  role,
-}) => {
+const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist, isMeetingLobby, role }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
@@ -472,4 +467,4 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
   );
 };
 
-export default AddMeetingVotationList;
+export default VotationList;
