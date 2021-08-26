@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  HStack,
+  useToast,
+  VStack,
+  Text,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionIcon,
+} from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   MajorityType,
@@ -19,6 +32,7 @@ import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
 import VotationListSection from './VotationListSection';
+import Hammer from '../../static/hammer.svg';
 
 interface VotationListProps {
   meetingId: string;
@@ -54,12 +68,7 @@ const getEmptyVotation = (id?: string, index?: number) => {
   };
 };
 
-const AddMeetingVotationList: React.FC<VotationListProps> = ({
-  meetingId,
-  votationsMayExist,
-  isMeetingLobby,
-  role,
-}) => {
+const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist, isMeetingLobby, role }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
@@ -111,7 +120,8 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
-      const formattedVotations = formatVotations(votations) ?? [getEmptyVotation()];
+      const winners = data.resultsOfPublishedVotations as Votation[];
+      const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
       const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
       const shouldAddEmpty =
         !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
@@ -143,27 +153,37 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
     // eslint-disable-next-line
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations]);
 
-  const formatVotation = (votation: Votation) => {
+  const alternativeMapper = (alternative: Alternative, index: number) => {
+    return {
+      ...alternative,
+      index: index,
+      existsInDb: true,
+    };
+  };
+
+  const formatVotation = (votation: Votation, alternatives?: Alternative[]) => {
     return {
       ...votation,
       existsInDb: true,
       isEdited: false,
       alternatives:
-        votation.alternatives.length > 0
-          ? votation.alternatives.map((alternative: Alternative, index: number) => {
-              return {
-                ...alternative,
-                index: index,
-                existsInDb: true,
-              };
-            })
+        alternatives && alternatives.length > 0
+          ? alternatives.map(alternativeMapper)
+          : votation.alternatives.length > 0
+          ? votation.alternatives.map(alternativeMapper)
           : [getEmptyAlternative()],
     };
   };
 
-  const formatVotations = (votations: Votation[]) => {
+  const formatVotations = (votations: Votation[], winners?: Votation[]) => {
     if (!votations) return;
-    return votations.map((votation) => formatVotation(votation));
+    return votations.map((votation) => {
+      if (winners && votation.status === VotationStatus.PublishedResult) {
+        const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
+        if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
+      }
+      return formatVotation(votation);
+    });
   };
 
   const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
@@ -450,26 +470,56 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
           <Heading as="h1" fontSize="1em" mb="1.125em">
             Avsluttede voteringer
           </Heading>
-          {endedVotations.map((votation, index) => (
-            <HStack
-              w="90vw"
-              maxWidth="700px"
-              justify="space-between"
-              marginBottom="16px"
-              sx={collapsedStyle}
-              cursor="default"
-              opacity="0.5"
-            >
-              <HStack spacing="8">
-                <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-                <Text>{votation.title}</Text>
-              </HStack>
-            </HStack>
-          ))}
+          <Accordion allowToggle>
+            {endedVotations.map((votation, index) => (
+              <AccordionItem
+                key={votation.id}
+                borderStyle="none"
+                isDisabled={votation.alternatives.filter((a) => a.isWinner).length > 1}
+              >
+                <AccordionButton
+                  w="90vw"
+                  maxWidth="700px"
+                  justify="space-between"
+                  marginBottom="16px"
+                  sx={collapsedStyle}
+                  cursor="default"
+                  opacity="0.5"
+                  _hover={votation.alternatives.filter((a) => a.isWinner).length > 1 ? {} : { bg: 'white' }}
+                >
+                  <HStack w="100%" justifyContent="space-between">
+                    <HStack spacing="8">
+                      <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
+                      <Text>{votation.title}</Text>
+                    </HStack>
+                    {votation.status === VotationStatus.PublishedResult && (
+                      <HStack>
+                        {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
+                          <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
+                        )}
+                        <Text isTruncated maxWidth="100px">
+                          {votation.alternatives
+                            .filter((a) => a.isWinner)
+                            .map(
+                              (a, index) =>
+                                `${a.text}${
+                                  index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''
+                                }`
+                            )}
+                        </Text>
+                      </HStack>
+                    )}
+                  </HStack>
+                  {votation.status === VotationStatus.PublishedResult &&
+                    votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon />}
+                </AccordionButton>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </VStack>
       )}
     </VStack>
   );
 };
 
-export default AddMeetingVotationList;
+export default VotationList;

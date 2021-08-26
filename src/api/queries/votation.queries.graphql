@@ -51,6 +51,15 @@ query VotationsByMeetingId($meetingId: String!) {
       }
     }
   }
+
+  resultsOfPublishedVotations(meetingId: $meetingId) {
+    id
+    alternatives {
+      id
+      text
+      isWinner
+    }
+  }
 }
 
 query GetVoteCount($votationId: String!) {
