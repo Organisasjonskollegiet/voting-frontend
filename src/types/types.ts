@@ -17,6 +17,7 @@ export interface Alternative {
   text: string;
   index?: number;
   existsInDb?: boolean;
+  isWinner?: boolean;
 }
 export interface Votation {
   id: string;

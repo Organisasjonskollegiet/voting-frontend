@@ -37,6 +37,13 @@ export type AlternativeResult = {
   votes: Scalars['Int'];
 };
 
+export type AlternativeWithWinner = {
+  __typename?: 'AlternativeWithWinner';
+  id: Scalars['ID'];
+  text: Scalars['String'];
+  isWinner: Scalars['Boolean'];
+};
+
 export type CreateMeetingInput = {
   organization: Scalars['String'];
   title: Scalars['String'];
@@ -212,6 +219,8 @@ export type Query = {
   getVoteCount?: Maybe<VoteCountResult>;
   getWinnerOfVotation?: Maybe<Alternative>;
   getVotationResults?: Maybe<VotationResults>;
+  /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
+  resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -243,6 +252,11 @@ export type QueryGetWinnerOfVotationArgs = {
 
 export type QueryGetVotationResultsArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryResultsOfPublishedVotationsArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -385,6 +399,12 @@ export enum VotationType {
   Simple = 'SIMPLE',
   Stv = 'STV'
 }
+
+export type VotationWithWinner = {
+  __typename?: 'VotationWithWinner';
+  id: Scalars['ID'];
+  alternatives: Array<Maybe<AlternativeWithWinner>>;
+};
 
 export type Vote = {
   __typename?: 'Vote';
@@ -677,7 +697,14 @@ export type VotationsByMeetingIdQuery = (
         & Pick<Alternative, 'id' | 'text'>
       )>>> }
     )>>> }
-  )> }
+  )>, resultsOfPublishedVotations?: Maybe<Array<Maybe<(
+    { __typename?: 'VotationWithWinner' }
+    & Pick<VotationWithWinner, 'id'>
+    & { alternatives: Array<Maybe<(
+      { __typename?: 'AlternativeWithWinner' }
+      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
+    )>> }
+  )>>> }
 );
 
 export type GetVoteCountQueryVariables = Exact<{
@@ -1422,6 +1449,14 @@ export const VotationsByMeetingIdDocument = gql`
         id
         text
       }
+    }
+  }
+  resultsOfPublishedVotations(meetingId: $meetingId) {
+    id
+    alternatives {
+      id
+      text
+      isWinner
     }
   }
 }

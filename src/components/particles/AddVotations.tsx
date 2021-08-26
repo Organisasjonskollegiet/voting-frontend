@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
-import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
+import VotationList from '../molecules/VotationList';
 import { Role } from '../../__generated__/graphql-types';
 import AddMeetingController from '../molecules/AddMeetingController';
 import { h1Style } from './formStyles';
@@ -42,7 +42,7 @@ const AddVotations: React.FC<IProps> = ({
         <Text fontSize="20px">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
-        <AddMeetingVotationList
+        <VotationList
           role={Role.Admin}
           isMeetingLobby={false}
           meetingId={meetingId}

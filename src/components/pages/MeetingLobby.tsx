@@ -13,11 +13,12 @@ import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
-import AddMeetingVotationList from '../molecules/AddMeetingVotationList';
+import VotationList from '../molecules/VotationList';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
+  console.log(user);
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
     variables: {
@@ -97,12 +98,7 @@ const MeetingLobby: React.FC = () => {
             </Heading>
             <VStack align="start">
               <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-              <AddMeetingVotationList
-                role={role}
-                isMeetingLobby={true}
-                votationsMayExist={true}
-                meetingId={meetingId}
-              />
+              <VotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
             </VStack>
           </VStack>
           <VStack alignItems="left" spacing="1em">
