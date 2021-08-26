@@ -16,15 +16,16 @@ interface IProps {
 
 const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail }) => {
   const history = useHistory();
-  const [getParticipantsByMeetingId, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
+
+  const [getParticipants, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
     variables: { meetingId },
   });
 
   useEffect(() => {
-    if (!data || !loading || !error) {
-      getParticipantsByMeetingId();
+    if (meetingId && !data) {
+      getParticipants();
     }
-  }, [getParticipantsByMeetingId]);
+  }, [meetingId, getParticipants, data]);
 
   const [participants, setParticipants] = useState<ParticipantOrInvite[]>([]);
 
