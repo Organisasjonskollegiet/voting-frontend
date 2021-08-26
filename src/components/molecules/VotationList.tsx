@@ -488,7 +488,6 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
             {endedVotations.map((votation) => (
               <AccordionItem
                 key={votation.id}
-                // borderStyle="none"
                 isDisabled={votation.alternatives.filter((a) => a.isWinner).length > 1}
                 sx={{ ...collapsedStyle, padding: '0' }}
                 mb="1.5em"
