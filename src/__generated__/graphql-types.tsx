@@ -50,6 +50,7 @@ export type CreateVotationInput = {
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   type: VotationType;
+  numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
   alternatives?: Maybe<Array<Scalars['String']>>;
@@ -306,6 +307,7 @@ export type UpdateVotationInput = {
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   type: VotationType;
+  numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
   alternatives?: Maybe<Array<AlternativeInput>>;
@@ -354,6 +356,7 @@ export type Votation = {
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
   type: VotationType;
+  numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
   meetingId: Scalars['String'];
@@ -474,7 +477,7 @@ export type CreateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { createVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'type' | 'majorityThreshold'>
+    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -491,7 +494,7 @@ export type UpdateVotationsMutation = (
   { __typename?: 'Mutation' }
   & { updateVotations?: Maybe<Array<Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'type' | 'majorityThreshold' | 'status'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'status'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
@@ -638,7 +641,7 @@ export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'majorityThreshold' | 'meetingId'>
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text' | 'votationId'>
@@ -668,7 +671,7 @@ export type VotationsByMeetingIdQuery = (
     & Pick<Meeting, 'id' | 'title'>
     & { votations?: Maybe<Array<Maybe<(
       { __typename?: 'Votation' }
-      & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'majorityThreshold' | 'index'>
+      & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
         { __typename?: 'Alternative' }
         & Pick<Alternative, 'id' | 'text'>
@@ -940,6 +943,7 @@ export const CreateVotationsDocument = gql`
     status
     hiddenVotes
     type
+    numberOfWinners
     majorityThreshold
     alternatives {
       id
@@ -985,6 +989,7 @@ export const UpdateVotationsDocument = gql`
     index
     hiddenVotes
     type
+    numberOfWinners
     majorityThreshold
     status
     alternatives {
@@ -1353,6 +1358,7 @@ export const GetVotationByIdDocument = gql`
     blankVotes
     hiddenVotes
     type
+    numberOfWinners
     majorityThreshold
     meetingId
   }
@@ -1409,6 +1415,7 @@ export const VotationsByMeetingIdDocument = gql`
       blankVotes
       hiddenVotes
       type
+      numberOfWinners
       majorityThreshold
       index
       alternatives {

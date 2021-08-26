@@ -47,6 +47,7 @@ const getEmptyVotation = (id?: string, index?: number) => {
     status: VotationStatus.Upcoming,
     hiddenVotes: true,
     type: 'SIMPLE' as VotationType,
+    numberOfWinners: 1,
     majorityThreshold: 50,
     existsInDb: false,
     isEdited: false,
@@ -297,6 +298,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
         type: votation.type,
+        numberOfWinners: votation.numberOfWinners,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => {
@@ -320,6 +322,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
         type: votation.type,
+        numberOfWinners: votation.numberOfWinners,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => alternative.text)

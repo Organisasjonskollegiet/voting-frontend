@@ -12,7 +12,6 @@ const MyMeetings: React.FC = () => {
   const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
   const toast = useToast();
   const meetingsData = data?.meetings;
-  console.log(data);
 
   useEffect(() => {
     if (deleteMeetingResult.data?.deleteMeeting) {

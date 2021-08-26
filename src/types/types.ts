@@ -29,6 +29,7 @@ export interface Votation {
   blankVotes: boolean;
   hiddenVotes: boolean;
   type: VotationType;
+  numberOfWinners: number;
   majorityThreshold: number;
   existsInDb?: boolean;
   isEdited?: boolean;
