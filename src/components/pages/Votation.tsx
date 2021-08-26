@@ -264,7 +264,12 @@ const Votation: React.FC = () => {
             (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
               <VStack>
                 <Divider />
-                <VotationController votationId={votationId} status={status} />
+                <VotationController
+                  hideVote={hideVote}
+                  toggleHideVote={() => setHideVote(!hideVote)}
+                  votationId={votationId}
+                  status={status}
+                />
               </VStack>
             )
         }
