@@ -490,34 +490,26 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
             {endedVotations.map((votation) => (
               <AccordionItem
                 key={votation.id}
-                borderStyle="none"
+                // borderStyle="none"
                 isDisabled={votation.alternatives.filter((a) => a.isWinner).length > 1}
+                sx={{ ...collapsedStyle, padding: '0' }}
+                mb="1.5em"
               >
-                {console.log(votation.status)}
-
-                <AccordionButton
-                  w="90vw"
-                  maxWidth="700px"
-                  justify="space-between"
-                  marginBottom="16px"
-                  cursor="default"
-                  p="0"
-                >
-                  <HStack
-                    w="100%"
-                    justifyContent="space-between"
-                    sx={{ ...collapsedStyle, paddingRight: '10px' }}
-                    bgColor="rgba(255, 255, 255, 0.5)"
+                <HStack w="90vw" maxWidth="700px" justifyContent="space-between">
+                  <AccordionButton
+                    cursor="default"
+                    p="1em"
+                    pr="0"
                     _hover={votation.alternatives.filter((a) => a.isWinner).length > 1 ? {} : { bg: 'white' }}
                   >
-                    <HStack spacing="8" opacity="0.6">
-                      <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-                      <Text>{votation.title}</Text>
-                    </HStack>
-                    <Box>
-                      <HStack>
+                    <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
+                      <HStack spacing="8" opacity="0.6">
+                        <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
+                        <Text>{votation.title}</Text>
+                      </HStack>
+                      <HStack ml="auto">
                         {votation.status === VotationStatus.PublishedResult && (
-                          <HStack>
+                          <HStack opacity="0.5">
                             {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
                               <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
                             )}
@@ -534,20 +526,23 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                           </HStack>
                         )}
                         {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Ugyldig" />}{' '}
-                        <Tooltip label="Dupliser votering">
-                          <IconButton
-                            aria-label="Dupliser votering"
-                            bg={'white'}
-                            onClick={() => duplicateVotation(votation)}
-                            icon={<img alt="duplicate" src={DuplicateIcon} />}
-                          />
-                        </Tooltip>
                       </HStack>
-                    </Box>
-                  </HStack>
-                  {votation.status === VotationStatus.PublishedResult &&
-                    votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon />}
-                </AccordionButton>
+                    </HStack>
+                    {votation.status === VotationStatus.PublishedResult &&
+                      votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon />}
+                  </AccordionButton>
+                  <Tooltip label="Dupliser votering">
+                    <IconButton
+                      aria-label="Dupliser votering"
+                      h="fit-content"
+                      bg={'white'}
+                      p="1em"
+                      borderRadius="4px"
+                      onClick={() => duplicateVotation(votation)}
+                      icon={<img alt="duplicate" src={DuplicateIcon} style={{ padding: '1em 0' }} />}
+                    />
+                  </Tooltip>
+                </HStack>
               </AccordionItem>
             ))}
           </Accordion>
