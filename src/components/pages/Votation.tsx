@@ -78,6 +78,8 @@ const Votation: React.FC = () => {
   const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
+  const [hideVote, setHideVote] = useState<boolean>(true);
+
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winner) {
       const result = winnerResult.getWinnerOfVotation;
@@ -240,6 +242,7 @@ const Votation: React.FC = () => {
             isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
+            hideVote={hideVote}
           />
         )}
         {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (

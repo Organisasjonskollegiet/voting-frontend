@@ -18,6 +18,7 @@ interface CastVoteProps {
   isStv: boolean;
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
+  hideVote: boolean;
 }
 
 const CastVote: React.FC<CastVoteProps> = ({
@@ -31,6 +32,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   isStv,
   updateAlternatives,
   userHasVoted,
+  hideVote,
 }) => {
   return (
     <WrapStack w="100%" justifyContent="space-between">
@@ -44,6 +46,8 @@ const CastVote: React.FC<CastVoteProps> = ({
           handleSelect={handleSelect}
           blankVotes={blankVotes}
           updateAlternatives={updateAlternatives}
+          userHasVoted={userHasVoted}
+          hideVote={hideVote}
         />
       </VStack>
       <VStack h="100%" justifyContent="flex-end" spacing="1em">
