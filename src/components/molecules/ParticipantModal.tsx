@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import participantIcon from '../../static/participantIcon.svg';
+import ReturnToPreviousButton from '../atoms/ReturnToPreviousButton';
 import AddParticipants from '../particles/AddParticipants';
 
 interface ParticipantModalProps {
@@ -38,11 +39,8 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
             <AddParticipants meetingId={meetingId} ownerEmail={ownerEmail}></AddParticipants>
           </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant="ghost">Secondary Action</Button>
+          <ModalFooter justifyContent="flex-start">
+            <ReturnToPreviousButton onClick={onClose} text="Tilbake"></ReturnToPreviousButton>
           </ModalFooter>
         </ModalContent>
       </Modal>
