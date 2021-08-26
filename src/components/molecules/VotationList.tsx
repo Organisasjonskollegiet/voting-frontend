@@ -14,8 +14,6 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionIcon,
-  Tag,
-  TagLabel,
   IconButton,
   Tooltip,
 } from '@chakra-ui/react';
