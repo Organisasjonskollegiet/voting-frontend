@@ -36,7 +36,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
           <ModalHeader>Administrer deltagere</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <AddParticipants meetingId={meetingId} ownerEmail={ownerEmail}></AddParticipants>
+            <AddParticipants meetingId={meetingId} ownerEmail={ownerEmail} isActive={true} />
           </ModalBody>
 
           <ModalFooter justifyContent="flex-start">

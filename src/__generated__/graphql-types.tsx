@@ -620,6 +620,7 @@ export type GetRoleQuery = (
   { __typename?: 'Query' }
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
+    & Pick<Meeting, 'id'>
     & { participants: Array<Maybe<(
       { __typename?: 'Participant' }
       & Pick<Participant, 'role'>
@@ -645,10 +646,7 @@ export type GetMeetingByIdQuery = (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
     )> }
-  )>, participants?: Maybe<Array<Maybe<(
-    { __typename?: 'ParticipantOrInvite' }
-    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
-  )>>> }
+  )> }
 );
 
 export type GetParticipantsByMeetingIdQueryVariables = Exact<{
@@ -1298,6 +1296,7 @@ export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMee
 export const GetRoleDocument = gql`
     query GetRole($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
+    id
     participants {
       user {
         id
@@ -1348,11 +1347,6 @@ export const GetMeetingByIdDocument = gql`
     organization
     status
     startTime
-  }
-  participants(meetingId: $meetingId) {
-    email
-    role
-    isVotingEligible
   }
 }
     `;

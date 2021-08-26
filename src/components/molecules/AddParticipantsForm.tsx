@@ -137,7 +137,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
         if (email && !emailExists) {
-          participants.push({
+          newParticipants.push({
             email,
             role,
             isVotingEligible: true,
@@ -204,55 +204,53 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <Divider m="3em 0" />
         <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
           {participants.length > 0 ? (
-            participants
-              .sort((a, b) => a.email.localeCompare(b.email))
-              .map((participant, index) => (
-                <React.Fragment key={participant.email}>
-                  {index > 0 && <Divider width="100%" m="0.5em 0" />}
-                  <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
-                    <Text>{participant.email}</Text>
-                    <HStack>
-                      <Select
-                        disabled={ownerEmail === participant.email || !meetingId}
-                        width="10em"
-                        value={participant.role}
-                        onChange={(e) => {
+            participants.map((participant, index) => (
+              <React.Fragment key={participant.email}>
+                {index > 0 && <Divider width="100%" m="0.5em 0" />}
+                <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
+                  <Text>{participant.email}</Text>
+                  <HStack>
+                    <Select
+                      disabled={ownerEmail === participant.email || !meetingId}
+                      width="10em"
+                      value={participant.role}
+                      onChange={(e) => {
+                        if (!meetingId) return;
+                        addParticipants({
+                          variables: {
+                            meetingId,
+                            participants: [
+                              {
+                                email: participant.email,
+                                role: e.target.value as Role,
+                                isVotingEligible: true,
+                              },
+                            ],
+                          },
+                        });
+                      }}
+                      style={{ border: 'none' }}
+                    >
+                      <option value={Role.Admin}>Administrator</option>
+                      <option value={Role.Counter}>Teller</option>
+                      <option value={Role.Participant}>Deltaker</option>
+                    </Select>
+                    <Tooltip label="Fjern deltager">
+                      <CloseButton
+                        onClick={() => {
                           if (!meetingId) return;
-                          addParticipants({
-                            variables: {
-                              meetingId,
-                              participants: [
-                                {
-                                  email: participant.email,
-                                  role: e.target.value as Role,
-                                  isVotingEligible: true,
-                                },
-                              ],
-                            },
-                          });
+                          deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
                         }}
-                        style={{ border: 'none' }}
-                      >
-                        <option value={Role.Admin}>Administrator</option>
-                        <option value={Role.Counter}>Teller</option>
-                        <option value={Role.Participant}>Deltaker</option>
-                      </Select>
-                      <Tooltip label="Fjern deltager">
-                        <CloseButton
-                          onClick={() => {
-                            if (!meetingId) return;
-                            deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
-                          }}
-                          disabled={ownerEmail === participant.email || !meetingId}
-                          background="transparent"
-                          _hover={{ background: 'transparent' }}
-                          isActive={false}
-                        ></CloseButton>
-                      </Tooltip>
-                    </HStack>
+                        disabled={ownerEmail === participant.email || !meetingId}
+                        background="transparent"
+                        _hover={{ background: 'transparent' }}
+                        isActive={false}
+                      ></CloseButton>
+                    </Tooltip>
                   </HStack>
-                </React.Fragment>
-              ))
+                </HStack>
+              </React.Fragment>
+            ))
           ) : (
             <Text>Du har ikke lagt til noen deltakere</Text>
           )}

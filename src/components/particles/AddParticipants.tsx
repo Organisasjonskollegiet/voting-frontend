@@ -31,6 +31,7 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
 
   useEffect(() => {
     if (data?.participants) {
+      console.log(data.participants);
       setParticipants(data.participants as ParticipantOrInvite[]);
     }
   }, [data]);
@@ -58,6 +59,8 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
   };
 
   if (!isActive) return <></>;
+
+  console.log();
 
   return (
     <>
