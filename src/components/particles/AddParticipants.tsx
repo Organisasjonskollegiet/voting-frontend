@@ -31,7 +31,6 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
 
   useEffect(() => {
     if (data?.participants) {
-      console.log(data.participants);
       setParticipants(data.participants as ParticipantOrInvite[]);
     }
   }, [data]);
@@ -60,13 +59,11 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
 
   if (!isActive) return <></>;
 
-  console.log();
-
   return (
     <>
       <VStack spacing="5" align="left">
         <Heading sx={h1Style} as="h1">
-          Inviter deltagere
+          Administrer deltagere
         </Heading>
         <Text fontSize="20px">Her kan du invitere deltagere og gi redigeringstilgang</Text>
       </VStack>
