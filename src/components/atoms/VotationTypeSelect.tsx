@@ -11,7 +11,7 @@ interface IProps {
 
 const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationFromSelect }) => {
   const getOptionValue = (votation: Votation) => {
-    switch (votation.majorityType) {
+    switch (votation.type) {
       case 'SIMPLE':
         return 'SIMPLE';
       case 'QUALIFIED':

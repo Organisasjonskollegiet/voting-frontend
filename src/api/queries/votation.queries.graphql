@@ -12,9 +12,8 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     }
     status
     blankVotes
-    severalVotes
     hiddenVotes
-    majorityType
+    type
     majorityThreshold
     meetingId
   }
@@ -41,8 +40,7 @@ query VotationsByMeetingId($meetingId: String!) {
       description
       blankVotes
       hiddenVotes
-      severalVotes
-      majorityType
+      type
       majorityThreshold
       index
       alternatives {

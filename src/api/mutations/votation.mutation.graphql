@@ -8,8 +8,7 @@ mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]
     blankVotes
     status
     hiddenVotes
-    severalVotes
-    majorityType
+    type
     majorityThreshold
     alternatives {
       id
@@ -26,8 +25,7 @@ mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
     blankVotes
     index
     hiddenVotes
-    severalVotes
-    majorityType
+    type
     majorityThreshold
     status
     alternatives {

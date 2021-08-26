@@ -4,7 +4,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Box, Button, Center, Heading, HStack, useToast, VStack, Text } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
-  MajorityType,
+  VotationType,
   Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
@@ -46,8 +46,7 @@ const getEmptyVotation = (id?: string, index?: number) => {
     blankVotes: false,
     status: VotationStatus.Upcoming,
     hiddenVotes: true,
-    severalVotes: false,
-    majorityType: 'SIMPLE' as MajorityType,
+    type: 'SIMPLE' as VotationType,
     majorityThreshold: 50,
     existsInDb: false,
     isEdited: false,
@@ -297,8 +296,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
-        severalVotes: votation.severalVotes,
-        majorityType: votation.majorityType,
+        type: votation.type,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => {
@@ -321,8 +319,7 @@ const AddMeetingVotationList: React.FC<VotationListProps> = ({
         index: votation.index,
         blankVotes: votation.blankVotes,
         hiddenVotes: votation.hiddenVotes,
-        severalVotes: votation.severalVotes,
-        majorityType: votation.majorityType,
+        type: votation.type,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
           .map((alternative) => alternative.text)
