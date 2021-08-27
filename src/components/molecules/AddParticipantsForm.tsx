@@ -19,6 +19,7 @@ import {
   CloseButton,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Switch,
 } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
@@ -184,7 +185,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
 
   const handleChangeSort = (value: string) => {
-    console.log('Satt alfabetisk sortering til: ' + value);
     setSortAlphabetically(value === 'true');
   };
 
@@ -192,6 +192,14 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
     setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
   }, [participants, sortAlphabetically]);
+
+  const [searchInputValue, setSearchInputValue] = useState<string>('');
+
+  const [filteredParticipants, setFilteredParticipants] = useState<ParticipantOrInvite[]>(participants);
+
+  useEffect(() => {
+    setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
+  }, [searchInputValue, participantsCopy, sortAlphabetically]);
 
   return (
     <>
@@ -242,9 +250,18 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <FormControl>
           <FormLabel>Administrer deltagere</FormLabel>
           <HStack justifyContent="space-between" spacing="1em">
-            <InputGroup boxShadow={boxShadow} w="60%">
+            <InputGroup boxShadow={boxShadow} w="60%" bg="white">
               <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
-              <Input bg="white" placeholder="Søk etter deltager"></Input>
+              <Input
+                placeholder="Søk etter deltager"
+                value={searchInputValue}
+                onChange={(e) => setSearchInputValue(e.target.value)}
+              ></Input>
+              {searchInputValue && (
+                <InputRightElement>
+                  <CloseButton onClick={() => setSearchInputValue('')}></CloseButton>
+                </InputRightElement>
+              )}
             </InputGroup>
             <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
               <option value="true">A - Å</option>
@@ -253,51 +270,54 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           </HStack>
         </FormControl>
         <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
-          {participantsCopy.map((participant, index) => (
-            <React.Fragment key={participant.email}>
-              {index > 0 && <Divider width="100%" m="0.5em 0" />}
-              <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
-                <Text>{participant.email}</Text>
-                <HStack spacing="1em">
-                  <HStack>
-                    <FormLabel mb="0">
-                      <Text>Har stemmerett</Text>
-                    </FormLabel>
-                    <Switch
-                      onChange={() => changeParticipantsRights(participant, undefined, true)}
-                      aria-label="Har stemmerett"
-                      defaultChecked={participant.isVotingEligible}
-                    ></Switch>
-                  </HStack>
-                  <Select
-                    disabled={ownerEmail === participant.email || !meetingId}
-                    width="10em"
-                    value={participant.role}
-                    onChange={(e) => {
-                      changeParticipantsRights(participant, e.target.value as Role);
-                    }}
-                    style={{ border: 'none' }}
-                  >
-                    <option value={Role.Admin}>Administrator</option>
-                    <option value={Role.Counter}>Teller</option>
-                    <option value={Role.Participant}>Deltaker</option>
-                  </Select>
-                  <Tooltip label="Fjern deltager">
-                    <CloseButton
-                      onClick={() => {
-                        if (!meetingId) return;
-                        deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
-                      }}
+          {filteredParticipants.length === 0 ? (
+            <Text p="1em 2em">Kunne ikke finne noen deltagere som matchet søket</Text>
+          ) : (
+            filteredParticipants.map((participant, index) => (
+              <React.Fragment key={participant.email}>
+                {index > 0 && <Divider width="100%" m="0.5em 0" />}
+                <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
+                  <Text>{participant.email}</Text>
+                  <HStack spacing="1em">
+                    <HStack>
+                      <FormLabel mb="0">
+                        <Text>Har stemmerett</Text>
+                      </FormLabel>
+                      <Switch
+                        onChange={() => changeParticipantsRights(participant, undefined, true)}
+                        aria-label="Har stemmerett"
+                        defaultChecked={participant.isVotingEligible}
+                      ></Switch>
+                    </HStack>
+                    <Select
                       disabled={ownerEmail === participant.email || !meetingId}
-                      background="transparent"
-                      _hover={{ background: 'transparent' }}
-                      // isActive={false}
-                    ></CloseButton>
-                  </Tooltip>
+                      width="10em"
+                      value={participant.role}
+                      onChange={(e) => {
+                        changeParticipantsRights(participant, e.target.value as Role);
+                      }}
+                      style={{ border: 'none' }}
+                    >
+                      <option value={Role.Admin}>Administrator</option>
+                      <option value={Role.Counter}>Teller</option>
+                      <option value={Role.Participant}>Deltaker</option>
+                    </Select>
+                    <Tooltip label="Fjern deltager">
+                      <CloseButton
+                        onClick={() => {
+                          if (!meetingId) return;
+                          deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
+                        }}
+                        disabled={ownerEmail === participant.email || !meetingId}
+                        background="transparent"
+                        _hover={{ background: 'transparent' }}
+                      ></CloseButton>
+                    </Tooltip>
+                  </HStack>
                 </HStack>
-              </HStack>
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            ))
+          )}
         </VStack>
       </VStack>
     </>
