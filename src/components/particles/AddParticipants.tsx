@@ -12,9 +12,10 @@ interface IProps {
   handleNavigation?: (nextIndex: number) => void;
   isActive?: boolean;
   ownerEmail: string | undefined;
+  modalView?: boolean;
 }
 
-const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail }) => {
+const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail, modalView }) => {
   const history = useHistory();
 
   const [getParticipants, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
@@ -58,14 +59,19 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
   };
 
   if (!isActive) return <></>;
+  console.log(modalView);
 
   return (
     <>
       <VStack spacing="5" align="left">
-        <Heading sx={h1Style} as="h1">
-          Administrer deltagere
-        </Heading>
-        <Text fontSize="20px">Her kan du invitere deltagere og gi redigeringstilgang</Text>
+        {!modalView && (
+          <Heading sx={h1Style} as="h1">
+            Administrer deltagere
+          </Heading>
+        )}
+        <Text fontSize="18px" mb={modalView ? '1.5em' : 0}>
+          Her kan du invitere deltagere og gi redigeringstilgang
+        </Text>
       </VStack>
       <AddParticipantsForm
         meetingId={meetingId}

@@ -248,7 +248,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         </FormControl>
         <Divider m="3em 0" />
         <FormControl>
-          <FormLabel>Administrer deltagere</FormLabel>
+          <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
           <HStack justifyContent="space-between" spacing="1em">
             <InputGroup boxShadow={boxShadow} w="60%" bg="white">
               <InputLeftElement pointerEvents="none" children={<SearchIcon />} />

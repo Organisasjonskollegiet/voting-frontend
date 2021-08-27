@@ -10,7 +10,7 @@ import {
   Votation,
 } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
-import { darkblue } from '../particles/theme';
+import { darkblue, offwhite } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
@@ -90,7 +90,7 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg="#F9F9F9" w="100vw" p="10vh 0" color="gray.500" style={styles}>
+      <Box bg={offwhite} w="100vw" h="100%" p="10vh 0" color="gray.500" style={styles}>
         <VStack w="90vw" maxWidth="700px" alignItems="left" spacing="3em">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">

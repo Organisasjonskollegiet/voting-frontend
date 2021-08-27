@@ -14,6 +14,7 @@ import React from 'react';
 import participantIcon from '../../static/participantIcon.svg';
 import ReturnToPreviousButton from '../atoms/ReturnToPreviousButton';
 import AddParticipants from '../particles/AddParticipants';
+import { darkblue, offwhite } from '../particles/theme';
 
 interface ParticipantModalProps {
   meetingId: string;
@@ -32,11 +33,11 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="3xl">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={offwhite} textColor={darkblue} p="2em">
           <ModalHeader>Administrer deltagere</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <AddParticipants meetingId={meetingId} ownerEmail={ownerEmail} isActive={true} />
+            <AddParticipants meetingId={meetingId} ownerEmail={ownerEmail} isActive={true} modalView={true} />
           </ModalBody>
 
           <ModalFooter justifyContent="flex-start">
