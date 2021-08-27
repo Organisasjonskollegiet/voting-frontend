@@ -5,6 +5,7 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../__generated__/graphql-types';
+import { darkblue, lightblue } from '../particles/theme';
 import {
   VStack,
   FormControl,
@@ -269,7 +270,27 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             </Select>
           </HStack>
         </FormControl>
-        <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
+        <VStack
+          width="100%"
+          backgroundColor="white"
+          borderRadius="4px"
+          boxShadow={boxShadow}
+          spacing="0"
+          overflowY="scroll"
+          maxH="15em"
+          pr="3px"
+          sx={{
+            '&::-webkit-scrollbar': {
+              width: '8px',
+              borderRadius: '8px',
+              backgroundColor: lightblue,
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: darkblue,
+              borderRadius: '8px',
+            },
+          }}
+        >
           {filteredParticipants.length === 0 ? (
             <Text p="1em 2em">Kunne ikke finne noen deltagere som matchet søket</Text>
           ) : (
