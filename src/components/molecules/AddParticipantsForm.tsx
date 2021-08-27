@@ -277,11 +277,13 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               <React.Fragment key={participant.email}>
                 {index > 0 && <Divider width="100%" m="0.5em 0" />}
                 <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
-                  <Text>{participant.email}</Text>
+                  <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+                    {participant.email}
+                  </Text>
                   <HStack spacing="1em">
                     <HStack>
                       <FormLabel mb="0">
-                        <Text>Har stemmerett</Text>
+                        <Text whiteSpace="nowrap">Har stemmerett</Text>
                       </FormLabel>
                       <Switch
                         onChange={() => changeParticipantsRights(participant, undefined, true)}
@@ -293,9 +295,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
                       disabled={ownerEmail === participant.email || !meetingId}
                       width="10em"
                       value={participant.role}
-                      onChange={(e) => {
-                        changeParticipantsRights(participant, e.target.value as Role);
-                      }}
+                      onChange={(e) => changeParticipantsRights(participant, e.target.value as Role)}
                       style={{ border: 'none' }}
                     >
                       <option value={Role.Admin}>Administrator</option>
