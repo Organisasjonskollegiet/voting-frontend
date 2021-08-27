@@ -199,7 +199,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
-  }, [searchInputValue, participantsCopy, sortAlphabetically]);
+  }, [searchInputValue, participantsCopy]);
 
   return (
     <>
