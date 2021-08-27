@@ -159,6 +159,19 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setReadingFiles(false);
   };
 
+  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
+  const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
+
+  const handleChangeSort = (value: string) => {
+    console.log('Satt alfabetisk sortering til: ' + value);
+    setSortAlphabetically(value === 'true');
+  };
+
+  useEffect(() => {
+    const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
+    setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
+  }, [participants, participantsCopy, sortAlphabetically]);
+
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
@@ -212,14 +225,14 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
               <Input bg="white" placeholder="Søk etter deltager"></Input>
             </InputGroup>
-            <Select onChange={(e) => console.log('Do something')} bg="white" boxShadow={boxShadow} w="200px">
+            <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
               <option value="true">A-Å</option>
               <option value="false">Å-A</option>
             </Select>
           </HStack>
         </FormControl>
         <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
-          {participants.map((participant, index) => (
+          {participantsCopy.map((participant, index) => (
             <React.Fragment key={participant.email}>
               {index > 0 && <Divider width="100%" m="0.5em 0" />}
               <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
