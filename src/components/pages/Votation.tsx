@@ -78,6 +78,8 @@ const Votation: React.FC = () => {
   const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
+  const [hideVote, setHideVote] = useState<boolean>(true);
+
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winner) {
       const result = winnerResult.getWinnerOfVotation;
@@ -214,7 +216,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
-      <VStack sx={centerContainer} maxWidth="700px" alignItems="left" spacing="3em">
+      <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
             Votering {data.votationById.index + 1}
@@ -240,6 +242,7 @@ const Votation: React.FC = () => {
             isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
+            hideVote={hideVote}
           />
         )}
         {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
@@ -261,7 +264,12 @@ const Votation: React.FC = () => {
             (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
               <VStack>
                 <Divider />
-                <VotationController votationId={votationId} status={status} />
+                <VotationController
+                  hideVote={hideVote}
+                  toggleHideVote={() => setHideVote(!hideVote)}
+                  votationId={votationId}
+                  status={status}
+                />
               </VStack>
             )
         }

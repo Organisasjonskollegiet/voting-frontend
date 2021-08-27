@@ -75,7 +75,7 @@ const AddVotationForm: React.FC<IProps> = ({
         {(provided) => (
           <HStack
             w="90vw"
-            maxWidth="700px"
+            maxWidth="800px"
             ref={provided.innerRef}
             {...provided.draggableProps}
             justify="space-between"
@@ -108,7 +108,7 @@ const AddVotationForm: React.FC<IProps> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           width="90vw"
-          maxWidth="700px"
+          maxWidth="800px"
           spacing="5"
         >
           <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">

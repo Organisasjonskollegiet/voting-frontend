@@ -1,22 +1,25 @@
 import React from 'react';
-import { Button, HStack } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
+import WrapStack from './WrapStack';
 
 interface VotationControllerProps {
   votationId: string;
   status: VotationStatus;
+  hideVote: boolean;
+  toggleHideVote: () => void;
 }
 
-const VotationController: React.FC<VotationControllerProps> = ({ votationId, status }) => {
+const VotationController: React.FC<VotationControllerProps> = ({ votationId, status, hideVote, toggleHideVote }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
 
   const getText = () => {
     switch (status) {
       case VotationStatus.Open:
-        return 'Steng avstemning';
+        return <Text>Steng avstemning</Text>;
       case VotationStatus.CheckingResult:
-        return 'Publiser resultater';
+        return <Text>Publiser resultater</Text>;
     }
   };
 
@@ -32,8 +35,20 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
   };
 
   return (
-    <HStack w="100%" justifyContent="flex-end">
+    <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
+      {status === VotationStatus.Open ? (
+        <FormControl display="flex" width="fit-content">
+          <Switch id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
+          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
+            Skjul min stemme
+          </FormLabel>
+        </FormControl>
+      ) : (
+        <Box></Box>
+      )}
       <Button
+        w="fit-content"
+        _hover={{ bg: 'transparent' }}
         onClick={() =>
           updateVotationStatus({
             variables: { id: votationId, status: getNextStatus() },
@@ -46,7 +61,7 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
       >
         {getText()}
       </Button>
-    </HStack>
+    </WrapStack>
   );
 };
 

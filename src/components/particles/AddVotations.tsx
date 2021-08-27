@@ -35,7 +35,7 @@ const AddVotations: React.FC<IProps> = ({
 
   return (
     <>
-      <VStack spacing="5" w="90vw" maxWidth="700px" align="left">
+      <VStack spacing="5" w="90vw" maxWidth="800px" align="left">
         <Heading sx={h1Style} as="h1">
           Legg til voteringer
         </Heading>

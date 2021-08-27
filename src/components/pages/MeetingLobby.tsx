@@ -90,8 +90,8 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" h="100%" p="10vh 0" color="gray.500" style={styles}>
-        <VStack w="90vw" maxWidth="700px" alignItems="left" spacing="3em">
+      <Box bg={offwhite} w="100vw" p="10vh 0" color="gray.500" style={styles}>
+        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
               {votationData?.meetingById.title}

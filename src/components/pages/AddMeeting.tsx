@@ -165,7 +165,7 @@ const AddMeeting: React.FC = () => {
       {(createMeetingResult.loading || updateMeetingResult.loading) && (
         <Loading asOverlay={true} text="Oppretter møte" />
       )}
-      <VStack spacing="10" align="left" maxWidth="700px" sx={centerContainer}>
+      <VStack spacing="10" align="left" maxWidth="800px" sx={centerContainer}>
         <AddMeetingInformation
           isActive={activeTab === 0}
           meeting={meeting}
