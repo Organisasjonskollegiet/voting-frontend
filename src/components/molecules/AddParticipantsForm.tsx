@@ -19,6 +19,7 @@ import {
   CloseButton,
   InputGroup,
   InputLeftElement,
+  Switch,
 } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../particles/formStyles';
 import UploadIcon from '../../static/uploadIcon.svg';
@@ -159,7 +160,11 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setReadingFiles(false);
   };
 
-  const handleChangeRole = (participant: ParticipantOrInvite, newRole: Role) => {
+  const changeParticipantsRights = (
+    participant: ParticipantOrInvite,
+    newRole?: Role,
+    toggleVotingEligibility = false
+  ) => {
     if (!meetingId) return;
     addParticipants({
       variables: {
@@ -167,8 +172,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         participants: [
           {
             email: participant.email,
-            role: newRole,
-            isVotingEligible: participant.isVotingEligible,
+            role: newRole ?? participant.role,
+            isVotingEligible: toggleVotingEligibility ? !participant.isVotingEligible : participant.isVotingEligible,
           },
         ],
       },
@@ -253,13 +258,23 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               {index > 0 && <Divider width="100%" m="0.5em 0" />}
               <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
                 <Text>{participant.email}</Text>
-                <HStack>
+                <HStack spacing="1em">
+                  <HStack>
+                    <FormLabel mb="0">
+                      <Text>Har stemmerett</Text>
+                    </FormLabel>
+                    <Switch
+                      onChange={() => changeParticipantsRights(participant, undefined, true)}
+                      aria-label="Har stemmerett"
+                      defaultChecked={participant.isVotingEligible}
+                    ></Switch>
+                  </HStack>
                   <Select
                     disabled={ownerEmail === participant.email || !meetingId}
                     width="10em"
                     value={participant.role}
                     onChange={(e) => {
-                      handleChangeRole(participant, e.target.value as Role);
+                      changeParticipantsRights(participant, e.target.value as Role);
                     }}
                     style={{ border: 'none' }}
                   >
