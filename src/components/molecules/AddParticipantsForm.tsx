@@ -159,6 +159,22 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setReadingFiles(false);
   };
 
+  const handleChangeRole = (participant: ParticipantOrInvite, newRole: Role) => {
+    if (!meetingId) return;
+    addParticipants({
+      variables: {
+        meetingId,
+        participants: [
+          {
+            email: participant.email,
+            role: newRole,
+            isVotingEligible: participant.isVotingEligible,
+          },
+        ],
+      },
+    });
+  };
+
   const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
   const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
 
@@ -170,7 +186,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   useEffect(() => {
     const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
     setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
-  }, [participants, participantsCopy, sortAlphabetically]);
+  }, [participants, sortAlphabetically]);
 
   return (
     <>
@@ -226,8 +242,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               <Input bg="white" placeholder="Søk etter deltager"></Input>
             </InputGroup>
             <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
-              <option value="true">A-Å</option>
-              <option value="false">Å-A</option>
+              <option value="true">A - Å</option>
+              <option value="false">Å - A</option>
             </Select>
           </HStack>
         </FormControl>
@@ -243,19 +259,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
                     width="10em"
                     value={participant.role}
                     onChange={(e) => {
-                      if (!meetingId) return;
-                      addParticipants({
-                        variables: {
-                          meetingId,
-                          participants: [
-                            {
-                              email: participant.email,
-                              role: e.target.value as Role,
-                              isVotingEligible: true,
-                            },
-                          ],
-                        },
-                      });
+                      handleChangeRole(participant, e.target.value as Role);
                     }}
                     style={{ border: 'none' }}
                   >
