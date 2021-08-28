@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import Alternative from '../atoms/alternative/Alternative';
 import { ButtonGroup, CSSObject } from '@chakra-ui/react';
+import Alternative from '../../atoms/alternative/Alternative';
 
 interface AlternativeChoice {
   id: string;
@@ -35,7 +35,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
       setSelectedAlternativeId(newId);
       handleSelect(newId);
     },
-    [setSelectedAlternativeId, handleSelect]
+    [setSelectedAlternativeId, handleSelect, selectedAlternativeId]
   );
 
   const handleUpdateSelected = (id: string) => {
