@@ -5,7 +5,6 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../../__generated__/graphql-types';
-import { darkblue, lightblue } from '../../particles/theme';
 import {
   VStack,
   FormControl,
@@ -16,7 +15,6 @@ import {
   HStack,
   Select,
   useToast,
-  Tooltip,
   CloseButton,
   InputGroup,
   InputLeftElement,
@@ -28,9 +26,7 @@ import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
 import { boxShadow } from '../../particles/formStyles';
 import { SearchIcon } from '@chakra-ui/icons';
-import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
 import SelectRole from '../atoms/SelectRole';
-import DeleteParticipant from '../atoms/DeleteParticipant';
 import ParticipantList from './ParticipantList';
 
 interface IProps {
