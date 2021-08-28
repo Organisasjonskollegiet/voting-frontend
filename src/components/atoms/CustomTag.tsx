@@ -7,16 +7,14 @@ interface CustomProps {
   text: string;
 }
 
-const Custom: React.FC<CustomProps> = ({ textColor, bgColor, text }) => {
+const CustomTag: React.FC<CustomProps> = ({ textColor, bgColor, text }) => {
   return (
-    <Tag bgColor={bgColor} fontWeight="bold" pl="1em" pr="1em">
-      <TagLabel variant="subtle" pt="2px">
-        <Text fontWeight="bold" textColor={textColor || 'white'} fontSize="12px">
-          {text}
-        </Text>
+    <Tag bgColor={bgColor} fontWeight="bold" p="0 1em">
+      <TagLabel variant="subtle" pt="2px" fontWeight="bold" textColor={textColor || 'white'} fontSize="12px">
+        {text}
       </TagLabel>
     </Tag>
   );
 };
 
-export default Custom;
+export default CustomTag;

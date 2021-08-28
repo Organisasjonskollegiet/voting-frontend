@@ -308,17 +308,15 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
     const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-    setVotations([
-      ...votations,
-      {
-        ...votation,
-        id: newId,
-        existsInDb: false,
-        index: nextVotationIndex,
-        status: VotationStatus.Upcoming,
-        alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
-      },
-    ]);
+    const newDuplicatedVotation = {
+      ...votation,
+      id: newId,
+      existsInDb: false,
+      index: nextVotationIndex,
+      status: VotationStatus.Upcoming,
+      alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
+    };
+    setVotations([...votations, newDuplicatedVotation]);
     setActiveVotationId(newId);
   };
 
