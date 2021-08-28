@@ -10,7 +10,7 @@ export const offwhite = '#F9F9F9';
 const theme = extendTheme({
   colors: {
     blue: {
-      200: '#EDF2F7'
+      200: '#EDF2F7',
       300: '#8d99ab',
       400: '#718096',
     },
