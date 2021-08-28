@@ -19,9 +19,9 @@ interface DeleteAlertDialogProps {
 }
 
 export enum DeleteAlternative {
-  MEETING = 'meeting',
-  VOTATION = 'votation',
-  PARTICIPANT = 'participant',
+  MEETING = 'møte',
+  VOTATION = 'votering',
+  PARTICIPANT = 'deltager',
 }
 
 const WarningBody = new Map<DeleteAlternative, string>([
