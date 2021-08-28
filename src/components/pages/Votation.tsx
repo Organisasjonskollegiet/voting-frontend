@@ -12,6 +12,7 @@ import {
   useGetVoteCountQuery,
   useGetWinnerOfVotationQuery,
   VotationType,
+  useCastBlankVoteMutation,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -158,12 +159,18 @@ const Votation: React.FC = () => {
 
   //Register the vote
   const [castVote] = useCastVoteMutation();
+  const [castBlankVote, result] = useCastBlankVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
       setUserHasVoted(true);
-      castVote({ variables: { alternativeId: selectedAlternativeId } });
+      if (selectedAlternativeId === 'BLANK') {
+        castBlankVote({ variables: { votationId: votationId } });
+      } else {
+        castVote({ variables: { alternativeId: selectedAlternativeId } });
+      }
     }
   };
+  console.log(result.data);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);

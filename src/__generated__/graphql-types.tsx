@@ -102,6 +102,8 @@ export type Mutation = {
   updateAlternative?: Maybe<Alternative>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castVote?: Maybe<Vote>;
+  /** Returns the current number of blank votes */
+  castBlankVote?: Maybe<Scalars['Int']>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
@@ -152,6 +154,11 @@ export type MutationDeleteAlternativesArgs = {
 
 export type MutationCastVoteArgs = {
   alternativeId: Scalars['String'];
+};
+
+
+export type MutationCastBlankVoteArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -556,6 +563,16 @@ export type CastVoteMutation = (
       & Pick<Alternative, 'text'>
     )> }
   )> }
+);
+
+export type CastBlankVoteMutationVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type CastBlankVoteMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'castBlankVote'>
 );
 
 export type UpdateVotationStatusMutationVariables = Exact<{
@@ -1163,6 +1180,37 @@ export function useCastVoteMutation(baseOptions?: Apollo.MutationHookOptions<Cas
 export type CastVoteMutationHookResult = ReturnType<typeof useCastVoteMutation>;
 export type CastVoteMutationResult = Apollo.MutationResult<CastVoteMutation>;
 export type CastVoteMutationOptions = Apollo.BaseMutationOptions<CastVoteMutation, CastVoteMutationVariables>;
+export const CastBlankVoteDocument = gql`
+    mutation CastBlankVote($votationId: String!) {
+  castBlankVote(votationId: $votationId)
+}
+    `;
+export type CastBlankVoteMutationFn = Apollo.MutationFunction<CastBlankVoteMutation, CastBlankVoteMutationVariables>;
+
+/**
+ * __useCastBlankVoteMutation__
+ *
+ * To run a mutation, you first call `useCastBlankVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCastBlankVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [castBlankVoteMutation, { data, loading, error }] = useCastBlankVoteMutation({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useCastBlankVoteMutation(baseOptions?: Apollo.MutationHookOptions<CastBlankVoteMutation, CastBlankVoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CastBlankVoteMutation, CastBlankVoteMutationVariables>(CastBlankVoteDocument, options);
+      }
+export type CastBlankVoteMutationHookResult = ReturnType<typeof useCastBlankVoteMutation>;
+export type CastBlankVoteMutationResult = Apollo.MutationResult<CastBlankVoteMutation>;
+export type CastBlankVoteMutationOptions = Apollo.BaseMutationOptions<CastBlankVoteMutation, CastBlankVoteMutationVariables>;
 export const UpdateVotationStatusDocument = gql`
     mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
   updateVotationStatus(id: $id, status: $status) {

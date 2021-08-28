@@ -41,11 +41,9 @@ const CastVote: React.FC<CastVoteProps> = ({
           Alternativer
         </Heading>
         <AlternativeList
-          isStv={isStv}
           alternatives={alternatives}
           handleSelect={handleSelect}
           blankVotes={blankVotes}
-          updateAlternatives={updateAlternatives}
           userHasVoted={userHasVoted}
           hideVote={hideVote}
         />

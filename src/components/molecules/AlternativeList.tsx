@@ -1,25 +1,38 @@
 import React, { useCallback, useState } from 'react';
 import Alternative from '../atoms/alternative/Alternative';
-import { ButtonGroup, ComponentStyleConfig, useStyleConfig, VStack } from '@chakra-ui/react';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { AlternativeWithIndex } from '../pages/Votation';
+import { ButtonGroup, ComponentStyleConfig } from '@chakra-ui/react';
+
+interface AlternativeChoice {
+  id: string;
+  text: string;
+}
 
 export interface AlternativeListProps {
-  alternatives: AlternativeWithIndex[];
+  alternatives: AlternativeChoice[];
   blankVotes: boolean;
   handleSelect: (id: string | null) => void;
   userHasVoted: boolean;
   hideVote: boolean;
 }
 
-const AlternativeList: React.FC<AlternativeListProps> = ({ alternatives, handleSelect, userHasVoted, hideVote }) => {
+const blankAlternative: AlternativeChoice = {
+  id: 'BLANK',
+  text: 'Stem Blankt',
+};
+
+const AlternativeList: React.FC<AlternativeListProps> = ({
+  alternatives,
+  blankVotes,
+  handleSelect,
+  userHasVoted,
+  hideVote,
+}) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   const updateSelected = useCallback((id: string) => {
     const newId = selectedAlternativeId === id ? null : id;
     setSelectedAlternativeId(newId);
     handleSelect(newId);
-    console.log(updateSelected);
   }, []);
 
   const handleUpdateSelected = (id: string) => {
@@ -28,12 +41,11 @@ const AlternativeList: React.FC<AlternativeListProps> = ({ alternatives, handleS
     }
   };
 
-  console.log(hideVote);
   return (
     <ButtonGroup sx={styles} spacing={0} isDisabled={userHasVoted}>
-      {alternatives.map((alternative) => (
+      {alternatives.concat(blankVotes ? blankAlternative : []).map((alternative, i) => (
         <Alternative
-          key={`${alternative.votationId}_${alternative.id}`}
+          key={`${alternative.id}_${i}`}
           handleClick={() => handleUpdateSelected(alternative.id)}
           selected={(!userHasVoted || !hideVote) && selectedAlternativeId === alternative.id}
         >
