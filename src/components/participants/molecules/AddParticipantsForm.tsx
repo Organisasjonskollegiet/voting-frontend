@@ -65,7 +65,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         toast({
           id: toastId,
           title: `Ugyldige epostadresser`,
-          description: 'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
+          description: 'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
           status: 'warning',
           duration: 9000,
           isClosable: true,
@@ -92,6 +92,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   }, [deleteParticipantsResult.data]);
 
   const getRole = (role: string) => {
+    if (!role) return Role.Participant;
     switch (role.toLowerCase().trim()) {
       case 'teller':
         return Role.Counter;
@@ -158,20 +159,17 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       const content = evt.target.result as string;
       if (!content) return;
       const lines = content.split('\n').filter((line: string) => line.length > 0);
-      const firstRowArray = lines[0].split(',').map((content: string) => content.trim());
-      const indexOfEmail = firstRowArray.indexOf('email');
-      const indexOfRole = firstRowArray.indexOf('rolle');
 
       for (let i = 0; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
-        const email = lineList[indexOfEmail];
-        const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
+        const email = lineList[0].toLowerCase().trim();
+        const role = lineList.length > 1 ? Role.Participant : getRole(lineList[1]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
 
         const isEmailValid = checkIfEmailIsValid(email);
 
         if (!isEmailValid) {
-          invalidEmailsLineNumbers.push(String(i));
+          invalidEmailsLineNumbers.push(String(i + 1));
         } else if (!emailExists) {
           newParticipants.push({
             email,
