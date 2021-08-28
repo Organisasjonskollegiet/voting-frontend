@@ -6,12 +6,21 @@ import { boxShadow } from '../../particles/formStyles';
 
 interface InviteParticipantProps {
   selectRole: (role: Role) => void;
-  handleOnEnter: (email: string) => void;
+  inviteParticipant: (email: string) => boolean;
   participantRole: Role;
 }
 
-const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, handleOnEnter, participantRole }) => {
+const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, inviteParticipant, participantRole }) => {
   const [email, setEmail] = useState<string>('');
+
+  const handleOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.code === 'Enter') {
+      if (inviteParticipant(email)) {
+        setEmail('');
+      }
+    }
+  };
+
   return (
     <HStack w="100%" borderRadius="4px" bg="#fff" zIndex="10" sx={{ boxShadow }}>
       <Input
@@ -21,9 +30,7 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, handl
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={(event) => {
-          if (event.code === 'Enter') handleOnEnter(email);
-        }}
+        onKeyDown={handleOnEnter}
       />
       <SelectRole onChange={(role: Role) => selectRole(role)} value={participantRole} />
     </HStack>

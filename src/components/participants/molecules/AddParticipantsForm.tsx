@@ -87,23 +87,38 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   };
 
   const addParticipantByEmail = (email: string) => {
-    //TODO: validate email
-    if (!email || email.trim().length === 0) return;
-    const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
-    if (!emailAlreadyAdded && meetingId) {
-      addParticipants({
-        variables: {
-          meetingId,
-          participants: [
-            {
-              email,
-              role: inputRole,
-              isVotingEligible: true,
-            },
-          ],
-        },
-      });
+    const emailRegExp = new RegExp(
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+    if (emailRegExp.test(email)) {
+      const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
+      if (!emailAlreadyAdded && meetingId) {
+        addParticipants({
+          variables: {
+            meetingId,
+            participants: [
+              {
+                email,
+                role: inputRole,
+                isVotingEligible: true,
+              },
+            ],
+          },
+        });
+      }
+    } else {
+      const toastId = 'invalidEmail';
+      if (!toast.isActive(toastId))
+        toast({
+          id: toastId,
+          title: `Ugyldig epostadresse`,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      return false;
     }
+    return true;
   };
 
   const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +218,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
           <InviteParticipantByFileUpload handleFileUpload={onFileUpload} />
           <InviteParticipant
-            handleOnEnter={addParticipantByEmail}
+            inviteParticipant={addParticipantByEmail}
             selectRole={(role: Role) => setInputRole(role)}
             participantRole={inputRole}
           />
