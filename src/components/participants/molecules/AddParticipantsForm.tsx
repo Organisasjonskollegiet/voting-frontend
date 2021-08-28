@@ -23,9 +23,9 @@ interface IProps {
   ownerEmail: string | undefined;
 }
 
-enum AscOrDesc {
-  Asc = 'ASC',
-  Desc = 'DESC',
+enum SortingType {
+  ASC = 'ASC',
+  DESC = 'DESC',
 }
 
 const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
@@ -171,10 +171,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     });
   };
 
-  const [ascVsDesc, setAscVsDesc] = useState<AscOrDesc>();
+  const [ascVsDesc, setAscVsDesc] = useState<SortingType>(SortingType.ASC);
 
   const sortParticipantsAlphabetically = useCallback(() => {
-    const reversed = ascVsDesc === AscOrDesc.Desc;
+    const reversed = ascVsDesc === SortingType.DESC;
     return [...participants].sort((a, b) =>
       reversed ? -a.email.localeCompare(b.email) : a.email.localeCompare(b.email)
     );
@@ -190,6 +190,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
+
+  console.log('Rerenders ');
 
   return (
     <>
@@ -207,7 +209,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             </HStack>
           </FormLabel>
           <InviteParticipant
-            onEnter={addParticipantByEmail}
+            handleOnEnter={addParticipantByEmail}
             selectRole={(role: Role) => setInputRole(role)}
             participantRole={inputRole}
           />
@@ -219,13 +221,13 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
             <Select
-              onChange={(e) => setAscVsDesc(e.target.value as AscOrDesc)}
+              onChange={(e) => setAscVsDesc(e.target.value as SortingType)}
               bg="white"
               boxShadow={boxShadow}
               w="200px"
             >
-              <option value={AscOrDesc.Asc}>A - Å</option>
-              <option value={AscOrDesc.Desc}>Å - A</option>
+              <option value={SortingType.ASC}>A - Å</option>
+              <option value={SortingType.DESC}>Å - A</option>
             </Select>
           </HStack>
 
