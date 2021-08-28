@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, TagLabel, Text } from '@chakra-ui/react';
+import { Tag, TagLabel } from '@chakra-ui/react';
 
 interface CustomProps {
   textColor?: string;
