@@ -171,13 +171,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     });
   };
 
-  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
-
   const [ascVsDesc, setAscVsDesc] = useState<AscOrDesc>();
-
-  const handleChangeSort = (value: AscOrDesc) => {
-    setAscVsDesc(value);
-  };
 
   const sortParticipantsAlphabetically = useCallback(() => {
     const reversed = ascVsDesc === AscOrDesc.Desc;
@@ -186,14 +180,13 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     );
   }, [participants, ascVsDesc]);
 
+  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(sortParticipantsAlphabetically);
   useEffect(() => {
     setParticipantsCopy(sortParticipantsAlphabetically);
   }, [participants, ascVsDesc, sortParticipantsAlphabetically]);
 
   const [searchInputValue, setSearchInputValue] = useState<string>('');
-
   const [filteredParticipants, setFilteredParticipants] = useState<ParticipantOrInvite[]>(participants);
-
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
@@ -226,7 +219,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
             <Select
-              onChange={(e) => handleChangeSort(e.target.value as AscOrDesc)}
+              onChange={(e) => setAscVsDesc(e.target.value as AscOrDesc)}
               bg="white"
               boxShadow={boxShadow}
               w="200px"
