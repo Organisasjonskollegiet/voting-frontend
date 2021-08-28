@@ -5,9 +5,8 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack, Select, useToast } from '@chakra-ui/react';
-import { inputStyle, labelStyle } from '../../particles/formStyles';
-import UploadIcon from '../../../static/uploadIcon.svg';
+import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast } from '@chakra-ui/react';
+import { labelStyle } from '../../particles/formStyles';
 import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
 import { boxShadow } from '../../particles/formStyles';
@@ -15,6 +14,7 @@ import ParticipantList from './ParticipantList';
 import SearchBar from '../atoms/SearchBar';
 import InviteParticipant from '../atoms/InviteParticipant';
 import { useCallback } from 'react';
+import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
 
 interface IProps {
   meetingId: string;
@@ -201,13 +201,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       <VStack spacing="7">
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
-          <FormLabel maxWidth="320px" w="30vw">
-            <Input disabled={!meetingId} display="none" type="file" accept="text/csv" onChange={onFileUpload} />
-            <HStack sx={inputStyle} _hover={{ cursor: 'pointer' }} padding="8px" justify="center" borderRadius="4px">
-              <img alt="upload" src={UploadIcon} />
-              <Text>Last opp deltagerliste fra CSV-fil</Text>
-            </HStack>
-          </FormLabel>
+          <InviteParticipantByFileUpload handleFileUpload={onFileUpload} />
           <InviteParticipant
             handleOnEnter={addParticipantByEmail}
             selectRole={(role: Role) => setInputRole(role)}
