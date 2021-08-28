@@ -71,8 +71,9 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
                   disabled={ownerEmail === participant.email}
                 />
                 <DeleteParticipant
-                  onClick={() => deleteParticipant(participant.email)}
+                  handleDeleteParticipant={() => deleteParticipant(participant.email)}
                   disabled={ownerEmail === participant.email}
+                  participantName={participant.email}
                 />
               </HStack>
             </HStack>

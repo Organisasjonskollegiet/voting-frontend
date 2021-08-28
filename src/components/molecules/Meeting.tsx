@@ -5,7 +5,7 @@ import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import EditIcon from '../../static/editIcon.svg';
-import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import DeleteAlertDialog, { DeleteAlternative } from '../atoms/DeleteAlertDialog';
 import { boxShadow } from '../particles/formStyles';
 import { expandAndLift, transition } from '../particles/styles';
 
@@ -118,7 +118,7 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
           handleDeleteMeeting(id);
         }}
         handleCancelDelete={() => setDialogIsOpen(false)}
-        type="meeting"
+        type={DeleteAlternative.MEETING}
       />
     </Box>
   );
