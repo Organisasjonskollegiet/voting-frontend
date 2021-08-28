@@ -32,6 +32,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
+  const [invalidEmailsInFile, setInvalidEmailsInFile] = useState<string[]>([]);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
 
@@ -55,6 +56,21 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         duration: 9000,
         isClosable: true,
       });
+    }
+
+    if (invalidEmailsInFile.length > 0) {
+      const invalidLineNumbers = invalidEmailsInFile.reduce((a, b) => a + ', ' + b);
+      const toastId = 'invalidEmails';
+      if (!toast.isActive(toastId))
+        toast({
+          id: toastId,
+          title: `Ugyldige epostadresser`,
+          description: 'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+        });
+      setInvalidEmailsInFile([]);
     }
     // eslint-disable-next-line
   }, [addParticipantsResult.data]);
@@ -86,24 +102,44 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
+  const checkIfEmailIsValid = (email: string) => {
+    const emailRegExp = new RegExp(
+      // eslint-disable-next-line no-useless-escape
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+    return emailRegExp.test(email);
+  };
+
   const addParticipantByEmail = (email: string) => {
-    //TODO: validate email
-    if (!email || email.trim().length === 0) return;
-    const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
-    if (!emailAlreadyAdded && meetingId) {
-      addParticipants({
-        variables: {
-          meetingId,
-          participants: [
-            {
-              email,
-              role: inputRole,
-              isVotingEligible: true,
-            },
-          ],
-        },
-      });
+    if (checkIfEmailIsValid(email)) {
+      const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
+      if (!emailAlreadyAdded && meetingId) {
+        addParticipants({
+          variables: {
+            meetingId,
+            participants: [
+              {
+                email,
+                role: inputRole,
+                isVotingEligible: true,
+              },
+            ],
+          },
+        });
+      }
+    } else {
+      const toastId = 'invalidEmail';
+      if (!toast.isActive(toastId))
+        toast({
+          id: toastId,
+          title: `Ugyldig epostadresse`,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      return false;
     }
+    return true;
   };
 
   const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +147,9 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     const input = event.target as HTMLInputElement;
     if (!(input.files && input.files.length > 0)) return;
     if (!meetingId) throw new Error('Meeting id not defined');
+
+    const invalidEmailsLineNumbers: Array<string> = [];
+
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
@@ -122,12 +161,18 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       const firstRowArray = lines[0].split(',').map((content: string) => content.trim());
       const indexOfEmail = firstRowArray.indexOf('email');
       const indexOfRole = firstRowArray.indexOf('rolle');
-      for (let i = 1; i < lines.length; i++) {
+
+      for (let i = 0; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[indexOfEmail];
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
-        if (email && !emailExists) {
+
+        const isEmailValid = checkIfEmailIsValid(email);
+
+        if (!isEmailValid) {
+          invalidEmailsLineNumbers.push(String(i));
+        } else if (!emailExists) {
           newParticipants.push({
             email,
             role,
@@ -145,6 +190,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
+    setInvalidEmailsInFile(invalidEmailsLineNumbers);
   };
 
   const deleteParticipantByEmail = (email: string) => {
@@ -191,8 +237,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
 
-  console.log('Rerenders ');
-
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
@@ -203,7 +247,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
           <InviteParticipantByFileUpload handleFileUpload={onFileUpload} />
           <InviteParticipant
-            handleOnEnter={addParticipantByEmail}
+            inviteParticipant={addParticipantByEmail}
             selectRole={(role: Role) => setInputRole(role)}
             participantRole={inputRole}
           />
