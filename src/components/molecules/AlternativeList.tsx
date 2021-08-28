@@ -33,7 +33,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
     const newId = selectedAlternativeId === id ? null : id;
     setSelectedAlternativeId(newId);
     handleSelect(newId);
-  }, []);
+  }, [setSelectedAlternativeId, handleSelect]);
 
   const handleUpdateSelected = (id: string) => {
     if (!userHasVoted) {
