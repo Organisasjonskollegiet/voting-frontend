@@ -86,11 +86,15 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const addParticipantByEmail = (email: string) => {
+  const checkIfEmailIsValid = (email: string) => {
     const emailRegExp = new RegExp(
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
-    if (emailRegExp.test(email)) {
+    return emailRegExp.test(email);
+  };
+
+  const addParticipantByEmail = (email: string) => {
+    if (checkIfEmailIsValid(email)) {
       const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
       if (!emailAlreadyAdded && meetingId) {
         addParticipants({
@@ -126,6 +130,9 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     const input = event.target as HTMLInputElement;
     if (!(input.files && input.files.length > 0)) return;
     if (!meetingId) throw new Error('Meeting id not defined');
+
+    const invalidEmailsLineNumbers: Array<string> = [];
+
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
@@ -137,12 +144,18 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       const firstRowArray = lines[0].split(',').map((content: string) => content.trim());
       const indexOfEmail = firstRowArray.indexOf('email');
       const indexOfRole = firstRowArray.indexOf('rolle');
+
       for (let i = 1; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[indexOfEmail];
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
-        if (email && !emailExists) {
+
+        const isEmailValid = checkIfEmailIsValid(email);
+
+        if (!isEmailValid) {
+          invalidEmailsLineNumbers.push(String(i));
+        } else if (!emailExists) {
           newParticipants.push({
             email,
             role,
@@ -160,6 +173,21 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
+
+    if (invalidEmailsLineNumbers.length > 0) {
+      const invalidLineNumbers = invalidEmailsLineNumbers.reduce((a, b) => a + ', ' + b);
+      const toastId = 'invalidEmails';
+      if (!toast.isActive(toastId))
+        toast({
+          id: toastId,
+          title: `Ugyldige epostadresser`,
+          description:
+            'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til i møtet: \n ' + invalidLineNumbers,
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+        });
+    }
   };
 
   const deleteParticipantByEmail = (email: string) => {
