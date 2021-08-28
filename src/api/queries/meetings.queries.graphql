@@ -21,6 +21,7 @@ query GetMeetings {
 
 query GetRole($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
+    id
     participants {
       user {
         id
@@ -44,6 +45,14 @@ query GetMeetingById($meetingId: String!) {
     startTime
   }
 
+  # participants(meetingId: $meetingId) {
+  #   email
+  #   role
+  #   isVotingEligible
+  # }
+}
+
+query GetParticipantsByMeetingId($meetingId: String!) {
   participants(meetingId: $meetingId) {
     email
     role

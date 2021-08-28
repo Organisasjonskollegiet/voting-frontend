@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, VStack, Grid, Button, Box } from '@chakra-ui/react';
+import { Divider, VStack, Grid, Button, Box, Text } from '@chakra-ui/react';
 import ArrowLeft from '../../static/arrowLeft.svg';
 import AddMeetingStatus from './AddMeetingStatus';
 
@@ -31,7 +31,7 @@ const AddMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, ac
               bg="#f9f9f9"
               onClick={() => handleNavigation(activeTab - 1)}
             >
-              Forrige
+              <Text pt="5px">Forrige</Text>
             </Button>
           ) : (
             <Box />

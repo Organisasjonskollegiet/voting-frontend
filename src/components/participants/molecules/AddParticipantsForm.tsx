@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Role, useAddParticipantsMutation, useDeleteParticipantsMutation } from '../../__generated__/graphql-types';
+import {
+  ParticipantOrInvite,
+  Role,
+  useAddParticipantsMutation,
+  useDeleteParticipantsMutation,
+} from '../../../__generated__/graphql-types';
 import {
   VStack,
   FormControl,
@@ -10,20 +15,24 @@ import {
   HStack,
   Select,
   useToast,
-  Tooltip,
   CloseButton,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
 } from '@chakra-ui/react';
-import { inputStyle, labelStyle } from '../particles/formStyles';
-import UploadIcon from '../../static/uploadIcon.svg';
-import Loading from '../atoms/Loading';
-import { ParticipantWorking } from '../../types/types';
+import { inputStyle, labelStyle } from '../../particles/formStyles';
+import UploadIcon from '../../../static/uploadIcon.svg';
+import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
-import { boxShadow } from '../particles/formStyles';
+import { boxShadow } from '../../particles/formStyles';
+import { SearchIcon } from '@chakra-ui/icons';
+import SelectRole from '../atoms/SelectRole';
+import ParticipantList from './ParticipantList';
 
 interface IProps {
-  meetingId: string | undefined;
-  participants: ParticipantWorking[];
-  setParticipants: (participants: ParticipantWorking[]) => void;
+  meetingId: string;
+  participants: ParticipantOrInvite[];
+  setParticipants: (participants: ParticipantOrInvite[]) => void;
   ownerEmail: string | undefined;
 }
 
@@ -37,7 +46,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   useEffect(() => {
     if (!participants || !addParticipantsResult.data) return;
-    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantWorking[];
+    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantOrInvite[];
     const nonUpdatedParticipants = participants.filter(
       (participant) => !newParticipants.map((p) => p.email).includes(participant.email)
     );
@@ -88,7 +97,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantWorking[]) => {
+  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantOrInvite[]) => {
     if (event.code !== 'Enter') return;
     const input = document.getElementById(participantInputElementId) as HTMLInputElement;
     if (!input || !input.value || input.value.trim().length === 0) return;
@@ -118,7 +127,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (evt: ProgressEvent<FileReader>) => {
-      const newParticipants: ParticipantWorking[] = [];
+      const newParticipants: ParticipantOrInvite[] = [];
       if (!evt.target) return;
       const content = evt.target.result as string;
       if (!content) return;
@@ -132,11 +141,11 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
         if (email && !emailExists) {
-          participants.push({
+          newParticipants.push({
             email,
             role,
             isVotingEligible: true,
-            existsInDb: false,
+            // existsInDb: false,
           });
         }
       }
@@ -150,6 +159,50 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
   };
+
+  const deleteParticipantByEmail = (email: string) => {
+    deleteParticipants({ variables: { meetingId, emails: [email] } });
+  };
+
+  const changeParticipantsRights = (
+    participant: ParticipantOrInvite,
+    newRole?: Role,
+    toggleVotingEligibility = false
+  ) => {
+    if (!meetingId) return;
+    addParticipants({
+      variables: {
+        meetingId,
+        participants: [
+          {
+            email: participant.email,
+            role: newRole ?? participant.role,
+            isVotingEligible: toggleVotingEligibility ? !participant.isVotingEligible : participant.isVotingEligible,
+          },
+        ],
+      },
+    });
+  };
+
+  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
+  const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
+
+  const handleChangeSort = (value: string) => {
+    setSortAlphabetically(value === 'true');
+  };
+
+  useEffect(() => {
+    const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
+    setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
+  }, [participants, sortAlphabetically]);
+
+  const [searchInputValue, setSearchInputValue] = useState<string>('');
+
+  const [filteredParticipants, setFilteredParticipants] = useState<ParticipantOrInvite[]>(participants);
+
+  useEffect(() => {
+    setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
+  }, [searchInputValue, participantsCopy]);
 
   return (
     <>
@@ -183,76 +236,39 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               placeholder="Inviter deltaker med epostadresse"
               onKeyDown={(event) => handleEnterPressed(event, participants)}
             />
-            <Select
-              value={inputRole}
-              disabled={!meetingId}
-              onChange={(e) => setInputRole(e.target.value as Role)}
-              style={{ border: 'none' }}
-              width="20%"
-            >
-              <option value={Role.Admin}>Administrator</option>
-              <option value={Role.Counter}>Teller</option>
-              <option value={Role.Participant}>Deltaker</option>
-            </Select>
+            <SelectRole onChange={(role: Role) => setInputRole(role)} value={inputRole} />
           </HStack>
         </FormControl>
         <Divider m="3em 0" />
-        <VStack width="100%" backgroundColor="white" borderRadius="4px" boxShadow={boxShadow} spacing="0">
-          {participants.length > 0 ? (
-            participants
-              .sort((a, b) => a.email.localeCompare(b.email))
-              .map((participant, index) => (
-                <React.Fragment key={participant.email}>
-                  {index > 0 && <Divider width="100%" m="0.5em 0" />}
-                  <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
-                    <Text>{participant.email}</Text>
-                    <HStack>
-                      <Select
-                        disabled={ownerEmail === participant.email || !meetingId}
-                        width="10em"
-                        value={participant.role}
-                        onChange={(e) => {
-                          if (!meetingId) return;
-                          addParticipants({
-                            variables: {
-                              meetingId,
-                              participants: [
-                                {
-                                  email: participant.email,
-                                  role: e.target.value as Role,
-                                  isVotingEligible: true,
-                                },
-                              ],
-                            },
-                          });
-                        }}
-                        style={{ border: 'none' }}
-                      >
-                        <option value={Role.Admin}>Administrator</option>
-                        <option value={Role.Counter}>Teller</option>
-                        <option value={Role.Participant}>Deltaker</option>
-                      </Select>
-                      <Tooltip label="Fjern deltager">
-                        <CloseButton
-                          onClick={() => {
-                            if (!meetingId) return;
-                            deleteParticipants({ variables: { meetingId, emails: [participant.email] } });
-                          }}
-                          disabled={ownerEmail === participant.email || !meetingId}
-                          background="transparent"
-                          _hover={{ background: 'transparent' }}
-                          isActive={false}
-                        ></CloseButton>
-                      </Tooltip>
-                    </HStack>
-                  </HStack>
-                </React.Fragment>
-              ))
-          ) : (
-            <Text>Du har ikke lagt til noen deltakere</Text>
-          )}
-          )
-        </VStack>
+        <FormControl>
+          <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
+          <HStack justifyContent="space-between" spacing="1em">
+            <InputGroup boxShadow={boxShadow} w="60%" bg="white">
+              <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
+              <Input
+                placeholder="Søk etter deltager"
+                value={searchInputValue}
+                onChange={(e) => setSearchInputValue(e.target.value)}
+              ></Input>
+              {searchInputValue && (
+                <InputRightElement>
+                  <CloseButton onClick={() => setSearchInputValue('')}></CloseButton>
+                </InputRightElement>
+              )}
+            </InputGroup>
+            <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
+              <option value="true">A - Å</option>
+              <option value="false">Å - A</option>
+            </Select>
+          </HStack>
+        </FormControl>
+
+        <ParticipantList
+          participants={filteredParticipants}
+          ownerEmail={ownerEmail}
+          changeParticipantRights={changeParticipantsRights}
+          deleteParticipant={deleteParticipantByEmail}
+        />
       </VStack>
     </>
   );

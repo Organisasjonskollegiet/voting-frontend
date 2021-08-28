@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Center, Box, Heading, Text, VStack, Divider, Button } from '@chakra-ui/react';
+import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
   // useVotationOpenedForMeetingSubscription,
@@ -10,15 +10,15 @@ import {
   Votation,
 } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
-import { darkblue } from '../particles/theme';
+import { darkblue, offwhite } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import ParticipantModal from '../participants/organisms/ParticipantModal';
+import ReturnToPreviousButton from '../atoms/ReturnToPreviousButton';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
-  console.log(user);
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
     variables: {
@@ -90,7 +90,7 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg="#F9F9F9" w="100vw" p="10vh 0" color="gray.500" style={styles}>
+      <Box bg={offwhite} w="100vw" p="10vh 0" color="gray.500" style={styles}>
         <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
@@ -103,17 +103,10 @@ const MeetingLobby: React.FC = () => {
           </VStack>
           <VStack alignItems="left" spacing="1em">
             <Divider />
-            <Button
-              borderRadius={'16em'}
-              bg="transparent"
-              w="fit-content"
-              onClick={backToVotationList}
-              leftIcon={<ArrowBackIcon />}
-            >
-              <Text fontWeight="normal" fontSize="16px" decoration="underline">
-                Tilbake til møteoversikt
-              </Text>
-            </Button>
+            <HStack justifyContent="space-between">
+              <ReturnToPreviousButton onClick={backToVotationList} text="Tiltake til møteoversikt" />
+              <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+            </HStack>
           </VStack>
         </VStack>
       </Box>
