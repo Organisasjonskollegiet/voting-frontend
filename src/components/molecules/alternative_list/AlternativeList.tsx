@@ -29,11 +29,14 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
 }) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
-  const updateSelected = useCallback((id: string) => {
-    const newId = selectedAlternativeId === id ? null : id;
-    setSelectedAlternativeId(newId);
-    handleSelect(newId);
-  }, [setSelectedAlternativeId, handleSelect]);
+  const updateSelected = useCallback(
+    (id: string) => {
+      const newId = selectedAlternativeId === id ? null : id;
+      setSelectedAlternativeId(newId);
+      handleSelect(newId);
+    },
+    [setSelectedAlternativeId, handleSelect]
+  );
 
   const handleUpdateSelected = (id: string) => {
     if (!userHasVoted) {
