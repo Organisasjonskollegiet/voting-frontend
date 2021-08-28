@@ -2,10 +2,10 @@ import { Divider, HStack, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { ParticipantOrInvite, Role } from '../../../__generated__/graphql-types';
 import { boxShadow } from '../../particles/formStyles';
-import { lightblue, darkblue } from '../../particles/theme';
 import DeleteParticipant from '../atoms/DeleteParticipant';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
+import { darkblue, lightblue } from '../../particles/theme';
 
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
@@ -26,6 +26,18 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
   changeParticipantRights,
   ownerEmail,
 }) => {
+  const customScrollbar = {
+    '&::-webkit-scrollbar': {
+      width: '8px',
+      borderRadius: '8px',
+      backgroundColor: lightblue,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: darkblue,
+      borderRadius: '8px',
+    },
+  };
+
   return (
     <VStack
       width="100%"
@@ -36,17 +48,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
       overflowY="scroll"
       maxH="15em"
       pr="3px"
-      sx={{
-        '&::-webkit-scrollbar': {
-          width: '8px',
-          borderRadius: '8px',
-          backgroundColor: lightblue,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: darkblue,
-          borderRadius: '8px',
-        },
-      }}
+      sx={customScrollbar}
     >
       {participants.length === 0 ? (
         <Text p="1em 2em">Kunne ikke finne noen deltagere som matchet søket</Text>

@@ -31,7 +31,9 @@ const AddMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, ac
               bg="#f9f9f9"
               onClick={() => handleNavigation(activeTab - 1)}
             >
-              <Text pt="5px">Forrige</Text>
+              <Text pt="5px" as="span">
+                Forrige
+              </Text>
             </Button>
           ) : (
             <Box />

@@ -5,29 +5,16 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../../__generated__/graphql-types';
-import {
-  VStack,
-  FormControl,
-  FormLabel,
-  Input,
-  Divider,
-  Text,
-  HStack,
-  Select,
-  useToast,
-  CloseButton,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-} from '@chakra-ui/react';
-import { inputStyle, labelStyle } from '../../particles/formStyles';
-import UploadIcon from '../../../static/uploadIcon.svg';
+import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast } from '@chakra-ui/react';
+import { labelStyle } from '../../particles/formStyles';
 import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
 import { boxShadow } from '../../particles/formStyles';
-import { SearchIcon } from '@chakra-ui/icons';
-import SelectRole from '../atoms/SelectRole';
 import ParticipantList from './ParticipantList';
+import SearchBar from '../atoms/SearchBar';
+import InviteParticipant from '../atoms/InviteParticipant';
+import { useCallback } from 'react';
+import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
 
 interface IProps {
   meetingId: string;
@@ -36,13 +23,17 @@ interface IProps {
   ownerEmail: string | undefined;
 }
 
+enum SortingType {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
 const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
-  const participantInputElementId = 'participantInput';
 
   useEffect(() => {
     if (!participants || !addParticipantsResult.data) return;
@@ -54,8 +45,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       a.email.localeCompare(b.email)
     );
     setParticipants(sortedParticipants);
-    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
-    input.value = '';
     const toastId = 'participantsUpdated';
     if (!toast.isActive(toastId)) {
       toast({
@@ -97,11 +86,9 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantOrInvite[]) => {
-    if (event.code !== 'Enter') return;
-    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
-    if (!input || !input.value || input.value.trim().length === 0) return;
-    const email = input.value;
+  const addParticipantByEmail = (email: string) => {
+    //TODO: validate email
+    if (!email || email.trim().length === 0) return;
     const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
     if (!emailAlreadyAdded && meetingId) {
       addParticipants({
@@ -184,25 +171,27 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     });
   };
 
-  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
-  const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
+  const [ascVsDesc, setAscVsDesc] = useState<SortingType>(SortingType.ASC);
 
-  const handleChangeSort = (value: string) => {
-    setSortAlphabetically(value === 'true');
-  };
+  const sortParticipantsAlphabetically = useCallback(() => {
+    const reversed = ascVsDesc === SortingType.DESC;
+    return [...participants].sort((a, b) =>
+      reversed ? -a.email.localeCompare(b.email) : a.email.localeCompare(b.email)
+    );
+  }, [participants, ascVsDesc]);
 
+  const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(sortParticipantsAlphabetically);
   useEffect(() => {
-    const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
-    setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
-  }, [participants, sortAlphabetically]);
+    setParticipantsCopy(sortParticipantsAlphabetically);
+  }, [participants, ascVsDesc, sortParticipantsAlphabetically]);
 
   const [searchInputValue, setSearchInputValue] = useState<string>('');
-
   const [filteredParticipants, setFilteredParticipants] = useState<ParticipantOrInvite[]>(participants);
-
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
+
+  console.log('Rerenders ');
 
   return (
     <>
@@ -212,63 +201,37 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       <VStack spacing="7">
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
-          <FormLabel maxWidth="320px" w="30vw">
-            <Input disabled={!meetingId} display="none" type="file" accept="text/csv" onChange={onFileUpload} />
-            <HStack sx={inputStyle} _hover={{ cursor: 'pointer' }} padding="8px" justify="center" borderRadius="4px">
-              <img alt="upload" src={UploadIcon} />
-              <Text>Last opp deltagerliste fra CSV-fil</Text>
-            </HStack>
-          </FormLabel>
-          <HStack
-            width="100%"
-            style={{
-              borderRadius: '4px',
-              boxShadow,
-              background: '#fff',
-              zIndex: 10,
-            }}
-          >
-            <Input
-              id={participantInputElementId}
-              disabled={!meetingId}
-              width="80%"
-              style={{ border: 'none' }}
-              placeholder="Inviter deltaker med epostadresse"
-              onKeyDown={(event) => handleEnterPressed(event, participants)}
-            />
-            <SelectRole onChange={(role: Role) => setInputRole(role)} value={inputRole} />
-          </HStack>
+          <InviteParticipantByFileUpload handleFileUpload={onFileUpload} />
+          <InviteParticipant
+            handleOnEnter={addParticipantByEmail}
+            selectRole={(role: Role) => setInputRole(role)}
+            participantRole={inputRole}
+          />
         </FormControl>
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
-          <HStack justifyContent="space-between" spacing="1em">
-            <InputGroup boxShadow={boxShadow} w="60%" bg="white">
-              <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
-              <Input
-                placeholder="Søk etter deltager"
-                value={searchInputValue}
-                onChange={(e) => setSearchInputValue(e.target.value)}
-              ></Input>
-              {searchInputValue && (
-                <InputRightElement>
-                  <CloseButton onClick={() => setSearchInputValue('')}></CloseButton>
-                </InputRightElement>
-              )}
-            </InputGroup>
-            <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
-              <option value="true">A - Å</option>
-              <option value="false">Å - A</option>
+          <HStack justifyContent="space-between" spacing="1em" mb="2em">
+            <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
+
+            <Select
+              onChange={(e) => setAscVsDesc(e.target.value as SortingType)}
+              bg="white"
+              boxShadow={boxShadow}
+              w="200px"
+            >
+              <option value={SortingType.ASC}>A - Å</option>
+              <option value={SortingType.DESC}>Å - A</option>
             </Select>
           </HStack>
-        </FormControl>
 
-        <ParticipantList
-          participants={filteredParticipants}
-          ownerEmail={ownerEmail}
-          changeParticipantRights={changeParticipantsRights}
-          deleteParticipant={deleteParticipantByEmail}
-        />
+          <ParticipantList
+            participants={filteredParticipants}
+            ownerEmail={ownerEmail}
+            changeParticipantRights={changeParticipantsRights}
+            deleteParticipant={deleteParticipantByEmail}
+          />
+        </FormControl>
       </VStack>
     </>
   );
