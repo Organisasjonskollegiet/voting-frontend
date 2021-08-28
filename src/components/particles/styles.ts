@@ -11,14 +11,14 @@ export const expandAndLift = {
 }
 
 export const customScrollbar = {
-'&::-webkit-scrollbar': {
-          width: '8px',
-          borderRadius: '8px',
-          backgroundColor: lightblue,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: darkblue,
-          borderRadius: '8px',
-        },
+    '&::-webkit-scrollbar': {
+        width: '8px',
+        borderRadius: '8px',
+        backgroundColor: lightblue,
+    },
+    '&::-webkit-scrollbar-thumb': {
+        backgroundColor: darkblue,
+        borderRadius: '8px',
+    },
 
 }
