@@ -43,30 +43,39 @@ const AddVotationForm: React.FC<IProps> = ({
     deleteVotation(votation);
   };
 
-  const updateVotationFromSelect = (value: string) => {
-    switch (value) {
-      case 'SIMPLE':
-        updateVotation({ ...votation, isEdited: true, type: 'SIMPLE' as VotationType });
-        break;
-      case 'QUALIFIED50':
-        updateVotation({
-          ...votation,
-          isEdited: true,
-          type: 'QUALIFIED' as VotationType,
-          majorityThreshold: 50,
-        });
-        break;
-      case 'QUALIFIED67':
-        updateVotation({
-          ...votation,
-          isEdited: true,
-          type: 'QUALIFIED' as VotationType,
-          majorityThreshold: 67,
-        });
-        break;
-      default:
-        break;
-    }
+  // const updateVotationFromSelect = (value: string) => {
+  //   switch (value) {
+  //     case 'SIMPLE':
+  //       updateVotation({ ...votation, isEdited: true, type: 'SIMPLE' as VotationType });
+  //       break;
+  //     case 'QUALIFIED50':
+  //       updateVotation({
+  //         ...votation,
+  //         isEdited: true,
+  //         type: 'QUALIFIED' as VotationType,
+  //         majorityThreshold: 50,
+  //       });
+  //       break;
+  //     case 'QUALIFIED67':
+  //       updateVotation({
+  //         ...votation,
+  //         isEdited: true,
+  //         type: 'QUALIFIED' as VotationType,
+  //         majorityThreshold: 67,
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
+  const updateVotationType = (newType: VotationType, newMajorityThreshold = 50) => {
+    updateVotation({
+      ...votation,
+      isEdited: true,
+      type: newType,
+      majorityThreshold: newMajorityThreshold,
+    });
   };
 
   if (!isActive || !isAdmin) {
@@ -121,7 +130,7 @@ const AddVotationForm: React.FC<IProps> = ({
               />
             </VStack>
             <VStack flex="1" spacing="7" align="left">
-              <VotationTypeSelect votation={votation} updateVotationFromSelect={updateVotationFromSelect} />
+              <VotationTypeSelect votation={votation} updateVotationType={updateVotationType} />
               <VotationCheckboxes votation={votation} updateVotation={updateVotation} />
             </VStack>
           </HStack>
