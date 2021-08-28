@@ -162,7 +162,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
       for (let i = 0; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
-        const email = lineList[0];
+        const email = lineList[0].toLowerCase().trim();
         const role = lineList.length > 1 ? Role.Participant : getRole(lineList[1]);
         const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
 
