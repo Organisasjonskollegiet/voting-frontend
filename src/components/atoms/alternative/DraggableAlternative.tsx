@@ -1,21 +1,28 @@
 import React from 'react';
 import { Box, Button, ComponentStyleConfig, Text, HStack, useStyleConfig } from '@chakra-ui/react';
-import { boxShadow } from '../particles/formStyles';
+import { boxShadow } from '../../particles/formStyles';
 import { Draggable } from 'react-beautiful-dnd';
-import { AlternativeWithIndex } from '../pages/Votation';
+import { AlternativeWithIndex } from '../../pages/Votation';
 import { DragHandleIcon } from '@chakra-ui/icons';
 
-export interface AlternativeProps {
+export interface DraggableAlternativeProps {
   alternative: AlternativeWithIndex;
   selected: boolean;
   onClick: () => void;
   isStv: boolean;
+  index: number;
 }
 
-const Alternative: React.FC<AlternativeProps> = ({ alternative, selected, onClick, isStv }) => {
+const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({
+  index,
+  alternative,
+  selected,
+  onClick,
+  isStv,
+}) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
   return (
-    <Draggable isDragDisabled={!isStv} key={alternative.id} draggableId={alternative.id} index={alternative.index}>
+    <Draggable isDragDisabled={!isStv} key={alternative.id} draggableId={alternative.id} index={index}>
       {(provided) => (
         <HStack w="100%" minWidth="320px" ref={provided.innerRef} {...provided.draggableProps}>
           {isStv ? (
@@ -61,4 +68,4 @@ export const AlternativeConfig: ComponentStyleConfig = {
   },
 };
 
-export default Alternative;
+export default DraggableAlternative;
