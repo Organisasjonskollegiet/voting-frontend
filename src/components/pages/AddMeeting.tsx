@@ -7,7 +7,7 @@ import {
   useUpdateMeetingMutation,
 } from '../../__generated__/graphql-types';
 import AddMeetingInformation from '../particles/AddMeetingInformation';
-import AddParticipants from '../particles/AddParticipants';
+import AddParticipants from '../participants/organisms/AddParticipants';
 import { MeetingWorking } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';

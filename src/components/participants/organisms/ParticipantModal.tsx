@@ -11,10 +11,10 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import React from 'react';
-import participantIcon from '../../static/participantIcon.svg';
-import ReturnToPreviousButton from '../atoms/ReturnToPreviousButton';
-import AddParticipants from '../particles/AddParticipants';
-import { darkblue, offwhite } from '../particles/theme';
+import participantIcon from '../../../static/participantIcon.svg';
+import ReturnToPreviousButton from '../../atoms/ReturnToPreviousButton';
+import AddParticipants from './AddParticipants';
+import { darkblue, offwhite } from '../../particles/theme';
 
 interface ParticipantModalProps {
   meetingId: string;

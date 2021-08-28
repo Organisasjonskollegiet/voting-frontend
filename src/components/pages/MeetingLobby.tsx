@@ -14,7 +14,7 @@ import { darkblue, offwhite } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
-import ParticipantModal from '../molecules/ParticipantModal';
+import ParticipantModal from '../participants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../atoms/ReturnToPreviousButton';
 
 const MeetingLobby: React.FC = () => {

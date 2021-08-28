@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { VStack, Heading, Text, Center } from '@chakra-ui/react';
-import AddMeetingController from '../molecules/AddMeetingController';
+import AddMeetingController from '../../molecules/AddMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
-import { h1Style } from './formStyles';
-import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../__generated__/graphql-types';
-import Loading from '../atoms/Loading';
+import { h1Style } from '../../particles/formStyles';
+import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../../__generated__/graphql-types';
+import Loading from '../../atoms/Loading';
 
 interface IProps {
   meetingId: string;
