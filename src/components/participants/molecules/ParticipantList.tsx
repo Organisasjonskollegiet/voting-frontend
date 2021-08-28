@@ -5,7 +5,7 @@ import { boxShadow } from '../../particles/formStyles';
 import DeleteParticipant from '../atoms/DeleteParticipant';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
-import { customScrollbar } from '../../particles/styles';
+import { darkblue, lightblue } from '../../particles/theme';
 
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
@@ -26,6 +26,18 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
   changeParticipantRights,
   ownerEmail,
 }) => {
+  const customScrollbar = {
+    '&::-webkit-scrollbar': {
+      width: '8px',
+      borderRadius: '8px',
+      backgroundColor: lightblue,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: darkblue,
+      borderRadius: '8px',
+    },
+  };
+
   return (
     <VStack
       width="100%"

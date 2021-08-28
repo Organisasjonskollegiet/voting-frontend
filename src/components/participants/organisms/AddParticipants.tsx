@@ -59,7 +59,6 @@ const AddParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigati
   };
 
   if (!isActive) return <></>;
-  console.log(modalView);
 
   return (
     <>
