@@ -11,9 +11,10 @@ import UploadIcon from '../../../static/uploadIcon.svg';
 import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
 import { boxShadow } from '../../particles/formStyles';
-import SelectRole from '../atoms/SelectRole';
 import ParticipantList from './ParticipantList';
 import SearchBar from '../atoms/SearchBar';
+import InviteParticipant from '../atoms/InviteParticipant';
+import { useCallback } from 'react';
 
 interface IProps {
   meetingId: string;
@@ -22,13 +23,17 @@ interface IProps {
   ownerEmail: string | undefined;
 }
 
+enum AscOrDesc {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}
+
 const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
-  const participantInputElementId = 'participantInput';
 
   useEffect(() => {
     if (!participants || !addParticipantsResult.data) return;
@@ -40,8 +45,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       a.email.localeCompare(b.email)
     );
     setParticipants(sortedParticipants);
-    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
-    input.value = '';
     const toastId = 'participantsUpdated';
     if (!toast.isActive(toastId)) {
       toast({
@@ -83,11 +86,9 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>, participants: ParticipantOrInvite[]) => {
-    if (event.code !== 'Enter') return;
-    const input = document.getElementById(participantInputElementId) as HTMLInputElement;
-    if (!input || !input.value || input.value.trim().length === 0) return;
-    const email = input.value;
+  const addParticipantByEmail = (email: string) => {
+    //TODO: validate email
+    if (!email || email.trim().length === 0) return;
     const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
     if (!emailAlreadyAdded && meetingId) {
       addParticipants({
@@ -171,16 +172,23 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   };
 
   const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(participants);
-  const [sortAlphabetically, setSortAlphabetically] = useState<boolean>(true);
 
-  const handleChangeSort = (value: string) => {
-    setSortAlphabetically(value === 'true');
+  const [ascVsDesc, setAscVsDesc] = useState<AscOrDesc>();
+
+  const handleChangeSort = (value: AscOrDesc) => {
+    setAscVsDesc(value);
   };
 
+  const sortParticipantsAlphabetically = useCallback(() => {
+    const reversed = ascVsDesc === AscOrDesc.Desc;
+    return [...participants].sort((a, b) =>
+      reversed ? -a.email.localeCompare(b.email) : a.email.localeCompare(b.email)
+    );
+  }, [participants, ascVsDesc]);
+
   useEffect(() => {
-    const sortedParticipants = [...participants].sort((a, b) => a.email.localeCompare(b.email));
-    setParticipantsCopy(sortAlphabetically ? sortedParticipants : sortedParticipants.reverse());
-  }, [participants, sortAlphabetically]);
+    setParticipantsCopy(sortParticipantsAlphabetically);
+  }, [participants, ascVsDesc, sortParticipantsAlphabetically]);
 
   const [searchInputValue, setSearchInputValue] = useState<string>('');
 
@@ -205,25 +213,11 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               <Text>Last opp deltagerliste fra CSV-fil</Text>
             </HStack>
           </FormLabel>
-          <HStack
-            width="100%"
-            style={{
-              borderRadius: '4px',
-              boxShadow,
-              background: '#fff',
-              zIndex: 10,
-            }}
-          >
-            <Input
-              id={participantInputElementId}
-              disabled={!meetingId}
-              width="80%"
-              style={{ border: 'none' }}
-              placeholder="Inviter deltaker med epostadresse"
-              onKeyDown={(event) => handleEnterPressed(event, participants)}
-            />
-            <SelectRole onChange={(role: Role) => setInputRole(role)} value={inputRole} />
-          </HStack>
+          <InviteParticipant
+            onEnter={addParticipantByEmail}
+            selectRole={(role: Role) => setInputRole(role)}
+            participantRole={inputRole}
+          />
         </FormControl>
         <Divider m="3em 0" />
         <FormControl>
@@ -231,9 +225,14 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           <HStack justifyContent="space-between" spacing="1em" mb="2em">
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
-            <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
-              <option value="true">A - Å</option>
-              <option value="false">Å - A</option>
+            <Select
+              onChange={(e) => handleChangeSort(e.target.value as AscOrDesc)}
+              bg="white"
+              boxShadow={boxShadow}
+              w="200px"
+            >
+              <option value={AscOrDesc.Asc}>A - Å</option>
+              <option value={AscOrDesc.Desc}>Å - A</option>
             </Select>
           </HStack>
 
