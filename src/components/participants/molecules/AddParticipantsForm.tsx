@@ -5,29 +5,15 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../../__generated__/graphql-types';
-import {
-  VStack,
-  FormControl,
-  FormLabel,
-  Input,
-  Divider,
-  Text,
-  HStack,
-  Select,
-  useToast,
-  CloseButton,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-} from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Input, Divider, Text, HStack, Select, useToast } from '@chakra-ui/react';
 import { inputStyle, labelStyle } from '../../particles/formStyles';
 import UploadIcon from '../../../static/uploadIcon.svg';
 import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
 import { boxShadow } from '../../particles/formStyles';
-import { SearchIcon } from '@chakra-ui/icons';
 import SelectRole from '../atoms/SelectRole';
 import ParticipantList from './ParticipantList';
+import SearchBar from '../atoms/SearchBar';
 
 interface IProps {
   meetingId: string;
@@ -242,33 +228,22 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
-          <HStack justifyContent="space-between" spacing="1em">
-            <InputGroup boxShadow={boxShadow} w="60%" bg="white">
-              <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
-              <Input
-                placeholder="Søk etter deltager"
-                value={searchInputValue}
-                onChange={(e) => setSearchInputValue(e.target.value)}
-              ></Input>
-              {searchInputValue && (
-                <InputRightElement>
-                  <CloseButton onClick={() => setSearchInputValue('')}></CloseButton>
-                </InputRightElement>
-              )}
-            </InputGroup>
+          <HStack justifyContent="space-between" spacing="1em" mb="2em">
+            <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
+
             <Select onChange={(e) => handleChangeSort(e.target.value)} bg="white" boxShadow={boxShadow} w="200px">
               <option value="true">A - Å</option>
               <option value="false">Å - A</option>
             </Select>
           </HStack>
-        </FormControl>
 
-        <ParticipantList
-          participants={filteredParticipants}
-          ownerEmail={ownerEmail}
-          changeParticipantRights={changeParticipantsRights}
-          deleteParticipant={deleteParticipantByEmail}
-        />
+          <ParticipantList
+            participants={filteredParticipants}
+            ownerEmail={ownerEmail}
+            changeParticipantRights={changeParticipantsRights}
+            deleteParticipant={deleteParticipantByEmail}
+          />
+        </FormControl>
       </VStack>
     </>
   );
