@@ -1,5 +1,14 @@
 import React from 'react';
-import { FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormLabel,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Select,
+} from '@chakra-ui/react';
 import { labelStyle } from '../particles/formStyles';
 import { boxShadow } from '../particles/formStyles';
 import { Votation } from '../../types/types';
@@ -24,11 +33,24 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
     }
   };
 
+  const getSelectStartValue = () => {
+    if (votation.type === VotationType.Qualified) {
+      return String(
+        votation.majorityThreshold === 67 ? VotationQualifiedType.Qualified67 : VotationQualifiedType.Qualified50
+      );
+    }
+    return String(votation.type);
+  };
+
   return (
     <>
       <FormControl>
         <FormLabel sx={labelStyle}>Stemmeform</FormLabel>
-        <Select boxShadow={boxShadow} value={votation.type} onChange={(event) => handleChangeType(event.target.value)}>
+        <Select
+          boxShadow={boxShadow}
+          value={getSelectStartValue()}
+          onChange={(event) => handleChangeType(event.target.value)}
+        >
           <option value={VotationType.Simple}>Simpelt flertall</option>
           <option value={VotationQualifiedType.Qualified50}>Kvalifisert flertall</option>
           <option value={VotationQualifiedType.Qualified67}>Kvalifisert 2/3 flertall</option>
@@ -38,11 +60,13 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
       {votation.type === VotationType.Stv && (
         <FormControl>
           <FormLabel sx={labelStyle}>Velg terskel</FormLabel>
-          <Input
-            type="number"
-            value={votation.majorityThreshold}
-            onChange={(e) => updateVotationType(votation.type, Number(e.target.value))}
-          />
+          <NumberInput defaultValue={votation.majorityThreshold} min={1} max={100}>
+            <NumberInputField onChange={(e) => updateVotationType(votation.type, Number(e.target.value))} />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
         </FormControl>
       )}
     </>
