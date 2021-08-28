@@ -10,7 +10,7 @@ import VotationCheckboxes from '../atoms/VotationCheckboxes';
 import VotationInfoForm from '../atoms/VotationInfoForm';
 import { collapsedStyle, highlightedStyle, containerStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
-import DeleteAlertDialog from '../atoms/DeleteAlertDialog';
+import DeleteAlertDialog, { DeleteAlternative } from '../atoms/DeleteAlertDialog';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { expandAndLift } from '../particles/styles';
 
@@ -148,7 +148,7 @@ const AddVotationForm: React.FC<IProps> = ({
             dialogIsOpen={votationDialogIsOpen}
             handleConfirmDelete={handleConfirmDelete}
             handleCancelDelete={() => setVotationDialogIsOpen(false)}
-            type="votation"
+            type={DeleteAlternative.VOTATION}
           />
         </VStack>
       )}

@@ -65,7 +65,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         toast({
           id: toastId,
           title: `Ugyldige epostadresser`,
-          description: 'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
+          description:
+            'Epostadressene på følgende linjernummer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
           status: 'warning',
           duration: 9000,
           isClosable: true,
