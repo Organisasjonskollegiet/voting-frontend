@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import Alternative from '../atoms/alternative/Alternative';
-import { ButtonGroup, ComponentStyleConfig } from '@chakra-ui/react';
+import { ButtonGroup, CSSObject } from '@chakra-ui/react';
 
 interface AlternativeChoice {
   id: string;
@@ -55,19 +55,12 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
     </ButtonGroup>
   );
 };
-const styles = {
+
+const styles: CSSObject = {
   flexDirection: 'column',
   justifyContent: 'space-between',
   '& > button': {
     marginBottom: '1em',
   },
 };
-
-export const AlternativeListConfig: ComponentStyleConfig = {
-  baseStyle: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-};
-
 export default AlternativeList;
