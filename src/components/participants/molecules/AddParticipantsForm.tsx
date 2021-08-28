@@ -32,6 +32,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
+  const [invalidEmailsInFile, setInvalidEmailsInFile] = useState<string[]>([]);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
 
@@ -55,6 +56,21 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         duration: 9000,
         isClosable: true,
       });
+    }
+
+    if (invalidEmailsInFile.length > 0) {
+      const invalidLineNumbers = invalidEmailsInFile.reduce((a, b) => a + ', ' + b);
+      const toastId = 'invalidEmails';
+      if (!toast.isActive(toastId))
+        toast({
+          id: toastId,
+          title: `Ugyldige epostadresser`,
+          description: 'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
+          status: 'warning',
+          duration: 9000,
+          isClosable: true,
+        });
+      setInvalidEmailsInFile([]);
     }
     // eslint-disable-next-line
   }, [addParticipantsResult.data]);
@@ -88,6 +104,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   const checkIfEmailIsValid = (email: string) => {
     const emailRegExp = new RegExp(
+      // eslint-disable-next-line no-useless-escape
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
     return emailRegExp.test(email);
@@ -145,7 +162,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       const indexOfEmail = firstRowArray.indexOf('email');
       const indexOfRole = firstRowArray.indexOf('rolle');
 
-      for (let i = 1; i < lines.length; i++) {
+      for (let i = 0; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[indexOfEmail];
         const role = indexOfRole === -1 ? Role.Participant : getRole(lineList[indexOfRole]);
@@ -173,21 +190,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
-
-    if (invalidEmailsLineNumbers.length > 0) {
-      const invalidLineNumbers = invalidEmailsLineNumbers.reduce((a, b) => a + ', ' + b);
-      const toastId = 'invalidEmails';
-      if (!toast.isActive(toastId))
-        toast({
-          id: toastId,
-          title: `Ugyldige epostadresser`,
-          description:
-            'Epostadressene på følgende linjer er ugyldige og ble ikke lagt til i møtet: \n ' + invalidLineNumbers,
-          status: 'warning',
-          duration: 9000,
-          isClosable: true,
-        });
-    }
+    setInvalidEmailsInFile(invalidEmailsLineNumbers);
   };
 
   const deleteParticipantByEmail = (email: string) => {
@@ -233,8 +236,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
-
-  console.log('Rerenders ');
 
   return (
     <>
