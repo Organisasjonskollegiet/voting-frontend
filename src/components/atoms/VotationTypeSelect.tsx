@@ -58,8 +58,13 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
       {votation.type === VotationType.Stv && (
         <FormControl>
           <FormLabel sx={labelStyle}>Velg terskel (%)</FormLabel>
-          <NumberInput defaultValue={votation.majorityThreshold} min={1} max={100}>
-            <NumberInputField onChange={(e) => updateVotationType(votation.type, Number(e.target.value))} />
+          <NumberInput
+            defaultValue={votation.majorityThreshold}
+            min={1}
+            max={100}
+            onChange={(value) => updateVotationType(votation.type, Number(value))}
+          >
+            <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
               <NumberDecrementStepper />

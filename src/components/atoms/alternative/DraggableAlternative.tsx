@@ -16,7 +16,7 @@ const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative
         <HStack w="100%" minWidth="320px" ref={provided.innerRef} {...provided.draggableProps}>
           <HStack w="100%">
             <Text isTruncated fontSize="24px" fontWeight="bold" opacity="0.5">
-              {alternative.index}
+              {alternative.index + 1}
             </Text>
             <HStack w="100%" justifyContent="space-between" sx={styles}>
               <Text>{alternative.text}</Text>
