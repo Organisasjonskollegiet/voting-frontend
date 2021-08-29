@@ -1,5 +1,5 @@
 import { extendTheme } from '@chakra-ui/react';
-import { AlternativeConfig } from '../atoms/Alternative';
+import { AlternativeConfig } from '../atoms/alternative/Alternative';
 import { MeetingInformationFormConfig } from '../molecules/MeetingInformationForm';
 
 export const darkblue = '#718096';
@@ -7,6 +7,13 @@ export const lightblue = '#EDF2F7';
 export const offwhite = '#F9F9F9';
 
 const theme = extendTheme({
+  colors: {
+    blue: {
+      200: '#EDF2F7',
+      300: '#8d99ab',
+      400: '#718096',
+    },
+  },
   fonts: {
     body: 'Helvetica',
   },

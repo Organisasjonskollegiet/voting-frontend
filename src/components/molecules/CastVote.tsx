@@ -1,9 +1,10 @@
 import { Button, Center, Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../pages/Votation';
-import AlternativeList from './AlternativeList';
 import VoteCount from '../atoms/VoteCount';
 import { AlternativeWithIndex } from '../pages/Votation';
+import AlternativeList from './alternative_list/AlternativeList';
+import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from './WrapStack';
 import { h1Style } from '../particles/formStyles';
 
@@ -40,15 +41,21 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        <AlternativeList
-          isStv={isStv}
-          alternatives={alternatives}
-          handleSelect={handleSelect}
-          blankVotes={blankVotes}
-          updateAlternatives={updateAlternatives}
-          userHasVoted={userHasVoted}
-          hideVote={hideVote}
-        />
+        {isStv ? (
+          <PreferenceAlternativeList
+            alternatives={alternatives}
+            updateAlternatives={updateAlternatives}
+            userHasVoted={userHasVoted}
+          />
+        ) : (
+          <AlternativeList
+            alternatives={alternatives}
+            handleSelect={handleSelect}
+            blankVotes={blankVotes}
+            userHasVoted={userHasVoted}
+            hideVote={hideVote}
+          />
+        )}
       </VStack>
       <VStack h="100%" justifyContent="flex-end" spacing="1em">
         {userHasVoted && (
