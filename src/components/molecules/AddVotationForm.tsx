@@ -52,6 +52,16 @@ const AddVotationForm: React.FC<IProps> = ({
     });
   };
 
+  const updateNumberOfWinners = (newNumberOfWinners: number) => {
+    console.log({ newNumberOfWinners });
+
+    updateVotation({
+      ...votation,
+      isEdited: true,
+      numberOfWinners: newNumberOfWinners,
+    });
+  };
+
   if (!isActive || !isAdmin) {
     return (
       <Draggable isDragDisabled={!isAdmin} draggableId={votation.id} index={index}>
@@ -104,7 +114,11 @@ const AddVotationForm: React.FC<IProps> = ({
               />
             </VStack>
             <VStack flex="1" spacing="7" align="left">
-              <VotationTypeSelect votation={votation} updateVotationType={updateVotationType} />
+              <VotationTypeSelect
+                votation={votation}
+                updateVotationType={updateVotationType}
+                updateNumberOfWinners={updateNumberOfWinners}
+              />
               <VotationCheckboxes votation={votation} updateVotation={updateVotation} />
             </VStack>
           </HStack>
