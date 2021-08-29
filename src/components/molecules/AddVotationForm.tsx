@@ -43,32 +43,6 @@ const AddVotationForm: React.FC<IProps> = ({
     deleteVotation(votation);
   };
 
-  // const updateVotationFromSelect = (value: string) => {
-  //   switch (value) {
-  //     case 'SIMPLE':
-  //       updateVotation({ ...votation, isEdited: true, type: 'SIMPLE' as VotationType });
-  //       break;
-  //     case 'QUALIFIED50':
-  //       updateVotation({
-  //         ...votation,
-  //         isEdited: true,
-  //         type: 'QUALIFIED' as VotationType,
-  //         majorityThreshold: 50,
-  //       });
-  //       break;
-  //     case 'QUALIFIED67':
-  //       updateVotation({
-  //         ...votation,
-  //         isEdited: true,
-  //         type: 'QUALIFIED' as VotationType,
-  //         majorityThreshold: 67,
-  //       });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   const updateVotationType = (newType: VotationType, newMajorityThreshold = 50) => {
     updateVotation({
       ...votation,

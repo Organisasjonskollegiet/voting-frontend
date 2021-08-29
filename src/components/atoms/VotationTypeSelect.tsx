@@ -35,11 +35,9 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
 
   const getSelectStartValue = () => {
     if (votation.type === VotationType.Qualified) {
-      return String(
-        votation.majorityThreshold === 67 ? VotationQualifiedType.Qualified67 : VotationQualifiedType.Qualified50
-      );
+      return votation.majorityThreshold === 67 ? VotationQualifiedType.Qualified67 : VotationQualifiedType.Qualified50;
     }
-    return String(votation.type);
+    return votation.type;
   };
 
   return (
@@ -48,7 +46,7 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
         <FormLabel sx={labelStyle}>Stemmeform</FormLabel>
         <Select
           boxShadow={boxShadow}
-          value={getSelectStartValue()}
+          value={getSelectStartValue() as string}
           onChange={(event) => handleChangeType(event.target.value)}
         >
           <option value={VotationType.Simple}>Simpelt flertall</option>
@@ -59,7 +57,7 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
       </FormControl>
       {votation.type === VotationType.Stv && (
         <FormControl>
-          <FormLabel sx={labelStyle}>Velg terskel</FormLabel>
+          <FormLabel sx={labelStyle}>Velg terskel (%)</FormLabel>
           <NumberInput defaultValue={votation.majorityThreshold} min={1} max={100}>
             <NumberInputField onChange={(e) => updateVotationType(votation.type, Number(e.target.value))} />
             <NumberInputStepper>
