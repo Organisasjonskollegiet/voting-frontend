@@ -17,6 +17,7 @@ import { VotationType } from '../../__generated__/graphql-types';
 interface IProps {
   votation: Votation;
   updateVotationType: (type: VotationType, majorityThreshold?: number) => void;
+  updateNumberOfWinners: (newNumberOfWinners: number) => void;
 }
 
 enum VotationQualifiedType {
@@ -24,8 +25,12 @@ enum VotationQualifiedType {
   Qualified67 = 'QUALIFIED67',
 }
 
-const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) => {
+const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType, updateNumberOfWinners }) => {
   const handleChangeType = (type: string) => {
+    if (type !== VotationType.Stv) {
+      updateNumberOfWinners(1);
+    }
+
     if (Object.values(VotationQualifiedType).includes(type as VotationQualifiedType)) {
       updateVotationType(VotationType.Qualified, type === VotationQualifiedType.Qualified67 ? 67 : 50);
     } else {
@@ -57,12 +62,12 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType }) 
       </FormControl>
       {votation.type === VotationType.Stv && (
         <FormControl>
-          <FormLabel sx={labelStyle}>Velg terskel (%)</FormLabel>
+          <FormLabel sx={labelStyle}>Antall vinnere </FormLabel>
           <NumberInput
-            defaultValue={votation.majorityThreshold}
+            defaultValue={votation.numberOfWinners}
             min={1}
-            max={100}
-            onChange={(value) => updateVotationType(votation.type, Number(value))}
+            max={20}
+            onChange={(value) => updateNumberOfWinners(Number(value))}
           >
             <NumberInputField />
             <NumberInputStepper>
