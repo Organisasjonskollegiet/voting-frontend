@@ -42,6 +42,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
   useEffect(() => {
     if (alternativeFocus) {
       document.getElementById(alternativeFocus)?.focus();
+      setAlternativeFocus(null);
     }
   }, [alternativeFocus, votation]);
 
