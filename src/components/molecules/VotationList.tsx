@@ -37,6 +37,7 @@ import VotationListSection from './VotationListSection';
 import Hammer from '../../static/hammer.svg';
 import CustomTag from '../atoms/CustomTag';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
+import EndedVotation from './EndedVotation';
 
 interface VotationListProps {
   meetingId: string;
@@ -484,61 +485,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <AccordionItem
-                key={votation.id}
-                isDisabled={votation.alternatives.filter((a) => a.isWinner).length > 1}
-                sx={{ ...collapsedStyle, padding: '0' }}
-                mb="1.5em"
-              >
-                <HStack w="90vw" maxWidth="800px" justifyContent="space-between">
-                  <AccordionButton
-                    cursor="default"
-                    p="1em"
-                    pr="0"
-                    _hover={votation.alternatives.filter((a) => a.isWinner).length > 1 ? {} : { bg: 'white' }}
-                  >
-                    <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
-                      <HStack spacing="8" opacity="0.6">
-                        <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-                        <Text>{votation.title}</Text>
-                      </HStack>
-                      <HStack ml="auto">
-                        {votation.status === VotationStatus.PublishedResult && (
-                          <HStack opacity="0.5">
-                            {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
-                              <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
-                            )}
-                            <Text isTruncated maxWidth="100px">
-                              {votation.alternatives
-                                .filter((a) => a.isWinner)
-                                .map(
-                                  (a, index) =>
-                                    `${a.text}${
-                                      index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''
-                                    }`
-                                )}
-                            </Text>
-                          </HStack>
-                        )}
-                        {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Ugyldig" />}{' '}
-                      </HStack>
-                    </HStack>
-                    {votation.status === VotationStatus.PublishedResult &&
-                      votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon />}
-                  </AccordionButton>
-                  <Tooltip label="Dupliser votering">
-                    <IconButton
-                      aria-label="Dupliser votering"
-                      h="fit-content"
-                      bg={'white'}
-                      p="1em"
-                      borderRadius="4px"
-                      onClick={() => duplicateVotation(votation)}
-                      icon={<img alt="duplicate" src={DuplicateIcon} style={{ padding: '1em 0' }} />}
-                    />
-                  </Tooltip>
-                </HStack>
-              </AccordionItem>
+              <EndedVotation votation={votation} duplicateVotation={duplicateVotation} />
             ))}
           </Accordion>
         </VStack>
