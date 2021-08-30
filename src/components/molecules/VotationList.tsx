@@ -392,8 +392,6 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   };
 
   const startVotation = () => {
-    console.log('Prøver å starte votering');
-
     updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
