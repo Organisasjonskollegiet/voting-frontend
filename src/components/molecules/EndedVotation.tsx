@@ -4,7 +4,6 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Heading,
   HStack,
   IconButton,
   Text,

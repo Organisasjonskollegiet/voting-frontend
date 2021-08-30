@@ -1,22 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import {
-  Box,
-  Button,
-  Center,
-  Heading,
-  HStack,
-  useToast,
-  VStack,
-  Text,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionIcon,
-  IconButton,
-  Tooltip,
-} from '@chakra-ui/react';
+import { Box, Button, Center, Heading, HStack, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   VotationType,
@@ -32,11 +17,7 @@ import {
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../atoms/Loading';
 import { darkblue } from '../particles/theme';
-import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
 import VotationListSection from './VotationListSection';
-import Hammer from '../../static/hammer.svg';
-import CustomTag from '../atoms/CustomTag';
-import DuplicateIcon from '../../static/duplicateIcon.svg';
 import EndedVotation from './EndedVotation';
 
 interface VotationListProps {
