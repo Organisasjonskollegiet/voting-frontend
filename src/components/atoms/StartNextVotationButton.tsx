@@ -34,9 +34,9 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
     }
   };
 
-  const saveBeforeStartVotation = (save: boolean) => {
+  const saveBeforeStartVotation = (saveChanges: boolean) => {
     setIsOpen(false);
-    if (save) {
+    if (saveChanges) {
       handleSaveChanges();
     }
     handleStartVotation();

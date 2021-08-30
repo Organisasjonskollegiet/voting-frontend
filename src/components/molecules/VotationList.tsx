@@ -388,8 +388,13 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   }
 
   const checkIfAnyChanges = () => {
-    console.log(votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length === 0);
     return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
+  };
+
+  const startVotation = () => {
+    console.log('Prøver å starte votering');
+
+    updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
@@ -411,9 +416,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 handleDeleteVotation={handleDeleteVotation}
                 handleDeleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
-                handleStartVotation={() =>
-                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-                }
+                handleStartVotation={startVotation}
                 checkIfAnyChanges={checkIfAnyChanges}
                 handleSaveChanges={() => handleSave(votations)}
                 showStartNextButton={role === Role.Admin}
@@ -429,9 +432,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 handleDeleteVotation={handleDeleteVotation}
                 handleDeleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
-                handleStartVotation={() =>
-                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-                }
+                handleStartVotation={startVotation}
                 checkIfAnyChanges={checkIfAnyChanges}
                 handleSaveChanges={() => handleSave(votations)}
                 showStartNextButton={false}
@@ -449,9 +450,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
               handleDeleteVotation={handleDeleteVotation}
               handleDeleteAlternative={handleDeleteAlternative}
               duplicateVotation={duplicateVotation}
-              handleStartVotation={() =>
-                updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-              }
+              handleStartVotation={startVotation}
               checkIfAnyChanges={checkIfAnyChanges}
               handleSaveChanges={() => handleSave(votations)}
               showStartNextButton={false}

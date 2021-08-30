@@ -170,7 +170,6 @@ const Votation: React.FC = () => {
       }
     }
   };
-  console.log(result.data);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
