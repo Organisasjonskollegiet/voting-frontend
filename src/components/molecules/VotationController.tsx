@@ -9,9 +9,16 @@ interface VotationControllerProps {
   status: VotationStatus;
   hideVote: boolean;
   toggleHideVote: () => void;
+  disableHideVote: boolean;
 }
 
-const VotationController: React.FC<VotationControllerProps> = ({ votationId, status, hideVote, toggleHideVote }) => {
+const VotationController: React.FC<VotationControllerProps> = ({
+  votationId,
+  status,
+  hideVote,
+  toggleHideVote,
+  disableHideVote,
+}) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
 
   const getText = () => {
@@ -38,7 +45,7 @@ const VotationController: React.FC<VotationControllerProps> = ({ votationId, sta
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
       {status === VotationStatus.Open ? (
         <FormControl display="flex" width="fit-content">
-          <Switch id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
+          <Switch isDisabled={disableHideVote} id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
             Skjul min stemme
           </FormLabel>

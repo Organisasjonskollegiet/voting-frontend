@@ -11,5 +11,5 @@ const Template: Story<VotationResultProps> = (args) => <VotationResult {...args}
 
 export const Default = Template.bind({});
 Default.args = {
-  text: 'Alternativ 2',
+  winners: [{ text: 'Alternativ 1', id: 'id', votationId: 'id' }],
 };

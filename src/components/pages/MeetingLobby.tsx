@@ -78,13 +78,11 @@ const MeetingLobby: React.FC = () => {
   }
 
   if (!votationData?.meetingById || votationError || roleError) {
+    console.log(votationError);
     return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
     );
   }
 

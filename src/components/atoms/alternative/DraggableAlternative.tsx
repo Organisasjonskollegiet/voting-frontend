@@ -6,9 +6,10 @@ import { DragHandleIcon } from '@chakra-ui/icons';
 
 export interface DraggableAlternativeProps {
   alternative: AlternativeWithIndex;
+  hideVote: boolean;
 }
 
-const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative }) => {
+const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative, hideVote }) => {
   const styles = useStyleConfig('Alternative');
   return (
     <Draggable key={alternative.id} draggableId={alternative.id} index={alternative.index}>
@@ -19,7 +20,7 @@ const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative
               {alternative.index + 1}
             </Text>
             <HStack w="100%" justifyContent="space-between" sx={styles}>
-              <Text>{alternative.text}</Text>
+              <Text>{!hideVote ? alternative.text : 'Stemmer skjult'}</Text>
               <Box {...provided.dragHandleProps}>
                 <DragHandleIcon />
               </Box>
