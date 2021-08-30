@@ -80,7 +80,7 @@ const Votation: React.FC = () => {
   // be able to unhide vote
   const [disableToggleHideVote, setDisableToggleHideVote] = useState(true);
 
-  const [castStvVote, { loading: castStvLoading, error: castStvError }] = useCastStvVoteMutation();
+  const [castStvVote, { error: castStvError }] = useCastStvVoteMutation();
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
