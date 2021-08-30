@@ -173,7 +173,7 @@ const Votation: React.FC = () => {
 
   //Register the vote
   const [castVote] = useCastVoteMutation();
-  const [castBlankVote, result] = useCastBlankVoteMutation();
+  const [castBlankVote] = useCastBlankVoteMutation();
   const submitVote = () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
       setUserHasVoted(true);
@@ -206,46 +206,46 @@ const Votation: React.FC = () => {
 
   if (error?.message === 'Not Authorised!') {
     return (
-      <>
-        <Center mt="40vh">
-          <Text>
-            Du har ikke tilgang til denne voteringen,{' '}
-            <Link href="/" textDecoration="underline">
-              gå tilbake til hjemmesiden.
-            </Link>
-          </Text>
-        </Center>
-      </>
+      <Center mt="40vh">
+        <Text>
+          Du har ikke tilgang til denne voteringen,{' '}
+          <Link href="/" textDecoration="underline">
+            gå tilbake til hjemmesiden.
+          </Link>
+        </Text>
+      </Center>
     );
   }
 
   if (loading || voteCountLoading) {
     return (
-      <>
-        <Center mt="10vh">
-          <Loading asOverlay={false} text={'Henter votering'} />
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Loading asOverlay={false} text={'Henter votering'} />
+      </Center>
     );
   }
 
   if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
-      <>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
     );
   }
 
   if (status === VotationStatus.Upcoming) {
     return (
-      <>
-        <Center mt="10vh">
-          <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
+      </Center>
+    );
+  }
+
+  if (castStvError) {
+    return (
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdatert siden og prøv på ny.</Text>
+      </Center>
     );
   }
 

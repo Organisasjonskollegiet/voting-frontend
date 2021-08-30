@@ -10,7 +10,7 @@ import {
   Votation,
 } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
-import { darkblue, offwhite } from '../particles/theme';
+import { offwhite } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
