@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AddVotationForm from './AddVotationForm';
 import { Droppable } from 'react-beautiful-dnd';
 import { Heading, VStack } from '@chakra-ui/react';
