@@ -32,7 +32,8 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
           >
             Stemmer kan være blanke
           </Checkbox>
-          <Checkbox
+          {/* COMMENTED OUT UNTIL RESULT TABLE ARE ADDED TO RESULT PAGE  */}
+          {/* <Checkbox
             sx={checkboxStyle}
             isChecked={votation.hiddenVotes}
             onChange={() =>
@@ -46,7 +47,7 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
             spacing="16px"
           >
             Skjult stemmeresultat
-          </Checkbox>
+          </Checkbox> */}
         </VStack>
       </CheckboxGroup>
     </FormControl>
