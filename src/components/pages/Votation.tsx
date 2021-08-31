@@ -159,7 +159,7 @@ const Votation: React.FC = () => {
 
   //Register the vote
   const [castVote] = useCastVoteMutation();
-  const [castBlankVote, result] = useCastBlankVoteMutation();
+  const [castBlankVote] = useCastBlankVoteMutation();
   const submitVote = () => {
     if (selectedAlternativeId !== null) {
       setUserHasVoted(true);
