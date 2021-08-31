@@ -10,7 +10,7 @@ import {
   Votation,
 } from '../../__generated__/graphql-types';
 import Loading from '../atoms/Loading';
-import { darkblue, offwhite } from '../particles/theme';
+import { offwhite } from '../particles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../particles/formStyles';
 import VotationList from '../molecules/VotationList';
@@ -78,13 +78,11 @@ const MeetingLobby: React.FC = () => {
   }
 
   if (!votationData?.meetingById || votationError || roleError) {
+    console.log(votationError);
     return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
     );
   }
 

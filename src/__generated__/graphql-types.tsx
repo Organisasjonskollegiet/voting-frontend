@@ -101,6 +101,7 @@ export type Mutation = {
   createAlternative?: Maybe<Alternative>;
   updateAlternative?: Maybe<Alternative>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
+  castStvVote?: Maybe<Scalars['String']>;
   castVote?: Maybe<Vote>;
   /** Returns the current number of blank votes */
   castBlankVote?: Maybe<Scalars['Int']>;
@@ -149,6 +150,12 @@ export type MutationUpdateAlternativeArgs = {
 
 export type MutationDeleteAlternativesArgs = {
   ids: Array<Scalars['String']>;
+};
+
+
+export type MutationCastStvVoteArgs = {
+  votationId: Scalars['String'];
+  alternatives: Array<StvVoteAlternativeInput>;
 };
 
 
@@ -224,7 +231,7 @@ export type Query = {
   votationById?: Maybe<Votation>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVoteCount?: Maybe<VoteCountResult>;
-  getWinnerOfVotation?: Maybe<Alternative>;
+  getWinnerOfVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVotationResults?: Maybe<VotationResults>;
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
   resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
@@ -281,6 +288,11 @@ export enum Role {
   Participant = 'PARTICIPANT',
   Counter = 'COUNTER'
 }
+
+export type StvVoteAlternativeInput = {
+  alternativeId: Scalars['String'];
+  ranking: Scalars['Int'];
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -417,10 +429,7 @@ export type Vote = {
   __typename?: 'Vote';
   id: Scalars['ID'];
   alternativeId: Scalars['String'];
-  nextVoteId?: Maybe<Scalars['String']>;
   alternative?: Maybe<Alternative>;
-  nextVote?: Maybe<Vote>;
-  prevVote?: Maybe<Vote>;
 };
 
 /** The result of getVoteCount */
@@ -573,6 +582,17 @@ export type CastBlankVoteMutationVariables = Exact<{
 export type CastBlankVoteMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'castBlankVote'>
+);
+
+export type CastStvVoteMutationVariables = Exact<{
+  votationId: Scalars['String'];
+  alternatives: Array<StvVoteAlternativeInput> | StvVoteAlternativeInput;
+}>;
+
+
+export type CastStvVoteMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'castStvVote'>
 );
 
 export type UpdateVotationStatusMutationVariables = Exact<{
@@ -775,10 +795,10 @@ export type GetWinnerOfVotationQueryVariables = Exact<{
 
 export type GetWinnerOfVotationQuery = (
   { __typename?: 'Query' }
-  & { getWinnerOfVotation?: Maybe<(
+  & { getWinnerOfVotation?: Maybe<Array<Maybe<(
     { __typename?: 'Alternative' }
     & Pick<Alternative, 'id' | 'text' | 'votationId'>
-  )> }
+  )>>> }
 );
 
 export type VotationStatusUpdatedSubscriptionVariables = Exact<{
@@ -1211,6 +1231,38 @@ export function useCastBlankVoteMutation(baseOptions?: Apollo.MutationHookOption
 export type CastBlankVoteMutationHookResult = ReturnType<typeof useCastBlankVoteMutation>;
 export type CastBlankVoteMutationResult = Apollo.MutationResult<CastBlankVoteMutation>;
 export type CastBlankVoteMutationOptions = Apollo.BaseMutationOptions<CastBlankVoteMutation, CastBlankVoteMutationVariables>;
+export const CastStvVoteDocument = gql`
+    mutation CastStvVote($votationId: String!, $alternatives: [StvVoteAlternativeInput!]!) {
+  castStvVote(votationId: $votationId, alternatives: $alternatives)
+}
+    `;
+export type CastStvVoteMutationFn = Apollo.MutationFunction<CastStvVoteMutation, CastStvVoteMutationVariables>;
+
+/**
+ * __useCastStvVoteMutation__
+ *
+ * To run a mutation, you first call `useCastStvVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCastStvVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [castStvVoteMutation, { data, loading, error }] = useCastStvVoteMutation({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *      alternatives: // value for 'alternatives'
+ *   },
+ * });
+ */
+export function useCastStvVoteMutation(baseOptions?: Apollo.MutationHookOptions<CastStvVoteMutation, CastStvVoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CastStvVoteMutation, CastStvVoteMutationVariables>(CastStvVoteDocument, options);
+      }
+export type CastStvVoteMutationHookResult = ReturnType<typeof useCastStvVoteMutation>;
+export type CastStvVoteMutationResult = Apollo.MutationResult<CastStvVoteMutation>;
+export type CastStvVoteMutationOptions = Apollo.BaseMutationOptions<CastStvVoteMutation, CastStvVoteMutationVariables>;
 export const UpdateVotationStatusDocument = gql`
     mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
   updateVotationStatus(id: $id, status: $status) {

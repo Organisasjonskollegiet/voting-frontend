@@ -8,12 +8,14 @@ export interface AlternativeListProps {
   alternatives: AlternativeWithIndex[];
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
+  hideVote: boolean;
 }
 
 const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
   alternatives,
   updateAlternatives,
   userHasVoted,
+  hideVote,
 }) => {
   const reorder = (list: AlternativeWithIndex[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -51,7 +53,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
           <div ref={provided.innerRef} {...provided.droppableProps}>
             <VStack spacing="1em" opacity={userHasVoted ? 0.5 : 1}>
               {alternatives.map((alt) => (
-                <DraggableAlternative alternative={alt} />
+                <DraggableAlternative hideVote={userHasVoted && hideVote} alternative={alt} />
               ))}
             </VStack>
             {provided.placeholder}

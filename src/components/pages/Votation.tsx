@@ -13,6 +13,8 @@ import {
   useGetWinnerOfVotationQuery,
   VotationType,
   useCastBlankVoteMutation,
+  useCastStvVoteMutation,
+  Alternative,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -72,7 +74,13 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
-  const [winner, setWinner] = useState<AlternativeType | null>();
+  const [winners, setWinners] = useState<AlternativeType[] | null>(null);
+  // when page is refreshed and votes are not hidden, what we say the
+  // user has voted is not correct, and therefore the user should not
+  // be able to unhide vote
+  const [disableToggleHideVote, setDisableToggleHideVote] = useState(true);
+
+  const [castStvVote, { error: castStvError }] = useCastStvVoteMutation();
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -82,11 +90,17 @@ const Votation: React.FC = () => {
   const [hideVote, setHideVote] = useState<boolean>(true);
 
   useEffect(() => {
-    if (winnerResult?.getWinnerOfVotation && !winner) {
-      const result = winnerResult.getWinnerOfVotation;
-      setWinner({ id: result.id, text: result.text, votationId: result.votationId });
+    if (winnerResult?.getWinnerOfVotation && !winners) {
+      const result = winnerResult.getWinnerOfVotation as Alternative[];
+      if (result.length > 0) {
+        setWinners(
+          result.map((a) => {
+            return { id: a.id, text: a.text, votationId: a.votationId };
+          })
+        );
+      }
     }
-  }, [winnerResult, winner]);
+  }, [winnerResult, winners]);
 
   useEffect(() => {
     const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
@@ -159,10 +173,25 @@ const Votation: React.FC = () => {
 
   //Register the vote
   const [castVote] = useCastVoteMutation();
-  const [castBlankVote, result] = useCastBlankVoteMutation();
+  const [castBlankVote] = useCastBlankVoteMutation();
   const submitVote = () => {
-    if (selectedAlternativeId !== null) {
+    if (data?.votationById?.type === VotationType.Stv && alternatives) {
       setUserHasVoted(true);
+      setDisableToggleHideVote(false);
+      castStvVote({
+        variables: {
+          votationId,
+          alternatives: alternatives.map((a) => {
+            return {
+              alternativeId: a.id,
+              ranking: a.index,
+            };
+          }),
+        },
+      });
+    } else if (selectedAlternativeId !== null) {
+      setUserHasVoted(true);
+      setDisableToggleHideVote(false);
       if (selectedAlternativeId === 'BLANK') {
         castBlankVote({ variables: { votationId: votationId } });
       } else {
@@ -170,7 +199,6 @@ const Votation: React.FC = () => {
       }
     }
   };
-  console.log(result.data);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
@@ -178,46 +206,46 @@ const Votation: React.FC = () => {
 
   if (error?.message === 'Not Authorised!') {
     return (
-      <>
-        <Center mt="40vh">
-          <Text>
-            Du har ikke tilgang til denne voteringen,{' '}
-            <Link href="/" textDecoration="underline">
-              gå tilbake til hjemmesiden.
-            </Link>
-          </Text>
-        </Center>
-      </>
+      <Center mt="40vh">
+        <Text>
+          Du har ikke tilgang til denne voteringen,{' '}
+          <Link href="/" textDecoration="underline">
+            gå tilbake til hjemmesiden.
+          </Link>
+        </Text>
+      </Center>
     );
   }
 
   if (loading || voteCountLoading) {
     return (
-      <>
-        <Center mt="10vh">
-          <Loading asOverlay={false} text={'Henter votering'} />
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Loading asOverlay={false} text={'Henter votering'} />
+      </Center>
     );
   }
 
   if (error || data?.votationById?.id === undefined || voteCountError) {
     return (
-      <>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
     );
   }
 
   if (status === VotationStatus.Upcoming) {
     return (
-      <>
-        <Center mt="10vh">
-          <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Denne voteringen har ikke åpnet enda, men vil dukke opp her automatisk så fort den åpner.</Text>
+      </Center>
+    );
+  }
+
+  if (castStvError) {
+    return (
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdatert siden og prøv på ny.</Text>
+      </Center>
     );
   }
 
@@ -243,7 +271,7 @@ const Votation: React.FC = () => {
             handleSelect={handleSelect}
             blankVotes={data.votationById.blankVotes || false}
             submitVote={submitVote}
-            submitButtonDisabled={selectedAlternativeId === null}
+            submitButtonDisabled={selectedAlternativeId === null && data.votationById.type !== VotationType.Stv}
             voteCount={voteCount}
             votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
             isStv={data.votationById.type === VotationType.Stv}
@@ -258,11 +286,16 @@ const Votation: React.FC = () => {
           </Box>
         )}
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
-          <CheckResults role={participantRole} votationId={votationId} meetingId={meetingId} />
+          <CheckResults
+            isStv={data.votationById.type === VotationType.Stv}
+            role={participantRole}
+            votationId={votationId}
+            meetingId={meetingId}
+          />
         )}
         {status === 'PUBLISHED_RESULT' && (
           <Box mt="4em">
-            <VotationResult backToVotationList={backToVotationList} text={winner?.text} />
+            <VotationResult backToVotationList={backToVotationList} winners={winners} />
           </Box>
         )}
         {
@@ -276,6 +309,7 @@ const Votation: React.FC = () => {
                   toggleHideVote={() => setHideVote(!hideVote)}
                   votationId={votationId}
                   status={status}
+                  disableHideVote={disableToggleHideVote}
                 />
               </VStack>
             )
