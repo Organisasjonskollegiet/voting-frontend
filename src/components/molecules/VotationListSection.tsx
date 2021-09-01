@@ -1,9 +1,10 @@
 import React from 'react';
 import AddVotationForm from './AddVotationForm';
 import { Droppable } from 'react-beautiful-dnd';
-import { Button, Heading, VStack } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 
 import { Votation } from '../../types/types';
+import StartNextVotationButton from '../atoms/StartNextVotationButton';
 
 interface VotationListSectionProps {
   votations: Votation[];
@@ -13,7 +14,9 @@ interface VotationListSectionProps {
   handleDeleteVotation: (votation: Votation) => void;
   handleDeleteAlternative: (alternativeId: string, votationId: string) => void;
   duplicateVotation: (votation: Votation) => void;
-  openVotation: () => void;
+  handleStartVotation: () => void;
+  checkIfAnyChanges: () => boolean;
+  handleSaveChanges: () => void;
   showStartNextButton: boolean;
   heading?: string;
   droppableId: string;
@@ -28,7 +31,9 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
   handleDeleteVotation,
   handleDeleteAlternative,
   duplicateVotation,
-  openVotation,
+  handleStartVotation,
+  checkIfAnyChanges,
+  handleSaveChanges,
   showStartNextButton,
   heading,
   droppableId,
@@ -63,12 +68,15 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
         )}
       </Droppable>
       {showStartNextButton && votations.length > 0 && votations[0].existsInDb && (
-        <Button onClick={openVotation} w={'250px'} bg="green" color="white" borderRadius={'16em'}>
-          Start neste votering
-        </Button>
+        <>
+          <StartNextVotationButton
+            handleStartVotation={handleStartVotation}
+            checkIfAnyChanges={checkIfAnyChanges}
+            handleSaveChanges={handleSaveChanges}
+          />
+        </>
       )}
     </VStack>
   );
 };
-
 export default VotationListSection;

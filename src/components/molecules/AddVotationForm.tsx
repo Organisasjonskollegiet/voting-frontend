@@ -53,8 +53,6 @@ const AddVotationForm: React.FC<IProps> = ({
   };
 
   const updateNumberOfWinners = (newNumberOfWinners: number) => {
-    console.log({ newNumberOfWinners });
-
     updateVotation({
       ...votation,
       isEdited: true,

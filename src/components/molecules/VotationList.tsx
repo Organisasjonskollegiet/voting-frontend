@@ -369,6 +369,14 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
     );
   }
 
+  const checkIfAnyChanges = () => {
+    return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
+  };
+
+  const startVotation = () => {
+    updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } });
+  };
+
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
   const endedVotations = votations.filter((v) => v.status !== VotationStatus.Upcoming);
 
@@ -388,9 +396,9 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 handleDeleteVotation={handleDeleteVotation}
                 handleDeleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
-                openVotation={() =>
-                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-                }
+                handleStartVotation={startVotation}
+                checkIfAnyChanges={checkIfAnyChanges}
+                handleSaveChanges={() => handleSave(votations)}
                 showStartNextButton={role === Role.Admin}
                 heading={'Neste votering'}
                 isAdmin={role === Role.Admin}
@@ -404,9 +412,9 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 handleDeleteVotation={handleDeleteVotation}
                 handleDeleteAlternative={handleDeleteAlternative}
                 duplicateVotation={duplicateVotation}
-                openVotation={() =>
-                  updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-                }
+                handleStartVotation={startVotation}
+                checkIfAnyChanges={checkIfAnyChanges}
+                handleSaveChanges={() => handleSave(votations)}
                 showStartNextButton={false}
                 heading={'Kommende voteringer'}
                 isAdmin={role === Role.Admin}
@@ -422,9 +430,9 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
               handleDeleteVotation={handleDeleteVotation}
               handleDeleteAlternative={handleDeleteAlternative}
               duplicateVotation={duplicateVotation}
-              openVotation={() =>
-                updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } })
-              }
+              handleStartVotation={startVotation}
+              checkIfAnyChanges={checkIfAnyChanges}
+              handleSaveChanges={() => handleSave(votations)}
               showStartNextButton={false}
               heading={'Kommende voteringer'}
               isAdmin={role === Role.Admin}
@@ -448,7 +456,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
             Legg til votering
           </Button>
           <Button
-            disabled={votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length === 0}
+            disabled={!checkIfAnyChanges()}
             bg="gray.500"
             color="white"
             w={'250px'}
