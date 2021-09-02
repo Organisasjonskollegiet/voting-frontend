@@ -47,6 +47,16 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
     }
   }, [data?.getVotationResults?.voteCount, voteCount]);
 
+  const getBlankAlternative = (blankVoteCount: number) => {
+    return {
+      id: 'BLANK',
+      isWinner: false,
+      text: 'Blanke stemmer',
+      votes: blankVoteCount,
+      votationId,
+    };
+  };
+
   const getRoundedPercentage = (share: number) => {
     return Math.round(share * 100 * 100) / 100;
   };
@@ -100,23 +110,29 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
                   % av stemmeberettigede
                 </Box>
               </HStack>
-              {alternatives.map((alternative) => (
-                <React.Fragment key={alternative.id}>
-                  <Divider m="3em 0" />
-                  <HStack
-                    width={'100%'}
-                    key={alternative.id + 'stack'}
-                    style={alternative.isWinner ? { color: 'green', fontWeight: 'bold' } : {}}
-                  >
-                    <Box width={'25%'}>{alternative.text}</Box>
-                    <Box width={'25%'}>{alternative.votes}</Box>
-                    <Box width={'25%'}>{voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount) : 0}</Box>
-                    <Box width={'25%'}>
-                      {votingEligibleCount > 0 ? getRoundedPercentage(alternative.votes / votingEligibleCount) : 0}
-                    </Box>
-                  </HStack>
-                </React.Fragment>
-              ))}
+              {alternatives
+                .concat(
+                  data?.getVotationResults?.blankVotes
+                    ? getBlankAlternative(data.getVotationResults.blankVoteCount)
+                    : []
+                )
+                .map((alternative) => (
+                  <React.Fragment key={alternative.id}>
+                    <Divider m="3em 0" />
+                    <HStack
+                      width={'100%'}
+                      key={alternative.id + 'stack'}
+                      style={alternative.isWinner ? { color: 'green', fontWeight: 'bold' } : {}}
+                    >
+                      <Box width={'25%'}>{alternative.text}</Box>
+                      <Box width={'25%'}>{alternative.votes}</Box>
+                      <Box width={'25%'}>{voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount) : 0}</Box>
+                      <Box width={'25%'}>
+                        {votingEligibleCount > 0 ? getRoundedPercentage(alternative.votes / votingEligibleCount) : 0}
+                      </Box>
+                    </HStack>
+                  </React.Fragment>
+                ))}
             </VStack>
           </VStack>
         </Box>

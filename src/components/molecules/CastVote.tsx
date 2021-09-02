@@ -41,7 +41,6 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        {userHasVoted && <Text fontSize="16px">Du kan ikke se din stemme etter at du har oppdatert siden.</Text>}
         {isStv ? (
           <PreferenceAlternativeList
             alternatives={alternatives}

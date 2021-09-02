@@ -80,6 +80,8 @@ query GetVotationResults($id: String!) {
       isWinner
       votes
     }
+    blankVotes
+    blankVoteCount
     voteCount
     votingEligibleCount
   }

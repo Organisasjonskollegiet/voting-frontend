@@ -17,7 +17,7 @@ export interface AlternativeListProps {
 
 const blankAlternative: AlternativeChoice = {
   id: 'BLANK',
-  text: 'Stem Blankt',
+  text: 'Stem blankt',
 };
 
 const AlternativeList: React.FC<AlternativeListProps> = ({

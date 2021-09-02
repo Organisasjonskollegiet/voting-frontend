@@ -401,6 +401,8 @@ export type Votation = {
 export type VotationResults = {
   __typename?: 'VotationResults';
   alternatives: Array<Maybe<AlternativeResult>>;
+  blankVotes: Scalars['Boolean'];
+  blankVoteCount: Scalars['Int'];
   voteCount: Scalars['Int'];
   votingEligibleCount: Scalars['Int'];
 };
@@ -780,7 +782,7 @@ export type GetVotationResultsQuery = (
   { __typename?: 'Query' }
   & { getVotationResults?: Maybe<(
     { __typename?: 'VotationResults' }
-    & Pick<VotationResults, 'voteCount' | 'votingEligibleCount'>
+    & Pick<VotationResults, 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeResult' }
       & Pick<AlternativeResult, 'id' | 'text' | 'isWinner' | 'votes'>
@@ -1684,6 +1686,8 @@ export const GetVotationResultsDocument = gql`
       isWinner
       votes
     }
+    blankVotes
+    blankVoteCount
     voteCount
     votingEligibleCount
   }
