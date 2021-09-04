@@ -1,4 +1,4 @@
-import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
+import { Button, Center, Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../pages/Votation';
 import VoteCount from '../atoms/VoteCount';

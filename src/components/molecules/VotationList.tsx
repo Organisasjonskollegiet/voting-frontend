@@ -374,7 +374,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   };
 
   const startVotation = () => {
-    updateVotationStatus({ variables: { id: upcomingVotations[0].id, status: VotationStatus.Open } });
+    updateVotationStatus({ variables: { votationId: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
