@@ -1,11 +1,11 @@
 import React from 'react';
-import { Alternative as AlternativeType } from '../../__generated__/graphql-types';
+import { Alternative as AlternativeType, AlternativeResult } from '../../__generated__/graphql-types';
 import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export interface VotationResultProps {
-  winners: AlternativeType[] | null;
+  winners: AlternativeType[] | AlternativeResult[] | null;
   backToVotationList: () => void;
 }
 
@@ -20,7 +20,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           {winners ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerene' : 'Vinneren'} av valget er`}</Text>
-              {winners.map((w) => (
+              {winners.map((w: AlternativeType | AlternativeResult) => (
                 <Text fontSize="2.25em">{w.text}</Text>
               ))}
             </>

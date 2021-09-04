@@ -15,6 +15,8 @@ import {
   useCastBlankVoteMutation,
   useCastStvVoteMutation,
   Alternative,
+  useGetVotationResultsLazyQuery,
+  AlternativeResult,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -52,6 +54,8 @@ const Votation: React.FC = () => {
   });
   const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
 
+  const [getResult, { data: votationResultData }] = useGetVotationResultsLazyQuery({ variables: { id: votationId } });
+
   // const {
   //   data: votingEligibleCountResult,
   //   loading: votingEligibleCountLoading,
@@ -74,7 +78,7 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
-  const [winners, setWinners] = useState<AlternativeType[] | null>(null);
+  const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
   // be able to unhide vote
@@ -89,6 +93,7 @@ const Votation: React.FC = () => {
 
   const [hideVote, setHideVote] = useState<boolean>(true);
 
+  // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winners) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
@@ -102,6 +107,7 @@ const Votation: React.FC = () => {
     }
   }, [winnerResult, winners]);
 
+  // Update vouteCount when a new vote count is received
   useEffect(() => {
     const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
     if (newVoteCount && newVoteCount !== voteCount) {
@@ -121,12 +127,33 @@ const Votation: React.FC = () => {
   // set initial status of votation when data on votation arrives
   useEffect(() => {
     if (data?.votationById && status !== data.votationById.status) {
-      if (data.votationById.status === 'PUBLISHED_RESULT') {
+      if (
+        data.votationById.status === 'PUBLISHED_RESULT' &&
+        data.votationById.hiddenVotes &&
+        !winnerResult &&
+        participantRole === Role.Participant
+      ) {
         refetchWinner();
+      } else if (
+        !votationResultData &&
+        ((data.votationById.status === VotationStatus.PublishedResult && data.votationById.hiddenVotes) ||
+          (data.votationById.status === VotationStatus.CheckingResult && participantRole !== Role.Participant))
+      ) {
+        getResult();
       }
       setStatus(data.votationById.status);
     }
   }, [data, status, refetchWinner]);
+
+  // Update winner of votation when new result is received from getVotationResult
+  useEffect(() => {
+    if (votationResultData?.getVotationResults && !winners) {
+      const winners = votationResultData.getVotationResults.alternatives.filter(
+        (a) => a?.isWinner
+      ) as AlternativeResult[];
+      setWinners(winners.length > 0 ? winners : null);
+    }
+  }, [votationResultData, winners]);
 
   useEffect(() => {
     if (data?.votationById?.alternatives && !alternatives) {
@@ -287,6 +314,7 @@ const Votation: React.FC = () => {
         )}
         {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
           <CheckResults
+            result={votationResultData}
             isStv={data.votationById.type === VotationType.Stv}
             role={participantRole}
             votationId={votationId}
