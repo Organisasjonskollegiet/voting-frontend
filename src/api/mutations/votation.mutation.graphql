@@ -61,8 +61,8 @@ mutation CastStvVote($votationId: String!, $alternatives: [StvVoteAlternativeInp
   castStvVote(votationId: $votationId, alternatives: $alternatives)
 }
 
-mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
-  updateVotationStatus(id: $id, status: $status) {
+mutation UpdateVotationStatus($votationId: String!, $status: VotationStatus!) {
+  updateVotationStatus(votationId: $votationId, status: $status) {
     __typename
     ... on Votation {
       title

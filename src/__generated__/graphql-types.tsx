@@ -126,7 +126,7 @@ export type MutationUpdateVotationsArgs = {
 
 
 export type MutationUpdateVotationStatusArgs = {
-  id: Scalars['String'];
+  votationId: Scalars['String'];
   status: VotationStatus;
 };
 
@@ -260,12 +260,12 @@ export type QueryGetVoteCountArgs = {
 
 
 export type QueryGetWinnerOfVotationArgs = {
-  id: Scalars['String'];
+  votationId: Scalars['String'];
 };
 
 
 export type QueryGetVotationResultsArgs = {
-  id: Scalars['String'];
+  votationId: Scalars['String'];
 };
 
 
@@ -401,6 +401,8 @@ export type Votation = {
 export type VotationResults = {
   __typename?: 'VotationResults';
   alternatives: Array<Maybe<AlternativeResult>>;
+  blankVotes: Scalars['Boolean'];
+  blankVoteCount: Scalars['Int'];
   voteCount: Scalars['Int'];
   votingEligibleCount: Scalars['Int'];
 };
@@ -596,7 +598,7 @@ export type CastStvVoteMutation = (
 );
 
 export type UpdateVotationStatusMutationVariables = Exact<{
-  id: Scalars['String'];
+  votationId: Scalars['String'];
   status: VotationStatus;
 }>;
 
@@ -772,7 +774,7 @@ export type GetVoteCountQuery = (
 );
 
 export type GetVotationResultsQueryVariables = Exact<{
-  id: Scalars['String'];
+  votationId: Scalars['String'];
 }>;
 
 
@@ -780,7 +782,7 @@ export type GetVotationResultsQuery = (
   { __typename?: 'Query' }
   & { getVotationResults?: Maybe<(
     { __typename?: 'VotationResults' }
-    & Pick<VotationResults, 'voteCount' | 'votingEligibleCount'>
+    & Pick<VotationResults, 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeResult' }
       & Pick<AlternativeResult, 'id' | 'text' | 'isWinner' | 'votes'>
@@ -789,7 +791,7 @@ export type GetVotationResultsQuery = (
 );
 
 export type GetWinnerOfVotationQueryVariables = Exact<{
-  id: Scalars['String'];
+  votationId: Scalars['String'];
 }>;
 
 
@@ -1264,8 +1266,8 @@ export type CastStvVoteMutationHookResult = ReturnType<typeof useCastStvVoteMuta
 export type CastStvVoteMutationResult = Apollo.MutationResult<CastStvVoteMutation>;
 export type CastStvVoteMutationOptions = Apollo.BaseMutationOptions<CastStvVoteMutation, CastStvVoteMutationVariables>;
 export const UpdateVotationStatusDocument = gql`
-    mutation UpdateVotationStatus($id: String!, $status: VotationStatus!) {
-  updateVotationStatus(id: $id, status: $status) {
+    mutation UpdateVotationStatus($votationId: String!, $status: VotationStatus!) {
+  updateVotationStatus(votationId: $votationId, status: $status) {
     __typename
     ... on Votation {
       title
@@ -1292,7 +1294,7 @@ export type UpdateVotationStatusMutationFn = Apollo.MutationFunction<UpdateVotat
  * @example
  * const [updateVotationStatusMutation, { data, loading, error }] = useUpdateVotationStatusMutation({
  *   variables: {
- *      id: // value for 'id'
+ *      votationId: // value for 'votationId'
  *      status: // value for 'status'
  *   },
  * });
@@ -1676,14 +1678,16 @@ export type GetVoteCountQueryHookResult = ReturnType<typeof useGetVoteCountQuery
 export type GetVoteCountLazyQueryHookResult = ReturnType<typeof useGetVoteCountLazyQuery>;
 export type GetVoteCountQueryResult = Apollo.QueryResult<GetVoteCountQuery, GetVoteCountQueryVariables>;
 export const GetVotationResultsDocument = gql`
-    query GetVotationResults($id: String!) {
-  getVotationResults(id: $id) {
+    query GetVotationResults($votationId: String!) {
+  getVotationResults(votationId: $votationId) {
     alternatives {
       id
       text
       isWinner
       votes
     }
+    blankVotes
+    blankVoteCount
     voteCount
     votingEligibleCount
   }
@@ -1702,7 +1706,7 @@ export const GetVotationResultsDocument = gql`
  * @example
  * const { data, loading, error } = useGetVotationResultsQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      votationId: // value for 'votationId'
  *   },
  * });
  */
@@ -1718,8 +1722,8 @@ export type GetVotationResultsQueryHookResult = ReturnType<typeof useGetVotation
 export type GetVotationResultsLazyQueryHookResult = ReturnType<typeof useGetVotationResultsLazyQuery>;
 export type GetVotationResultsQueryResult = Apollo.QueryResult<GetVotationResultsQuery, GetVotationResultsQueryVariables>;
 export const GetWinnerOfVotationDocument = gql`
-    query GetWinnerOfVotation($id: String!) {
-  getWinnerOfVotation(id: $id) {
+    query GetWinnerOfVotation($votationId: String!) {
+  getWinnerOfVotation(votationId: $votationId) {
     id
     text
     votationId
@@ -1739,7 +1743,7 @@ export const GetWinnerOfVotationDocument = gql`
  * @example
  * const { data, loading, error } = useGetWinnerOfVotationQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      votationId: // value for 'votationId'
  *   },
  * });
  */

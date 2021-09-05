@@ -15,17 +15,20 @@ import {
   useCastBlankVoteMutation,
   useCastStvVoteMutation,
   Alternative,
+  useGetVotationResultsLazyQuery,
+  AlternativeResult,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
-import VotationResult from '../atoms/VotationResult';
+import VotationResult from '../molecules/VotationResult';
 import { h1Style } from '../particles/formStyles';
 import VotationController from '../molecules/VotationController';
-import CheckResults from '../molecules/CheckResults';
 import { centerContainer, outerContainer } from '../particles/containerStyles';
 import CastVote from '../molecules/CastVote';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import CheckResults from '../molecules/CheckResults';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -35,8 +38,6 @@ export const subtitlesStyle = {
 } as React.CSSProperties;
 
 export type AlternativeWithIndex = AlternativeType & {
-  // id: string;
-  // text: string;
   index: number;
 };
 
@@ -50,7 +51,11 @@ const Votation: React.FC = () => {
     variables: { votationId: votationId, meetingId: meetingId },
     pollInterval: 1000,
   });
-  const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { id: votationId } });
+  const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
+
+  const [getResult, { data: votationResultData, error: votationResultError }] = useGetVotationResultsLazyQuery({
+    variables: { votationId },
+  });
 
   // const {
   //   data: votingEligibleCountResult,
@@ -74,7 +79,7 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
-  const [winners, setWinners] = useState<AlternativeType[] | null>(null);
+  const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
   // be able to unhide vote
@@ -89,10 +94,13 @@ const Votation: React.FC = () => {
 
   const [hideVote, setHideVote] = useState<boolean>(true);
 
+  // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winners) {
+      console.log('setWinners soon');
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       if (result.length > 0) {
+        console.log('setWinners');
         setWinners(
           result.map((a) => {
             return { id: a.id, text: a.text, votationId: a.votationId };
@@ -102,9 +110,11 @@ const Votation: React.FC = () => {
     }
   }, [winnerResult, winners]);
 
+  // Update vouteCount when a new vote count is received
   useEffect(() => {
     const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
     if (newVoteCount && newVoteCount !== voteCount) {
+      console.log('setResult');
       setVoteCount(newVoteCount);
     }
   }, [voteCountResult, voteCount]);
@@ -121,12 +131,33 @@ const Votation: React.FC = () => {
   // set initial status of votation when data on votation arrives
   useEffect(() => {
     if (data?.votationById && status !== data.votationById.status) {
-      if (data.votationById.status === 'PUBLISHED_RESULT') {
+      if (
+        data.votationById.status === VotationStatus.PublishedResult &&
+        data.votationById.hiddenVotes &&
+        !winnerResult &&
+        participantRole === Role.Participant
+      ) {
         refetchWinner();
+      } else if (
+        !votationResultData &&
+        ((data.votationById.status === VotationStatus.PublishedResult && !data.votationById.hiddenVotes) ||
+          (data.votationById.status === VotationStatus.CheckingResult && participantRole !== Role.Participant))
+      ) {
+        getResult();
       }
       setStatus(data.votationById.status);
     }
-  }, [data, status, refetchWinner]);
+  }, [data, status, refetchWinner, getResult, participantRole, votationResultData, winnerResult]);
+
+  // Update winner of votation when new result is received from getVotationResult
+  useEffect(() => {
+    if (votationResultData?.getVotationResults && !winners) {
+      const winners = votationResultData.getVotationResults.alternatives.filter(
+        (a) => a?.isWinner
+      ) as AlternativeResult[];
+      setWinners(winners.length > 0 ? winners : null);
+    }
+  }, [votationResultData, winners]);
 
   useEffect(() => {
     if (data?.votationById?.alternatives && !alternatives) {
@@ -249,6 +280,8 @@ const Votation: React.FC = () => {
     );
   }
 
+  console.log('error', votationResultError);
+
   return (
     <Center sx={outerContainer}>
       <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
@@ -280,40 +313,53 @@ const Votation: React.FC = () => {
             hideVote={hideVote}
           />
         )}
-        {status === 'CHECKING_RESULT' && participantRole === Role.Participant && (
+        {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (
           <Box>
             <Loading asOverlay={false} text={'Resultatene sjekkes'} />
           </Box>
         )}
-        {status === 'CHECKING_RESULT' && (participantRole === Role.Counter || participantRole === Role.Admin) && (
-          <CheckResults
-            isStv={data.votationById.type === VotationType.Stv}
-            role={participantRole}
-            votationId={votationId}
-            meetingId={meetingId}
-          />
-        )}
-        {status === 'PUBLISHED_RESULT' && (
+        {status === VotationStatus.CheckingResult &&
+          (participantRole === Role.Counter || participantRole === Role.Admin) && (
+            <CheckResults
+              result={votationResultData}
+              isStv={data.votationById.type === VotationType.Stv}
+              role={participantRole}
+              votationId={votationId}
+              meetingId={meetingId}
+            />
+          )}
+        {status === VotationStatus.PublishedResult && (
           <Box mt="4em">
-            <VotationResult backToVotationList={backToVotationList} winners={winners} />
+            <VotationResult
+              result={votationResultData}
+              votationId={votationId}
+              showResultsTable={!data.votationById.hiddenVotes}
+              backToVotationList={backToVotationList}
+              winners={winners}
+            />
           </Box>
         )}
-        {
-          /* Update votation status for admin if votation is open or you are checking results */
-          participantRole === Role.Admin &&
-            (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-              <VStack>
-                <Divider />
-                <VotationController
-                  hideVote={hideVote}
-                  toggleHideVote={() => setHideVote(!hideVote)}
-                  votationId={votationId}
-                  status={status}
-                  disableHideVote={disableToggleHideVote}
-                />
-              </VStack>
-            )
-        }
+        {status === VotationStatus.Invalid && (
+          <VStack>
+            <Text>Voteringen er erklært ugyldig</Text>
+            <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+              Gå tilbake til liste over voteringer
+            </Button>
+          </VStack>
+        )}
+        {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+          <VStack>
+            <Divider />
+            <VotationController
+              hideVote={hideVote}
+              toggleHideVote={() => setHideVote(!hideVote)}
+              votationId={votationId}
+              status={status}
+              disableHideVote={disableToggleHideVote}
+              role={participantRole}
+            />
+          </VStack>
+        )}
       </VStack>
     </Center>
   );

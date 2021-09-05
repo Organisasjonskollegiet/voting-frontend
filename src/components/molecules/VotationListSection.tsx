@@ -68,13 +68,11 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
         )}
       </Droppable>
       {showStartNextButton && votations.length > 0 && votations[0].existsInDb && (
-        <>
-          <StartNextVotationButton
-            handleStartVotation={handleStartVotation}
-            checkIfAnyChanges={checkIfAnyChanges}
-            handleSaveChanges={handleSaveChanges}
-          />
-        </>
+        <StartNextVotationButton
+          handleStartVotation={handleStartVotation}
+          checkIfAnyChanges={checkIfAnyChanges}
+          handleSaveChanges={handleSaveChanges}
+        />
       )}
     </VStack>
   );
