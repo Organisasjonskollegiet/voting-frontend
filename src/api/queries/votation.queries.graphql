@@ -72,21 +72,23 @@ query GetVoteCount($votationId: String!) {
   }
 }
 
-query GetVotationResults($id: String!) {
-  getVotationResults(id: $id) {
+query GetVotationResults($votationId: String!) {
+  getVotationResults(votationId: $votationId) {
     alternatives {
       id
       text
       isWinner
       votes
     }
+    blankVotes
+    blankVoteCount
     voteCount
     votingEligibleCount
   }
 }
 
-query GetWinnerOfVotation($id: String!) {
-  getWinnerOfVotation(id: $id) {
+query GetWinnerOfVotation($votationId: String!) {
+  getWinnerOfVotation(votationId: $votationId) {
     id
     text
     votationId

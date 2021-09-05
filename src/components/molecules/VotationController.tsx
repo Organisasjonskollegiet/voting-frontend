@@ -61,7 +61,7 @@ const VotationController: React.FC<VotationControllerProps> = ({
           _hover={{ bg: 'transparent' }}
           onClick={() =>
             updateVotationStatus({
-              variables: { id: votationId, status: getNextStatus() },
+              variables: { votationId, status: getNextStatus() },
             })
           }
           p="1.5em 4em"

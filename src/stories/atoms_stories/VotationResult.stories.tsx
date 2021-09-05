@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import VotationResult, { VotationResultProps } from '../../components/atoms/VotationResult';
+import VotationResult, { VotationResultProps } from '../../components/molecules/VotationResult';
 
 export default {
   title: 'Atoms/VotationResult',

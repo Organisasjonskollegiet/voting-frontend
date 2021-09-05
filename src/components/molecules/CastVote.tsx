@@ -1,4 +1,4 @@
-import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
+import { Button, Center, Heading, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../pages/Votation';
 import VoteCount from '../atoms/VoteCount';
@@ -41,7 +41,6 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        {userHasVoted && <Text fontSize="16px">Du kan ikke se din stemme etter at du har oppdatert siden.</Text>}
         {isStv ? (
           <PreferenceAlternativeList
             alternatives={alternatives}
