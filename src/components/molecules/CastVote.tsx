@@ -20,6 +20,7 @@ interface CastVoteProps {
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
   hideVote: boolean;
+  isVotingEligible: boolean;
 }
 
 const CastVote: React.FC<CastVoteProps> = ({
@@ -34,6 +35,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   updateAlternatives,
   userHasVoted,
   hideVote,
+  isVotingEligible,
 }) => {
   return (
     <WrapStack breakpoint={730} w="100%" justifyContent="space-between">
@@ -55,6 +57,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             blankVotes={blankVotes}
             userHasVoted={userHasVoted}
             hideVote={hideVote}
+            disableVoting={!isVotingEligible}
           />
         )}
       </VStack>
@@ -66,8 +69,15 @@ const CastVote: React.FC<CastVoteProps> = ({
             </Heading>
           </Center>
         )}
+        {!isVotingEligible && (
+          <Center w="300px" mt="4em">
+            <Heading as="h1" sx={h1Style}>
+              Du har ikke stemmerett.
+            </Heading>
+          </Center>
+        )}
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
-        {!userHasVoted && (
+        {!userHasVoted && isVotingEligible && (
           <Button
             bg="green"
             color="white"
