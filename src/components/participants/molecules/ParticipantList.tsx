@@ -45,9 +45,8 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
       borderRadius="4px"
       boxShadow={boxShadow}
       spacing="0"
-      overflowY="scroll"
+      overflowY="auto"
       maxH="15em"
-      pr="3px"
       sx={customScrollbar}
     >
       {participants.length === 0 ? (

@@ -1,8 +1,9 @@
-import { HStack, Input } from '@chakra-ui/react';
+import { HStack, IconButton, Input } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Role } from '../../../__generated__/graphql-types';
 import SelectRole from './SelectRole';
 import { boxShadow } from '../../particles/formStyles';
+import { AddIcon } from '@chakra-ui/icons';
 
 interface InviteParticipantProps {
   selectRole: (role: Role) => void;
@@ -13,11 +14,15 @@ interface InviteParticipantProps {
 const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, inviteParticipant, participantRole }) => {
   const [email, setEmail] = useState<string>('');
 
+  const addParticipant = () => {
+    if (inviteParticipant(email)) {
+      setEmail('');
+    }
+  };
+
   const handleOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.code === 'Enter') {
-      if (inviteParticipant(email)) {
-        setEmail('');
-      }
+      addParticipant();
     }
   };
 
@@ -33,6 +38,7 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, invit
         onKeyDown={handleOnEnter}
       />
       <SelectRole onChange={(role: Role) => selectRole(role)} value={participantRole} />
+      <IconButton disabled={email === ''} icon={<AddIcon />} aria-label="Legg til deltaker" onClick={addParticipant} />
     </HStack>
   );
 };
