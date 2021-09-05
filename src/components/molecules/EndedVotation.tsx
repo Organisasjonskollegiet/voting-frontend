@@ -45,16 +45,18 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
             <HStack ml="auto">
               {votation.status === VotationStatus.PublishedResult && (
                 <HStack opacity="0.5">
-                  {votation.alternatives.filter((a) => a.isWinner).length > 0 && (
-                    <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
-                  )}
+                  <img alt="hammer" style={{ width: '24px' }} src={Hammer} />
                   <Text isTruncated maxWidth="150px">
-                    {votation.alternatives
-                      .filter((a) => a.isWinner)
-                      .map(
-                        (a, index) =>
-                          `${a.text}${index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''}`
-                      )}
+                    {votation.alternatives.filter((a) => a.isWinner).length > 0
+                      ? votation.alternatives
+                          .filter((a) => a.isWinner)
+                          .map(
+                            (a, index) =>
+                              `${a.text}${
+                                index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''
+                              }`
+                          )
+                      : 'Ingen vinner'}
                   </Text>
                 </HStack>
               )}
