@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
-import { VotationStatus, useUpdateVotationStatusMutation } from '../../__generated__/graphql-types';
+import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import WrapStack from './WrapStack';
 
@@ -10,6 +10,7 @@ interface VotationControllerProps {
   hideVote: boolean;
   toggleHideVote: () => void;
   disableHideVote: boolean;
+  role: Role | null;
 }
 
 const VotationController: React.FC<VotationControllerProps> = ({
@@ -18,6 +19,7 @@ const VotationController: React.FC<VotationControllerProps> = ({
   hideVote,
   toggleHideVote,
   disableHideVote,
+  role,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
 
@@ -53,21 +55,23 @@ const VotationController: React.FC<VotationControllerProps> = ({
       ) : (
         <Box></Box>
       )}
-      <Button
-        w="fit-content"
-        _hover={{ bg: 'transparent' }}
-        onClick={() =>
-          updateVotationStatus({
-            variables: { votationId, status: getNextStatus() },
-          })
-        }
-        p="1.5em 4em"
-        borderRadius="16em"
-        bg="transparent"
-        rightIcon={<ArrowForwardIcon />}
-      >
-        {getText()}
-      </Button>
+      {role === Role.Admin && (
+        <Button
+          w="fit-content"
+          _hover={{ bg: 'transparent' }}
+          onClick={() =>
+            updateVotationStatus({
+              variables: { votationId, status: getNextStatus() },
+            })
+          }
+          p="1.5em 4em"
+          borderRadius="16em"
+          bg="transparent"
+          rightIcon={<ArrowForwardIcon />}
+        >
+          {getText()}
+        </Button>
+      )}
     </WrapStack>
   );
 };

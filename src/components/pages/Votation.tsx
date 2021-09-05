@@ -347,22 +347,19 @@ const Votation: React.FC = () => {
             </Button>
           </VStack>
         )}
-        {
-          /* Update votation status for admin if votation is open or you are checking results */
-          participantRole === Role.Admin &&
-            (status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-              <VStack>
-                <Divider />
-                <VotationController
-                  hideVote={hideVote}
-                  toggleHideVote={() => setHideVote(!hideVote)}
-                  votationId={votationId}
-                  status={status}
-                  disableHideVote={disableToggleHideVote}
-                />
-              </VStack>
-            )
-        }
+        {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+          <VStack>
+            <Divider />
+            <VotationController
+              hideVote={hideVote}
+              toggleHideVote={() => setHideVote(!hideVote)}
+              votationId={votationId}
+              status={status}
+              disableHideVote={disableToggleHideVote}
+              role={participantRole}
+            />
+          </VStack>
+        )}
       </VStack>
     </Center>
   );
