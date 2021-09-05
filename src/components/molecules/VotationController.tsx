@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import WrapStack from './WrapStack';
+import CustomAlertDialog, { DialogType } from '../atoms/CustomAlertDialog';
 
 interface VotationControllerProps {
   votationId: string;
@@ -22,6 +23,7 @@ const VotationController: React.FC<VotationControllerProps> = ({
   role,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const getText = () => {
     switch (status) {
@@ -43,6 +45,24 @@ const VotationController: React.FC<VotationControllerProps> = ({
     }
   };
 
+  const getDialogType = () => {
+    switch (status) {
+      case VotationStatus.Open:
+        return DialogType.CLOSE;
+      case VotationStatus.CheckingResult:
+        return DialogType.PUBLISH;
+      default:
+        return DialogType.PUBLISH;
+    }
+  };
+
+  const handleConfirm = () => {
+    updateVotationStatus({
+      variables: { votationId, status: getNextStatus() },
+    });
+    setDialogOpen(false);
+  };
+
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
       {status === VotationStatus.Open ? (
@@ -59,11 +79,7 @@ const VotationController: React.FC<VotationControllerProps> = ({
         <Button
           w="fit-content"
           _hover={{ bg: 'transparent' }}
-          onClick={() =>
-            updateVotationStatus({
-              variables: { votationId, status: getNextStatus() },
-            })
-          }
+          onClick={() => setDialogOpen(true)}
           p="1.5em 4em"
           borderRadius="16em"
           bg="transparent"
@@ -72,6 +88,12 @@ const VotationController: React.FC<VotationControllerProps> = ({
           {getText()}
         </Button>
       )}
+      <CustomAlertDialog
+        dialogIsOpen={dialogOpen}
+        handleCancel={() => setDialogOpen(false)}
+        handleConfirm={handleConfirm}
+        type={getDialogType()}
+      />
     </WrapStack>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { VStack, Button, Heading } from '@chakra-ui/react';
 import {
   Role,
@@ -8,6 +8,7 @@ import {
 } from '../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
 import ResultsTable from './ResultsTable';
+import CustomAlertDialog, { DialogType } from '../atoms/CustomAlertDialog';
 
 interface CheckResultsProps {
   votationId: string;
@@ -19,9 +20,11 @@ interface CheckResultsProps {
 
 const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role, isStv, result }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
+  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
   const history = useHistory();
 
   const handleInvalidResult = async () => {
+    setInvalidateVotationDialogOpen(false);
     await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
     history.push(`/meeting/${meetingId}`);
   };
@@ -55,10 +58,16 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
       </VStack>
       {!isStv && <ResultsTable result={result} votationId={votationId} />}
       {role === Role.Admin && (
-        <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => handleInvalidResult()}>
+        <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
           Erklær resultat ugyldig og gå til møteadministrering
         </Button>
       )}
+      <CustomAlertDialog
+        dialogIsOpen={invalidateVotationDialogOpen}
+        handleCancel={() => setInvalidateVotationDialogOpen(false)}
+        handleConfirm={handleInvalidResult}
+        type={DialogType.INVALIDATE}
+      />
     </VStack>
   );
 };
