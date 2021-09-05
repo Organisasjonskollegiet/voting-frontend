@@ -18,7 +18,7 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, HStack, Button } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -38,8 +38,6 @@ export const subtitlesStyle = {
 } as React.CSSProperties;
 
 export type AlternativeWithIndex = AlternativeType & {
-  // id: string;
-  // text: string;
   index: number;
 };
 
@@ -132,11 +130,6 @@ const Votation: React.FC = () => {
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
-    // console.log('status updated', status, data?.votationById?.status);
-    // console.log('status:', data?.votationById?.status === VotationStatus.PublishedResult);
-    // console.log('hiddenVotes', data?.votationById?.hiddenVotes);
-    // console.log('winner doess not exists', !winnerResult);
-    // console.log('result not exist', !votationResultData);
     if (data?.votationById && status !== data.votationById.status) {
       if (
         data.votationById.status === VotationStatus.PublishedResult &&
@@ -144,19 +137,17 @@ const Votation: React.FC = () => {
         !winnerResult &&
         participantRole === Role.Participant
       ) {
-        // console.log('refetchWinner');
         refetchWinner();
       } else if (
         !votationResultData &&
         ((data.votationById.status === VotationStatus.PublishedResult && !data.votationById.hiddenVotes) ||
           (data.votationById.status === VotationStatus.CheckingResult && participantRole !== Role.Participant))
       ) {
-        console.log('getResults');
         getResult();
       }
       setStatus(data.votationById.status);
     }
-  }, [data, status, refetchWinner]);
+  }, [data, status, refetchWinner, getResult, participantRole, votationResultData, winnerResult]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {

@@ -63,8 +63,4 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
   );
 };
 
-const styles = {
-  fontWeight: 'bold',
-} as React.CSSProperties;
-
 export default CheckResults;
