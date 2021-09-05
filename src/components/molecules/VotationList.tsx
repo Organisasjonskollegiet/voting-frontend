@@ -300,6 +300,13 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
     };
     setVotations([...votations, newDuplicatedVotation]);
     setActiveVotationId(newId);
+    toast({
+      title: 'Votering duplisert',
+      description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    });
   };
 
   const handleUpdateVotations = (votations: Votation[]) => {
@@ -474,7 +481,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <EndedVotation votation={votation} duplicateVotation={duplicateVotation} />
+              <EndedVotation role={role} votation={votation} duplicateVotation={duplicateVotation} />
             ))}
           </Accordion>
         </VStack>
