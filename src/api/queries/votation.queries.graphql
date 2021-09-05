@@ -26,6 +26,7 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
         email
       }
       role
+      isVotingEligible
     }
   }
 }

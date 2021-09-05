@@ -53,7 +53,7 @@ const Votation: React.FC = () => {
   });
   const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
 
-  const [getResult, { data: votationResultData, error: votationResultError }] = useGetVotationResultsLazyQuery({
+  const [getResult, { data: votationResultData }] = useGetVotationResultsLazyQuery({
     variables: { votationId },
   });
 
@@ -79,6 +79,7 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+  const [isVotingEligible, setIsVotingEligible] = useState(false);
   const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
@@ -97,10 +98,8 @@ const Votation: React.FC = () => {
   // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winners) {
-      console.log('setWinners soon');
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       if (result.length > 0) {
-        console.log('setWinners');
         setWinners(
           result.map((a) => {
             return { id: a.id, text: a.text, votationId: a.votationId };
@@ -114,19 +113,19 @@ const Votation: React.FC = () => {
   useEffect(() => {
     const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
     if (newVoteCount && newVoteCount !== voteCount) {
-      console.log('setResult');
       setVoteCount(newVoteCount);
     }
   }, [voteCountResult, voteCount]);
 
   //Update role after data of participants is received
   useEffect(() => {
-    if (data?.meetingById?.participants && participantRole === null) {
+    if (data?.meetingById?.participants) {
       const participants = data?.meetingById?.participants as Array<Participant>;
       const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
-      setParticipantRole(participant.role);
+      if (participantRole !== participant.role) setParticipantRole(participant.role);
+      if (isVotingEligible !== participant.isVotingEligible) setIsVotingEligible(participant.isVotingEligible);
     }
-  }, [data?.meetingById, user?.sub, participantRole]);
+  }, [data?.meetingById, user?.sub, participantRole, isVotingEligible]);
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
@@ -280,7 +279,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  console.log('error', votationResultError);
+  console.log(isVotingEligible);
 
   return (
     <Center sx={outerContainer}>
@@ -311,6 +310,7 @@ const Votation: React.FC = () => {
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
             hideVote={hideVote}
+            isVotingEligible={isVotingEligible}
           />
         )}
         {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (

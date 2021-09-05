@@ -5,12 +5,20 @@ import { boxShadow } from '../../particles/formStyles';
 interface AlternativeProps {
   handleClick: () => void;
   selected: boolean;
+  disableVoting: boolean;
 }
 
-const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, selected }) => {
+const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, selected, disableVoting }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
   return (
-    <Button w="100%" boxShadow={boxShadow} justifyContent="left" onClick={handleClick} sx={styles}>
+    <Button
+      disabled={disableVoting}
+      w="100%"
+      boxShadow={boxShadow}
+      justifyContent="left"
+      onClick={handleClick}
+      sx={styles}
+    >
       <Text color={selected ? 'white' : 'inherit'} isTruncated>
         {children}
       </Text>
