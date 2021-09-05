@@ -72,9 +72,9 @@ const AddVotationForm: React.FC<IProps> = ({
             justify="space-between"
             marginBottom="16px"
             sx={collapsedStyle}
-            cursor="pointer"
+            cursor={isAdmin ? 'pointer' : 'default'}
             onClick={toggleCollapsedVotation}
-            _hover={expandAndLift}
+            _hover={isAdmin ? expandAndLift : {}}
           >
             <HStack spacing="8">
               <Text sx={highlightedStyle}>{`${index + 1}`}</Text>

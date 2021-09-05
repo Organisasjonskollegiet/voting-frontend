@@ -474,7 +474,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <EndedVotation votation={votation} duplicateVotation={duplicateVotation} />
+              <EndedVotation role={role} votation={votation} duplicateVotation={duplicateVotation} />
             ))}
           </Accordion>
         </VStack>

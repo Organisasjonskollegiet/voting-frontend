@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { Votation } from '../../types/types';
 import { collapsedStyle, highlightedStyle } from '../particles/formStyles';
-import { VotationStatus } from '../../__generated__/graphql-types';
+import { Role, VotationStatus } from '../../__generated__/graphql-types';
 import Hammer from '../../static/hammer.svg';
 import CustomTag from '../atoms/CustomTag';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
@@ -19,9 +19,10 @@ import DuplicateIcon from '../../static/duplicateIcon.svg';
 interface EndedVotationProps {
   votation: Votation;
   duplicateVotation: (votation: Votation) => void;
+  role: Role | undefined;
 }
 
-const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation }) => {
+const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
   return (
     <AccordionItem
       key={votation.id}
@@ -29,7 +30,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
       mb="1.5em"
       _disabled={{ ...collapsedStyle, padding: '0' }}
     >
-      <HStack w="90vw" maxWidth="800px" justifyContent="space-between">
+      <HStack w="90vw" maxWidth="800px" justifyContent="space-between" pr={role === Role.Admin ? '0' : '1.5em'}>
         <AccordionButton
           cursor={votation.alternatives.filter((a) => a.isWinner).length > 1 ? 'pointer' : 'default'}
           p="1em"
@@ -63,17 +64,19 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           {votation.status === VotationStatus.PublishedResult &&
             votation.alternatives.filter((a) => a.isWinner).length > 1 && <AccordionIcon ml="0.5rem" />}
         </AccordionButton>
-        <Tooltip label="Dupliser votering">
-          <IconButton
-            aria-label="Dupliser votering"
-            h="fit-content"
-            bg={'white'}
-            p="1em"
-            borderRadius="4px"
-            onClick={() => duplicateVotation(votation)}
-            icon={<img alt="duplicate" src={DuplicateIcon} style={{ padding: '1em 0' }} />}
-          />
-        </Tooltip>
+        {role === Role.Admin && (
+          <Tooltip label="Dupliser votering">
+            <IconButton
+              aria-label="Dupliser votering"
+              h="fit-content"
+              bg={'white'}
+              p="1em"
+              borderRadius="4px"
+              onClick={() => duplicateVotation(votation)}
+              icon={<img alt="duplicate" src={DuplicateIcon} style={{ padding: '1em 0' }} />}
+            />
+          </Tooltip>
+        )}
       </HStack>
       <AccordionPanel>
         <HStack alignItems="flex-end">
