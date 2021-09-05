@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tooltip, CloseButton } from '@chakra-ui/react';
-import DeleteAlertDialog, { DeleteAlternative } from '../../atoms/DeleteAlertDialog';
+import CustomAlertDialog, { DialogType } from '../../atoms/CustomAlertDialog';
 
 interface DeleteParticipantProps {
   handleDeleteParticipant: () => void;
@@ -25,12 +25,12 @@ const DeleteParticipant: React.FC<DeleteParticipantProps> = ({
           _hover={{ background: 'transparent' }}
         ></CloseButton>
       </Tooltip>
-      <DeleteAlertDialog
+      <CustomAlertDialog
         dialogIsOpen={isDialogOpen}
-        type={DeleteAlternative.PARTICIPANT}
-        handleConfirmDelete={handleDeleteParticipant}
-        itemToBeDeleted={participantName}
-        handleCancelDelete={() => setIsDialogOpen(false)}
+        type={DialogType.PARTICIPANT}
+        handleConfirm={handleDeleteParticipant}
+        itemToBeConfirmed={participantName}
+        handleCancel={() => setIsDialogOpen(false)}
       />
     </>
   );
