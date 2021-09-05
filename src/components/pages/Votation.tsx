@@ -337,7 +337,7 @@ const Votation: React.FC = () => {
               meetingId={meetingId}
             />
           )}
-        {status === VotationStatus.PublishedResult && winners && (
+        {status === VotationStatus.PublishedResult && (
           <Box mt="4em">
             <VotationResult
               result={votationResultData}
