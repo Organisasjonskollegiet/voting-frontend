@@ -28,6 +28,13 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
       role
     }
   }
+
+  getVoteCount(votationId: $votationId) {
+    votingEligibleCount
+    voteCount
+  }
+
+  getOpenVotation(meetingId: $meetingId)
 }
 
 query VotationsByMeetingId($meetingId: String!) {

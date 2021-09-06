@@ -9,7 +9,6 @@ import {
   // useVotationStatusUpdatedSubscription,
   // useNewVoteRegisteredSubscription,
   // useVotingEligibleCountQuery,
-  useGetVoteCountQuery,
   useGetWinnerOfVotationQuery,
   VotationType,
   useCastBlankVoteMutation,
@@ -53,7 +52,7 @@ const Votation: React.FC = () => {
   });
   const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
 
-  const [getResult, { data: votationResultData, error: votationResultError }] = useGetVotationResultsLazyQuery({
+  const [getResult, { data: votationResultData }] = useGetVotationResultsLazyQuery({
     variables: { votationId },
   });
 
@@ -63,10 +62,6 @@ const Votation: React.FC = () => {
   //   error: votingEligibleCountError,
   // } = useVotingEligibleCountQuery({ variables: { votationId } });
 
-  const { data: voteCountResult, error: voteCountError, loading: voteCountLoading } = useGetVoteCountQuery({
-    variables: { votationId },
-    pollInterval: 1000,
-  });
   // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
   //   variables: { id: votationId },
   // });
@@ -94,13 +89,22 @@ const Votation: React.FC = () => {
 
   const [hideVote, setHideVote] = useState<boolean>(true);
 
+  useEffect(() => {
+    // reset state if votation is changed
+    setWinners(null);
+    setDisableToggleHideVote(true);
+    setSelectedAlternativeId(null);
+    setAlternatives(undefined);
+    setHideVote(true);
+    setStatus(null);
+    setUserHasVoted(false);
+  }, [votationId]);
+
   // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winners) {
-      console.log('setWinners soon');
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       if (result.length > 0) {
-        console.log('setWinners');
         setWinners(
           result.map((a) => {
             return { id: a.id, text: a.text, votationId: a.votationId };
@@ -110,14 +114,19 @@ const Votation: React.FC = () => {
     }
   }, [winnerResult, winners]);
 
+  useEffect(() => {
+    if (data?.getOpenVotation && data.getOpenVotation !== votationId) {
+      history.push(`/meeting/${meetingId}/votation/${data.getOpenVotation}`);
+    }
+  }, [data?.getOpenVotation, history, meetingId, votationId]);
+
   // Update vouteCount when a new vote count is received
   useEffect(() => {
-    const newVoteCount = voteCountResult?.getVoteCount?.voteCount;
-    if (newVoteCount && newVoteCount !== voteCount) {
-      console.log('setResult');
+    const newVoteCount = data?.getVoteCount?.voteCount;
+    if (newVoteCount !== undefined && newVoteCount !== voteCount) {
       setVoteCount(newVoteCount);
     }
-  }, [voteCountResult, voteCount]);
+  }, [data?.getVoteCount, voteCount]);
 
   //Update role after data of participants is received
   useEffect(() => {
@@ -248,7 +257,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (loading || voteCountLoading) {
+  if (loading) {
     return (
       <Center mt="10vh">
         <Loading asOverlay={false} text={'Henter votering'} />
@@ -256,7 +265,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (error || data?.votationById?.id === undefined || voteCountError) {
+  if (error || data?.votationById?.id === undefined) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
@@ -279,8 +288,6 @@ const Votation: React.FC = () => {
       </Center>
     );
   }
-
-  console.log('error', votationResultError);
 
   return (
     <Center sx={outerContainer}>
@@ -306,7 +313,7 @@ const Votation: React.FC = () => {
             submitVote={submitVote}
             submitButtonDisabled={selectedAlternativeId === null && data.votationById.type !== VotationType.Stv}
             voteCount={voteCount}
-            votingEligibleCount={voteCountResult?.getVoteCount?.votingEligibleCount}
+            votingEligibleCount={data?.getVoteCount?.votingEligibleCount}
             isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
