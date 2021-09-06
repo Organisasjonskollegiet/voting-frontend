@@ -29,6 +29,13 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
       isVotingEligible
     }
   }
+
+  getVoteCount(votationId: $votationId) {
+    votingEligibleCount
+    voteCount
+  }
+
+  getOpenVotation(meetingId: $meetingId)
 }
 
 query VotationsByMeetingId($meetingId: String!) {

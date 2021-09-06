@@ -239,6 +239,7 @@ export type Query = {
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
   meetingById?: Maybe<Meeting>;
+  getOpenVotation?: Maybe<Scalars['String']>;
   /** Return relevant information about invites and participants connected to meeting */
   participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
 };
@@ -275,6 +276,11 @@ export type QueryResultsOfPublishedVotationsArgs = {
 
 
 export type QueryMeetingByIdArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryGetOpenVotationArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -709,6 +715,7 @@ export type GetVotationByIdQueryVariables = Exact<{
 
 export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
+  & Pick<Query, 'getOpenVotation'>
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
     & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
@@ -726,6 +733,9 @@ export type GetVotationByIdQuery = (
         & Pick<User, 'id' | 'email'>
       )> }
     )>> }
+  )>, getVoteCount?: Maybe<(
+    { __typename?: 'VoteCountResult' }
+    & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
   )> }
 );
 
@@ -1548,6 +1558,11 @@ export const GetVotationByIdDocument = gql`
       isVotingEligible
     }
   }
+  getVoteCount(votationId: $votationId) {
+    votingEligibleCount
+    voteCount
+  }
+  getOpenVotation(meetingId: $meetingId)
 }
     `;
 

@@ -88,7 +88,9 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           {votation.alternatives
             .filter((a) => a.isWinner)
             .map((a) => (
-              <Text alignSelf="flex-end">{a.text}</Text>
+              <Text key={a.id} alignSelf="flex-end">
+                {a.text}
+              </Text>
             ))}
         </HStack>
       </AccordionPanel>

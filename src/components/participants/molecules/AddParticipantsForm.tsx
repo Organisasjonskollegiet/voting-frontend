@@ -53,7 +53,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         title: 'Deltakerlisten ble oppdatert',
         description: '',
         status: 'success',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     }
@@ -67,7 +67,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           title: `Ugyldige epostadresser`,
           description: 'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
           status: 'warning',
-          duration: 9000,
+          duration: 5000,
           isClosable: true,
         });
       setInvalidEmailsInFile([]);
@@ -85,7 +85,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         title: `Deltakeren ble slettet.`,
         description: '',
         status: 'success',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     // eslint-disable-next-line
@@ -135,7 +135,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           id: toastId,
           title: `Ugyldig epostadresse`,
           status: 'error',
-          duration: 9000,
+          duration: 5000,
           isClosable: true,
         });
       return false;
