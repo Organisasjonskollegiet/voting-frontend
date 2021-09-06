@@ -57,7 +57,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             blankVotes={blankVotes}
             userHasVoted={userHasVoted}
             hideVote={hideVote}
-            disableVoting={!isVotingEligible}
+            disableVoting={!isVotingEligible || userHasVoted}
           />
         )}
       </VStack>
