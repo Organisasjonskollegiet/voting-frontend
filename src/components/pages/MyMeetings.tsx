@@ -21,7 +21,7 @@ const MyMeetings: React.FC = () => {
           title: 'Møtet ble slettet',
           description: '',
           status: 'success',
-          duration: 9000,
+          duration: 5000,
           isClosable: true,
         });
       }
@@ -29,6 +29,7 @@ const MyMeetings: React.FC = () => {
   }, [deleteMeetingResult.data, meetingsData, refetch, toast]);
 
   if (error) {
+    console.log(error);
     return (
       <Center mt="20vh">
         <Text>Det skjedde noe galt under innlastingen</Text>

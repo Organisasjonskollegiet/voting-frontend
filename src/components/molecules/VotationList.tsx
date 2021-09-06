@@ -126,7 +126,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
       status: 'success',
-      duration: 9000,
+      duration: 5000,
       isClosable: true,
     });
     const createResults = createVotationsResult.data.createVotations as Votation[];
@@ -234,7 +234,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
         title: 'Votering slettet.',
         description: `${votation.title} ble slettet`,
         status: 'success',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     } catch (error) {
@@ -242,7 +242,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
         title: 'Det oppstod et problem.',
         description: `Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.`,
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     }
@@ -266,7 +266,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
       toast({
         title: 'Alternativ slettet.',
         status: 'success',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     } catch (error) {
@@ -274,7 +274,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
         title: 'Det oppstod et problem.',
         description: `Vi kunne ikke slette alternativet. Prøv å laste inn siden på nytt.`,
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
     }
@@ -304,7 +304,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
       title: 'Votering duplisert',
       description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
       status: 'success',
-      duration: 9000,
+      duration: 5000,
       isClosable: true,
     });
   };

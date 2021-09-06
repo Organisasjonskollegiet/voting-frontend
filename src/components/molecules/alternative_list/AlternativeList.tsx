@@ -13,6 +13,7 @@ export interface AlternativeListProps {
   handleSelect: (id: string | null) => void;
   userHasVoted: boolean;
   hideVote: boolean;
+  disableVoting: boolean;
 }
 
 const blankAlternative: AlternativeChoice = {
@@ -26,6 +27,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
   handleSelect,
   userHasVoted,
   hideVote,
+  disableVoting,
 }) => {
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
@@ -51,6 +53,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
           key={`${alternative.id}_${i}`}
           handleClick={() => handleUpdateSelected(alternative.id)}
           selected={(!userHasVoted || !hideVote) && selectedAlternativeId === alternative.id}
+          disableVoting={disableVoting}
         >
           {alternative.text}
         </Alternative>

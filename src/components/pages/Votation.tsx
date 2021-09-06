@@ -74,6 +74,7 @@ const Votation: React.FC = () => {
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
+  const [isVotingEligible, setIsVotingEligible] = useState(false);
   const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
@@ -130,12 +131,13 @@ const Votation: React.FC = () => {
 
   //Update role after data of participants is received
   useEffect(() => {
-    if (data?.meetingById?.participants && participantRole === null) {
+    if (data?.meetingById?.participants) {
       const participants = data?.meetingById?.participants as Array<Participant>;
       const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
-      setParticipantRole(participant.role);
+      if (participantRole !== participant.role) setParticipantRole(participant.role);
+      if (isVotingEligible !== participant.isVotingEligible) setIsVotingEligible(participant.isVotingEligible);
     }
-  }, [data?.meetingById, user?.sub, participantRole]);
+  }, [data?.meetingById, user?.sub, participantRole, isVotingEligible]);
 
   // set initial status of votation when data on votation arrives
   useEffect(() => {
@@ -318,6 +320,7 @@ const Votation: React.FC = () => {
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
             hideVote={hideVote}
+            isVotingEligible={isVotingEligible}
           />
         )}
         {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (

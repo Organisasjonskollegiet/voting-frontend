@@ -727,7 +727,7 @@ export type GetVotationByIdQuery = (
     { __typename?: 'Meeting' }
     & { participants: Array<Maybe<(
       { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
+      & Pick<Participant, 'role' | 'isVotingEligible'>
       & { user?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'email'>
@@ -1555,6 +1555,7 @@ export const GetVotationByIdDocument = gql`
         email
       }
       role
+      isVotingEligible
     }
   }
   getVoteCount(votationId: $votationId) {

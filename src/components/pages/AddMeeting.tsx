@@ -56,7 +56,7 @@ const AddMeeting: React.FC = () => {
       title: `Møte ${responseKeyWord}`,
       description: `Møtet ble ${responseKeyWord}.`,
       status: 'success',
-      duration: 9000,
+      duration: 5000,
       isClosable: true,
     });
     setActiveTab(1);
@@ -106,7 +106,7 @@ const AddMeeting: React.FC = () => {
         title: 'Kan ikke opprette møte',
         description: 'Du må fylle ut alle felter markert med *',
         status: 'error',
-        duration: 9000,
+        duration: 5000,
         isClosable: true,
       });
       return;
