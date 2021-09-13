@@ -5,7 +5,7 @@ import {
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast } from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text } from '@chakra-ui/react';
 import { labelStyle } from '../../particles/formStyles';
 import Loading from '../../atoms/Loading';
 import { useEffect } from 'react';
@@ -253,6 +253,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
+          <Text mb="0.5em">{`Antall deltakere: ${participants.length}`}</Text>
           <HStack justifyContent="space-between" spacing="1em" mb="2em">
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
