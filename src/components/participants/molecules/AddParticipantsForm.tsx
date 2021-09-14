@@ -160,7 +160,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       if (!content) return;
       const lines = content.split('\n').filter((line: string) => line.length > 0);
 
-      for (let i = 1; i < lines.length; i++) {
+      for (let i = 0; i < lines.length; i++) {
         const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
         const email = lineList[0].toLowerCase().trim();
         const role = lineList.length === 1 ? Role.Participant : getRole(lineList[1]);
