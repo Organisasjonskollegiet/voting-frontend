@@ -17,7 +17,7 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, Button, useToast } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -44,8 +44,6 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
   const history = useHistory();
-
-  const toast = useToast();
 
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
