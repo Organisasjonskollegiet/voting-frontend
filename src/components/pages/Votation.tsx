@@ -16,7 +16,6 @@ import {
   Alternative,
   useGetVotationResultsLazyQuery,
   AlternativeResult,
-  CastVoteDocument,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button, useToast } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -253,8 +252,10 @@ const Votation: React.FC = () => {
   }, [castVoteData, blankVoteData]);
 
   useEffect(() => {
-    if (castVoteError || blankVoteError) {
+    const toastId = 'voteNotRegistered';
+    if ((castVoteError || blankVoteError) && !toast.isActive(toastId)) {
       toast({
+        id: toastId,
         title: 'Din stemme ble ikke registrert.',
         description: 'Prøv på ny, eller ta kontakt med møtepersonalet.',
         status: 'error',
@@ -262,7 +263,7 @@ const Votation: React.FC = () => {
         isClosable: true,
       });
     }
-  }, [castVoteError, blankVoteError]);
+  }, [castVoteError, blankVoteError, toast]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
