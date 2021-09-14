@@ -8,7 +8,6 @@ import {
   useGetVotationByIdQuery,
   // useVotationStatusUpdatedSubscription,
   // useNewVoteRegisteredSubscription,
-  // useVotingEligibleCountQuery,
   useGetWinnerOfVotationQuery,
   VotationType,
   useCastBlankVoteMutation,
@@ -17,7 +16,7 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, Button, useToast } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -44,8 +43,6 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
   const history = useHistory();
-
-  const toast = useToast();
 
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
@@ -81,24 +78,24 @@ const Votation: React.FC = () => {
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
   // be able to unhide vote
-  const [disableToggleHideVote, setDisableToggleHideVote] = useState(true);
+  const [disableToggleShowVote, setDisableToggleShowVote] = useState(true);
 
-  const [castStvVote, { error: castStvError }] = useCastStvVoteMutation();
+  const [castStvVote, { data: stvData, loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
-  const [hideVote, setHideVote] = useState<boolean>(true);
+  const [showVote, setShowVote] = useState<boolean>(false);
 
   useEffect(() => {
     // reset state if votation is changed
     setWinners(null);
-    setDisableToggleHideVote(true);
+    setDisableToggleShowVote(true);
     setSelectedAlternativeId(null);
     setAlternatives(undefined);
-    setHideVote(true);
+    setShowVote(false);
     setStatus(null);
     setUserHasVoted(false);
   }, [votationId]);
@@ -245,25 +242,11 @@ const Votation: React.FC = () => {
 
   // UPDATE USERHASVOTED AFTER RECEIVING RESPONSE FROM BACKEND
   useEffect(() => {
-    if (castVoteData || blankVoteData) {
+    if (castVoteData || blankVoteData || stvData) {
       setUserHasVoted(true);
-      setDisableToggleHideVote(false);
+      setDisableToggleShowVote(false);
     }
-  }, [castVoteData, blankVoteData]);
-
-  useEffect(() => {
-    const toastId = 'voteNotRegistered';
-    if ((castVoteError || blankVoteError) && !toast.isActive(toastId)) {
-      toast({
-        id: toastId,
-        title: 'Din stemme ble ikke registrert.',
-        description: 'Prøv på ny, eller ta kontakt med møtepersonalet.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  }, [castVoteError, blankVoteError, toast]);
+  }, [castVoteData, blankVoteData, stvData]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
@@ -306,7 +289,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (castStvError) {
+  if (castStvError || castVoteError || blankVoteError) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdatert siden og prøv på ny.</Text>
@@ -316,7 +299,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
-      {(castVoteLoading || blankVoteLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
+      {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
       <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
@@ -343,7 +326,7 @@ const Votation: React.FC = () => {
             isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
-            hideVote={hideVote}
+            showVote={showVote}
             isVotingEligible={isVotingEligible}
           />
         )}
@@ -385,11 +368,11 @@ const Votation: React.FC = () => {
           <VStack>
             <Divider />
             <VotationController
-              hideVote={hideVote}
-              toggleHideVote={() => setHideVote(!hideVote)}
+              showVote={showVote}
+              toggleShowVote={() => setShowVote(!showVote)}
               votationId={votationId}
               status={status}
-              disableHideVote={disableToggleHideVote}
+              disableShowVote={disableToggleShowVote}
               role={participantRole}
             />
           </VStack>
