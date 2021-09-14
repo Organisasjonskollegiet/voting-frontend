@@ -19,7 +19,7 @@ interface CastVoteProps {
   isStv: boolean;
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
-  hideVote: boolean;
+  showVote: boolean;
   isVotingEligible: boolean;
 }
 
@@ -34,7 +34,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   isStv,
   updateAlternatives,
   userHasVoted,
-  hideVote,
+  showVote,
   isVotingEligible,
 }) => {
   return (
@@ -48,7 +48,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             alternatives={alternatives}
             updateAlternatives={updateAlternatives}
             userHasVoted={userHasVoted}
-            hideVote={hideVote}
+            showVote={showVote}
           />
         ) : (
           <AlternativeList
@@ -56,7 +56,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             handleSelect={handleSelect}
             blankVotes={blankVotes}
             userHasVoted={userHasVoted}
-            hideVote={hideVote}
+            showVote={showVote}
             disableVoting={!isVotingEligible || userHasVoted}
           />
         )}

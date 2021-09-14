@@ -8,18 +8,18 @@ import CustomAlertDialog, { DialogType } from '../atoms/CustomAlertDialog';
 interface VotationControllerProps {
   votationId: string;
   status: VotationStatus;
-  hideVote: boolean;
-  toggleHideVote: () => void;
-  disableHideVote: boolean;
+  showVote: boolean;
+  toggleShowVote: () => void;
+  disableShowVote: boolean;
   role: Role | null;
 }
 
 const VotationController: React.FC<VotationControllerProps> = ({
   votationId,
   status,
-  hideVote,
-  toggleHideVote,
-  disableHideVote,
+  showVote,
+  toggleShowVote,
+  disableShowVote,
   role,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
@@ -67,9 +67,9 @@ const VotationController: React.FC<VotationControllerProps> = ({
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
       {status === VotationStatus.Open ? (
         <FormControl display="flex" width="fit-content">
-          <Switch isDisabled={disableHideVote} id="hide-vote" onChange={toggleHideVote} isChecked={hideVote} />
+          <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
-            Skjul min stemme
+            Vis min stemme
           </FormLabel>
         </FormControl>
       ) : (

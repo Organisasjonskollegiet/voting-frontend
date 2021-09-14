@@ -79,7 +79,7 @@ const Votation: React.FC = () => {
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
   // be able to unhide vote
-  const [disableToggleHideVote, setDisableToggleHideVote] = useState(true);
+  const [disableToggleShowVote, setDisableToggleShowVote] = useState(true);
 
   const [castStvVote, { error: castStvError }] = useCastStvVoteMutation();
 
@@ -88,15 +88,15 @@ const Votation: React.FC = () => {
   const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
   const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
-  const [hideVote, setHideVote] = useState<boolean>(true);
+  const [showVote, setShowVote] = useState<boolean>(true);
 
   useEffect(() => {
     // reset state if votation is changed
     setWinners(null);
-    setDisableToggleHideVote(true);
+    setDisableToggleShowVote(true);
     setSelectedAlternativeId(null);
     setAlternatives(undefined);
-    setHideVote(true);
+    setShowVote(true);
     setStatus(null);
     setUserHasVoted(false);
   }, [votationId]);
@@ -219,7 +219,7 @@ const Votation: React.FC = () => {
   const submitVote = () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
       setUserHasVoted(true);
-      setDisableToggleHideVote(false);
+      setDisableToggleShowVote(false);
       castStvVote({
         variables: {
           votationId,
@@ -233,7 +233,7 @@ const Votation: React.FC = () => {
       });
     } else if (selectedAlternativeId !== null) {
       setUserHasVoted(true);
-      setDisableToggleHideVote(false);
+      setDisableToggleShowVote(false);
       if (selectedAlternativeId === 'BLANK') {
         castBlankVote({ variables: { votationId: votationId } });
       } else {
@@ -319,7 +319,7 @@ const Votation: React.FC = () => {
             isStv={data.votationById.type === VotationType.Stv}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
-            hideVote={hideVote}
+            showVote={showVote}
             isVotingEligible={isVotingEligible}
           />
         )}
@@ -361,11 +361,11 @@ const Votation: React.FC = () => {
           <VStack>
             <Divider />
             <VotationController
-              hideVote={hideVote}
-              toggleHideVote={() => setHideVote(!hideVote)}
+              showVote={showVote}
+              toggleShowVote={() => setShowVote(!showVote)}
               votationId={votationId}
               status={status}
-              disableHideVote={disableToggleHideVote}
+              disableShowVote={disableToggleShowVote}
               role={participantRole}
             />
           </VStack>
