@@ -18,7 +18,7 @@ import {
   AlternativeResult,
   CastVoteDocument,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button, useToast } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -45,6 +45,8 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
   const history = useHistory();
+
+  const toast = useToast();
 
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
@@ -242,13 +244,25 @@ const Votation: React.FC = () => {
     }
   };
 
+  // UPDATE USERHASVOTED AFTER RECEIVING RESPONSE FROM BACKEND
   useEffect(() => {
     if (castVoteData || blankVoteData) {
-      console.log(castVoteData, blankVoteData);
       setUserHasVoted(true);
       setDisableToggleHideVote(false);
     }
   }, [castVoteData, blankVoteData]);
+
+  useEffect(() => {
+    if (castVoteError || blankVoteError) {
+      toast({
+        title: 'Din stemme ble ikke registrert.',
+        description: 'Prøv på ny, eller ta kontakt med møtepersonalet.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [castVoteError, blankVoteError]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
