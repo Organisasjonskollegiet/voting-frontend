@@ -102,7 +102,9 @@ const MeetingLobby: React.FC = () => {
             <Divider />
             <HStack justifyContent="space-between">
               <ReturnToPreviousButton onClick={backToVotationList} text="Tiltake til møteoversikt" />
-              <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+              {role === Role.Admin && (
+                <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+              )}
             </HStack>
           </VStack>
         </VStack>
