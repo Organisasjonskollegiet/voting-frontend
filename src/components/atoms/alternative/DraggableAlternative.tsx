@@ -20,7 +20,7 @@ const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative
               {alternative.index + 1}
             </Text>
             <HStack w="100%" justifyContent="space-between" sx={styles}>
-              <Text>{!showVote ? alternative.text : 'Stemmer skjult'}</Text>
+              <Text>{showVote ? alternative.text : 'Stemmer skjult'}</Text>
               <Box {...provided.dragHandleProps}>
                 <DragHandleIcon />
               </Box>
