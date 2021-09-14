@@ -17,7 +17,7 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
 } from '../../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button, useToast } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -44,6 +44,8 @@ const Votation: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
   const history = useHistory();
+
+  const toast = useToast();
 
   //Get votation data and participants from meeting
   const { data, loading, error } = useGetVotationByIdQuery({
@@ -214,12 +216,13 @@ const Votation: React.FC = () => {
   // }, [newVoteCountResult, voteCount]);
 
   //Register the vote
-  const [castVote] = useCastVoteMutation();
-  const [castBlankVote] = useCastBlankVoteMutation();
+  const [castVote, { data: castVoteData, loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
+  const [
+    castBlankVote,
+    { data: blankVoteData, loading: blankVoteLoading, error: blankVoteError },
+  ] = useCastBlankVoteMutation();
   const submitVote = () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
-      setUserHasVoted(true);
-      setDisableToggleHideVote(false);
       castStvVote({
         variables: {
           votationId,
@@ -232,8 +235,6 @@ const Votation: React.FC = () => {
         },
       });
     } else if (selectedAlternativeId !== null) {
-      setUserHasVoted(true);
-      setDisableToggleHideVote(false);
       if (selectedAlternativeId === 'BLANK') {
         castBlankVote({ variables: { votationId: votationId } });
       } else {
@@ -241,6 +242,28 @@ const Votation: React.FC = () => {
       }
     }
   };
+
+  // UPDATE USERHASVOTED AFTER RECEIVING RESPONSE FROM BACKEND
+  useEffect(() => {
+    if (castVoteData || blankVoteData) {
+      setUserHasVoted(true);
+      setDisableToggleHideVote(false);
+    }
+  }, [castVoteData, blankVoteData]);
+
+  useEffect(() => {
+    const toastId = 'voteNotRegistered';
+    if ((castVoteError || blankVoteError) && !toast.isActive(toastId)) {
+      toast({
+        id: toastId,
+        title: 'Din stemme ble ikke registrert.',
+        description: 'Prøv på ny, eller ta kontakt med møtepersonalet.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [castVoteError, blankVoteError, toast]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
@@ -293,6 +316,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
+      {(castVoteLoading || blankVoteLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
       <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
