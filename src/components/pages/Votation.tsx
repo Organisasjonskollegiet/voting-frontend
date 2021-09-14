@@ -16,6 +16,7 @@ import {
   Alternative,
   useGetVotationResultsLazyQuery,
   AlternativeResult,
+  CastVoteDocument,
 } from '../../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../atoms/Loading';
@@ -214,12 +215,13 @@ const Votation: React.FC = () => {
   // }, [newVoteCountResult, voteCount]);
 
   //Register the vote
-  const [castVote] = useCastVoteMutation();
-  const [castBlankVote] = useCastBlankVoteMutation();
+  const [castVote, { data: castVoteData, loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
+  const [
+    castBlankVote,
+    { data: blankVoteData, loading: blankVoteLoading, error: blankVoteError },
+  ] = useCastBlankVoteMutation();
   const submitVote = () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
-      setUserHasVoted(true);
-      setDisableToggleHideVote(false);
       castStvVote({
         variables: {
           votationId,
@@ -232,8 +234,6 @@ const Votation: React.FC = () => {
         },
       });
     } else if (selectedAlternativeId !== null) {
-      setUserHasVoted(true);
-      setDisableToggleHideVote(false);
       if (selectedAlternativeId === 'BLANK') {
         castBlankVote({ variables: { votationId: votationId } });
       } else {
@@ -241,6 +241,14 @@ const Votation: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (castVoteData || blankVoteData) {
+      console.log(castVoteData, blankVoteData);
+      setUserHasVoted(true);
+      setDisableToggleHideVote(false);
+    }
+  }, [castVoteData, blankVoteData]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
@@ -293,6 +301,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
+      {(castVoteLoading || blankVoteLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
       <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
