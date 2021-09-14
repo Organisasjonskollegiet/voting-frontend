@@ -2,6 +2,7 @@ import React from 'react';
 import { FormControl, FormLabel, CheckboxGroup, VStack, Checkbox } from '@chakra-ui/react';
 import { labelStyle, checkboxStyle } from '../particles/formStyles';
 import { Votation } from '../../types/types';
+import { VotationType } from '../../__generated__/graphql-types';
 
 interface IProps {
   votation: Votation;
@@ -16,22 +17,24 @@ const VotationCheckboxes: React.FC<IProps> = ({ votation, updateVotation }) => {
       </FormLabel>
       <CheckboxGroup>
         <VStack spacing="5" align="left">
-          <Checkbox
-            sx={checkboxStyle}
-            isChecked={votation.blankVotes}
-            onChange={() =>
-              updateVotation({
-                ...votation,
-                isEdited: true,
-                blankVotes: !votation.blankVotes,
-              })
-            }
-            colorScheme="gray"
-            spacing="16px"
-            iconSize="150px"
-          >
-            Stemmer kan være blanke
-          </Checkbox>
+          {votation.type !== VotationType.Stv && (
+            <Checkbox
+              sx={checkboxStyle}
+              isChecked={votation.blankVotes}
+              onChange={() =>
+                updateVotation({
+                  ...votation,
+                  isEdited: true,
+                  blankVotes: !votation.blankVotes,
+                })
+              }
+              colorScheme="gray"
+              spacing="16px"
+              iconSize="150px"
+            >
+              Stemmer kan være blanke
+            </Checkbox>
+          )}
           <Checkbox
             sx={checkboxStyle}
             isChecked={votation.hiddenVotes}

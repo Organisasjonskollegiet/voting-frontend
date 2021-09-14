@@ -83,7 +83,7 @@ const Votation: React.FC = () => {
   // be able to unhide vote
   const [disableToggleShowVote, setDisableToggleShowVote] = useState(true);
 
-  const [castStvVote, { error: castStvError }] = useCastStvVoteMutation();
+  const [castStvVote, { data: stvData, loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
@@ -245,25 +245,11 @@ const Votation: React.FC = () => {
 
   // UPDATE USERHASVOTED AFTER RECEIVING RESPONSE FROM BACKEND
   useEffect(() => {
-    if (castVoteData || blankVoteData) {
+    if (castVoteData || blankVoteData || stvData) {
       setUserHasVoted(true);
       setDisableToggleShowVote(false);
     }
-  }, [castVoteData, blankVoteData]);
-
-  useEffect(() => {
-    const toastId = 'voteNotRegistered';
-    if ((castVoteError || blankVoteError) && !toast.isActive(toastId)) {
-      toast({
-        id: toastId,
-        title: 'Din stemme ble ikke registrert.',
-        description: 'Prøv på ny, eller ta kontakt med møtepersonalet.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  }, [castVoteError, blankVoteError, toast]);
+  }, [castVoteData, blankVoteData, stvData]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
@@ -306,7 +292,7 @@ const Votation: React.FC = () => {
     );
   }
 
-  if (castStvError) {
+  if (castStvError || castVoteError || blankVoteError) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdatert siden og prøv på ny.</Text>
@@ -316,7 +302,7 @@ const Votation: React.FC = () => {
 
   return (
     <Center sx={outerContainer}>
-      {(castVoteLoading || blankVoteLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
+      {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
       <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
         <VStack alignItems="left" spacing="0.5rem">
           <Heading as="h1" style={subtitlesStyle}>
