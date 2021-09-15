@@ -73,14 +73,14 @@ const MyMeetings: React.FC = () => {
   return (
     <PageContainer>
       {deleteMeetingResult.loading && <Loading asOverlay={true} text="Sletter møte" />}
-      <Box w="65vw" m="auto" pt="5em" pb="1.125em" maxWidth="800px">
+      <Box m="auto" pt="5em" pb="1.125em" maxWidth="600px">
         {meetingsData.length === 0 && (
-          <Center mb="2.625em">
+          <Center m="0 2em 2.625em">
             <Text>Du har ingen kommende møter</Text>
           </Center>
         )}
         {ongoingMeetings.length > 0 && (
-          <Box mb="2.625em">
+          <Box m="0 2em 2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Pågående møter
             </Heading>
@@ -91,7 +91,7 @@ const MyMeetings: React.FC = () => {
           </Box>
         )}
         {upcomingMeetings.length > 0 && (
-          <Box mb="2.625em">
+          <Box m="0 2em 2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
               Kommende møter
             </Heading>
@@ -102,7 +102,7 @@ const MyMeetings: React.FC = () => {
           </Box>
         )}
         {endedMeetings.length > 0 && (
-          <Box mb="2.625em">
+          <Box m="0 2em 2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
               {' '}
               Tidligere møter

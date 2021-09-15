@@ -29,6 +29,7 @@ const styles = {
   borderRadius: '4px',
   boxShadow,
   padding: '1em 2em',
+  overflow: 'auto',
   ...transition,
 } as React.CSSProperties;
 
@@ -76,12 +77,12 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
     <Box _hover={{ cursor: 'pointer', ...expandAndLift }} onClick={handleClick} sx={styles}>
       <Flex justifyContent="space-between">
         <Box width="100%">
-          <button onClick={handleClick}>
-            <Heading as="h2" fontSize="1.125em">
-              {' '}
-              {title}{' '}
-            </Heading>
-          </button>
+          {/* <button onClick={handleClick}> */}
+          <Heading as="h2" fontSize="1.125em">
+            {' '}
+            {title}{' '}
+          </Heading>
+          {/* </button> */}
           {description && (
             <Text mb="1em" fontSize="0.75em">
               {' '}
