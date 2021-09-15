@@ -29,7 +29,6 @@ const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, select
 export const AlternativeConfig: ComponentStyleConfig = {
   baseStyle: {
     height: '52px',
-    minWidth: '320px',
     padding: '12px;',
     borderRadius: '5px',
     fontSize: '18px',

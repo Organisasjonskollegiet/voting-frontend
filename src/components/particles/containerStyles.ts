@@ -9,6 +9,5 @@ export const outerContainer = {
 } as React.CSSProperties;
 
 export const centerContainer = {
-  minWidth: '320px',
   width: '100%',
 } as React.CSSProperties;
