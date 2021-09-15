@@ -172,8 +172,9 @@ const Votation: React.FC = () => {
   useEffect(() => {
     if (data?.votationById?.alternatives && !alternatives) {
       const alternatives = data.votationById.alternatives.filter((a) => a) as AlternativeType[];
+      const shuffledAlternatives = shuffleAlternatives(alternatives);
       setAlternatives(
-        alternatives.map((a, index) => {
+        shuffledAlternatives.map((a, index) => {
           return {
             ...a,
             index,
@@ -250,6 +251,23 @@ const Votation: React.FC = () => {
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
+  };
+
+  const shuffleAlternatives = (alternatives: AlternativeType[]) => {
+    let currentIndex = alternatives.length;
+    let randomIndex;
+
+    // While there remain elements to shuffle...
+    while (currentIndex !== 0) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [alternatives[currentIndex], alternatives[randomIndex]] = [alternatives[randomIndex], alternatives[currentIndex]];
+    }
+
+    return alternatives;
   };
 
   if (error?.message === 'Not Authorised!') {
