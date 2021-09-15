@@ -9,13 +9,16 @@ import Loading from '../atoms/Loading';
 
 const MyMeetings: React.FC = () => {
   const { data, loading, error, refetch } = useGetMeetingsQuery();
-  const [deleteMeeting, deleteMeetingResult] = useDeleteMeetingMutation();
+  const [
+    deleteMeeting,
+    { data: deleteMeetingData, error: deleteMeetingError, loading: deleteMeetingLoading },
+  ] = useDeleteMeetingMutation();
   const toast = useToast();
   const meetingsData = data?.meetings;
 
   useEffect(() => {
-    if (deleteMeetingResult.data?.deleteMeeting) {
-      if (meetingsData?.map((meeting) => meeting?.id).includes(deleteMeetingResult.data.deleteMeeting.id)) {
+    if (deleteMeetingData?.deleteMeeting) {
+      if (meetingsData?.map((meeting) => meeting?.id).includes(deleteMeetingData.deleteMeeting.id)) {
         refetch();
         toast({
           title: 'Møtet ble slettet',
@@ -26,7 +29,22 @@ const MyMeetings: React.FC = () => {
         });
       }
     }
-  }, [deleteMeetingResult.data, meetingsData, refetch, toast]);
+  }, [deleteMeetingData, meetingsData, refetch, toast]);
+
+  useEffect(() => {
+    const toastId = 'errorDeletingMeeting';
+    if (deleteMeetingError && toast.isActive(toastId)) {
+      toast({
+        id: toastId,
+        title: 'Kunne ikke slette møte.',
+        description:
+          'Det oppstod et problem med å slette måte. Prøv på ny eller ta kontakt med Organisasjonskollegiet.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [deleteMeetingError, toast]);
 
   if (error) {
     console.log(error);
@@ -72,7 +90,7 @@ const MyMeetings: React.FC = () => {
 
   return (
     <PageContainer>
-      {deleteMeetingResult.loading && <Loading asOverlay={true} text="Sletter møte" />}
+      {deleteMeetingLoading && <Loading asOverlay={true} text="Sletter møte" />}
       <Box m="auto" pt="5em" pb="1.125em" maxWidth="600px">
         {meetingsData.length === 0 && (
           <Center m="0 2em 2.625em">
