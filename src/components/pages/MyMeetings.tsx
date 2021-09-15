@@ -44,7 +44,7 @@ const MyMeetings: React.FC = () => {
         isClosable: true,
       });
     }
-  }, [deleteMeetingError]);
+  }, [deleteMeetingError, toast]);
 
   if (error) {
     console.log(error);
