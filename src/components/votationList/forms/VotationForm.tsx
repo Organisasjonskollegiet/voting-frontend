@@ -66,10 +66,9 @@ const AddVotationForm: React.FC<IProps> = ({
         {(provided) => (
           <HStack
             w="90vw"
-            {...provided.dragHandleProps}
+            maxWidth="800px"
             ref={provided.innerRef}
             {...provided.draggableProps}
-            maxWidth="800px"
             justify="space-between"
             marginBottom="16px"
             sx={collapsedStyle}
