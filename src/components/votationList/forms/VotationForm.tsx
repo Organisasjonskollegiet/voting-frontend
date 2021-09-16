@@ -81,7 +81,7 @@ const AddVotationForm: React.FC<IProps> = ({
               <Text>{votation.title}</Text>
             </HStack>
             {isAdmin && (
-              <Box>
+              <Box {...provided.dragHandleProps}>
                 <DragHandleIcon />
               </Box>
             )}
