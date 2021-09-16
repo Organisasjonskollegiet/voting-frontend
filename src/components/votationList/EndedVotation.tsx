@@ -12,9 +12,9 @@ import {
 import { Votation } from '../../types/types';
 import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
 import { Role, VotationStatus } from '../../__generated__/graphql-types';
-import Hammer from '../static/hammer.svg';
+import Hammer from '../../static/hammer.svg';
 import CustomTag from '../common/CustomTag';
-import DuplicateIcon from '../static/duplicateIcon.svg';
+import DuplicateIcon from '../../static/duplicateIcon.svg';
 
 interface EndedVotationProps {
   votation: Votation;

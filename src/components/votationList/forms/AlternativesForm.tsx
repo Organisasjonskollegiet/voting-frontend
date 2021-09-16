@@ -10,7 +10,7 @@ import {
   CloseButton,
   useToast,
 } from '@chakra-ui/react';
-import AddIcon from '../../static/addIcon.svg';
+import AddIcon from '../../../static/addIcon.svg';
 import { v4 as uuid } from 'uuid';
 import { labelStyle, inputStyle, highlightedInputStyle } from '../../styles/formStyles';
 import { Votation, Alternative } from '../../../types/types';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
-import DeleteIcon from '../../static/deleteIcon.svg';
-import DuplicateIcon from '../../static/duplicateIcon.svg';
+import DeleteIcon from '../../../static/deleteIcon.svg';
+import DuplicateIcon from '../../../static/duplicateIcon.svg';
 import { VotationType } from '../../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
 import AlternativesForm from './AlternativesForm';
