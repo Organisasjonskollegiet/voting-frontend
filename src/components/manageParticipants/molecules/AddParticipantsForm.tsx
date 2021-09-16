@@ -42,48 +42,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   const [updateParticipant, updateParticipantResult] = useUpdateParticipantMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
-  // const [invalidEmailsInFile, setInvalidEmailsInFile] = useState<string[]>([]);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
-
-  // useEffect(() => {
-  //   if (!participants || !addParticipantsResult.data) return;
-  //   const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantOrInvite[];
-  //   const nonUpdatedParticipants = participants.filter(
-  //     (participant) => !newParticipants.map((p) => p.email).includes(participant.email)
-  //   );
-  //   const sortedParticipants = [...nonUpdatedParticipants, ...newParticipants].sort((a, b) =>
-  //     a.email.localeCompare(b.email)
-  //   );
-  //   setParticipants(sortedParticipants);
-  //   const toastId = 'participantsUpdated';
-  //   if (!toast.isActive(toastId)) {
-  //     toast({
-  //       id: toastId,
-  //       title: 'Deltakerlisten ble oppdatert',
-  //       description: '',
-  //       status: 'success',
-  //       duration: 5000,
-  //       isClosable: true,
-  //     });
-  //   }
-
-  //   if (invalidEmailsInFile.length > 0) {
-  //     const invalidLineNumbers = invalidEmailsInFile.reduce((a, b) => a + ', ' + b);
-  //     const toastId = 'invalidEmails';
-  //     if (!toast.isActive(toastId))
-  //       toast({
-  //         id: toastId,
-  //         title: `Ugyldige epostadresser`,
-  //         description: 'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
-  //         status: 'warning',
-  //         duration: 5000,
-  //         isClosable: true,
-  //       });
-  //     setInvalidEmailsInFile([]);
-  //   }
-  //   // eslint-disable-next-line
-  // }, [addParticipantsResult.data]);
 
   useEffect(() => {
     if (!participants || !deleteParticipantsResult.data) return;
@@ -251,6 +211,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
       {addParticipantsResult.loading && <Loading asOverlay={true} text="Legger til deltaker" />}
+      {updateParticipantResult.loading && <Loading asOverlay={true} text="Oppdaterer deltaker" />}
       {deleteParticipantsResult.loading && <Loading asOverlay={true} text="Sletter deltaker" />}
       <VStack spacing="7">
         <FormControl>
