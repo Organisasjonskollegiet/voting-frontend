@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { labelStyle, inputStyle, highlightedInputStyle } from '../../components/styles/formStyles';
-import { Votation } from '../../types/types';
-import { AutoResizeTextarea } from '../../components/common/AutosizeTextArea';
+import { labelStyle, inputStyle, highlightedInputStyle } from '../../styles/formStyles';
+import { Votation } from '../../../types/types';
+import { AutoResizeTextarea } from '../../common/AutosizeTextArea';
 
 interface IProps {
   votation: Votation;

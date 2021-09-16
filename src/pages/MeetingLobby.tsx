@@ -13,7 +13,7 @@ import Loading from '../components/common/Loading';
 import { offwhite } from '../components/styles/theme';
 import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../components/styles/formStyles';
-import VotationList from '../votationList/VotationList';
+import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
 

@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
 import DeleteIcon from '../../static/deleteIcon.svg';
 import DuplicateIcon from '../../static/duplicateIcon.svg';
-import { VotationType } from '../../__generated__/graphql-types';
+import { VotationType } from '../../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
 import AlternativesForm from './AlternativesForm';
 import VotationTypeSelect from './VotationTypeSelect';
 import VotationCheckboxes from './VotationCheckboxes';
 import VotationInfoForm from './VotationInfoForm';
-import { collapsedStyle, highlightedStyle, containerStyle } from '../../components/styles/formStyles';
-import { Votation } from '../../types/types';
-import CustomAlertDialog, { DialogType } from '../../components/common/CustomAlertDialog';
+import { collapsedStyle, highlightedStyle, containerStyle } from '../../styles/formStyles';
+import { Votation } from '../../../types/types';
+import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
 import { DragHandleIcon } from '@chakra-ui/icons';
-import { expandAndLift } from '../../components/styles/styles';
+import { expandAndLift } from '../../styles/styles';
 
 interface IProps {
   index: number;

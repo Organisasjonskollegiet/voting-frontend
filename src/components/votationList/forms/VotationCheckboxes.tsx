@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormControl, FormLabel, CheckboxGroup, VStack, Checkbox } from '@chakra-ui/react';
-import { labelStyle, checkboxStyle } from '../../components/styles/formStyles';
-import { Votation } from '../../types/types';
-import { VotationType } from '../../__generated__/graphql-types';
+import { labelStyle, checkboxStyle } from '../../styles/formStyles';
+import { Votation } from '../../../types/types';
+import { VotationType } from '../../../__generated__/graphql-types';
 
 interface IProps {
   votation: Votation;

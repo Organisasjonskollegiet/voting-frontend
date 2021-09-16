@@ -9,11 +9,11 @@ import {
   Text,
   Tooltip,
 } from '@chakra-ui/react';
-import { Votation } from '../types/types';
-import { collapsedStyle, highlightedStyle } from '../components/styles/formStyles';
-import { Role, VotationStatus } from '../__generated__/graphql-types';
+import { Votation } from '../../types/types';
+import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
+import { Role, VotationStatus } from '../../__generated__/graphql-types';
 import Hammer from '../static/hammer.svg';
-import CustomTag from '../components/common/CustomTag';
+import CustomTag from '../common/CustomTag';
 import DuplicateIcon from '../static/duplicateIcon.svg';
 
 interface EndedVotationProps {

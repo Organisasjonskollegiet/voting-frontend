@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
-import VotationList from '../../votationList/VotationList';
+import VotationList from '../votationList/VotationList';
 import { Role } from '../../__generated__/graphql-types';
 import ManageMeetingController from './ManageMeetingController';
 import { h1Style } from '../styles/formStyles';

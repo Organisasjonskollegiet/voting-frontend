@@ -9,10 +9,10 @@ import {
   NumberInputStepper,
   Select,
 } from '@chakra-ui/react';
-import { labelStyle } from '../../components/styles/formStyles';
-import { boxShadow } from '../../components/styles/formStyles';
-import { Votation } from '../../types/types';
-import { VotationType } from '../../__generated__/graphql-types';
+import { labelStyle } from '../../styles/formStyles';
+import { boxShadow } from '../../styles/formStyles';
+import { Votation } from '../../../types/types';
+import { VotationType } from '../../../__generated__/graphql-types';
 
 interface IProps {
   votation: Votation;

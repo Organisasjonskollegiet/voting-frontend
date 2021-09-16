@@ -13,10 +13,10 @@ import {
   useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
-} from '../__generated__/graphql-types';
-import { Votation, Alternative } from '../types/types';
-import Loading from '../components/common/Loading';
-import { darkblue } from '../components/styles/theme';
+} from '../../__generated__/graphql-types';
+import { Votation, Alternative } from '../../types/types';
+import Loading from '../common/Loading';
+import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
 

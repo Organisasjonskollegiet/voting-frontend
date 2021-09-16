@@ -3,8 +3,8 @@ import VotationForm from './forms/VotationForm';
 import { Droppable } from 'react-beautiful-dnd';
 import { Heading, VStack } from '@chakra-ui/react';
 
-import { Votation } from '../types/types';
-import StartNextVotationButton from '../components/meetingLobby/StartNextVotationButton';
+import { Votation } from '../../types/types';
+import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
 
 interface VotationListSectionProps {
   votations: Votation[];
