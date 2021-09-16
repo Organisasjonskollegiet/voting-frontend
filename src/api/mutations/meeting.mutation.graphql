@@ -21,7 +21,11 @@ mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
 }
 
 mutation AddParticipants($meetingId: String!, $participants: [ParticipantInput!]!) {
-  addParticipants(meetingId: $meetingId, participants: $participants) {
+  addParticipants(meetingId: $meetingId, participants: $participants)
+}
+
+mutation UpdateParticipant($meetingId: String!, $participant: ParticipantInput!) {
+  updateParticipant(meetingId: $meetingId, participant: $participant) {
     email
     role
     isVotingEligible
