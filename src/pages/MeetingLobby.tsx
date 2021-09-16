@@ -56,7 +56,7 @@ const MeetingLobby: React.FC = () => {
     (openVotation: string | null) => {
       if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
     },
-    [openVotation, meetingId, history]
+    [meetingId, history]
   );
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const MeetingLobby: React.FC = () => {
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
-        if (role === Role.Admin && !openVotation) {
+        if (role === Role.Admin && openVotation !== openVotations[0].id) {
           setDialogIsOpen(true);
           setOpenVotation(openVotations[0].id);
         } else if (role !== Role.Admin && role !== undefined) {
@@ -76,7 +76,7 @@ const MeetingLobby: React.FC = () => {
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
       setVotations(sortedVotations);
     }
-  }, [votationData, history, meetingId, votations.length, role, navigateToOpenVotation]);
+  }, [votationData, history, meetingId, votations.length, role, navigateToOpenVotation, openVotation]);
 
   const backToMyMeetings = () => {
     history.push('/');
