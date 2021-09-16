@@ -17,7 +17,7 @@ import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import CustomAlertDialog, { DialogType } from '../components/common/CustomAlertDialog';
+import { useLastLocation } from 'react-router-last-location';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -32,7 +32,6 @@ const MeetingLobby: React.FC = () => {
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
   const [openVotation, setOpenVotation] = useState<string | null>(null);
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
   //   variables: {
   //     meetingId,
@@ -40,6 +39,7 @@ const MeetingLobby: React.FC = () => {
   // });
 
   const history = useHistory();
+  const lastLocation = useLastLocation();
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
@@ -66,11 +66,15 @@ const MeetingLobby: React.FC = () => {
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
-        if (role === Role.Admin && openVotation !== openVotations[0].id) {
-          setDialogIsOpen(true);
-          setOpenVotation(openVotations[0].id);
-        } else if (role !== Role.Admin && role !== undefined) {
+        if (
+          role !== undefined &&
+          (role !== Role.Admin ||
+            (openVotation && openVotation !== openVotations[0].id) ||
+            lastLocation?.pathname !== `/meeting/${meetingId}/votation/${openVotations[0].id}`)
+        ) {
           navigateToOpenVotation(openVotations[0].id);
+        } else {
+          setOpenVotation(openVotations[0].id);
         }
       }
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
@@ -131,13 +135,6 @@ const MeetingLobby: React.FC = () => {
           </VStack>
         </VStack>
       </Box>
-      <CustomAlertDialog
-        dialogIsOpen={dialogIsOpen}
-        handleCancel={() => setDialogIsOpen(false)}
-        handleConfirm={() => navigateToOpenVotation(openVotation)}
-        confirmButtonColor={'green'}
-        type={DialogType.GO_TO_ACTIVE_VOTATION}
-      />
     </>
   );
 };
