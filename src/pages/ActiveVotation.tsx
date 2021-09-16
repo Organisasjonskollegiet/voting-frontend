@@ -326,7 +326,7 @@ const Votation: React.FC = () => {
   return (
     <>
       <Box bg={offwhite} w="100vw" color="gray.500" style={styles}>
-        {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} />}
+        {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
           {(castVoteLoading || blankVoteLoading || stvLoading) && (
             <Loading text="Registrerer stemme" asOverlay={true} />

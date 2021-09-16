@@ -5,9 +5,10 @@ import { useHistory } from 'react-router';
 interface LobbyNavigationProps {
   openVotation?: string | null;
   meetingId: string;
+  location: 'lobby' | 'activeVotation';
 }
 
-const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meetingId }) => {
+const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meetingId, location }) => {
   const history = useHistory();
 
   return (
@@ -25,25 +26,26 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meeting
           _hover={{ bg: 'transparent' }}
           bg="transparent"
           onClick={() => {
-            history.push(`/meeting/${meetingId}`);
+            if (location !== 'lobby') history.push(`/meeting/${meetingId}`);
           }}
         >
           Voteringsliste
         </Button>
-        <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />
+        {location === 'lobby' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
       </VStack>
       <VStack spacing="0">
         <Button
           _hover={{ bg: 'transparent' }}
           bg="transparent"
-          disabled={!openVotation}
+          disabled={location !== 'activeVotation' && !openVotation}
           onClick={() => {
-            if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
+            if (openVotation && location !== 'activeVotation')
+              history.push(`/meeting/${meetingId}/votation/${openVotation}`);
           }}
         >
           Aktiv votering
         </Button>
-        {false && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
+        {location === 'activeVotation' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
       </VStack>
     </HStack>
   );
