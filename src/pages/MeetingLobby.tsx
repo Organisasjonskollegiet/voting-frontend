@@ -16,6 +16,7 @@ import { h1Style } from '../components/styles/formStyles';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
+import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -29,6 +30,7 @@ const MeetingLobby: React.FC = () => {
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
+  const [openVotation, setOpenVotation] = useState<string | null>(null);
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
   //   variables: {
   //     meetingId,
@@ -55,13 +57,17 @@ const MeetingLobby: React.FC = () => {
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
-        history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
+        if (role === Role.Admin) {
+          setOpenVotation(openVotations[0].id);
+        } else if (role !== undefined) {
+          history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
+        }
       } else if (newVotations.length > 0 && newVotations.length > votations.length) {
         const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
         setVotations(sortedVotations);
       }
     }
-  }, [votationData, history, meetingId, votations.length]);
+  }, [votationData, history, meetingId, votations.length, role]);
 
   const backToVotationList = () => {
     history.push('/');
@@ -87,8 +93,9 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" p="10vh 0" color="gray.500" style={styles}>
-        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em">
+      <Box bg={offwhite} w="100vw" color="gray.500" style={styles}>
+        {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} />}
+        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
               {votationData?.meetingById.title}

@@ -33,6 +33,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
 
   useEffect(() => {
     if (data?.participants) {
+      console.log(data.participants);
       setParticipants(data.participants as ParticipantOrInvite[]);
     }
   }, [data]);
