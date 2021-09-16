@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import Navbar from './components/pages/Navbar';
-import Votation from './components/pages/Votation';
-import AddMeeting from './components/pages/AddMeeting';
-import MyMeetings from './components/pages/MyMeetings';
-import MeetingLobby from './components/pages/MeetingLobby';
+import Navbar from './components/common/Navbar';
+import ActiveVotation from './pages/ActiveVotation';
+import ManageMeeting from './pages/ManageMeeting';
+import MyMeetings from './pages/MyMeetings';
+import MeetingLobby from './pages/MeetingLobby';
 
 const App: FC = () => {
   return (
@@ -12,13 +12,13 @@ const App: FC = () => {
       <Navbar />
       <Switch>
         <Route path="/meeting/:meetingId/votation/:votationId">
-          <Votation />
+          <ActiveVotation />
         </Route>
         <Route key="edit-meeting" path="/meeting/:meetingId/edit">
-          <AddMeeting />
+          <ManageMeeting />
         </Route>
         <Route key="add-meeting" path="/meeting/new">
-          <AddMeeting />
+          <ManageMeeting />
         </Route>
         <Route path="/meeting/:meetingId">
           <MeetingLobby />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import Loading, { LoadingProps } from '../../components/atoms/Loading';
+import Loading, { LoadingProps } from '../../components/common/Loading';
 
 export default {
   title: 'Atoms/Loading',
