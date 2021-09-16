@@ -19,6 +19,7 @@ import Loading from '../common/Loading';
 import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
+import CollapsedVotation from './CollapsedVotation';
 
 interface VotationListProps {
   meetingId: string;
@@ -418,7 +419,19 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
-      {}
+      {openVotation.length > 0 && (
+        <>
+          <Heading as="h1" fontSize="1em">
+            {'Aktiv votering'}
+          </Heading>
+          <CollapsedVotation
+            isAdmin={role === Role.Admin}
+            votationTitle={openVotation[0].title}
+            index={openVotation[0].index}
+            isActive={true}
+          />
+        </>
+      )}
       {upcomingVotations.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
           {isMeetingLobby ? (

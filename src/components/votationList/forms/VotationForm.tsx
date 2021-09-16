@@ -66,6 +66,9 @@ const AddVotationForm: React.FC<IProps> = ({
         {(provided) => (
           <HStack
             w="90vw"
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
             maxWidth="800px"
             justify="space-between"
             marginBottom="16px"
@@ -79,7 +82,7 @@ const AddVotationForm: React.FC<IProps> = ({
               <Text>{votation.title}</Text>
             </HStack>
             {isAdmin && (
-              <Box {...provided.dragHandleProps}>
+              <Box>
                 <DragHandleIcon />
               </Box>
             )}
