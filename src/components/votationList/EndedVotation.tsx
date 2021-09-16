@@ -23,19 +23,23 @@ interface EndedVotationProps {
 }
 
 const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
+  const numberOfWinners = votation.alternatives.filter((a) => a.isWinner).length;
+
   return (
     <AccordionItem
       key={votation.id}
       sx={{ ...collapsedStyle, padding: '0' }}
       mb="1.5em"
       _disabled={{ ...collapsedStyle, padding: '0' }}
+      isDisabled={!(numberOfWinners > 1)}
     >
       <HStack w="90vw" maxWidth="800px" justifyContent="space-between" pr={role === Role.Admin ? '0' : '1.5em'}>
         <AccordionButton
-          cursor={votation.alternatives.filter((a) => a.isWinner).length > 1 ? 'pointer' : 'default'}
+          cursor={numberOfWinners > 1 ? 'pointer' : 'default'}
           p="1em"
           pr="0"
-          _hover={votation.alternatives.filter((a) => a.isWinner).length > 1 ? {} : { bg: 'white' }}
+          _hover={numberOfWinners > 1 ? {} : { bg: 'white' }}
+          _disabled={{ cursor: 'default' }}
         >
           <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
             <HStack spacing="8" opacity="0.6">
