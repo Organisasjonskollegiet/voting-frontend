@@ -65,22 +65,29 @@ const MeetingLobby: React.FC = () => {
       const openVotations = newVotations.filter(
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
+      // check that there is an open votation
       if (openVotations.length > 0 && openVotations[0]?.id) {
-        if (
-          role !== undefined &&
-          (role !== Role.Admin ||
-            (openVotation && openVotation !== openVotations[0].id) ||
-            lastLocation?.pathname !== `/meeting/${meetingId}/votation/${openVotations[0].id}`)
-        ) {
-          navigateToOpenVotation(openVotations[0].id);
-        } else {
+        // if you are admin and has navigated from the open votation, the id of the votation is saved,
+        // if not, you should be taken directly to the open votation
+        if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotations[0].id}`) {
           setOpenVotation(openVotations[0].id);
+        } else if (role !== undefined) {
+          navigateToOpenVotation(openVotations[0].id);
         }
       }
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
       setVotations(sortedVotations);
     }
-  }, [votationData, history, meetingId, votations.length, role, navigateToOpenVotation, openVotation]);
+  }, [
+    votationData,
+    history,
+    meetingId,
+    votations.length,
+    role,
+    navigateToOpenVotation,
+    openVotation,
+    lastLocation?.pathname,
+  ]);
 
   const backToMyMeetings = () => {
     history.push('/');
