@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
@@ -17,6 +17,7 @@ import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
+import CustomAlertDialog, { DialogType } from '../components/common/CustomAlertDialog';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -31,6 +32,7 @@ const MeetingLobby: React.FC = () => {
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
   const [openVotation, setOpenVotation] = useState<string | null>(null);
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
   //   variables: {
   //     meetingId,
@@ -50,6 +52,13 @@ const MeetingLobby: React.FC = () => {
     }
   }, [roleResult, role, user?.sub]);
 
+  const navigateToOpenVotation = useCallback(
+    (openVotation: string | null) => {
+      if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
+    },
+    [openVotation, meetingId, history]
+  );
+
   useEffect(() => {
     if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
       const newVotations = votationData?.meetingById?.votations;
@@ -57,19 +66,19 @@ const MeetingLobby: React.FC = () => {
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       if (openVotations.length > 0 && openVotations[0]?.id) {
-        if (role === Role.Admin) {
+        if (role === Role.Admin && !openVotation) {
+          setDialogIsOpen(true);
           setOpenVotation(openVotations[0].id);
-        } else if (role !== undefined) {
-          history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
+        } else if (role !== Role.Admin && role !== undefined) {
+          navigateToOpenVotation(openVotations[0].id);
         }
-      } else if (newVotations.length > 0 && newVotations.length > votations.length) {
-        const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
-        setVotations(sortedVotations);
       }
+      const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
+      setVotations(sortedVotations);
     }
-  }, [votationData, history, meetingId, votations.length, role]);
+  }, [votationData, history, meetingId, votations.length, role, navigateToOpenVotation]);
 
-  const backToVotationList = () => {
+  const backToMyMeetings = () => {
     history.push('/');
   };
 
@@ -102,13 +111,19 @@ const MeetingLobby: React.FC = () => {
             </Heading>
             <VStack align="start">
               <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-              <VotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
+              <VotationList
+                hideOpenVotationButton={!!openVotation}
+                role={role}
+                isMeetingLobby={true}
+                votationsMayExist={true}
+                meetingId={meetingId}
+              />
             </VStack>
           </VStack>
           <VStack alignItems="left" spacing="1em">
             <Divider />
             <HStack justifyContent="space-between">
-              <ReturnToPreviousButton onClick={backToVotationList} text="Tiltake til møteoversikt" />
+              <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
               {role === Role.Admin && (
                 <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
               )}
@@ -116,6 +131,13 @@ const MeetingLobby: React.FC = () => {
           </VStack>
         </VStack>
       </Box>
+      <CustomAlertDialog
+        dialogIsOpen={dialogIsOpen}
+        handleCancel={() => setDialogIsOpen(false)}
+        handleConfirm={() => navigateToOpenVotation(openVotation)}
+        confirmButtonColor={'green'}
+        type={DialogType.GO_TO_ACTIVE_VOTATION}
+      />
     </>
   );
 };
