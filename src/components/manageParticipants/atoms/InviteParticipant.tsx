@@ -4,7 +4,7 @@ import { Role } from '../../../__generated__/graphql-types';
 import SelectRole from './SelectRole';
 import { boxShadow } from '../../styles/formStyles';
 import { AddIcon } from '@chakra-ui/icons';
-import { checkIfEmailIsValid } from '../molecules/AddParticipantsForm';
+import { checkIfEmailIsValid } from '../utils';
 
 interface InviteParticipantProps {
   selectRole: (role: Role) => void;
