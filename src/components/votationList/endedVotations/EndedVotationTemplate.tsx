@@ -15,7 +15,7 @@ export interface EndedVotationProps {
 
 const EndedVotationTemplate: React.FC<EndedVotationProps> = ({ role, votation, duplicateVotation, children }) => {
   return (
-    <HStack w="90vw" maxW="800px" justifyContent="space-between" pr={role === Role.Admin ? '0' : '1.5em'}>
+    <HStack w="90vw" maxW="800px" justifyContent="space-between" pr={role !== Role.Admin ? '1.5em' : '0'}>
       <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
         <HStack spacing="8" opacity="0.6">
           <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
