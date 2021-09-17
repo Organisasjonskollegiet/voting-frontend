@@ -30,7 +30,7 @@ const InformationModal: React.FC<InformationModalProps> = ({ children, ariaLabel
         bg="none"
         borderRadius="5px"
         size="md"
-        mb={alignWithText ? '-0.25em' : ''}
+        mb={alignWithText ? '-0.30em' : ''}
       />
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
