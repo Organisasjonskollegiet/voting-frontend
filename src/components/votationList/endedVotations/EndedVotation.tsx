@@ -4,14 +4,13 @@ import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, HSt
 import { collapsedStyle } from '../../styles/formStyles';
 
 const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
-  const numberOfWinners = votation.alternatives.filter((a) => a.isWinner).length;
-  const winner =
-    votation.alternatives.filter((a) => a.isWinner).length > 0
-      ? votation.alternatives
-          .filter((a) => a.isWinner)
-          .map(
-            (a, index) => `${a.text}${index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''}`
-          )
+  const winners = votation.alternatives.filter((a) => a.isWinner);
+  const numberOfWinners = winners.length;
+  const winnerString =
+    numberOfWinners > 0
+      ? winners.map(
+          (a, index) => `${a.text}${index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''}`
+        )
       : 'Ingen vinner';
 
   const styles = {
@@ -26,7 +25,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
       <EndedVotationTemplate votation={votation} role={role} duplicateVotation={duplicateVotation}>
         <AccordionButton>
           <Text isTruncated maxWidth="150px">
-            {winner}
+            {winnerString}
           </Text>
           <AccordionIcon />
         </AccordionButton>
@@ -37,7 +36,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           <Text fontWeight="bold" fontSize="1rem">
             Vinnere:
           </Text>
-          <Text>{winner}</Text>
+          <Text>{winnerString}</Text>
         </HStack>
       </AccordionPanel>
     </AccordionItem>
@@ -45,7 +44,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
     <Box key={votation.id} sx={styles}>
       <EndedVotationTemplate votation={votation} duplicateVotation={duplicateVotation} role={role}>
         <Text isTruncated maxWidth="150px">
-          {winner}
+          {winnerString}
         </Text>
       </EndedVotationTemplate>
     </Box>
