@@ -79,14 +79,12 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
         <Box width="100%">
           {/* <button onClick={handleClick}> */}
           <Heading as="h2" fontSize="1.125em">
-            {' '}
-            {title}{' '}
+            {title}
           </Heading>
           {/* </button> */}
           {description && (
             <Text mb="1em" fontSize="0.75em">
-              {' '}
-              {description}{' '}
+              {description}
             </Text>
           )}
         </Box>
