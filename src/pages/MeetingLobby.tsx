@@ -62,17 +62,17 @@ const MeetingLobby: React.FC = () => {
   useEffect(() => {
     if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
       const newVotations = votationData?.meetingById?.votations;
-      const openVotations = newVotations.filter(
+      const openVotation = newVotations.find(
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
       // check that there is an open votation
-      if (openVotations.length > 0 && openVotations[0]?.id) {
+      if (openVotation && openVotation.id) {
         // if you are admin and has navigated from the open votation, the id of the votation is saved,
         // if not, you should be taken directly to the open votation
-        if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotations[0].id}`) {
-          setOpenVotation(openVotations[0].id);
+        if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation.id}`) {
+          setOpenVotation(openVotation.id);
         } else if (role !== undefined) {
-          navigateToOpenVotation(openVotations[0].id);
+          navigateToOpenVotation(openVotation.id);
         }
       }
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
@@ -93,12 +93,6 @@ const MeetingLobby: React.FC = () => {
     history.push('/');
   };
 
-  const styles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  } as React.CSSProperties;
-
   if (votationLoading) {
     return <Loading asOverlay={false} text={'Henter møte'} />;
   }
@@ -113,7 +107,16 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" minHeight="100vh" color="gray.500" pb="2em" style={styles}>
+      <Box
+        bg={offwhite}
+        w="100vw"
+        minHeight="100vh"
+        color="gray.500"
+        pb="2em"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
         {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
         <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">

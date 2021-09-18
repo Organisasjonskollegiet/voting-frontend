@@ -272,12 +272,6 @@ const Votation: React.FC = () => {
     return alternatives;
   };
 
-  const styles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  } as React.CSSProperties;
-
   if (error?.message === 'Not Authorised!') {
     return (
       <Center mt="40vh">
@@ -325,7 +319,7 @@ const Votation: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" color="gray.500" style={styles}>
+      <Box bg={offwhite} w="100vw" color="gray.500" display="flex" flexDirection="column" alignItems="center">
         {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
           {(castVoteLoading || blankVoteLoading || stvLoading) && (

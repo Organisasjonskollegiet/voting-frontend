@@ -412,7 +412,7 @@ const VotationList: React.FC<VotationListProps> = ({
     updateVotationStatus({ variables: { votationId: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
-  const openVotation = votations.filter((v) => v.status === VotationStatus.Open);
+  const openVotation = votations.find((v) => v.status === VotationStatus.Open);
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
   const endedVotations = votations.filter(
     (v) => v.status !== VotationStatus.Upcoming && v.status !== VotationStatus.Open
@@ -421,15 +421,15 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
-      {openVotation.length > 0 && (
+      {openVotation && (
         <>
           <Heading as="h1" fontSize="1em">
             {'Aktiv votering'}
           </Heading>
           <CollapsedVotation
             isAdmin={role === Role.Admin}
-            votationTitle={openVotation[0].title}
-            index={openVotation[0].index}
+            votationTitle={openVotation.title}
+            index={openVotation.index}
             isActive={true}
           />
         </>
