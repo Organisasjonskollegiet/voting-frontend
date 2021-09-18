@@ -113,7 +113,7 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" color="gray.500" style={styles}>
+      <Box bg={offwhite} w="100vw" minHeight="100vh" color="gray.500" pb="2em" style={styles}>
         {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
         <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">
