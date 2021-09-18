@@ -247,6 +247,8 @@ const VotationList: React.FC<VotationListProps> = ({
           };
         });
       const keyOfEmptyVotation = uuid();
+      // saves the changes made to the remaining votations in order to update
+      // the index. All other changes are also saved.
       handleSave(remainingVotations);
       setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId(
