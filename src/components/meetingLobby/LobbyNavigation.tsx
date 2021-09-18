@@ -28,6 +28,7 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meeting
           onClick={() => {
             if (location !== 'lobby') history.push(`/meeting/${meetingId}`);
           }}
+          fontSize="12px"
         >
           Voteringsliste
         </Button>
@@ -42,6 +43,7 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meeting
             if (openVotation && location !== 'activeVotation')
               history.push(`/meeting/${meetingId}/votation/${openVotation}`);
           }}
+          fontSize="12px"
         >
           Aktiv votering
         </Button>
