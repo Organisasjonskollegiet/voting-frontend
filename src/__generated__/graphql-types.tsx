@@ -209,6 +209,12 @@ export type MutationChangeViewArgs = {
   state: ViewState;
 };
 
+export type NewVoteRegisteredResponse = {
+  __typename?: 'NewVoteRegisteredResponse';
+  votationId: Scalars['String'];
+  voteCount: Scalars['Int'];
+};
+
 export type OwnerCannotBeRemovedFromParticipantError = {
   __typename?: 'OwnerCannotBeRemovedFromParticipantError';
   message: Scalars['String'];
@@ -311,7 +317,7 @@ export type StvVoteAlternativeInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newVoteRegistered?: Maybe<Scalars['Int']>;
+  newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   viewChanged?: Maybe<ViewState>;
@@ -859,7 +865,10 @@ export type NewVoteRegisteredSubscriptionVariables = Exact<{
 
 export type NewVoteRegisteredSubscription = (
   { __typename?: 'Subscription' }
-  & Pick<Subscription, 'newVoteRegistered'>
+  & { newVoteRegistered?: Maybe<(
+    { __typename?: 'NewVoteRegisteredResponse' }
+    & Pick<NewVoteRegisteredResponse, 'votationId' | 'voteCount'>
+  )> }
 );
 
 export type VotationOpenedForMeetingSubscriptionVariables = Exact<{
@@ -1868,7 +1877,10 @@ export type VotationStatusUpdatedSubscriptionHookResult = ReturnType<typeof useV
 export type VotationStatusUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationStatusUpdatedSubscription>;
 export const NewVoteRegisteredDocument = gql`
     subscription NewVoteRegistered($votationId: String!) {
-  newVoteRegistered(votationId: $votationId)
+  newVoteRegistered(votationId: $votationId) {
+    votationId
+    voteCount
+  }
 }
     `;
 

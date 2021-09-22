@@ -6,7 +6,10 @@ subscription VotationStatusUpdated($id: String!) {
 }
 
 subscription NewVoteRegistered($votationId: String!) {
-  newVoteRegistered(votationId: $votationId)
+  newVoteRegistered(votationId: $votationId) {
+    votationId
+    voteCount
+  }
 }
 
 subscription VotationOpenedForMeeting($meetingId: String!) {

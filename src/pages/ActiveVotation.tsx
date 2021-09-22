@@ -101,6 +101,7 @@ const Votation: React.FC = () => {
     setAlternatives(undefined);
     setShowVote(false);
     setStatus(null);
+    setVoteCount(0);
     setUserHasVoted(false);
   }, [votationId]);
 
@@ -168,10 +169,6 @@ const Votation: React.FC = () => {
     }
   }, [data?.votationById?.alternatives, alternatives]);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   // update initial votationStatus
   useEffect(() => {
     if (data?.votationById?.status) {
@@ -204,8 +201,13 @@ const Votation: React.FC = () => {
 
   // update vote count when new vote count arrives from subscription
   useEffect(() => {
-    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
-    const newVoteCount = newVoteCountResult.newVoteRegistered;
+    if (
+      !newVoteCountResult?.newVoteRegistered ||
+      newVoteCountResult.newVoteRegistered.voteCount === voteCount ||
+      newVoteCountResult.newVoteRegistered.votationId !== votationId
+    )
+      return;
+    const newVoteCount = newVoteCountResult.newVoteRegistered.voteCount;
     setVoteCount(newVoteCount);
   }, [newVoteCountResult, voteCount]);
 
@@ -217,14 +219,11 @@ const Votation: React.FC = () => {
   }, [votationOpened, history, meetingId, votationId]);
 
   //Register the vote
-  const [castVote, { data: castVoteData, loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
-  const [
-    castBlankVote,
-    { data: blankVoteData, loading: blankVoteLoading, error: blankVoteError },
-  ] = useCastBlankVoteMutation();
-  const submitVote = () => {
+  const [castVote, { loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
+  const [castBlankVote, { loading: blankVoteLoading, error: blankVoteError }] = useCastBlankVoteMutation();
+  const submitVote = async () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
-      castStvVote({
+      await castStvVote({
         variables: {
           votationId,
           alternatives: alternatives.map((a) => {
@@ -237,20 +236,14 @@ const Votation: React.FC = () => {
       });
     } else if (selectedAlternativeId !== null) {
       if (selectedAlternativeId === 'BLANK') {
-        castBlankVote({ variables: { votationId: votationId } });
+        await castBlankVote({ variables: { votationId: votationId } });
       } else {
-        castVote({ variables: { alternativeId: selectedAlternativeId } });
+        await castVote({ variables: { alternativeId: selectedAlternativeId } });
       }
     }
+    setUserHasVoted(true);
+    setDisableToggleShowVote(false);
   };
-
-  // UPDATE USERHASVOTED AFTER RECEIVING RESPONSE FROM BACKEND
-  useEffect(() => {
-    if (castVoteData || blankVoteData || stvData) {
-      setUserHasVoted(true);
-      setDisableToggleShowVote(false);
-    }
-  }, [castVoteData, blankVoteData, stvData]);
 
   const backToVotationList = () => {
     history.push(`/meeting/${meetingId}`);
