@@ -222,6 +222,7 @@ const Votation: React.FC = () => {
   //Register the vote
   const [castVote, { loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
   const [castBlankVote, { loading: blankVoteLoading, error: blankVoteError }] = useCastBlankVoteMutation();
+
   const submitVote = async () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
       await castStvVote({

@@ -56,11 +56,6 @@ const MeetingLobby: React.FC = () => {
     [meetingId, history]
   );
 
-  useEffect(() => {
-    if (!data?.getOpenVotation) return;
-    handleOpenVotation(data.getOpenVotation);
-  }, [data?.getOpenVotation, role]);
-
   const handleOpenVotation = (openVotation: string) => {
     if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
       setOpenVotation(openVotation);
@@ -69,6 +64,13 @@ const MeetingLobby: React.FC = () => {
     }
   };
 
+  // handle votation being open initially
+  useEffect(() => {
+    if (!data?.getOpenVotation) return;
+    handleOpenVotation(data.getOpenVotation);
+  }, [data?.getOpenVotation, role]);
+
+  // handle votation opening
   useEffect(() => {
     if (!votationOpened?.votationOpenedForMeeting) return;
     handleOpenVotation(votationOpened.votationOpenedForMeeting);

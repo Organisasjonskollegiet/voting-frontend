@@ -20,7 +20,7 @@ import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
 import CollapsedVotation from './CollapsedVotation';
-import ActiveVotation from './ActiveVotation';
+import OpenVotation from './OpenVotation';
 
 interface VotationListProps {
   meetingId: string;
@@ -429,7 +429,7 @@ const VotationList: React.FC<VotationListProps> = ({
           <Heading as="h1" fontSize="1em">
             {'Aktiv votering'}
           </Heading>
-          <ActiveVotation
+          <OpenVotation
             onClick={() => navigateToOpenVotation(openVotation.id)}
             isAdmin={role === Role.Admin}
             votationTitle={openVotation.title}
