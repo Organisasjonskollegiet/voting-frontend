@@ -6,8 +6,8 @@ import {
   VotationStatus,
   useCastVoteMutation,
   useGetVotationByIdQuery,
-  // useVotationStatusUpdatedSubscription,
-  // useNewVoteRegisteredSubscription,
+  useVotationStatusUpdatedSubscription,
+  useNewVoteRegisteredSubscription,
   useGetWinnerOfVotationQuery,
   VotationType,
   useCastBlankVoteMutation,
@@ -15,6 +15,8 @@ import {
   Alternative,
   useGetVotationResultsLazyQuery,
   AlternativeResult,
+  useVotationOpenedForMeetingSubscription,
+  GetWinnerOfVotationDocument,
 } from '../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
@@ -47,9 +49,8 @@ const Votation: React.FC = () => {
   const history = useHistory();
 
   //Get votation data and participants from meeting
-  const { data, loading, error } = useGetVotationByIdQuery({
+  const { data, loading, error, refetch } = useGetVotationByIdQuery({
     variables: { votationId: votationId, meetingId: meetingId },
-    pollInterval: 1000,
   });
   const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
 
@@ -57,19 +58,19 @@ const Votation: React.FC = () => {
     variables: { votationId },
   });
 
-  // const {
-  //   data: votingEligibleCountResult,
-  //   loading: votingEligibleCountLoading,
-  //   error: votingEligibleCountError,
-  // } = useVotingEligibleCountQuery({ variables: { votationId } });
+  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+    variables: {
+      meetingId,
+    },
+  });
 
-  // const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
-  //   variables: { id: votationId },
-  // });
+  const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
+    variables: { id: votationId },
+  });
 
-  // const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
-  //   variables: { votationId },
-  // });
+  const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
+    variables: { votationId },
+  });
 
   const [status, setStatus] = useState<VotationStatus | null>(null);
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
@@ -93,6 +94,7 @@ const Votation: React.FC = () => {
 
   useEffect(() => {
     // reset state if votation is changed
+    refetch();
     setWinners(null);
     setDisableToggleShowVote(true);
     setSelectedAlternativeId(null);
@@ -116,50 +118,19 @@ const Votation: React.FC = () => {
     }
   }, [winnerResult, winners]);
 
+  // fetch result or winners when status has changed
   useEffect(() => {
-    if (data?.getOpenVotation && data.getOpenVotation !== votationId) {
-      history.push(`/meeting/${meetingId}/votation/${data.getOpenVotation}`);
+    if (
+      !votationResultData &&
+      ((status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
+        (status === VotationStatus.PublishedResult &&
+          (participantRole !== Role.Participant || data?.votationById?.hiddenVotes === false)))
+    ) {
+      getResult();
+    } else if (!winnerResult && status === VotationStatus.PublishedResult) {
+      refetchWinner();
     }
-  }, [data?.getOpenVotation, history, meetingId, votationId]);
-
-  // Update vouteCount when a new vote count is received
-  useEffect(() => {
-    const newVoteCount = data?.getVoteCount?.voteCount;
-    if (newVoteCount !== undefined && newVoteCount !== voteCount) {
-      setVoteCount(newVoteCount);
-    }
-  }, [data?.getVoteCount, voteCount]);
-
-  //Update role after data of participants is received
-  useEffect(() => {
-    if (data?.meetingById?.participants) {
-      const participants = data?.meetingById?.participants as Array<Participant>;
-      const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
-      if (participantRole !== participant.role) setParticipantRole(participant.role);
-      if (isVotingEligible !== participant.isVotingEligible) setIsVotingEligible(participant.isVotingEligible);
-    }
-  }, [data?.meetingById, user?.sub, participantRole, isVotingEligible]);
-
-  // set initial status of votation when data on votation arrives
-  useEffect(() => {
-    if (data?.votationById && status !== data.votationById.status) {
-      if (
-        data.votationById.status === VotationStatus.PublishedResult &&
-        data.votationById.hiddenVotes &&
-        !winnerResult &&
-        participantRole === Role.Participant
-      ) {
-        refetchWinner();
-      } else if (
-        !votationResultData &&
-        ((data.votationById.status === VotationStatus.PublishedResult && !data.votationById.hiddenVotes) ||
-          (data.votationById.status === VotationStatus.CheckingResult && participantRole !== Role.Participant))
-      ) {
-        getResult();
-      }
-      setStatus(data.votationById.status);
-    }
-  }, [data, status, refetchWinner, getResult, participantRole, votationResultData, winnerResult]);
+  }, [status, participantRole]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
@@ -171,6 +142,17 @@ const Votation: React.FC = () => {
     }
   }, [votationResultData, winners]);
 
+  // Update role after data of participants is received
+  useEffect(() => {
+    if (data?.meetingById?.participants) {
+      const participants = data?.meetingById?.participants as Array<Participant>;
+      const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
+      if (participantRole !== participant.role) setParticipantRole(participant.role);
+      if (isVotingEligible !== participant.isVotingEligible) setIsVotingEligible(participant.isVotingEligible);
+    }
+  }, [data?.meetingById, user?.sub, participantRole, isVotingEligible]);
+
+  // set alternatives when data arrives
   useEffect(() => {
     if (data?.votationById?.alternatives && !alternatives) {
       const alternatives = data.votationById.alternatives.filter((a) => a) as AlternativeType[];
@@ -184,36 +166,55 @@ const Votation: React.FC = () => {
         })
       );
     }
-  }, [data, alternatives]);
+  }, [data?.votationById?.alternatives, alternatives]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  // update initial votationStatus
+  useEffect(() => {
+    if (data?.votationById?.status) {
+      setStatus(data.votationById.status);
+    }
+  }, [data?.votationById?.status]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
     if (data?.votationById?.hasVoted && data.votationById.hasVoted.length > voteCount) {
       setVoteCount(data.votationById.hasVoted.length);
     }
-  }, [data, voteCount]);
+  }, [data?.votationById?.hasVoted, voteCount]);
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
     if (data?.votationById?.hasVoted && user?.sub) {
       setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
     }
-  }, [data, user]);
+  }, [data?.votationById?.hasVoted, user]);
 
   // update status of votation when new data arrives on subscription
-  // useEffect(() => {
-  //   const newStatus = newStatusResult?.votationStatusUpdated ?? null;
-  //   if (newStatus !== null && newStatus !== status) {
-  //     setStatus(newStatus);
-  //   }
-  // }, [newStatusResult, status]);
+  useEffect(() => {
+    const votationStatus = newStatusResult?.votationStatusUpdated?.votationStatus ?? null;
+    const statusForVotationId = newStatusResult?.votationStatusUpdated?.votationId ?? null;
+    if (votationStatus !== null && statusForVotationId === votationId && votationStatus !== status) {
+      setStatus(votationStatus);
+    }
+  }, [newStatusResult, status]);
 
-  // // update vote count when new vote count arrives from subscription
-  // useEffect(() => {
-  //   if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
-  //   const newVoteCount = newVoteCountResult.newVoteRegistered;
-  //   setVoteCount(newVoteCount);
-  // }, [newVoteCountResult, voteCount]);
+  // update vote count when new vote count arrives from subscription
+  useEffect(() => {
+    if (!newVoteCountResult?.newVoteRegistered || newVoteCountResult.newVoteRegistered === voteCount) return;
+    const newVoteCount = newVoteCountResult.newVoteRegistered;
+    setVoteCount(newVoteCount);
+  }, [newVoteCountResult, voteCount]);
+
+  // go to new votation if another votation opens
+  useEffect(() => {
+    if (votationOpened && votationOpened.votationOpenedForMeeting !== votationId) {
+      history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
+    }
+  }, [votationOpened, history, meetingId, votationId]);
 
   //Register the vote
   const [castVote, { data: castVoteData, loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
@@ -318,7 +319,7 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <>
+    <React.Fragment key={data.votationById.id}>
       <Box bg={offwhite} w="100vw" color="gray.500" display="flex" flexDirection="column" alignItems="center">
         {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
@@ -405,7 +406,7 @@ const Votation: React.FC = () => {
           </VStack>
         </Center>
       </Box>
-    </>
+    </React.Fragment>
   );
 };
 

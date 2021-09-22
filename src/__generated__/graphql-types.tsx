@@ -312,7 +312,7 @@ export type StvVoteAlternativeInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   newVoteRegistered?: Maybe<Scalars['Int']>;
-  votationStatusUpdated?: Maybe<VotationStatus>;
+  votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   viewChanged?: Maybe<ViewState>;
 };
@@ -429,6 +429,12 @@ export enum VotationStatus {
   PublishedResult = 'PUBLISHED_RESULT',
   Invalid = 'INVALID'
 }
+
+export type VotationStatusUpdatedResponse = {
+  __typename?: 'VotationStatusUpdatedResponse';
+  votationId: Scalars['String'];
+  votationStatus: VotationStatus;
+};
 
 export enum VotationType {
   Qualified = 'QUALIFIED',
@@ -840,7 +846,10 @@ export type VotationStatusUpdatedSubscriptionVariables = Exact<{
 
 export type VotationStatusUpdatedSubscription = (
   { __typename?: 'Subscription' }
-  & Pick<Subscription, 'votationStatusUpdated'>
+  & { votationStatusUpdated?: Maybe<(
+    { __typename?: 'VotationStatusUpdatedResponse' }
+    & Pick<VotationStatusUpdatedResponse, 'votationId' | 'votationStatus'>
+  )> }
 );
 
 export type NewVoteRegisteredSubscriptionVariables = Exact<{
@@ -1828,7 +1837,10 @@ export type GetWinnerOfVotationLazyQueryHookResult = ReturnType<typeof useGetWin
 export type GetWinnerOfVotationQueryResult = Apollo.QueryResult<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
-  votationStatusUpdated(id: $id)
+  votationStatusUpdated(id: $id) {
+    votationId
+    votationStatus
+  }
 }
     `;
 

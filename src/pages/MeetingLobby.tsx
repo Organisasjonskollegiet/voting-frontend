@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
-  // useVotationOpenedForMeetingSubscription,
+  useVotationOpenedForMeetingSubscription,
   useVotationsByMeetingIdQuery,
   VotationStatus,
   useGetRoleQuery,
@@ -32,11 +32,11 @@ const MeetingLobby: React.FC = () => {
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
   const [openVotation, setOpenVotation] = useState<string | null>(null);
-  // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-  //   variables: {
-  //     meetingId,
-  //   },
-  // });
+  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+    variables: {
+      meetingId,
+    },
+  });
 
   const history = useHistory();
   const lastLocation = useLastLocation();
@@ -76,6 +76,7 @@ const MeetingLobby: React.FC = () => {
         }
       }
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
+      console.log(sortedVotations);
       setVotations(sortedVotations);
     }
   }, [
