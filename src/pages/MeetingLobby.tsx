@@ -26,7 +26,6 @@ const MeetingLobby: React.FC = () => {
     variables: {
       meetingId,
     },
-    pollInterval: 1000,
   });
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
@@ -69,14 +68,9 @@ const MeetingLobby: React.FC = () => {
       if (openVotation && openVotation.id) {
         // if you are admin and has navigated from the open votation, the id of the votation is saved,
         // if not, you should be taken directly to the open votation
-        if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation.id}`) {
-          setOpenVotation(openVotation.id);
-        } else if (role !== undefined) {
-          navigateToOpenVotation(openVotation.id);
-        }
+        handleOpenVotation(openVotation.id);
       }
       const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
-      console.log(sortedVotations);
       setVotations(sortedVotations);
     }
   }, [
@@ -89,6 +83,19 @@ const MeetingLobby: React.FC = () => {
     openVotation,
     lastLocation?.pathname,
   ]);
+
+  const handleOpenVotation = (openVotation: string) => {
+    if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
+      setOpenVotation(openVotation);
+    } else if (role !== undefined) {
+      navigateToOpenVotation(openVotation);
+    }
+  };
+
+  useEffect(() => {
+    if (!votationOpened?.votationOpenedForMeeting) return;
+    handleOpenVotation(votationOpened.votationOpenedForMeeting);
+  }, [votationOpened]);
 
   const backToMyMeetings = () => {
     history.push('/');
