@@ -19,7 +19,6 @@ import Loading from '../common/Loading';
 import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
-import CollapsedVotation from './CollapsedVotation';
 import OpenVotation from './OpenVotation';
 
 interface VotationListProps {

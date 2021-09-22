@@ -105,7 +105,7 @@ const Votation: React.FC = () => {
     setStatus(null);
     setVoteCount(0);
     setUserHasVoted(false);
-  }, [votationId]);
+  }, [votationId, refetch]);
 
   // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
@@ -132,7 +132,7 @@ const Votation: React.FC = () => {
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {
       refetchWinner();
     }
-  }, [status, participantRole]);
+  }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, refetchWinner, winnerResult]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
@@ -198,7 +198,7 @@ const Votation: React.FC = () => {
     if (votationStatus !== null && statusForVotationId === votationId && votationStatus !== status) {
       setStatus(votationStatus);
     }
-  }, [newStatusResult, status]);
+  }, [newStatusResult, status, votationId]);
 
   // update vote count when new vote count arrives from subscription
   useEffect(() => {
@@ -210,7 +210,7 @@ const Votation: React.FC = () => {
       return;
     const newVoteCount = newVoteCountResult.newVoteRegistered.voteCount;
     setVoteCount(newVoteCount);
-  }, [newVoteCountResult, voteCount]);
+  }, [newVoteCountResult, voteCount, votationId]);
 
   // go to new votation if another votation opens
   useEffect(() => {

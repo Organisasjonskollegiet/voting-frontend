@@ -56,25 +56,28 @@ const MeetingLobby: React.FC = () => {
     [meetingId, history]
   );
 
-  const handleOpenVotation = (openVotation: string) => {
-    if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
-      setOpenVotation(openVotation);
-    } else if (role) {
-      navigateToOpenVotation(openVotation);
-    }
-  };
+  const handleOpenVotation = useCallback(
+    (openVotation: string) => {
+      if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
+        setOpenVotation(openVotation);
+      } else if (role) {
+        navigateToOpenVotation(openVotation);
+      }
+    },
+    [role, lastLocation?.pathname, meetingId, navigateToOpenVotation]
+  );
 
   // handle votation being open initially
   useEffect(() => {
     if (!data?.getOpenVotation) return;
     handleOpenVotation(data.getOpenVotation);
-  }, [data?.getOpenVotation, role]);
+  }, [data?.getOpenVotation, role, handleOpenVotation]);
 
   // handle votation opening
   useEffect(() => {
     if (!votationOpened?.votationOpenedForMeeting) return;
     handleOpenVotation(votationOpened.votationOpenedForMeeting);
-  }, [votationOpened]);
+  }, [votationOpened, handleOpenVotation]);
 
   const backToMyMeetings = () => {
     history.push('/');
