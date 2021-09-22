@@ -16,7 +16,6 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
   useVotationOpenedForMeetingSubscription,
-  GetWinnerOfVotationDocument,
 } from '../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
@@ -52,11 +51,15 @@ const Votation: React.FC = () => {
   const { data, loading, error, refetch } = useGetVotationByIdQuery({
     variables: { votationId: votationId, meetingId: meetingId },
   });
+
   const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
 
   const [getResult, { data: votationResultData }] = useGetVotationResultsLazyQuery({
     variables: { votationId },
+    fetchPolicy: 'cache-and-network',
   });
+
+  const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
     variables: {
@@ -83,14 +86,13 @@ const Votation: React.FC = () => {
   // be able to unhide vote
   const [disableToggleShowVote, setDisableToggleShowVote] = useState(true);
 
-  const [castStvVote, { data: stvData, loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
-
   //Handle selected Alternative
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
   const [alternatives, setAlternatives] = useState<AlternativeWithIndex[] | undefined>(undefined);
-  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
   const [showVote, setShowVote] = useState<boolean>(false);
+
+  const handleSelect = (id: string | null) => setSelectedAlternativeId(id);
 
   useEffect(() => {
     // reset state if votation is changed
@@ -122,10 +124,9 @@ const Votation: React.FC = () => {
   // fetch result or winners when status has changed
   useEffect(() => {
     if (
-      !votationResultData &&
-      ((status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
-        (status === VotationStatus.PublishedResult &&
-          (participantRole !== Role.Participant || data?.votationById?.hiddenVotes === false)))
+      (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
+      (status === VotationStatus.PublishedResult &&
+        (participantRole !== Role.Participant || data?.votationById?.hiddenVotes === false))
     ) {
       getResult();
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {

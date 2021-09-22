@@ -103,8 +103,8 @@ export type Mutation = {
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castStvVote?: Maybe<Scalars['String']>;
   castVote?: Maybe<Vote>;
-  /** Returns the current number of blank votes */
-  castBlankVote?: Maybe<Scalars['Int']>;
+  /** Returns the id of the votation */
+  castBlankVote?: Maybe<Scalars['String']>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
