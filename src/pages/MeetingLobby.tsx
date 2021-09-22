@@ -3,11 +3,9 @@ import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/
 import { useParams, useHistory } from 'react-router';
 import {
   useVotationOpenedForMeetingSubscription,
-  useVotationsByMeetingIdQuery,
-  VotationStatus,
+  useGetMeetingForLobbyQuery,
   useGetRoleQuery,
   Role,
-  Votation,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
 import { offwhite } from '../components/styles/theme';
@@ -22,14 +20,14 @@ import { useLastLocation } from 'react-router-last-location';
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string }>();
-  const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
+  const { data, loading, error } = useGetMeetingForLobbyQuery({
     variables: {
       meetingId,
     },
   });
+
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
-  const [votations, setVotations] = useState<Votation[]>([]);
   const [openVotation, setOpenVotation] = useState<string | null>(null);
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
     variables: {
@@ -59,35 +57,14 @@ const MeetingLobby: React.FC = () => {
   );
 
   useEffect(() => {
-    if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
-      const newVotations = votationData?.meetingById?.votations;
-      const openVotation = newVotations.find(
-        (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
-      );
-      // check that there is an open votation
-      if (openVotation && openVotation.id) {
-        // if you are admin and has navigated from the open votation, the id of the votation is saved,
-        // if not, you should be taken directly to the open votation
-        handleOpenVotation(openVotation.id);
-      }
-      const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
-      setVotations(sortedVotations);
-    }
-  }, [
-    votationData,
-    history,
-    meetingId,
-    votations.length,
-    role,
-    navigateToOpenVotation,
-    openVotation,
-    lastLocation?.pathname,
-  ]);
+    if (!data?.getOpenVotation) return;
+    handleOpenVotation(data.getOpenVotation);
+  }, [data?.getOpenVotation, role]);
 
   const handleOpenVotation = (openVotation: string) => {
     if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
       setOpenVotation(openVotation);
-    } else if (role !== undefined) {
+    } else if (role) {
       navigateToOpenVotation(openVotation);
     }
   };
@@ -101,11 +78,11 @@ const MeetingLobby: React.FC = () => {
     history.push('/');
   };
 
-  if (votationLoading) {
+  if (loading) {
     return <Loading asOverlay={false} text={'Henter møte'} />;
   }
 
-  if (!votationData?.meetingById || votationError || roleError) {
+  if (error || roleError) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
@@ -129,11 +106,12 @@ const MeetingLobby: React.FC = () => {
         <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
-              {votationData?.meetingById.title}
+              {data?.meetingById?.title}
             </Heading>
             <VStack align="start">
               <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
               <VotationList
+                navigateToOpenVotation={navigateToOpenVotation}
                 hideOpenVotationButton={!!openVotation}
                 role={role}
                 isMeetingLobby={true}
@@ -147,7 +125,7 @@ const MeetingLobby: React.FC = () => {
             <HStack justifyContent="space-between">
               <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
               {role === Role.Admin && (
-                <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+                <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
               )}
             </HStack>
           </VStack>

@@ -20,6 +20,7 @@ import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
 import CollapsedVotation from './CollapsedVotation';
+import ActiveVotation from './ActiveVotation';
 
 interface VotationListProps {
   meetingId: string;
@@ -27,6 +28,7 @@ interface VotationListProps {
   isMeetingLobby: boolean;
   role: Role | undefined;
   hideOpenVotationButton: boolean;
+  navigateToOpenVotation?: (openVotation: string | null) => void;
 }
 
 const getEmptyAlternative = () => {
@@ -62,6 +64,7 @@ const VotationList: React.FC<VotationListProps> = ({
   isMeetingLobby,
   role,
   hideOpenVotationButton,
+  navigateToOpenVotation,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
@@ -421,12 +424,13 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
-      {openVotation && (
+      {openVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">
             {'Aktiv votering'}
           </Heading>
-          <CollapsedVotation
+          <ActiveVotation
+            onClick={() => navigateToOpenVotation(openVotation.id)}
             isAdmin={role === Role.Admin}
             votationTitle={openVotation.title}
             index={openVotation.index}
