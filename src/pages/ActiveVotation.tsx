@@ -314,7 +314,7 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <React.Fragment key={data.votationById.id}>
+    <>
       <Box bg={offwhite} w="100vw" color="gray.500" display="flex" flexDirection="column" alignItems="center">
         {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
@@ -401,7 +401,7 @@ const Votation: React.FC = () => {
           </VStack>
         </Center>
       </Box>
-    </React.Fragment>
+    </>
   );
 };
 
