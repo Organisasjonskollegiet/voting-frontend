@@ -4,10 +4,11 @@ import { Role } from '../../../__generated__/graphql-types';
 import SelectRole from './SelectRole';
 import { boxShadow } from '../../styles/formStyles';
 import { AddIcon } from '@chakra-ui/icons';
+import { checkIfEmailIsValid } from '../utils';
 
 interface InviteParticipantProps {
   selectRole: (role: Role) => void;
-  inviteParticipant: (email: string) => boolean;
+  inviteParticipant: (email: string) => void;
   participantRole: Role;
 }
 
@@ -15,7 +16,8 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, invit
   const [email, setEmail] = useState<string>('');
 
   const addParticipant = () => {
-    if (inviteParticipant(email)) {
+    if (checkIfEmailIsValid(email)) {
+      inviteParticipant(email);
       setEmail('');
     }
   };

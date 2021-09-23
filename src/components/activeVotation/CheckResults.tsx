@@ -39,7 +39,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
             <Heading fontSize="16px" as="h3">
               {`${
                 result.getVotationResults.alternatives.filter((a) => a && a.isWinner).length > 1
-                  ? 'Vinnerene'
+                  ? 'Vinnerne'
                   : 'Vinneren'
               } er:`}
             </Heading>

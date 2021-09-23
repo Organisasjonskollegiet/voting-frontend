@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
-  // useVotationOpenedForMeetingSubscription,
-  useVotationsByMeetingIdQuery,
-  VotationStatus,
+  useVotationOpenedForMeetingSubscription,
+  useGetMeetingForLobbyQuery,
   useGetRoleQuery,
   Role,
-  Votation,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
 import { offwhite } from '../components/styles/theme';
@@ -16,26 +14,29 @@ import { h1Style } from '../components/styles/formStyles';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
+import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
+import { useLastLocation } from 'react-router-last-location';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string }>();
-  const { data: votationData, loading: votationLoading, error: votationError } = useVotationsByMeetingIdQuery({
+  const { data, loading, error } = useGetMeetingForLobbyQuery({
     variables: {
       meetingId,
     },
-    pollInterval: 1000,
   });
+
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
-  const [votations, setVotations] = useState<Votation[]>([]);
-  // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-  //   variables: {
-  //     meetingId,
-  //   },
-  // });
+  const [openVotation, setOpenVotation] = useState<string | null>(null);
+  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+    variables: {
+      meetingId,
+    },
+  });
 
   const history = useHistory();
+  const lastLocation = useLastLocation();
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
@@ -48,36 +49,45 @@ const MeetingLobby: React.FC = () => {
     }
   }, [roleResult, role, user?.sub]);
 
-  useEffect(() => {
-    if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
-      const newVotations = votationData?.meetingById?.votations;
-      const openVotations = newVotations.filter(
-        (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
-      );
-      if (openVotations.length > 0 && openVotations[0]?.id) {
-        history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
-      } else if (newVotations.length > 0 && newVotations.length > votations.length) {
-        const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
-        setVotations(sortedVotations);
-      }
-    }
-  }, [votationData, history, meetingId, votations.length]);
+  const navigateToOpenVotation = useCallback(
+    (openVotation: string | null) => {
+      if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
+    },
+    [meetingId, history]
+  );
 
-  const backToVotationList = () => {
+  const handleOpenVotation = useCallback(
+    (openVotation: string) => {
+      if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
+        setOpenVotation(openVotation);
+      } else if (role) {
+        navigateToOpenVotation(openVotation);
+      }
+    },
+    [role, lastLocation?.pathname, meetingId, navigateToOpenVotation]
+  );
+
+  // handle votation being open initially
+  useEffect(() => {
+    if (!data?.getOpenVotation) return;
+    handleOpenVotation(data.getOpenVotation);
+  }, [data?.getOpenVotation, role, handleOpenVotation]);
+
+  // handle votation opening
+  useEffect(() => {
+    if (!votationOpened?.votationOpenedForMeeting) return;
+    handleOpenVotation(votationOpened.votationOpenedForMeeting);
+  }, [votationOpened, handleOpenVotation]);
+
+  const backToMyMeetings = () => {
     history.push('/');
   };
 
-  const styles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  } as React.CSSProperties;
-
-  if (votationLoading) {
+  if (loading) {
     return <Loading asOverlay={false} text={'Henter møte'} />;
   }
 
-  if (!votationData?.meetingById || votationError || roleError) {
+  if (error || roleError) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
@@ -87,23 +97,40 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" p="10vh 0" color="gray.500" style={styles}>
-        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em">
+      <Box
+        bg={offwhite}
+        w="100vw"
+        minHeight="100vh"
+        color="gray.500"
+        pb="2em"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
+        {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
+        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
-              {votationData?.meetingById.title}
+              {data?.meetingById?.title}
             </Heading>
             <VStack align="start">
               <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-              <VotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
+              <VotationList
+                navigateToOpenVotation={navigateToOpenVotation}
+                hideOpenVotationButton={!!openVotation}
+                role={role}
+                isMeetingLobby={true}
+                votationsMayExist={true}
+                meetingId={meetingId}
+              />
             </VStack>
           </VStack>
           <VStack alignItems="left" spacing="1em">
             <Divider />
             <HStack justifyContent="space-between">
-              <ReturnToPreviousButton onClick={backToVotationList} text="Tiltake til møteoversikt" />
+              <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
               {role === Role.Admin && (
-                <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
+                <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
               )}
             </HStack>
           </VStack>

@@ -34,6 +34,16 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     votingEligibleCount
     voteCount
   }
+}
+
+query GetMeetingForLobby($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    id
+    title
+    owner {
+      email
+    }
+  }
 
   getOpenVotation(meetingId: $meetingId)
 }

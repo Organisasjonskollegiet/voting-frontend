@@ -4,6 +4,7 @@ import {
   Role,
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
+  useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
 import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
@@ -15,6 +16,7 @@ import SearchBar from '../atoms/SearchBar';
 import InviteParticipant from '../atoms/InviteParticipant';
 import { useCallback } from 'react';
 import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
+import { checkIfEmailIsValid } from '../utils';
 
 interface IProps {
   meetingId: string;
@@ -30,50 +32,11 @@ enum SortingType {
 
 const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
+  const [updateParticipant, updateParticipantResult] = useUpdateParticipantMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
-  const [invalidEmailsInFile, setInvalidEmailsInFile] = useState<string[]>([]);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const toast = useToast();
-
-  useEffect(() => {
-    if (!participants || !addParticipantsResult.data) return;
-    const newParticipants = addParticipantsResult.data?.addParticipants as ParticipantOrInvite[];
-    const nonUpdatedParticipants = participants.filter(
-      (participant) => !newParticipants.map((p) => p.email).includes(participant.email)
-    );
-    const sortedParticipants = [...nonUpdatedParticipants, ...newParticipants].sort((a, b) =>
-      a.email.localeCompare(b.email)
-    );
-    setParticipants(sortedParticipants);
-    const toastId = 'participantsUpdated';
-    if (!toast.isActive(toastId)) {
-      toast({
-        id: toastId,
-        title: 'Deltakerlisten ble oppdatert',
-        description: '',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-
-    if (invalidEmailsInFile.length > 0) {
-      const invalidLineNumbers = invalidEmailsInFile.reduce((a, b) => a + ', ' + b);
-      const toastId = 'invalidEmails';
-      if (!toast.isActive(toastId))
-        toast({
-          id: toastId,
-          title: `Ugyldige epostadresser`,
-          description: 'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidLineNumbers,
-          status: 'warning',
-          duration: 5000,
-          isClosable: true,
-        });
-      setInvalidEmailsInFile([]);
-    }
-    // eslint-disable-next-line
-  }, [addParticipantsResult.data]);
 
   useEffect(() => {
     if (!participants || !deleteParticipantsResult.data) return;
@@ -103,19 +66,11 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const checkIfEmailIsValid = (email: string) => {
-    const emailRegExp = new RegExp(
-      // eslint-disable-next-line no-useless-escape
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-    return emailRegExp.test(email);
-  };
-
-  const addParticipantByEmail = (email: string) => {
+  const addParticipantByEmail = async (email: string) => {
     if (checkIfEmailIsValid(email)) {
       const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
       if (!emailAlreadyAdded && meetingId) {
-        addParticipants({
+        await addParticipants({
           variables: {
             meetingId,
             participants: [
@@ -127,6 +82,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             ],
           },
         });
+        setParticipants([...participants, { email, role: inputRole, isVotingEligible: true }]);
       }
     } else {
       const toastId = 'invalidEmail';
@@ -138,12 +94,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           duration: 5000,
           isClosable: true,
         });
-      return false;
     }
-    return true;
   };
 
-  const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setReadingFiles(true);
     const input = event.target as HTMLInputElement;
     if (!(input.files && input.files.length > 0)) return;
@@ -153,7 +107,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
     const file = input.files[0];
     const reader = new FileReader();
-    reader.onload = (evt: ProgressEvent<FileReader>) => {
+    reader.onload = async (evt: ProgressEvent<FileReader>) => {
       const newParticipants: ParticipantOrInvite[] = [];
       if (!evt.target) return;
       const content = evt.target.result as string;
@@ -179,40 +133,51 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           });
         }
       }
-      addParticipants({
+      await addParticipants({
         variables: {
           meetingId,
           participants: newParticipants,
         },
       });
+      setParticipants([...participants, ...newParticipants]);
     };
     reader.readAsText(file, 'UTF-8');
     setReadingFiles(false);
-    setInvalidEmailsInFile(invalidEmailsLineNumbers);
+    const toastId = 'invalidEmails';
+    if (!toast.isActive(toastId) && invalidEmailsLineNumbers.length > 0)
+      toast({
+        id: toastId,
+        title: `Ugyldige epostadresser`,
+        description:
+          'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidEmailsLineNumbers,
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+      });
   };
 
   const deleteParticipantByEmail = (email: string) => {
     deleteParticipants({ variables: { meetingId, emails: [email] } });
   };
 
-  const changeParticipantsRights = (
+  const changeParticipantsRights = async (
     participant: ParticipantOrInvite,
     newRole?: Role,
     toggleVotingEligibility = false
   ) => {
     if (!meetingId) return;
-    addParticipants({
+    const participantInput = {
+      email: participant.email,
+      role: newRole ?? participant.role,
+      isVotingEligible: toggleVotingEligibility ? !participant.isVotingEligible : participant.isVotingEligible,
+    };
+    await updateParticipant({
       variables: {
         meetingId,
-        participants: [
-          {
-            email: participant.email,
-            role: newRole ?? participant.role,
-            isVotingEligible: toggleVotingEligibility ? !participant.isVotingEligible : participant.isVotingEligible,
-          },
-        ],
+        participant: participantInput,
       },
     });
+    setParticipants([...participants.filter((p) => p.email !== participant.email), participantInput]);
   };
 
   const [ascVsDesc, setAscVsDesc] = useState<SortingType>(SortingType.ASC);
@@ -239,6 +204,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
       {addParticipantsResult.loading && <Loading asOverlay={true} text="Legger til deltaker" />}
+      {updateParticipantResult.loading && <Loading asOverlay={true} text="Oppdaterer deltaker" />}
       {deleteParticipantsResult.loading && <Loading asOverlay={true} text="Sletter deltaker" />}
       <VStack spacing="7">
         <FormControl>
