@@ -42,7 +42,6 @@ const ApolloAuthProvider: React.FC = ({ children }) => {
     };
   });
 
-  // change httpLink for splitLink when subscription is used
   const client = new ApolloClient({
     link: authLink.concat(splitLink),
     cache: new InMemoryCache(),
