@@ -13,6 +13,7 @@ import {
   useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
+  useUpdateVotationIndexesMutation,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -72,6 +73,8 @@ const VotationList: React.FC<VotationListProps> = ({
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
+
+  const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
 
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
@@ -219,15 +222,39 @@ const VotationList: React.FC<VotationListProps> = ({
 
     const reorderedVotations = reorder(votations, result.source.index, result.destination.index);
 
-    const updatedVotations: Votation[] = reorderedVotations.map((votation, index) => {
+    const updatedVotations: Votation[] = reorderedVotations.map((v, index) => {
       return {
-        ...votation,
-        index: index,
-        isEdited: true,
+        ...v,
+        index,
       };
     });
+    await updateIndexes(updatedVotations);
     setVotations(updatedVotations);
   }
+
+  const updateIndexes = async (votations: Votation[]) => {
+    const upcomingVotations = votations
+      .filter((v) => v.status === VotationStatus.Upcoming)
+      .map((v) => {
+        return {
+          id: v.id,
+          index: v.index,
+        };
+      });
+    if (upcomingVotations.length > 0) {
+      try {
+        await updateVotationIndexes({ variables: { votations: upcomingVotations } });
+      } catch (error) {
+        toast({
+          title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+          description: 'Last inn siden på nytt, og prøv igjen.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+  };
 
   const handleDeleteVotation = async (votation: Votation) => {
     try {
@@ -245,13 +272,10 @@ const VotationList: React.FC<VotationListProps> = ({
           return {
             ...v,
             index,
-            isEdited: true,
           };
         });
+      await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
-      // saves the changes made to the remaining votations in order to update
-      // the index. All other changes are also saved.
-      handleSave(remainingVotations);
       setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId(
         remainingVotations.length > votation.index
@@ -418,6 +442,7 @@ const VotationList: React.FC<VotationListProps> = ({
     (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
   );
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
+
   const endedVotations = votations.filter(
     (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
   );
