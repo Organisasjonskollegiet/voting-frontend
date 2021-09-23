@@ -95,6 +95,7 @@ export enum MeetingStatus {
 export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
+  updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
   deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
@@ -120,6 +121,11 @@ export type Mutation = {
 export type MutationCreateVotationsArgs = {
   meetingId: Scalars['String'];
   votations: Array<CreateVotationInput>;
+};
+
+
+export type MutationUpdateVotationIndexesArgs = {
+  votations: Array<UpdateVotationIndexInput>;
 };
 
 
@@ -354,6 +360,11 @@ export type UpdateParticipantInput = {
   userExists: Scalars['Boolean'];
 };
 
+export type UpdateVotationIndexInput = {
+  id: Scalars['String'];
+  index: Scalars['Int'];
+};
+
 export type UpdateVotationInput = {
   id: Scalars['String'];
   title: Scalars['String'];
@@ -558,6 +569,19 @@ export type CreateVotationsMutation = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text'>
     )>>> }
+  )>>> }
+);
+
+export type UpdateVotationIndexesMutationVariables = Exact<{
+  votations: Array<UpdateVotationIndexInput> | UpdateVotationIndexInput;
+}>;
+
+
+export type UpdateVotationIndexesMutation = (
+  { __typename?: 'Mutation' }
+  & { updateVotationIndexes?: Maybe<Array<Maybe<(
+    { __typename?: 'Votation' }
+    & Pick<Votation, 'id' | 'index'>
   )>>> }
 );
 
@@ -1156,6 +1180,40 @@ export function useCreateVotationsMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateVotationsMutationHookResult = ReturnType<typeof useCreateVotationsMutation>;
 export type CreateVotationsMutationResult = Apollo.MutationResult<CreateVotationsMutation>;
 export type CreateVotationsMutationOptions = Apollo.BaseMutationOptions<CreateVotationsMutation, CreateVotationsMutationVariables>;
+export const UpdateVotationIndexesDocument = gql`
+    mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!) {
+  updateVotationIndexes(votations: $votations) {
+    id
+    index
+  }
+}
+    `;
+export type UpdateVotationIndexesMutationFn = Apollo.MutationFunction<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>;
+
+/**
+ * __useUpdateVotationIndexesMutation__
+ *
+ * To run a mutation, you first call `useUpdateVotationIndexesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVotationIndexesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVotationIndexesMutation, { data, loading, error }] = useUpdateVotationIndexesMutation({
+ *   variables: {
+ *      votations: // value for 'votations'
+ *   },
+ * });
+ */
+export function useUpdateVotationIndexesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>(UpdateVotationIndexesDocument, options);
+      }
+export type UpdateVotationIndexesMutationHookResult = ReturnType<typeof useUpdateVotationIndexesMutation>;
+export type UpdateVotationIndexesMutationResult = Apollo.MutationResult<UpdateVotationIndexesMutation>;
+export type UpdateVotationIndexesMutationOptions = Apollo.BaseMutationOptions<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>;
 export const UpdateVotationsDocument = gql`
     mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
   updateVotations(votations: $votations) {
