@@ -20,15 +20,16 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
 
   const [getParticipants, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
     variables: { meetingId },
+    fetchPolicy: 'cache-and-network',
   });
+
+  const [participants, setParticipants] = useState<ParticipantOrInvite[]>([]);
 
   useEffect(() => {
     if (meetingId && !data) {
       getParticipants();
     }
   }, [meetingId, getParticipants, data]);
-
-  const [participants, setParticipants] = useState<ParticipantOrInvite[]>([]);
 
   useEffect(() => {
     if (data?.participants) {

@@ -43,6 +43,7 @@ const ManageVotations: React.FC<IProps> = ({
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
         <VotationList
+          hideOpenVotationButton={true}
           role={Role.Admin}
           isMeetingLobby={false}
           meetingId={meetingId}
