@@ -219,15 +219,22 @@ const VotationList: React.FC<VotationListProps> = ({
 
     const reorderedVotations = reorder(votations, result.source.index, result.destination.index);
 
-    const updatedVotations: Votation[] = reorderedVotations.map((votation, index) => {
-      return {
-        ...votation,
-        index: index,
-        isEdited: true,
-      };
-    });
+    const updatedVotations: Votation[] = reorderedVotations.map(reorderedVotationMapper);
     setVotations(updatedVotations);
   }
+
+  const reorderedVotationMapper = (votation: Votation, index: number) => {
+    // if a votation is regarded as ended its index will never change and should not be updated
+    if (votation.status === VotationStatus.Invalid || votation.status === VotationStatus.PublishedResult) {
+      return votation;
+    } else {
+      return {
+        ...votation,
+        index,
+        isEdited: true,
+      };
+    }
+  };
 
   const handleDeleteVotation = async (votation: Votation) => {
     try {
@@ -241,13 +248,7 @@ const VotationList: React.FC<VotationListProps> = ({
       const remainingVotations = votations
         .filter((v) => v.id !== votation.id)
         .sort((a, b) => a.index - b.index)
-        .map((v, index) => {
-          return {
-            ...v,
-            index,
-            isEdited: true,
-          };
-        });
+        .map(reorderedVotationMapper);
       const keyOfEmptyVotation = uuid();
       // saves the changes made to the remaining votations in order to update
       // the index. All other changes are also saved.
@@ -418,9 +419,12 @@ const VotationList: React.FC<VotationListProps> = ({
     (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
   );
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
+
   const endedVotations = votations.filter(
     (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
   );
+
+  console.log('votations', votations);
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
