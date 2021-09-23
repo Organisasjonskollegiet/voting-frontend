@@ -414,10 +414,12 @@ const VotationList: React.FC<VotationListProps> = ({
     updateVotationStatus({ variables: { votationId: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
-  const openVotation = votations.find((v) => v.status === VotationStatus.Open);
+  const openVotation = votations.find(
+    (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+  );
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
   const endedVotations = votations.filter(
-    (v) => v.status !== VotationStatus.Upcoming && v.status !== VotationStatus.Open
+    (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
   );
 
   return (
