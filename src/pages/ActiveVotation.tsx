@@ -29,7 +29,6 @@ import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import { offwhite } from '../components/styles/theme';
 import PageContainer from '../components/common/PageContainer';
 
 export const subtitlesStyle = {
