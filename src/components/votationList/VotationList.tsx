@@ -424,8 +424,6 @@ const VotationList: React.FC<VotationListProps> = ({
     (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
   );
 
-  console.log('votations', votations);
-
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
