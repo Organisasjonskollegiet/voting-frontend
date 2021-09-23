@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
@@ -16,6 +16,8 @@ import { h1Style } from '../components/styles/formStyles';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
+import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
+import { useLastLocation } from 'react-router-last-location';
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -29,6 +31,7 @@ const MeetingLobby: React.FC = () => {
   const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
   const [votations, setVotations] = useState<Votation[]>([]);
+  const [openVotation, setOpenVotation] = useState<string | null>(null);
   // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
   //   variables: {
   //     meetingId,
@@ -36,6 +39,7 @@ const MeetingLobby: React.FC = () => {
   // });
 
   const history = useHistory();
+  const lastLocation = useLastLocation();
 
   useEffect(() => {
     if (roleResult && roleResult.meetingById?.participants) {
@@ -48,30 +52,46 @@ const MeetingLobby: React.FC = () => {
     }
   }, [roleResult, role, user?.sub]);
 
+  const navigateToOpenVotation = useCallback(
+    (openVotation: string | null) => {
+      if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
+    },
+    [meetingId, history]
+  );
+
   useEffect(() => {
     if (votationData?.meetingById?.votations && votationData.meetingById.votations.length > 0) {
       const newVotations = votationData?.meetingById?.votations;
-      const openVotations = newVotations.filter(
+      const openVotation = newVotations.find(
         (votation) => votation?.status === VotationStatus.Open || votation?.status === VotationStatus.CheckingResult
       );
-      if (openVotations.length > 0 && openVotations[0]?.id) {
-        history.push(`/meeting/${meetingId}/votation/${openVotations[0].id}`);
-      } else if (newVotations.length > 0 && newVotations.length > votations.length) {
-        const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
-        setVotations(sortedVotations);
+      // check that there is an open votation
+      if (openVotation && openVotation.id) {
+        // if you are admin and has navigated from the open votation, the id of the votation is saved,
+        // if not, you should be taken directly to the open votation
+        if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation.id}`) {
+          setOpenVotation(openVotation.id);
+        } else if (role !== undefined) {
+          navigateToOpenVotation(openVotation.id);
+        }
       }
+      const sortedVotations = newVotations.slice().sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
+      setVotations(sortedVotations);
     }
-  }, [votationData, history, meetingId, votations.length]);
+  }, [
+    votationData,
+    history,
+    meetingId,
+    votations.length,
+    role,
+    navigateToOpenVotation,
+    openVotation,
+    lastLocation?.pathname,
+  ]);
 
-  const backToVotationList = () => {
+  const backToMyMeetings = () => {
     history.push('/');
   };
-
-  const styles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  } as React.CSSProperties;
 
   if (votationLoading) {
     return <Loading asOverlay={false} text={'Henter møte'} />;
@@ -87,21 +107,37 @@ const MeetingLobby: React.FC = () => {
 
   return (
     <>
-      <Box bg={offwhite} w="100vw" p="10vh 0" color="gray.500" style={styles}>
-        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em">
+      <Box
+        bg={offwhite}
+        w="100vw"
+        minHeight="100vh"
+        color="gray.500"
+        pb="2em"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
+        {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
+        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
           <VStack alignItems="left">
             <Heading sx={h1Style} as="h1">
               {votationData?.meetingById.title}
             </Heading>
             <VStack align="start">
               <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-              <VotationList role={role} isMeetingLobby={true} votationsMayExist={true} meetingId={meetingId} />
+              <VotationList
+                hideOpenVotationButton={!!openVotation}
+                role={role}
+                isMeetingLobby={true}
+                votationsMayExist={true}
+                meetingId={meetingId}
+              />
             </VStack>
           </VStack>
           <VStack alignItems="left" spacing="1em">
             <Divider />
             <HStack justifyContent="space-between">
-              <ReturnToPreviousButton onClick={backToVotationList} text="Tiltake til møteoversikt" />
+              <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
               {role === Role.Admin && (
                 <ParticipantModal meetingId={meetingId} ownerEmail={votationData.meetingById.owner?.email} />
               )}

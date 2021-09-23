@@ -19,12 +19,14 @@ import Loading from '../common/Loading';
 import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './EndedVotation';
+import CollapsedVotation from './CollapsedVotation';
 
 interface VotationListProps {
   meetingId: string;
   votationsMayExist: boolean;
   isMeetingLobby: boolean;
   role: Role | undefined;
+  hideOpenVotationButton: boolean;
 }
 
 const getEmptyAlternative = () => {
@@ -54,7 +56,13 @@ const getEmptyVotation = (id?: string, index?: number) => {
   };
 };
 
-const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExist, isMeetingLobby, role }) => {
+const VotationList: React.FC<VotationListProps> = ({
+  meetingId,
+  votationsMayExist,
+  isMeetingLobby,
+  role,
+  hideOpenVotationButton,
+}) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
@@ -91,15 +99,33 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
   }, [votationsMayExist, getVotationsByMeetingId]);
 
   useEffect(() => {
-    const toastId = 'votationOpened';
-    if (updateVotationStatusResult.data?.updateVotationStatus && !toast.isActive(toastId)) {
-      toast({
-        id: 'votationOpened',
-        title: 'Voteringen ble åpnet.',
-        status: 'success',
-        duration: 4000,
-        isClosable: true,
-      });
+    if (updateVotationStatusResult.data?.updateVotationStatus) {
+      const openedToastId = 'votationOpened';
+      const maxOneToastId = 'maxOneOpenVotation';
+      if (
+        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation' &&
+        !toast.isActive(openedToastId)
+      ) {
+        toast({
+          id: openedToastId,
+          title: 'Voteringen ble åpnet.',
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
+        });
+      } else if (
+        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError' &&
+        !toast.isActive(maxOneToastId)
+      ) {
+        toast({
+          id: maxOneToastId,
+          title: 'Kunne ikke åpne votering.',
+          description: updateVotationStatusResult.data?.updateVotationStatus.message,
+          status: 'error',
+          duration: 4000,
+          isClosable: true,
+        });
+      }
     }
   }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
@@ -221,6 +247,8 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
           };
         });
       const keyOfEmptyVotation = uuid();
+      // saves the changes made to the remaining votations in order to update
+      // the index. All other changes are also saved.
       handleSave(remainingVotations);
       setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId(
@@ -384,12 +412,30 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
     updateVotationStatus({ variables: { votationId: upcomingVotations[0].id, status: VotationStatus.Open } });
   };
 
+  const openVotation = votations.find(
+    (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+  );
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
-  const endedVotations = votations.filter((v) => v.status !== VotationStatus.Upcoming);
+  const endedVotations = votations.filter(
+    (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+  );
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
+      {openVotation && (
+        <>
+          <Heading as="h1" fontSize="1em">
+            {'Aktiv votering'}
+          </Heading>
+          <CollapsedVotation
+            isAdmin={role === Role.Admin}
+            votationTitle={openVotation.title}
+            index={openVotation.index}
+            isActive={true}
+          />
+        </>
+      )}
       {upcomingVotations.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
           {isMeetingLobby ? (
@@ -406,7 +452,7 @@ const VotationList: React.FC<VotationListProps> = ({ meetingId, votationsMayExis
                 handleStartVotation={startVotation}
                 checkIfAnyChanges={checkIfAnyChanges}
                 handleSaveChanges={() => handleSave(votations)}
-                showStartNextButton={role === Role.Admin}
+                showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
                 heading={'Neste votering'}
                 isAdmin={role === Role.Admin}
               />

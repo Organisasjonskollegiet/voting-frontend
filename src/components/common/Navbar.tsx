@@ -43,6 +43,7 @@ const Navbar: React.FC = () => {
           src={Logo}
           alt="Organisasjonskollegiet"
           h="3em"
+          w="100px"
         />
 
         <HStack as={'nav'} spacing="5.5em" display={{ base: 'none', md: 'flex' }}>
@@ -57,7 +58,9 @@ const Navbar: React.FC = () => {
         {/* <Link to={links.get('Min profil') || ''}>
             <Avatar size="sm" />
           </Link> */}
-        <Button onClick={() => logout({ returnTo: window.location.origin })}>Logg ut</Button>
+        <Button w="100px" onClick={() => logout({ returnTo: window.location.origin })}>
+          Logg ut
+        </Button>
         {/* </Box> */}
 
         {/* Button to toggle hamburger menu */}
