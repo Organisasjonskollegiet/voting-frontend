@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { Box, Button, Center, Heading, HStack, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
+import { Button, Center, Heading, HStack, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
   VotationType,
@@ -17,7 +17,6 @@ import {
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
-import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
 import EndedVotation from './endedVotations/EndedVotation';
 import OpenVotation from './OpenVotation';
@@ -417,12 +416,9 @@ const VotationList: React.FC<VotationListProps> = ({
 
   if (error) {
     return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
+      <Center mt="10vh">
+        <Text>Det skjedde noe galt under innlastingen</Text>
+      </Center>
     );
   }
 
