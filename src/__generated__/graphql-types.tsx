@@ -103,8 +103,8 @@ export type Mutation = {
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castStvVote?: Maybe<Scalars['String']>;
   castVote?: Maybe<Vote>;
-  /** Returns the current number of blank votes */
-  castBlankVote?: Maybe<Scalars['Int']>;
+  /** Returns the id of the votation */
+  castBlankVote?: Maybe<Scalars['String']>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
@@ -209,6 +209,12 @@ export type MutationChangeViewArgs = {
   state: ViewState;
 };
 
+export type NewVoteRegisteredResponse = {
+  __typename?: 'NewVoteRegisteredResponse';
+  votationId: Scalars['String'];
+  voteCount: Scalars['Int'];
+};
+
 export type OwnerCannotBeRemovedFromParticipantError = {
   __typename?: 'OwnerCannotBeRemovedFromParticipantError';
   message: Scalars['String'];
@@ -311,8 +317,8 @@ export type StvVoteAlternativeInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newVoteRegistered?: Maybe<Scalars['Int']>;
-  votationStatusUpdated?: Maybe<VotationStatus>;
+  newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
+  votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   viewChanged?: Maybe<ViewState>;
 };
@@ -429,6 +435,12 @@ export enum VotationStatus {
   PublishedResult = 'PUBLISHED_RESULT',
   Invalid = 'INVALID'
 }
+
+export type VotationStatusUpdatedResponse = {
+  __typename?: 'VotationStatusUpdatedResponse';
+  votationId: Scalars['String'];
+  votationStatus: VotationStatus;
+};
 
 export enum VotationType {
   Qualified = 'QUALIFIED',
@@ -735,7 +747,6 @@ export type GetVotationByIdQueryVariables = Exact<{
 
 export type GetVotationByIdQuery = (
   { __typename?: 'Query' }
-  & Pick<Query, 'getOpenVotation'>
   & { votationById?: Maybe<(
     { __typename?: 'Votation' }
     & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
@@ -756,6 +767,24 @@ export type GetVotationByIdQuery = (
   )>, getVoteCount?: Maybe<(
     { __typename?: 'VoteCountResult' }
     & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
+  )> }
+);
+
+export type GetMeetingForLobbyQueryVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type GetMeetingForLobbyQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'getOpenVotation'>
+  & { meetingById?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'id' | 'title'>
+    & { owner?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'email'>
+    )> }
   )> }
 );
 
@@ -840,7 +869,10 @@ export type VotationStatusUpdatedSubscriptionVariables = Exact<{
 
 export type VotationStatusUpdatedSubscription = (
   { __typename?: 'Subscription' }
-  & Pick<Subscription, 'votationStatusUpdated'>
+  & { votationStatusUpdated?: Maybe<(
+    { __typename?: 'VotationStatusUpdatedResponse' }
+    & Pick<VotationStatusUpdatedResponse, 'votationId' | 'votationStatus'>
+  )> }
 );
 
 export type NewVoteRegisteredSubscriptionVariables = Exact<{
@@ -850,7 +882,10 @@ export type NewVoteRegisteredSubscriptionVariables = Exact<{
 
 export type NewVoteRegisteredSubscription = (
   { __typename?: 'Subscription' }
-  & Pick<Subscription, 'newVoteRegistered'>
+  & { newVoteRegistered?: Maybe<(
+    { __typename?: 'NewVoteRegisteredResponse' }
+    & Pick<NewVoteRegisteredResponse, 'votationId' | 'voteCount'>
+  )> }
 );
 
 export type VotationOpenedForMeetingSubscriptionVariables = Exact<{
@@ -1614,7 +1649,6 @@ export const GetVotationByIdDocument = gql`
     votingEligibleCount
     voteCount
   }
-  getOpenVotation(meetingId: $meetingId)
 }
     `;
 
@@ -1646,6 +1680,46 @@ export function useGetVotationByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetVotationByIdQueryHookResult = ReturnType<typeof useGetVotationByIdQuery>;
 export type GetVotationByIdLazyQueryHookResult = ReturnType<typeof useGetVotationByIdLazyQuery>;
 export type GetVotationByIdQueryResult = Apollo.QueryResult<GetVotationByIdQuery, GetVotationByIdQueryVariables>;
+export const GetMeetingForLobbyDocument = gql`
+    query GetMeetingForLobby($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    id
+    title
+    owner {
+      email
+    }
+  }
+  getOpenVotation(meetingId: $meetingId)
+}
+    `;
+
+/**
+ * __useGetMeetingForLobbyQuery__
+ *
+ * To run a query within a React component, call `useGetMeetingForLobbyQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeetingForLobbyQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeetingForLobbyQuery({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useGetMeetingForLobbyQuery(baseOptions: Apollo.QueryHookOptions<GetMeetingForLobbyQuery, GetMeetingForLobbyQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMeetingForLobbyQuery, GetMeetingForLobbyQueryVariables>(GetMeetingForLobbyDocument, options);
+      }
+export function useGetMeetingForLobbyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeetingForLobbyQuery, GetMeetingForLobbyQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMeetingForLobbyQuery, GetMeetingForLobbyQueryVariables>(GetMeetingForLobbyDocument, options);
+        }
+export type GetMeetingForLobbyQueryHookResult = ReturnType<typeof useGetMeetingForLobbyQuery>;
+export type GetMeetingForLobbyLazyQueryHookResult = ReturnType<typeof useGetMeetingForLobbyLazyQuery>;
+export type GetMeetingForLobbyQueryResult = Apollo.QueryResult<GetMeetingForLobbyQuery, GetMeetingForLobbyQueryVariables>;
 export const VotationsByMeetingIdDocument = gql`
     query VotationsByMeetingId($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
@@ -1828,7 +1902,10 @@ export type GetWinnerOfVotationLazyQueryHookResult = ReturnType<typeof useGetWin
 export type GetWinnerOfVotationQueryResult = Apollo.QueryResult<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
-  votationStatusUpdated(id: $id)
+  votationStatusUpdated(id: $id) {
+    votationId
+    votationStatus
+  }
 }
     `;
 
@@ -1856,7 +1933,10 @@ export type VotationStatusUpdatedSubscriptionHookResult = ReturnType<typeof useV
 export type VotationStatusUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationStatusUpdatedSubscription>;
 export const NewVoteRegisteredDocument = gql`
     subscription NewVoteRegistered($votationId: String!) {
-  newVoteRegistered(votationId: $votationId)
+  newVoteRegistered(votationId: $votationId) {
+    votationId
+    voteCount
+  }
 }
     `;
 

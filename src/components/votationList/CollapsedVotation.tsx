@@ -3,7 +3,7 @@ import React from 'react';
 import CustomTag from '../common/CustomTag';
 import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
 
-interface CollapsedVotationProps {
+export interface CollapsedVotationProps {
   isAdmin: boolean;
   votationTitle: string;
   index: number;
