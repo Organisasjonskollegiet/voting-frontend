@@ -1,10 +1,9 @@
+import { darkblue } from "./theme";
+
 export const outerContainer = {
-  paddingTop: '5rem',
   padding: '5rem 2rem 1rem 2rem',
   width: '100%',
-  bg: '#f9f9f9',
-  color: '#718096',
-  minHeight: '100vh',
+  color: darkblue,
   alignItems: 'top',
 } as React.CSSProperties;
 
