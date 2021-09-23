@@ -415,10 +415,6 @@ const VotationList: React.FC<VotationListProps> = ({
     handleUpdateVotations(votationsToUpdate);
   };
 
-  if (loading) {
-    return <Loading asOverlay={false} text={'Henter møte'} />;
-  }
-
   if (error) {
     return (
       <>
@@ -450,6 +446,7 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
+      {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {openVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">
