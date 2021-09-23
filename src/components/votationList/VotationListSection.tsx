@@ -6,7 +6,7 @@ import { Heading, VStack } from '@chakra-ui/react';
 import { Votation } from '../../types/types';
 import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
 
-interface VotationListSectionProps {
+export interface VotationListSectionProps {
   votations: Votation[];
   setActiveVotationId: (id: string) => void;
   activeVotationId: string;
@@ -19,7 +19,7 @@ interface VotationListSectionProps {
   handleSaveChanges: () => void;
   showStartNextButton: boolean;
   heading?: string;
-  droppableId: string;
+  droppableId?: string;
   isAdmin: boolean;
 }
 
@@ -46,7 +46,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
           {heading}
         </Heading>
       )}
-      <Droppable droppableId={droppableId} isDropDisabled={!isAdmin}>
+      <Droppable droppableId={droppableId ?? 'votation-list'} isDropDisabled={!isAdmin}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {votations.map((votation: Votation) => (
