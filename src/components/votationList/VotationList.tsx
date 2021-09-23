@@ -18,7 +18,7 @@ import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
 import { darkblue } from '../styles/theme';
 import VotationListSection from './VotationListSection';
-import EndedVotation from './EndedVotation';
+import EndedVotation from './endedVotations/EndedVotation';
 import OpenVotation from './OpenVotation';
 
 interface VotationListProps {
