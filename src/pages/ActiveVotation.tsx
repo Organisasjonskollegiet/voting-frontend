@@ -29,7 +29,7 @@ import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import { offwhite } from '../components/styles/theme';
+import PageContainer from '../components/common/PageContainer';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -314,8 +314,8 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <>
-      <Box bg={offwhite} w="100vw" color="gray.500" display="flex" flexDirection="column" alignItems="center">
+    <PageContainer>
+      <VStack>
         {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
           {(castVoteLoading || blankVoteLoading || stvLoading) && (
@@ -400,8 +400,8 @@ const Votation: React.FC = () => {
             )}
           </VStack>
         </Center>
-      </Box>
-    </>
+      </VStack>
+    </PageContainer>
   );
 };
 

@@ -13,6 +13,7 @@ import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import { outerContainer, centerContainer } from '../components/styles/containerStyles';
+import PageContainer from '../components/common/PageContainer';
 
 const ManageMeeting: React.FC = () => {
   const { user } = useAuth0();
@@ -161,35 +162,37 @@ const ManageMeeting: React.FC = () => {
   }
 
   return (
-    <Center sx={outerContainer}>
-      {(createMeetingResult.loading || updateMeetingResult.loading) && (
-        <Loading asOverlay={true} text="Oppretter møte" />
-      )}
-      <VStack spacing="10" align="left" maxWidth="800px" sx={centerContainer}>
-        <ManageMeetingInformation
-          isActive={activeTab === 0}
-          meeting={meeting}
-          updateMeeting={(meeting: MeetingWorking) => {
-            setMeetingHasBeenEdited(true);
-            setMeeting(meeting);
-          }}
-          handleNavigation={handleNextFromMeeting}
-        />
-        <ManageVotations
-          isActive={activeTab === 1}
-          votationsMayExist={votationsMayExist}
-          onVotationsCreated={onVotationsCreated}
-          meetingId={meeting?.id ?? ''}
-          handlePrevious={handlePrevFromVotation}
-        />
-        <ManageParticipants
-          isActive={activeTab === 2}
-          meetingId={meeting?.id ?? ''}
-          handleNavigation={handlePrevFromParticipants}
-          ownerEmail={user?.email}
-        />
-      </VStack>
-    </Center>
+    <PageContainer>
+      <Center sx={outerContainer}>
+        {(createMeetingResult.loading || updateMeetingResult.loading) && (
+          <Loading asOverlay={true} text="Oppretter møte" />
+        )}
+        <VStack spacing="10" align="left" maxWidth="800px" sx={centerContainer}>
+          <ManageMeetingInformation
+            isActive={activeTab === 0}
+            meeting={meeting}
+            updateMeeting={(meeting: MeetingWorking) => {
+              setMeetingHasBeenEdited(true);
+              setMeeting(meeting);
+            }}
+            handleNavigation={handleNextFromMeeting}
+          />
+          <ManageVotations
+            isActive={activeTab === 1}
+            votationsMayExist={votationsMayExist}
+            onVotationsCreated={onVotationsCreated}
+            meetingId={meeting?.id ?? ''}
+            handlePrevious={handlePrevFromVotation}
+          />
+          <ManageParticipants
+            isActive={activeTab === 2}
+            meetingId={meeting?.id ?? ''}
+            handleNavigation={handlePrevFromParticipants}
+            ownerEmail={user?.email}
+          />
+        </VStack>
+      </Center>
+    </PageContainer>
   );
 };
 

@@ -1,15 +1,14 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Box } from '@chakra-ui/layout';
 import { offwhite } from '../styles/theme';
 
 interface PageContainerProps {
-  children: ReactNode;
   color?: string;
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({ children, color }) => {
   return (
-    <Box w="100vw" minH="100vh" background={color || offwhite}>
+    <Box w="100%" minH="calc(100vh - 5.5rem)" background={color || offwhite}>
       {children}
     </Box>
   );
