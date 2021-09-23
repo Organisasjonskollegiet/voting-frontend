@@ -1,31 +1,38 @@
 import React from 'react';
 import InformationModal from '../../common/InformationModal';
-import { Heading, Text } from '@chakra-ui/react';
+import { Heading, Link, Text, VStack } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const VotationTypeInformation: React.FC = () => {
-  const votationTypesMap: Map<string, string> = new Map([
-    [
-      'Simpelt flertall',
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio eligendi, vel officiis quod corrupti dicta laudantium accusamus odio tenetur minima. Veniam architecto voluptatum ab, quae voluptas beatae reprehenderitenim quia!',
-    ],
-    [
-      'Kvalifisert flertall',
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil repudiandae magni dolorem quisquam quae nam consectetur, expedita, tempore maxime doloribus perferendis aut autem, consequatur saepe totam. Excepturi at totam iure.',
-    ],
-    ['Kvalifisert 2/3 flertall', ''],
-    ['Preferansevalg', ''],
-  ]);
-
   return (
     <InformationModal title="Stemmeformer" ariaLabel="Informasjon om stemmeformer" alignWithText={true}>
-      {Array.from(votationTypesMap.keys()).map((title) => (
-        <>
-          <Heading as="h2" fontSize="1.1em">
-            {title}
-          </Heading>
-          <Text mb="1em">{votationTypesMap.get(title)}</Text>
-        </>
-      ))}
+      <Heading as="h2" fontSize="1.1rem">
+        Simpelt Flertall
+      </Heading>
+      <Text mb="1rem">Alternativet med flest stemmer vinner.</Text>
+      <Heading as="h2" fontSize="1.1rem">
+        Kvalifisert flertall
+      </Heading>
+      <Text mb="1rem">Et alternativ trenger mer enn halvparten stemmene for å vinne.</Text>
+
+      <Heading as="h2" fontSize="1.1rem">
+        Kvalifisert 2/3 flertall
+      </Heading>
+      <Text mb="1rem">Et alternativ trenger mer enn 2/3 av stemmene for å vinne.</Text>
+
+      <Heading as="h2" fontSize="1.1rem">
+        Preferansevalg
+      </Heading>
+      <Text mb="1rem">
+        Velgerne rangerer alternativene i den rekkefølgen de foretrekker dem. Her har man mulighet til å velge flere
+        vinnere.
+      </Text>
+      <Text>
+        Hvordan resultatet blir utregnet kan du se her:{' '}
+        <Link href="https://www.youtube.com/watch?v=bLH_w5kHJpA" color="black" isExternal>
+          Single transferable vote <ExternalLinkIcon mx="2px" />
+        </Link>
+      </Text>
     </InformationModal>
   );
 };
