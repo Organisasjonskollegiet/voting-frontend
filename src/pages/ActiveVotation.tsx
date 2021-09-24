@@ -8,7 +8,7 @@ import {
   useGetVotationByIdQuery,
   useVotationStatusUpdatedSubscription,
   useNewVoteRegisteredSubscription,
-  useGetWinnerOfVotationQuery,
+  useGetWinnerOfVotationLazyQuery,
   VotationType,
   useCastBlankVoteMutation,
   useCastStvVoteMutation,
@@ -29,7 +29,7 @@ import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import { offwhite } from '../components/styles/theme';
+import PageContainer from '../components/common/PageContainer';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -52,9 +52,11 @@ const Votation: React.FC = () => {
     variables: { votationId: votationId, meetingId: meetingId },
   });
 
-  const { data: winnerResult, refetch: refetchWinner } = useGetWinnerOfVotationQuery({ variables: { votationId } });
+  const [getWinner, { data: winnerResult, loading: winnerLoading }] = useGetWinnerOfVotationLazyQuery({
+    variables: { votationId },
+  });
 
-  const [getResult, { data: votationResultData }] = useGetVotationResultsLazyQuery({
+  const [getResult, { data: votationResultData, loading: votationResultLoading }] = useGetVotationResultsLazyQuery({
     variables: { votationId },
     fetchPolicy: 'cache-and-network',
   });
@@ -111,13 +113,10 @@ const Votation: React.FC = () => {
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation && !winners) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
-      if (result.length > 0) {
-        setWinners(
-          result.map((a) => {
-            return { id: a.id, text: a.text, votationId: a.votationId };
-          })
-        );
-      }
+      const winners = result.map((a) => {
+        return { id: a.id, text: a.text, votationId: a.votationId };
+      });
+      setWinners(winners);
     }
   }, [winnerResult, winners]);
 
@@ -130,9 +129,9 @@ const Votation: React.FC = () => {
     ) {
       getResult();
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {
-      refetchWinner();
+      getWinner();
     }
-  }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, refetchWinner, winnerResult]);
+  }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, getWinner, winnerResult]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
@@ -140,7 +139,7 @@ const Votation: React.FC = () => {
       const winners = votationResultData.getVotationResults.alternatives.filter(
         (a) => a?.isWinner
       ) as AlternativeResult[];
-      setWinners(winners.length > 0 ? winners : null);
+      setWinners(winners);
     }
   }, [votationResultData, winners]);
 
@@ -314,8 +313,8 @@ const Votation: React.FC = () => {
   }
 
   return (
-    <>
-      <Box bg={offwhite} w="100vw" color="gray.500" display="flex" flexDirection="column" alignItems="center">
+    <PageContainer>
+      <VStack>
         {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
         <Center sx={outerContainer}>
           {(castVoteLoading || blankVoteLoading || stvLoading) && (
@@ -347,7 +346,8 @@ const Votation: React.FC = () => {
                 isStv={data.votationById.type === VotationType.Stv}
                 updateAlternatives={setAlternatives}
                 userHasVoted={userHasVoted}
-                showVote={showVote}
+                // show vote if showVote is true, or the user has not voted and is not waiting for vote to be registered
+                showVote={showVote || (!userHasVoted && !stvLoading && !castVoteLoading && !blankVoteLoading)}
                 isVotingEligible={isVotingEligible}
               />
             )}
@@ -369,6 +369,7 @@ const Votation: React.FC = () => {
             {status === VotationStatus.PublishedResult && (
               <Box mt="4em">
                 <VotationResult
+                  loading={votationResultLoading || winnerLoading}
                   result={votationResultData}
                   votationId={votationId}
                   showResultsTable={!data.votationById.hiddenVotes}
@@ -400,8 +401,8 @@ const Votation: React.FC = () => {
             )}
           </VStack>
         </Center>
-      </Box>
-    </>
+      </VStack>
+    </PageContainer>
   );
 };
 

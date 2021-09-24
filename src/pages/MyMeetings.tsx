@@ -47,7 +47,6 @@ const MyMeetings: React.FC = () => {
   }, [deleteMeetingError, toast]);
 
   if (error) {
-    console.log(error);
     return (
       <Center mt="20vh">
         <Text>Det skjedde noe galt under innlastingen</Text>

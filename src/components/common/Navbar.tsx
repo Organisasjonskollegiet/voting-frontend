@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
       zIndex="2"
       position="relative"
     >
-      <Flex as="nav" h="5.5em" alignItems="center" justifyContent="space-between">
+      <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
         <Image
           _hover={{ cursor: 'pointer' }}
           onClick={() => history.push('/')}

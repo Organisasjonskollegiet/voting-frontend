@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { Box, Button, Center, Heading, HStack, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { Center, Heading, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
 import {
-  VotationType,
   Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
@@ -13,13 +11,15 @@ import {
   useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
+  useUpdateVotationIndexesMutation,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
-import { darkblue } from '../styles/theme';
-import VotationListSection from './VotationListSection';
 import EndedVotation from './endedVotations/EndedVotation';
 import OpenVotation from './OpenVotation';
+import VotationListButtonRow from './VotationListButtonRow';
+import UpcomingVotationLists from './UpcomingVotationLists';
+import { getEmptyAlternative, getEmptyVotation } from './utils';
 
 interface VotationListProps {
   meetingId: string;
@@ -29,33 +29,6 @@ interface VotationListProps {
   hideOpenVotationButton: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
 }
-
-const getEmptyAlternative = () => {
-  return {
-    id: uuid(),
-    text: '',
-    index: 0,
-    existsInDb: false,
-  };
-};
-
-const getEmptyVotation = (id?: string, index?: number) => {
-  return {
-    id: id ?? uuid(),
-    title: '',
-    description: '',
-    index: index ?? 0,
-    alternatives: [getEmptyAlternative()],
-    blankVotes: false,
-    status: VotationStatus.Upcoming,
-    hiddenVotes: true,
-    type: 'SIMPLE' as VotationType,
-    numberOfWinners: 1,
-    majorityThreshold: 50,
-    existsInDb: false,
-    isEdited: false,
-  };
-};
 
 const VotationList: React.FC<VotationListProps> = ({
   meetingId,
@@ -72,6 +45,8 @@ const VotationList: React.FC<VotationListProps> = ({
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
+
+  const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
 
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
@@ -93,7 +68,8 @@ const VotationList: React.FC<VotationListProps> = ({
     return votation.title === '' && votation.description === '';
   };
 
-  // If there may exist votations (you are editing meeting or already been on add votations page), fetch votations from the backend
+  // If there may exist votations (you are editing meeting or already
+  // been on add votations page), fetch votations from the backend
   useEffect(() => {
     if (votationsMayExist) {
       getVotationsByMeetingId();
@@ -175,6 +151,16 @@ const VotationList: React.FC<VotationListProps> = ({
     };
   };
 
+  /**
+   * @description adds existsInDb and isEdited to the votations. If the results of the
+   * votation is published, alternatives prop is used and alternatives include isWinner.
+   * If the results are not published, the alternatives from the votation is used.
+   * If the votations has no alternatives, an empty alternative is added.
+   * @param votation
+   * @param alternatives is set only if the votationstatus is published, and includes
+   * isWinner
+   * @returns
+   */
   const formatVotation = (votation: Votation, alternatives?: Alternative[]) => {
     return {
       ...votation,
@@ -189,6 +175,14 @@ const VotationList: React.FC<VotationListProps> = ({
     };
   };
 
+  /**
+   * @description formats all votations and couple it with its results if the
+   * votation results are published.
+   * @param votations votations from meetingById.votations
+   * @param winners list of result from resultsOfPublishedVotations containing
+   * votationId and alternatives including whether they are winners or not.
+   * @returns votations formatted correctly for further use and editing
+   */
   const formatVotations = (votations: Votation[], winners?: Votation[]) => {
     if (!votations) return;
     return votations.map((votation) => {
@@ -219,15 +213,40 @@ const VotationList: React.FC<VotationListProps> = ({
 
     const reorderedVotations = reorder(votations, result.source.index, result.destination.index);
 
-    const updatedVotations: Votation[] = reorderedVotations.map((votation, index) => {
+    const updatedVotations: Votation[] = reorderedVotations.map((v, index) => {
       return {
-        ...votation,
-        index: index,
-        isEdited: true,
+        ...v,
+        index,
       };
     });
+    await updateIndexes(updatedVotations);
     setVotations(updatedVotations);
   }
+
+  // updates the indexes of the votations in backend
+  const updateIndexes = async (votations: Votation[]) => {
+    const upcomingVotations = votations
+      .filter((v) => v.status === VotationStatus.Upcoming)
+      .map((v) => {
+        return {
+          id: v.id,
+          index: v.index,
+        };
+      });
+    if (upcomingVotations.length > 0) {
+      try {
+        await updateVotationIndexes({ variables: { votations: upcomingVotations } });
+      } catch (error) {
+        toast({
+          title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+          description: 'Last inn siden på nytt, og prøv igjen.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+  };
 
   const handleDeleteVotation = async (votation: Votation) => {
     try {
@@ -245,13 +264,10 @@ const VotationList: React.FC<VotationListProps> = ({
           return {
             ...v,
             index,
-            isEdited: true,
           };
         });
+      await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
-      // saves the changes made to the remaining votations in order to update
-      // the index. All other changes are also saved.
-      handleSave(remainingVotations);
       setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId(
         remainingVotations.length > votation.index
@@ -310,6 +326,7 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   };
 
+  // update the state with an edited votation
   const updateVotation = (votation: Votation) => {
     const votationsCopy = Array.from(votations);
     const indexOfUpdatedVotation = votations.findIndex((v) => v.id === votation.id);
@@ -317,6 +334,7 @@ const VotationList: React.FC<VotationListProps> = ({
     setVotations(votationsCopy);
   };
 
+  // copys a votation and adds the votation last in line
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
     const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
@@ -391,21 +409,6 @@ const VotationList: React.FC<VotationListProps> = ({
     handleUpdateVotations(votationsToUpdate);
   };
 
-  if (loading) {
-    return <Loading asOverlay={false} text={'Henter møte'} />;
-  }
-
-  if (error) {
-    return (
-      <>
-        <Box h="57px" w="100vw" bgColor={darkblue}></Box>
-        <Center mt="10vh">
-          <Text>Det skjedde noe galt under innlastingen</Text>
-        </Center>
-      </>
-    );
-  }
-
   const checkIfAnyChanges = () => {
     return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
   };
@@ -418,13 +421,25 @@ const VotationList: React.FC<VotationListProps> = ({
     (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
   );
   const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
+
   const endedVotations = votations.filter(
     (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
   );
 
+  if (error) {
+    return (
+      <>
+        <Center mt="10vh">
+          <Text>Det skjedde noe galt under innlastingen</Text>
+        </Center>
+      </>
+    );
+  }
+
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px">
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
+      {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {openVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">
@@ -441,87 +456,36 @@ const VotationList: React.FC<VotationListProps> = ({
       )}
       {upcomingVotations.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
-          {isMeetingLobby ? (
-            <>
-              <VotationListSection
-                droppableId={'top-list'}
-                votations={upcomingVotations.slice(0, 1)}
-                setActiveVotationId={setActiveVotationId}
-                activeVotationId={activeVotationId}
-                updateVotation={updateVotation}
-                handleDeleteVotation={handleDeleteVotation}
-                handleDeleteAlternative={handleDeleteAlternative}
-                duplicateVotation={duplicateVotation}
-                handleStartVotation={startVotation}
-                checkIfAnyChanges={checkIfAnyChanges}
-                handleSaveChanges={() => handleSave(votations)}
-                showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
-                heading={'Neste votering'}
-                isAdmin={role === Role.Admin}
-              />
-              <VotationListSection
-                droppableId={'bottom-list'}
-                votations={upcomingVotations.slice(1)}
-                setActiveVotationId={setActiveVotationId}
-                activeVotationId={activeVotationId}
-                updateVotation={updateVotation}
-                handleDeleteVotation={handleDeleteVotation}
-                handleDeleteAlternative={handleDeleteAlternative}
-                duplicateVotation={duplicateVotation}
-                handleStartVotation={startVotation}
-                checkIfAnyChanges={checkIfAnyChanges}
-                handleSaveChanges={() => handleSave(votations)}
-                showStartNextButton={false}
-                heading={'Kommende voteringer'}
-                isAdmin={role === Role.Admin}
-              />
-            </>
-          ) : (
-            <VotationListSection
-              droppableId={'list'}
-              votations={upcomingVotations}
-              setActiveVotationId={setActiveVotationId}
-              activeVotationId={activeVotationId}
-              updateVotation={updateVotation}
-              handleDeleteVotation={handleDeleteVotation}
-              handleDeleteAlternative={handleDeleteAlternative}
-              duplicateVotation={duplicateVotation}
-              handleStartVotation={startVotation}
-              checkIfAnyChanges={checkIfAnyChanges}
-              handleSaveChanges={() => handleSave(votations)}
-              showStartNextButton={false}
-              heading={'Kommende voteringer'}
-              isAdmin={role === Role.Admin}
-            />
-          )}
+          <UpcomingVotationLists
+            isMeetingLobby={isMeetingLobby}
+            droppableId={'top-list'}
+            votations={upcomingVotations}
+            setActiveVotationId={setActiveVotationId}
+            activeVotationId={activeVotationId}
+            updateVotation={updateVotation}
+            handleDeleteVotation={handleDeleteVotation}
+            handleDeleteAlternative={handleDeleteAlternative}
+            duplicateVotation={duplicateVotation}
+            handleStartVotation={startVotation}
+            checkIfAnyChanges={checkIfAnyChanges}
+            handleSaveChanges={() => handleSave(votations)}
+            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
+            heading={'Neste votering'}
+            isAdmin={role === Role.Admin}
+          />
         </DragDropContext>
       )}
       {role === Role.Admin && (
-        <HStack w="100%" justifyContent="space-between">
-          <Button
-            w={'250px'}
-            rightIcon={<AddIcon w={3} h={3} />}
-            borderRadius={'16em'}
-            onClick={() => {
-              const id = uuid();
-              const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-              setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
-              setActiveVotationId(id);
-            }}
-          >
-            Legg til votering
-          </Button>
-          <Button
-            disabled={!checkIfAnyChanges()}
-            bg="gray.500"
-            color="white"
-            w={'250px'}
-            borderRadius={'16em'}
-            onClick={() => handleSave(votations)}
-          >
-            Lagre endringer
-          </Button>
-        </HStack>
+        <VotationListButtonRow
+          handleAddNewVotation={() => {
+            const id = uuid();
+            const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+            setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
+            setActiveVotationId(id);
+          }}
+          saveIsDisabled={!checkIfAnyChanges()}
+          handleSave={() => handleSave(votations)}
+        />
       )}
       {endedVotations.length > 0 && (
         <VStack spacing="16px" alignItems="start">

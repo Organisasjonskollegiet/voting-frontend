@@ -18,6 +18,13 @@ mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]
   }
 }
 
+mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!) {
+  updateVotationIndexes(votations: $votations) {
+    id
+    index
+  }
+}
+
 mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
   updateVotations(votations: $votations) {
     id
