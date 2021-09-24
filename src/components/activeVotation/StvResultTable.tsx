@@ -1,4 +1,4 @@
-import { Box, HStack, Heading, VStack, Text, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Heading, VStack, Text } from '@chakra-ui/react';
 import React from 'react';
 import { GetStvResultQuery } from '../../__generated__/graphql-types';
 import ResultTableContainer from './ResultTableContainer';

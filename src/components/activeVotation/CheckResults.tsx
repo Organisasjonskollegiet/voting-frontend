@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Button, Heading, Text, HStack } from '@chakra-ui/react';
+import { VStack, Button, Heading, Text } from '@chakra-ui/react';
 import {
   Role,
   useUpdateVotationStatusMutation,

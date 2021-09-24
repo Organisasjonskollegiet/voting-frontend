@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alternative as AlternativeType,
   Participant,
@@ -62,10 +62,7 @@ const Votation: React.FC = () => {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [
-    getStvResult,
-    { data: stvResult, loading: stvResultLoading, error: stvResultError },
-  ] = useGetStvResultLazyQuery({
+  const [getStvResult, { data: stvResult, loading: stvResultLoading }] = useGetStvResultLazyQuery({
     variables: { votationId },
   });
 
@@ -130,12 +127,12 @@ const Votation: React.FC = () => {
 
   // returns true if we are checking results and you are not participant
   // or if the results are published and the votes are not hidden
-  const checkShouldGetResults = () => {
+  const checkShouldGetResults = useCallback(() => {
     return (
       (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
       (status === VotationStatus.PublishedResult && data?.votationById?.hiddenVotes === false)
     );
-  };
+  }, [status, data?.votationById?.hiddenVotes, participantRole]);
 
   // fetch result or winners when status has changed
   useEffect(() => {
@@ -148,7 +145,17 @@ const Votation: React.FC = () => {
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {
       getWinner();
     }
-  }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, getWinner, winnerResult]);
+  }, [
+    status,
+    participantRole,
+    data?.votationById?.hiddenVotes,
+    getResult,
+    getWinner,
+    winnerResult,
+    checkShouldGetResults,
+    data?.votationById?.type,
+    getStvResult,
+  ]);
 
   useEffect(() => {
     if (stvResult) {
@@ -400,7 +407,7 @@ const Votation: React.FC = () => {
             {status === VotationStatus.PublishedResult && (
               <Box mt="4em">
                 <VotationResult
-                  loading={votationResultLoading || winnerLoading}
+                  loading={votationResultLoading || winnerLoading || stvResultLoading}
                   result={votationResultData}
                   votationId={votationId}
                   showResultsTable={!data.votationById.hiddenVotes}
