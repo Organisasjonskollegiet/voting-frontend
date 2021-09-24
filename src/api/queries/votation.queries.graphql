@@ -117,6 +117,8 @@ query GetStvResult($votationId: String!) {
   getStvResult(votationId: $votationId) {
     votationId
     quota
+    voteCount
+    votingEligibleCount
     stvRoundResults {
       index
       winners {

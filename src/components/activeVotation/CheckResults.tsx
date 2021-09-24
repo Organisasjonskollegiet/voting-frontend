@@ -43,7 +43,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({
     history.push(`/meeting/${meetingId}`);
   };
 
-  if (!result || !result.getVotationResults) return <></>;
+  // if (!result || !result.getVotationResults) return <></>;
 
   return (
     <VStack w="100%" spacing="2rem">
@@ -63,7 +63,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({
           </Heading>
         )}
       </VStack>
-      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable />}
+      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
       {role === Role.Admin && (
         <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
           Erklær resultat ugyldig og gå til møteadministrering

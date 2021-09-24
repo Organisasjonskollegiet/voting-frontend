@@ -40,7 +40,7 @@ export type AlternativeResult = {
 /** connects alternative to its vote count for one round when computing stv result */
 export type AlternativeRoundVoteCount = {
   __typename?: 'AlternativeRoundVoteCount';
-  alternative?: Maybe<Alternative>;
+  alternative: Alternative;
   voteCount: Scalars['Float'];
 };
 
@@ -336,6 +336,8 @@ export type StvResult = {
   votationId: Scalars['String'];
   quota: Scalars['Int'];
   stvRoundResults: Array<StvRoundResult>;
+  voteCount: Scalars['Int'];
+  votingEligibleCount: Scalars['Int'];
 };
 
 /** Results from one round computing the result of an stv votation */
@@ -927,7 +929,7 @@ export type GetStvResultQuery = (
   { __typename?: 'Query' }
   & { getStvResult?: Maybe<(
     { __typename?: 'StvResult' }
-    & Pick<StvResult, 'votationId' | 'quota'>
+    & Pick<StvResult, 'votationId' | 'quota' | 'voteCount' | 'votingEligibleCount'>
     & { stvRoundResults: Array<(
       { __typename?: 'StvRoundResult' }
       & Pick<StvRoundResult, 'index'>
@@ -940,10 +942,10 @@ export type GetStvResultQuery = (
       )>>, alternativesWithRoundVoteCount: Array<(
         { __typename?: 'AlternativeRoundVoteCount' }
         & Pick<AlternativeRoundVoteCount, 'voteCount'>
-        & { alternative?: Maybe<(
+        & { alternative: (
           { __typename?: 'Alternative' }
           & Pick<Alternative, 'id' | 'text'>
-        )> }
+        ) }
       )> }
     )> }
   )> }
@@ -2026,6 +2028,8 @@ export const GetStvResultDocument = gql`
   getStvResult(votationId: $votationId) {
     votationId
     quota
+    voteCount
+    votingEligibleCount
     stvRoundResults {
       index
       winners {
