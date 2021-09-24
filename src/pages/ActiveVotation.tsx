@@ -141,6 +141,7 @@ const Votation: React.FC = () => {
   useEffect(() => {
     const shouldGetResults = checkShouldGetResults();
     if (shouldGetResults && data?.votationById?.type === VotationType.Stv) {
+      console.log('getStv');
       getStvResult();
     } else if (shouldGetResults) {
       getResult();
@@ -150,7 +151,15 @@ const Votation: React.FC = () => {
   }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, getWinner, winnerResult]);
 
   useEffect(() => {
-    console.log(stvResult);
+    if (stvResult) {
+      const newWinners: AlternativeType[] = [];
+      stvResult.getStvResult?.stvRoundResults.forEach((round) =>
+        round.winners.forEach((w) => {
+          if (w) newWinners.push(w);
+        })
+      );
+      setWinners(newWinners);
+    }
   }, [stvResult]);
 
   // Update winner of votation when new result is received from getVotationResult

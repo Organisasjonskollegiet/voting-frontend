@@ -39,7 +39,7 @@ const VotationResult: React.FC<VotationResultProps> = ({
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerene' : 'Vinneren'} av valget er`}</Text>
               {winners.map((w: AlternativeType | AlternativeResult) => (
-                <Text key={w.id} fontSize="2.25em">
+                <Text key={w.id} fontSize="2.25em" textAlign="center">
                   {w.text}
                 </Text>
               ))}

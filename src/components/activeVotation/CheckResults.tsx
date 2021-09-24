@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Button, Heading } from '@chakra-ui/react';
+import { VStack, Button, Heading, Text, HStack } from '@chakra-ui/react';
 import {
   Role,
   useUpdateVotationStatusMutation,
@@ -43,19 +43,23 @@ const CheckResults: React.FC<CheckResultsProps> = ({
     history.push(`/meeting/${meetingId}`);
   };
 
-  // if (!result || !result.getVotationResults) return <></>;
+  if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult)) return <></>;
 
   return (
-    <VStack w="100%" spacing="2rem">
+    <VStack spacing="2rem">
       <VStack alignSelf="flex-start" alignItems="flex-start">
         {winners && winners.length > 0 ? (
           <>
             <Heading fontSize="16px" as="h3">
               {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
             </Heading>
-            <Heading color="green" fontSize="24px" as="h3">
-              {winners.map((a: AlternativeType | AlternativeResult) => a?.text).reduce((a, b) => a + ', ' + b)}
-            </Heading>{' '}
+            <VStack alignItems="start">
+              {winners.map((a: AlternativeType | AlternativeResult) => (
+                <Text fontSize="24px" fontWeight="bold" color="green">
+                  {a.text}
+                </Text>
+              ))}
+            </VStack>
           </>
         ) : (
           <Heading fontSize="24px" as="h3">
@@ -66,7 +70,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
       {role === Role.Admin && (
         <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
-          Erklær resultat ugyldig og gå til møteadministrering
+          Erklær resultat ugyldig
         </Button>
       )}
       <CustomAlertDialog

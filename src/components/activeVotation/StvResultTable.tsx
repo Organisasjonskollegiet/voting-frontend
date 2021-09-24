@@ -21,9 +21,10 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
         <Box>{`Antall avgitte stemmer: ${result?.getStvResult?.voteCount}`}</Box>
       </VStack>
       {/* <HStack spacing="1rem" alignItems="start" justifyContent="start"> */}
-      <Grid w="100%" templateColumns="repeat(2, 1fr)" gap="6" flexWrap="wrap">
-        {result?.getStvResult?.stvRoundResults.map((round) => (
-          // <GridItem h="100%" colEnd="auto">
+      {/* <Grid w="100%" templateColumns="repeat(2, 1fr)" gap="6" flexWrap="wrap"> */}
+      {result?.getStvResult?.stvRoundResults.map((round) => (
+        // <GridItem h="100%" colEnd="auto">
+        <Box maxW="600px" w="100%">
           <ResultTableContainer>
             <VStack w="100%" alignSelf="start" alignItems="start">
               <Heading fontSize="18px" alignSelf="start">
@@ -41,9 +42,10 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
               ))}
             </VStack>
           </ResultTableContainer>
-          // </GridItem>
-        ))}
-      </Grid>
+        </Box>
+        // </GridItem>
+      ))}
+      {/* </Grid> */}
       {/* </HStack> */}
     </VStack>
   );

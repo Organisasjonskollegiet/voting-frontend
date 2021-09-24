@@ -8,7 +8,7 @@ interface TableRowProps {
 
 const TableRow: React.FC<TableRowProps> = ({ elements, style }) => {
   return (
-    <HStack w="100%" style={style}>
+    <HStack w="100%" style={style} alignItems="start">
       {elements.map((e: string) => (
         <Box w={`${(1 / elements.length) * 100}%`}>{e}</Box>
       ))}

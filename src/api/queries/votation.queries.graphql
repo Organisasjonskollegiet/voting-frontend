@@ -122,6 +122,8 @@ query GetStvResult($votationId: String!) {
     stvRoundResults {
       index
       winners {
+        votationId
+        id
         text
       }
       losers {

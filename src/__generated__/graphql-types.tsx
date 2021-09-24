@@ -935,7 +935,7 @@ export type GetStvResultQuery = (
       & Pick<StvRoundResult, 'index'>
       & { winners: Array<Maybe<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'text'>
+        & Pick<Alternative, 'votationId' | 'id' | 'text'>
       )>>, losers: Array<Maybe<(
         { __typename?: 'Alternative' }
         & Pick<Alternative, 'text'>
@@ -2033,6 +2033,8 @@ export const GetStvResultDocument = gql`
     stvRoundResults {
       index
       winners {
+        votationId
+        id
         text
       }
       losers {
