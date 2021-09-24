@@ -16,6 +16,7 @@ import {
   useGetVotationResultsLazyQuery,
   AlternativeResult,
   useVotationOpenedForMeetingSubscription,
+  useGetStvResultLazyQuery,
 } from '../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
@@ -61,6 +62,13 @@ const Votation: React.FC = () => {
     fetchPolicy: 'cache-and-network',
   });
 
+  const [
+    getStvResult,
+    { data: stvResult, loading: stvResultLoading, error: stvResultError },
+  ] = useGetStvResultLazyQuery({
+    variables: { votationId },
+  });
+
   const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
@@ -69,11 +77,11 @@ const Votation: React.FC = () => {
     },
   });
 
-  const { data: newStatusResult } = useVotationStatusUpdatedSubscription({
+  const { data: newStatus } = useVotationStatusUpdatedSubscription({
     variables: { id: votationId },
   });
 
-  const { data: newVoteCountResult } = useNewVoteRegisteredSubscription({
+  const { data: newVoteCountData } = useNewVoteRegisteredSubscription({
     variables: { votationId },
   });
 
@@ -120,18 +128,30 @@ const Votation: React.FC = () => {
     }
   }, [winnerResult, winners]);
 
+  // returns true if we are checking results and you are not participant
+  // or if the results are published and the votes are not hidden
+  const checkShouldGetResults = () => {
+    return (
+      (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
+      (status === VotationStatus.PublishedResult && data?.votationById?.hiddenVotes === false)
+    );
+  };
+
   // fetch result or winners when status has changed
   useEffect(() => {
-    if (
-      (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
-      (status === VotationStatus.PublishedResult &&
-        (participantRole !== Role.Participant || data?.votationById?.hiddenVotes === false))
-    ) {
+    const shouldGetResults = checkShouldGetResults();
+    if (shouldGetResults && data?.votationById?.type === VotationType.Stv) {
+      getStvResult();
+    } else if (shouldGetResults) {
       getResult();
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {
       getWinner();
     }
   }, [status, participantRole, data?.votationById?.hiddenVotes, getResult, getWinner, winnerResult]);
+
+  useEffect(() => {
+    console.log(stvResult);
+  }, [stvResult]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
@@ -192,24 +212,24 @@ const Votation: React.FC = () => {
 
   // update status of votation when new data arrives on subscription
   useEffect(() => {
-    const votationStatus = newStatusResult?.votationStatusUpdated?.votationStatus ?? null;
-    const statusForVotationId = newStatusResult?.votationStatusUpdated?.votationId ?? null;
+    const votationStatus = newStatus?.votationStatusUpdated?.votationStatus ?? null;
+    const statusForVotationId = newStatus?.votationStatusUpdated?.votationId ?? null;
     if (votationStatus !== null && statusForVotationId === votationId && votationStatus !== status) {
       setStatus(votationStatus);
     }
-  }, [newStatusResult, status, votationId]);
+  }, [newStatus, status, votationId]);
 
   // update vote count when new vote count arrives from subscription
   useEffect(() => {
     if (
-      !newVoteCountResult?.newVoteRegistered ||
-      newVoteCountResult.newVoteRegistered.voteCount === voteCount ||
-      newVoteCountResult.newVoteRegistered.votationId !== votationId
+      !newVoteCountData?.newVoteRegistered ||
+      newVoteCountData.newVoteRegistered.voteCount === voteCount ||
+      newVoteCountData.newVoteRegistered.votationId !== votationId
     )
       return;
-    const newVoteCount = newVoteCountResult.newVoteRegistered.voteCount;
+    const newVoteCount = newVoteCountData.newVoteRegistered.voteCount;
     setVoteCount(newVoteCount);
-  }, [newVoteCountResult, voteCount, votationId]);
+  }, [newVoteCountData, voteCount, votationId]);
 
   // go to new votation if another votation opens
   useEffect(() => {
@@ -360,10 +380,12 @@ const Votation: React.FC = () => {
               (participantRole === Role.Counter || participantRole === Role.Admin) && (
                 <CheckResults
                   result={votationResultData}
+                  stvResult={stvResult}
                   isStv={data.votationById.type === VotationType.Stv}
                   role={participantRole}
                   votationId={votationId}
                   meetingId={meetingId}
+                  winners={winners}
                 />
               )}
             {status === VotationStatus.PublishedResult && (

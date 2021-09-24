@@ -112,3 +112,26 @@ query GetWinnerOfVotation($votationId: String!) {
     votationId
   }
 }
+
+query GetStvResult($votationId: String!) {
+  getStvResult(votationId: $votationId) {
+    votationId
+    quota
+    stvRoundResults {
+      index
+      winners {
+        text
+      }
+      losers {
+        text
+      }
+      alternativesWithRoundVoteCount {
+        alternative {
+          id
+          text
+        }
+        voteCount
+      }
+    }
+  }
+}

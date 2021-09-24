@@ -37,6 +37,13 @@ export type AlternativeResult = {
   votes: Scalars['Int'];
 };
 
+/** connects alternative to its vote count for one round when computing stv result */
+export type AlternativeRoundVoteCount = {
+  __typename?: 'AlternativeRoundVoteCount';
+  alternative?: Maybe<Alternative>;
+  voteCount: Scalars['Float'];
+};
+
 export type AlternativeWithWinner = {
   __typename?: 'AlternativeWithWinner';
   id: Scalars['ID'];
@@ -252,6 +259,8 @@ export type Query = {
   votationById?: Maybe<Votation>;
   alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVoteCount?: Maybe<VoteCountResult>;
+  /** Get results from an stv votation */
+  getStvResult?: Maybe<StvResult>;
   getWinnerOfVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVotationResults?: Maybe<VotationResults>;
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
@@ -277,6 +286,11 @@ export type QueryAlternativesByVotationArgs = {
 
 
 export type QueryGetVoteCountArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetStvResultArgs = {
   votationId: Scalars['String'];
 };
 
@@ -315,6 +329,24 @@ export enum Role {
   Participant = 'PARTICIPANT',
   Counter = 'COUNTER'
 }
+
+/** Results from a stv votation */
+export type StvResult = {
+  __typename?: 'StvResult';
+  votationId: Scalars['String'];
+  quota: Scalars['Int'];
+  stvRoundResults: Array<StvRoundResult>;
+};
+
+/** Results from one round computing the result of an stv votation */
+export type StvRoundResult = {
+  __typename?: 'StvRoundResult';
+  id: Scalars['String'];
+  index: Scalars['Int'];
+  winners: Array<Maybe<Alternative>>;
+  losers: Array<Maybe<Alternative>>;
+  alternativesWithRoundVoteCount: Array<AlternativeRoundVoteCount>;
+};
 
 export type StvVoteAlternativeInput = {
   alternativeId: Scalars['String'];
@@ -884,6 +916,37 @@ export type GetWinnerOfVotationQuery = (
     { __typename?: 'Alternative' }
     & Pick<Alternative, 'id' | 'text' | 'votationId'>
   )>>> }
+);
+
+export type GetStvResultQueryVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type GetStvResultQuery = (
+  { __typename?: 'Query' }
+  & { getStvResult?: Maybe<(
+    { __typename?: 'StvResult' }
+    & Pick<StvResult, 'votationId' | 'quota'>
+    & { stvRoundResults: Array<(
+      { __typename?: 'StvRoundResult' }
+      & Pick<StvRoundResult, 'index'>
+      & { winners: Array<Maybe<(
+        { __typename?: 'Alternative' }
+        & Pick<Alternative, 'text'>
+      )>>, losers: Array<Maybe<(
+        { __typename?: 'Alternative' }
+        & Pick<Alternative, 'text'>
+      )>>, alternativesWithRoundVoteCount: Array<(
+        { __typename?: 'AlternativeRoundVoteCount' }
+        & Pick<AlternativeRoundVoteCount, 'voteCount'>
+        & { alternative?: Maybe<(
+          { __typename?: 'Alternative' }
+          & Pick<Alternative, 'id' | 'text'>
+        )> }
+      )> }
+    )> }
+  )> }
 );
 
 export type VotationStatusUpdatedSubscriptionVariables = Exact<{
@@ -1958,6 +2021,58 @@ export function useGetWinnerOfVotationLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetWinnerOfVotationQueryHookResult = ReturnType<typeof useGetWinnerOfVotationQuery>;
 export type GetWinnerOfVotationLazyQueryHookResult = ReturnType<typeof useGetWinnerOfVotationLazyQuery>;
 export type GetWinnerOfVotationQueryResult = Apollo.QueryResult<GetWinnerOfVotationQuery, GetWinnerOfVotationQueryVariables>;
+export const GetStvResultDocument = gql`
+    query GetStvResult($votationId: String!) {
+  getStvResult(votationId: $votationId) {
+    votationId
+    quota
+    stvRoundResults {
+      index
+      winners {
+        text
+      }
+      losers {
+        text
+      }
+      alternativesWithRoundVoteCount {
+        alternative {
+          id
+          text
+        }
+        voteCount
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetStvResultQuery__
+ *
+ * To run a query within a React component, call `useGetStvResultQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStvResultQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStvResultQuery({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useGetStvResultQuery(baseOptions: Apollo.QueryHookOptions<GetStvResultQuery, GetStvResultQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStvResultQuery, GetStvResultQueryVariables>(GetStvResultDocument, options);
+      }
+export function useGetStvResultLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStvResultQuery, GetStvResultQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStvResultQuery, GetStvResultQueryVariables>(GetStvResultDocument, options);
+        }
+export type GetStvResultQueryHookResult = ReturnType<typeof useGetStvResultQuery>;
+export type GetStvResultLazyQueryHookResult = ReturnType<typeof useGetStvResultLazyQuery>;
+export type GetStvResultQueryResult = Apollo.QueryResult<GetStvResultQuery, GetStvResultQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id) {

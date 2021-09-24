@@ -5,10 +5,14 @@ import {
   useUpdateVotationStatusMutation,
   VotationStatus,
   GetVotationResultsQuery,
+  GetStvResultQuery,
+  AlternativeResult,
+  Alternative as AlternativeType,
 } from '../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
 import ResultsTable from './ResultsTable';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
+import StvResultTable from './StvResultTable';
 
 interface CheckResultsProps {
   votationId: string;
@@ -16,9 +20,19 @@ interface CheckResultsProps {
   role: Role;
   isStv: boolean;
   result: GetVotationResultsQuery | null | undefined;
+  stvResult: GetStvResultQuery | null | undefined;
+  winners: AlternativeType[] | AlternativeResult[] | null;
 }
 
-const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role, isStv, result }) => {
+const CheckResults: React.FC<CheckResultsProps> = ({
+  votationId,
+  meetingId,
+  role,
+  isStv,
+  result,
+  stvResult,
+  winners,
+}) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
   const history = useHistory();
@@ -34,20 +48,13 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
   return (
     <VStack w="100%" spacing="2rem">
       <VStack alignSelf="flex-start" alignItems="flex-start">
-        {result.getVotationResults.alternatives.filter((a) => a && a.isWinner).length > 0 ? (
+        {winners && winners.length > 0 ? (
           <>
             <Heading fontSize="16px" as="h3">
-              {`${
-                result.getVotationResults.alternatives.filter((a) => a && a.isWinner).length > 1
-                  ? 'Vinnerne'
-                  : 'Vinneren'
-              } er:`}
+              {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
             </Heading>
             <Heading color="green" fontSize="24px" as="h3">
-              {result.getVotationResults.alternatives
-                .filter((a) => a && a.isWinner)
-                .map((a) => a?.text)
-                .reduce((a, b) => a + ', ' + b)}
+              {winners.map((a: AlternativeType | AlternativeResult) => a?.text).reduce((a, b) => a + ', ' + b)}
             </Heading>{' '}
           </>
         ) : (
@@ -56,7 +63,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ votationId, meetingId, role
           </Heading>
         )}
       </VStack>
-      {!isStv && <ResultsTable result={result} votationId={votationId} />}
+      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable />}
       {role === Role.Admin && (
         <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
           Erklær resultat ugyldig og gå til møteadministrering
