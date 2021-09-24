@@ -8,6 +8,7 @@ import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './ResultsTable';
+import Loading from '../common/Loading';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -15,6 +16,7 @@ export interface VotationResultProps {
   votationId: string;
   backToVotationList: () => void;
   showResultsTable: boolean;
+  loading: boolean;
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({
@@ -23,7 +25,9 @@ const VotationResult: React.FC<VotationResultProps> = ({
   result,
   votationId,
   showResultsTable,
+  loading,
 }) => {
+  if (loading || !winners) return <Loading text="Henter resultat" asOverlay={false} />;
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
@@ -31,7 +35,7 @@ const VotationResult: React.FC<VotationResultProps> = ({
       </Center>
       <Center fontWeight="bold">
         <VStack spacing="0">
-          {winners ? (
+          {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerene' : 'Vinneren'} av valget er`}</Text>
               {winners.map((w: AlternativeType | AlternativeResult) => (
