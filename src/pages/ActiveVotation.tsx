@@ -347,7 +347,8 @@ const Votation: React.FC = () => {
                 isStv={data.votationById.type === VotationType.Stv}
                 updateAlternatives={setAlternatives}
                 userHasVoted={userHasVoted}
-                showVote={showVote}
+                // show vote if showVote is true, or the user has not voted and is not waiting for vote to be registered
+                showVote={showVote || (!userHasVoted && !stvLoading && !castVoteLoading && !blankVoteLoading)}
                 isVotingEligible={isVotingEligible}
               />
             )}

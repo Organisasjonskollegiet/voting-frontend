@@ -52,7 +52,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
         <Alternative
           key={`${alternative.id}_${i}`}
           handleClick={() => handleUpdateSelected(alternative.id)}
-          selected={(!userHasVoted || showVote) && selectedAlternativeId === alternative.id}
+          selected={showVote && selectedAlternativeId === alternative.id}
           disableVoting={disableVoting}
         >
           {alternative.text}
