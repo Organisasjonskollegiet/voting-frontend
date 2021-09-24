@@ -459,7 +459,7 @@ const VotationList: React.FC<VotationListProps> = ({
           <UpcomingVotationLists
             isMeetingLobby={isMeetingLobby}
             droppableId={'top-list'}
-            votations={upcomingVotations.slice(0, 1)}
+            votations={upcomingVotations}
             setActiveVotationId={setActiveVotationId}
             activeVotationId={activeVotationId}
             updateVotation={updateVotation}
