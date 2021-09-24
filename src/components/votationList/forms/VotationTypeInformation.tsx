@@ -1,6 +1,6 @@
 import React from 'react';
 import InformationModal from '../../common/InformationModal';
-import { Heading, Link, Text, VStack } from '@chakra-ui/react';
+import { Heading, Link, Text } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const VotationTypeInformation: React.FC = () => {
