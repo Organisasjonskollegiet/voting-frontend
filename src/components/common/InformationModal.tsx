@@ -39,10 +39,6 @@ const InformationModal: React.FC<InformationModalProps> = ({ children, ariaLabel
           <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{children}</ModalBody>
-
-          <ModalFooter justifyContent="flex-start">
-            {/* <ReturnToPreviousButton onClick={onClose} text="Tilbake"></ReturnToPreviousButton> */}
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
