@@ -1,12 +1,4 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-} from '@chakra-ui/modal';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from '@chakra-ui/modal';
 import { IconButton, useDisclosure } from '@chakra-ui/react';
 import React from 'react';
 import { offwhite, darkblue } from '../styles/theme';
