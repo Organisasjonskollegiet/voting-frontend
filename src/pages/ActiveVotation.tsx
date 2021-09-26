@@ -99,6 +99,7 @@ const Votation: React.FC = () => {
   useEffect(() => {
     // reset state if votation is changed
     refetch();
+    console.log('useeffect');
     setWinners(null);
     setDisableToggleShowVote(true);
     setSelectedAlternativeId(null);
@@ -111,17 +112,20 @@ const Votation: React.FC = () => {
 
   // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
-    if (winnerResult?.getWinnerOfVotation && !winners) {
+    console.log('winnerResult', winnerResult);
+    console.log('winners in winner result', winners);
+    if (winnerResult?.getWinnerOfVotation) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
-      const winners = result.map((a) => {
+      const newWinners = result.map((a) => {
         return { id: a.id, text: a.text, votationId: a.votationId };
       });
-      setWinners(winners);
+      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
   }, [winnerResult, winners]);
 
   // fetch result or winners when status has changed
   useEffect(() => {
+    console.log();
     if (
       (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
       (status === VotationStatus.PublishedResult &&
@@ -135,11 +139,13 @@ const Votation: React.FC = () => {
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
-    if (votationResultData?.getVotationResults && !winners) {
-      const winners = votationResultData.getVotationResults.alternatives.filter(
+    console.log('votationResultData', votationResultData);
+    console.log('winners in result data', winners);
+    if (votationResultData?.getVotationResults) {
+      const newWinners = votationResultData.getVotationResults.alternatives.filter(
         (a) => a?.isWinner
       ) as AlternativeResult[];
-      setWinners(winners);
+      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
   }, [votationResultData, winners]);
 
@@ -311,6 +317,8 @@ const Votation: React.FC = () => {
       </Center>
     );
   }
+
+  console.log('winner', winners);
 
   return (
     <PageContainer>
