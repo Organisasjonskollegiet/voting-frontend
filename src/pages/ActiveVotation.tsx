@@ -99,7 +99,6 @@ const Votation: React.FC = () => {
   useEffect(() => {
     // reset state if votation is changed
     refetch();
-    console.log('useeffect');
     setWinners(null);
     setDisableToggleShowVote(true);
     setSelectedAlternativeId(null);
@@ -112,8 +111,6 @@ const Votation: React.FC = () => {
 
   // Update winner when a new winner result from getWinnerOfVotation is received
   useEffect(() => {
-    console.log('winnerResult', winnerResult);
-    console.log('winners in winner result', winners);
     if (winnerResult?.getWinnerOfVotation) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       const newWinners = result.map((a) => {
@@ -125,7 +122,6 @@ const Votation: React.FC = () => {
 
   // fetch result or winners when status has changed
   useEffect(() => {
-    console.log();
     if (
       (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
       (status === VotationStatus.PublishedResult &&
@@ -139,8 +135,6 @@ const Votation: React.FC = () => {
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
-    console.log('votationResultData', votationResultData);
-    console.log('winners in result data', winners);
     if (votationResultData?.getVotationResults) {
       const newWinners = votationResultData.getVotationResults.alternatives.filter(
         (a) => a?.isWinner
@@ -317,8 +311,6 @@ const Votation: React.FC = () => {
       </Center>
     );
   }
-
-  console.log('winner', winners);
 
   return (
     <PageContainer>
