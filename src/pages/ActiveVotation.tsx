@@ -164,9 +164,9 @@ const Votation: React.FC = () => {
           if (w) newWinners.push(w);
         })
       );
-      setWinners(newWinners);
+      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
-  }, [stvResult]);
+  }, [stvResult, winners]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
