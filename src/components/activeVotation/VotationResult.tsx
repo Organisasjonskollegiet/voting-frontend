@@ -9,6 +9,7 @@ import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './ResultsTable';
 import Loading from '../common/Loading';
+import { formatAlternativesString } from './utils';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -38,11 +39,9 @@ const VotationResult: React.FC<VotationResultProps> = ({
           {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerene' : 'Vinneren'} av valget er`}</Text>
-              {winners.map((w: AlternativeType | AlternativeResult) => (
-                <Text key={w.id} fontSize="2.25em" textAlign="center">
-                  {w.text}
-                </Text>
-              ))}
+              <Text fontSize="2.25em" textAlign="center">
+                {formatAlternativesString(winners.map((w: AlternativeType | AlternativeResult) => w.text))}
+              </Text>
             </>
           ) : (
             <>

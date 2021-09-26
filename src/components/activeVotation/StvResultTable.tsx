@@ -4,6 +4,7 @@ import { GetStvResultQuery } from '../../__generated__/graphql-types';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
+import { formatAlternativesString } from './utils';
 
 interface StvResultTableProps {
   result: GetStvResultQuery | null | undefined;
@@ -15,13 +16,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
     return (
       <HStack>
         <Text>{eliminated.length > 1 ? `${prefix}: ` : `${prefix}e: `}</Text>
-        <Text fontWeight="bold">
-          {eliminated.length === 1
-            ? eliminated[0]
-            : eliminated.length > 2
-            ? eliminated.slice(0, -1).reduce((a, b) => a + ', ' + b) + ' og ' + eliminated[eliminated.length - 1]
-            : `${eliminated[0]} og ${eliminated[1]}`}
-        </Text>
+        <Text fontWeight="bold">{formatAlternativesString(eliminated)}</Text>
       </HStack>
     );
   };

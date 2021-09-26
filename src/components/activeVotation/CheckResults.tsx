@@ -13,6 +13,7 @@ import { useHistory } from 'react-router';
 import ResultsTable from './ResultsTable';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import StvResultTable from './StvResultTable';
+import { formatAlternativesString } from './utils';
 
 interface CheckResultsProps {
   votationId: string;
@@ -54,11 +55,9 @@ const CheckResults: React.FC<CheckResultsProps> = ({
               {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
             </Heading>
             <VStack alignItems="start">
-              {winners.map((a: AlternativeType | AlternativeResult) => (
-                <Text fontSize="24px" fontWeight="bold" color="green">
-                  {a.text}
-                </Text>
-              ))}
+              <Text fontSize="24px" fontWeight="bold" color="green">
+                {formatAlternativesString(winners.map((a: AlternativeType | AlternativeResult) => a.text))}
+              </Text>
             </VStack>
           </>
         ) : (
