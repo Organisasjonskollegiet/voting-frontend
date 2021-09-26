@@ -408,10 +408,12 @@ const Votation: React.FC = () => {
                 <VotationResult
                   loading={votationResultLoading || winnerLoading || stvResultLoading}
                   result={votationResultData}
+                  stvResult={stvResult}
                   votationId={votationId}
                   showResultsTable={!data.votationById.hiddenVotes}
                   backToVotationList={backToVotationList}
                   winners={winners}
+                  type={data.votationById.type}
                 />
               </Box>
             )}

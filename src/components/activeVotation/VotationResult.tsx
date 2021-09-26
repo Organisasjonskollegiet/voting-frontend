@@ -2,7 +2,9 @@ import React from 'react';
 import {
   Alternative as AlternativeType,
   AlternativeResult,
+  GetStvResultQuery,
   GetVotationResultsQuery,
+  VotationType,
 } from '../../__generated__/graphql-types';
 import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
@@ -10,6 +12,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './ResultsTable';
 import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
+import StvResultTable from './StvResultTable';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -18,6 +21,8 @@ export interface VotationResultProps {
   backToVotationList: () => void;
   showResultsTable: boolean;
   loading: boolean;
+  type: VotationType;
+  stvResult: GetStvResultQuery | undefined;
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({
@@ -27,6 +32,8 @@ const VotationResult: React.FC<VotationResultProps> = ({
   votationId,
   showResultsTable,
   loading,
+  type,
+  stvResult,
 }) => {
   if (loading || !winners) return <Loading text="Henter resultat" asOverlay={false} />;
   return (
@@ -52,7 +59,12 @@ const VotationResult: React.FC<VotationResultProps> = ({
           )}
         </VStack>
       </Center>
-      {showResultsTable && <ResultsTable result={result} votationId={votationId} />}
+      {showResultsTable &&
+        (type === VotationType.Stv ? (
+          <StvResultTable result={stvResult} />
+        ) : (
+          <ResultsTable result={result} votationId={votationId} />
+        ))}
       <Divider m="3em 0" />
       <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
         Gå tilbake til liste over voteringer
