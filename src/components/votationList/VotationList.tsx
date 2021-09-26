@@ -84,7 +84,7 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   useEffect(() => {
-    if (role && votations.length === 0 && !loading) {
+    if (role === Role.Admin && votations.length === 0 && !loading) {
       const emptyVotation = getEmptyVotation();
       setVotations([emptyVotation]);
       setActiveVotationId(emptyVotation.id);
