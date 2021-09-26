@@ -52,9 +52,11 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [deleteVotations] = useDeleteVotationsMutation();
 
-  const [votations, setVotations] = useState<Votation[]>([getEmptyVotation()]);
+  const [votations, setVotations] = useState<Votation[]>(role === Role.Admin ? [getEmptyVotation()] : []);
 
-  const [activeVotationId, setActiveVotationId] = useState<string>(votations[0].id);
+  const [activeVotationId, setActiveVotationId] = useState<string>(
+    role === Role.Admin && votations.length > 0 ? votations[0].id : ''
+  );
 
   const [deleteAlternatives] = useDeleteAlternativesMutation();
 
@@ -63,7 +65,7 @@ const VotationList: React.FC<VotationListProps> = ({
   const toast = useToast();
 
   const votationsAreEmpty = () => {
-    if (votations.length !== 1) return;
+    if (votations.length !== 1) return false;
     const votation = votations[0];
     return votation.title === '' && votation.description === '';
   };
