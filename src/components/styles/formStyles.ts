@@ -27,7 +27,6 @@ export const collapsedStyle = {
   backgroundColor: 'white',
   padding: '16px 40px',
   borderRadius: '4px',
-  ...transition,
   // cursor: 'pointer',
 };
 
