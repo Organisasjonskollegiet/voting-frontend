@@ -79,7 +79,7 @@ const VotationList: React.FC<VotationListProps> = ({
             (votation.alternatives.length === 1 && alternativeIsEmpty(votation.alternatives[0])))
         );
       default:
-        return true;
+        return false;
     }
   };
 
