@@ -13,7 +13,7 @@ import { useHistory } from 'react-router';
 import ResultsTable from './ResultsTable';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import StvResultTable from './StvResultTable';
-import AlternativesString from './AlternativesString';
+import AlternativesString from '../common/AlternativesString';
 
 interface CheckResultsProps {
   votationId: string;

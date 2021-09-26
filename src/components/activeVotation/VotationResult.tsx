@@ -9,7 +9,7 @@ import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './ResultsTable';
 import Loading from '../common/Loading';
-import AlternativesString from './AlternativesString';
+import AlternativesString from '../common/AlternativesString';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;

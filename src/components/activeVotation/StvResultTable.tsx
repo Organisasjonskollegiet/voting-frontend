@@ -1,7 +1,7 @@
 import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { GetStvResultQuery } from '../../__generated__/graphql-types';
-import AlternativesString from './AlternativesString';
+import AlternativesString from '../common/AlternativesString';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
