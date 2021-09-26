@@ -1,24 +1,31 @@
 import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { GetStvResultQuery } from '../../__generated__/graphql-types';
+import AlternativesString from './AlternativesString';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
-import { formatAlternativesString } from './utils';
-
 interface StvResultTableProps {
   result: GetStvResultQuery | null | undefined;
 }
 
 const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
-  const formatRoundEliminatedText = (eliminated: string[], prefix: 'Rundevinner' | 'Rundetaper') => {
-    if (eliminated.length === 0) return <></>;
+  const formatAlternativesText = (alternatives: string[], prefix: 'Rundevinner' | 'Rundetaper') => {
+    if (alternatives.length === 0) return <></>;
     return (
       <HStack>
-        <Text>{eliminated.length > 1 ? `${prefix}: ` : `${prefix}e: `}</Text>
-        <Text fontWeight="bold">{formatAlternativesString(eliminated)}</Text>
+        <Text>{alternatives.length > 1 ? `${prefix}: ` : `${prefix}e: `}</Text>
+        <AlternativesString alternatives={alternatives} />
       </HStack>
     );
+  };
+
+  const removeTrailingZeros = (num: string) => {
+    return parseFloat(num).toString();
+  };
+
+  const formatNumber = (num: number) => {
+    return removeTrailingZeros(num.toFixed(2));
   };
 
   return (
@@ -39,18 +46,18 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
                 {`Runde ${round.index + 1}`}
               </Heading>
               {round.winners.length > 0 &&
-                formatRoundEliminatedText(
+                formatAlternativesText(
                   round.winners.map((a) => a.text),
                   'Rundevinner'
                 )}
               {round.losers.length > 0 &&
-                formatRoundEliminatedText(
+                formatAlternativesText(
                   round.losers.map((a) => a.text),
                   'Rundetaper'
                 )}
               <TableColumnNames columnNames={['Alternativ', 'Antall stemmer']} />
               {round.alternativesWithRoundVoteCount.map((a) => (
-                <TableRow elements={[a.alternative.text, a.voteCount.toString()]} />
+                <TableRow elements={[a.alternative.text, formatNumber(a.voteCount)]} />
               ))}
             </VStack>
           </ResultTableContainer>
