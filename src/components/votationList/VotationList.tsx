@@ -460,7 +460,7 @@ const VotationList: React.FC<VotationListProps> = ({
   }
 
   return (
-    <VStack w="100%" h="100%" alignItems="start" spacing="32px">
+    <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
       {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {openVotation && navigateToOpenVotation && (

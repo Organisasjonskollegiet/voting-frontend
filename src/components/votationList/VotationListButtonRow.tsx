@@ -14,7 +14,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
   handleSave,
 }) => {
   return (
-    <HStack w="100%" justifyContent="space-between">
+    <HStack onClick={(e) => e.stopPropagation()} w="100%" justifyContent="space-between">
       <Button w={'250px'} rightIcon={<AddIcon w={3} h={3} />} borderRadius={'16em'} onClick={handleAddNewVotation}>
         Legg til votering
       </Button>
