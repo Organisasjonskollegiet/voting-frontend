@@ -345,8 +345,8 @@ export type StvRoundResult = {
   __typename?: 'StvRoundResult';
   id: Scalars['String'];
   index: Scalars['Int'];
-  winners: Array<Maybe<Alternative>>;
-  losers: Array<Maybe<Alternative>>;
+  winners: Array<Alternative>;
+  losers: Array<Alternative>;
   alternativesWithRoundVoteCount: Array<AlternativeRoundVoteCount>;
 };
 
@@ -933,13 +933,13 @@ export type GetStvResultQuery = (
     & { stvRoundResults: Array<(
       { __typename?: 'StvRoundResult' }
       & Pick<StvRoundResult, 'index'>
-      & { winners: Array<Maybe<(
+      & { winners: Array<(
         { __typename?: 'Alternative' }
         & Pick<Alternative, 'votationId' | 'id' | 'text'>
-      )>>, losers: Array<Maybe<(
+      )>, losers: Array<(
         { __typename?: 'Alternative' }
         & Pick<Alternative, 'text'>
-      )>>, alternativesWithRoundVoteCount: Array<(
+      )>, alternativesWithRoundVoteCount: Array<(
         { __typename?: 'AlternativeRoundVoteCount' }
         & Pick<AlternativeRoundVoteCount, 'voteCount'>
         & { alternative: (

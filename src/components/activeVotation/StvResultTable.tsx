@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, Text } from '@chakra-ui/react';
+import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { GetStvResultQuery } from '../../__generated__/graphql-types';
 import ResultTableContainer from './ResultTableContainer';
@@ -10,6 +10,22 @@ interface StvResultTableProps {
 }
 
 const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
+  const formatRoundEliminatedText = (eliminated: string[], prefix: 'Rundevinner' | 'Rundetaper') => {
+    if (eliminated.length === 0) return <></>;
+    return (
+      <HStack>
+        <Text>{eliminated.length > 1 ? `${prefix}: ` : `${prefix}e: `}</Text>
+        <Text fontWeight="bold">
+          {eliminated.length === 1
+            ? eliminated[0]
+            : eliminated.length > 2
+            ? eliminated.slice(0, -1).reduce((a, b) => a + ', ' + b) + ' og ' + eliminated[eliminated.length - 1]
+            : `${eliminated[0]} og ${eliminated[1]}`}
+        </Text>
+      </HStack>
+    );
+  };
+
   return (
     <VStack w="100%" spacing="2rem" alignItems="start">
       <VStack w="100%" alignItems="start">
@@ -20,22 +36,23 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
         <Box>{`Antall stemmeberettigede deltakere: ${result?.getStvResult?.votingEligibleCount}`}</Box>
         <Box>{`Antall avgitte stemmer: ${result?.getStvResult?.voteCount}`}</Box>
       </VStack>
-      {/* <HStack spacing="1rem" alignItems="start" justifyContent="start"> */}
-      {/* <Grid w="100%" templateColumns="repeat(2, 1fr)" gap="6" flexWrap="wrap"> */}
       {result?.getStvResult?.stvRoundResults.map((round) => (
-        // <GridItem h="100%" colEnd="auto">
         <Box maxW="600px" w="100%">
           <ResultTableContainer>
             <VStack w="100%" alignSelf="start" alignItems="start">
               <Heading fontSize="18px" alignSelf="start">
                 {`Runde ${round.index + 1}`}
               </Heading>
-              {round.winners.length > 0 && (
-                <Text>{`Rundevinner(e): ${round.winners.map((a) => a?.text).reduce((a, b) => a + ', ' + b)}`}</Text>
-              )}
-              {round.losers.length > 0 && (
-                <Text>{`Rundetaper(e): ${round.losers.map((a) => a?.text).reduce((a, b) => a + ', ' + b)}`}</Text>
-              )}
+              {round.winners.length > 0 &&
+                formatRoundEliminatedText(
+                  round.winners.map((a) => a.text),
+                  'Rundevinner'
+                )}
+              {round.losers.length > 0 &&
+                formatRoundEliminatedText(
+                  round.losers.map((a) => a.text),
+                  'Rundetaper'
+                )}
               <TableColumnNames columnNames={['Alternativ', 'Antall stemmer']} />
               {round.alternativesWithRoundVoteCount.map((a) => (
                 <TableRow elements={[a.alternative.text, a.voteCount.toString()]} />
@@ -43,10 +60,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
             </VStack>
           </ResultTableContainer>
         </Box>
-        // </GridItem>
       ))}
-      {/* </Grid> */}
-      {/* </HStack> */}
     </VStack>
   );
 };

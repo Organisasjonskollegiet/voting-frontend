@@ -138,7 +138,6 @@ const Votation: React.FC = () => {
   useEffect(() => {
     const shouldGetResults = checkShouldGetResults();
     if (shouldGetResults && data?.votationById?.type === VotationType.Stv) {
-      console.log('getStv');
       getStvResult();
     } else if (shouldGetResults) {
       getResult();
