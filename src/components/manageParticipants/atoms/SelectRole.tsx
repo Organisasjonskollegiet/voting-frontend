@@ -17,6 +17,7 @@ const SelectRole: React.FC<SelectRoleProps> = ({ onChange, value, disabled }) =>
         onChange={(e) => onChange(e.target.value as Role)}
         style={{ border: 'none' }}
         width="10em"
+        _hover={{ cursor: 'pointer' }}
       >
         <option value={Role.Admin}>Administrator</option>
         <option value={Role.Counter}>Teller</option>
