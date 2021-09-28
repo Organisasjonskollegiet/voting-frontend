@@ -15,7 +15,7 @@ const months = [
 
 const daysOfMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-export const formatMeetingTime = (startTime: Date) => {
+export const formatMeetingTime: (startTime: Date) => string = (startTime: Date) => {
   return `${startTime.getHours()}:${startTime.getMinutes()}, ${startTime.getDate()}. ${months[startTime.getMonth()]}`;
 };
 
@@ -33,7 +33,7 @@ const getTimeString = (amount: number, singular: string, plural: string) => {
   }
 };
 
-export const formatTimeLeftToMeeting = (start: Date, now: Date) => {
+export const formatTimeLeftToMeeting: (start: Date, now: Date) => string = (start: Date, now: Date) => {
   const days = start.getDate() - now.getDate();
   const hours = start.getHours() - now.getHours();
   const minutes = start.getMinutes() - now.getMinutes();
