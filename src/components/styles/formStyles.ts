@@ -1,5 +1,4 @@
 import React from 'react';
-import { transition } from './styles';
 
 export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
 export const highlightedStyle = {
@@ -27,7 +26,6 @@ export const collapsedStyle = {
   backgroundColor: 'white',
   padding: '16px 40px',
   borderRadius: '4px',
-  ...transition,
   // cursor: 'pointer',
 };
 

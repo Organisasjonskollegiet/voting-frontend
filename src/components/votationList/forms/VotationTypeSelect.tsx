@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Flex,
   FormControl,
   FormLabel,
   NumberDecrementStepper,
@@ -13,6 +14,7 @@ import { labelStyle } from '../../styles/formStyles';
 import { boxShadow } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import { VotationType } from '../../../__generated__/graphql-types';
+import VotationTypeInformation from './VotationTypeInformation';
 
 interface IProps {
   votation: Votation;
@@ -48,10 +50,17 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType, up
   return (
     <>
       <FormControl>
-        <FormLabel sx={labelStyle}>Stemmeform</FormLabel>
+        <FormLabel sx={labelStyle} mr="0">
+          <Flex justifyContent="space-between" alignItems="flex-end">
+            <span>Stemmeform</span>
+            <VotationTypeInformation />
+          </Flex>
+        </FormLabel>
+
         <Select
           boxShadow={boxShadow}
           value={getSelectStartValue() as string}
+          _hover={{ cursor: 'pointer' }}
           onChange={(event) => handleChangeType(event.target.value)}
         >
           <option value={VotationType.Simple}>Simpelt flertall</option>
