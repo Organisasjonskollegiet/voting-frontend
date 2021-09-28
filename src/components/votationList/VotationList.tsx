@@ -52,11 +52,9 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [deleteVotations] = useDeleteVotationsMutation();
 
-  const [votations, setVotations] = useState<Votation[]>(role === Role.Admin ? [getEmptyVotation()] : []);
+  const [votations, setVotations] = useState<Votation[]>([]);
 
-  const [activeVotationId, setActiveVotationId] = useState<string>(
-    role === Role.Admin && votations.length > 0 ? votations[0].id : ''
-  );
+  const [activeVotationId, setActiveVotationId] = useState<string>('');
 
   const [deleteAlternatives] = useDeleteAlternativesMutation();
 
@@ -64,11 +62,34 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const toast = useToast();
 
-  const votationsAreEmpty = () => {
-    if (votations.length !== 1) return false;
-    const votation = votations[0];
-    return votation.title === '' && votation.description === '';
+  const alternativeIsEmpty = (alternative: Alternative) => {
+    return alternative.text === '';
   };
+
+  const votationsAreEmpty = () => {
+    switch (votations.length) {
+      case 0:
+        return true;
+      case 1:
+        const votation = votations[0];
+        return (
+          votation.title === '' &&
+          votation.description === '' &&
+          (votation.alternatives.length === 0 ||
+            (votation.alternatives.length === 1 && alternativeIsEmpty(votation.alternatives[0])))
+        );
+      default:
+        return false;
+    }
+  };
+
+  useEffect(() => {
+    if (role === Role.Admin && votations.length === 0 && !loading) {
+      const emptyVotation = getEmptyVotation();
+      setVotations([emptyVotation]);
+      setActiveVotationId(emptyVotation.id);
+    }
+  }, [role, votations, loading]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend
@@ -339,7 +360,7 @@ const VotationList: React.FC<VotationListProps> = ({
   // copys a votation and adds the votation last in line
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
-    const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+    const nextVotationIndex = votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
     const newDuplicatedVotation = {
       ...votation,
       id: newId,
@@ -481,7 +502,8 @@ const VotationList: React.FC<VotationListProps> = ({
         <VotationListButtonRow
           handleAddNewVotation={() => {
             const id = uuid();
-            const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+            const nextVotationIndex =
+              votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
             setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
             setActiveVotationId(id);
           }}
