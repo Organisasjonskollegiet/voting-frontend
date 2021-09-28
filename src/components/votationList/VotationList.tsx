@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Center, Heading, useToast, VStack, Text, Accordion } from '@chakra-ui/react';
@@ -66,7 +66,7 @@ const VotationList: React.FC<VotationListProps> = ({
     return alternative.text === '';
   };
 
-  const votationsAreEmpty = () => {
+  const votationsAreEmpty = useCallback(() => {
     switch (votations.length) {
       case 0:
         return true;
@@ -81,7 +81,7 @@ const VotationList: React.FC<VotationListProps> = ({
       default:
         return false;
     }
-  };
+  }, [votations]);
 
   useEffect(() => {
     if (role === Role.Admin && votations.length === 0 && !loading) {
@@ -130,6 +130,52 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
+  /**
+   * @description adds existsInDb and isEdited to the votations. If the results of the
+   * votation is published, alternatives prop is used and alternatives include isWinner.
+   * If the results are not published, the alternatives from the votation is used.
+   * If the votations has no alternatives, an empty alternative is added.
+   * @param votation
+   * @param alternatives is set only if the votationstatus is published, and includes
+   * isWinner
+   * @returns
+   */
+  const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
+    return {
+      ...votation,
+      existsInDb: true,
+      isEdited: false,
+      alternatives:
+        alternatives && alternatives.length > 0
+          ? alternatives.map(alternativeMapper)
+          : votation.alternatives.length > 0
+          ? votation.alternatives.map(alternativeMapper)
+          : [getEmptyAlternative()],
+    };
+  }, []);
+
+  /**
+   * @description formats all votations and couple it with its results if the
+   * votation results are published.
+   * @param votations votations from meetingById.votations
+   * @param winners list of result from resultsOfPublishedVotations containing
+   * votationId and alternatives including whether they are winners or not.
+   * @returns votations formatted correctly for further use and editing
+   */
+  const formatVotations = useCallback(
+    (votations: Votation[], winners?: Votation[]) => {
+      if (!votations) return;
+      return votations.map((votation) => {
+        if (winners && votation.status === VotationStatus.PublishedResult) {
+          const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
+          if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
+        }
+        return formatVotation(votation);
+      });
+    },
+    [formatVotation]
+  );
+
   useEffect(() => {
     if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
       const votations = data.meetingById.votations as Votation[];
@@ -144,8 +190,7 @@ const VotationList: React.FC<VotationListProps> = ({
       setVotations(formattedVotations.sort((a, b) => a.index - b.index));
       setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
     }
-    // eslint-disable-next-line
-  }, [data]);
+  }, [data, formatVotations, isMeetingLobby, votations, votationsAreEmpty]);
 
   useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
@@ -174,49 +219,6 @@ const VotationList: React.FC<VotationListProps> = ({
     };
   };
 
-  /**
-   * @description adds existsInDb and isEdited to the votations. If the results of the
-   * votation is published, alternatives prop is used and alternatives include isWinner.
-   * If the results are not published, the alternatives from the votation is used.
-   * If the votations has no alternatives, an empty alternative is added.
-   * @param votation
-   * @param alternatives is set only if the votationstatus is published, and includes
-   * isWinner
-   * @returns
-   */
-  const formatVotation = (votation: Votation, alternatives?: Alternative[]) => {
-    return {
-      ...votation,
-      existsInDb: true,
-      isEdited: false,
-      alternatives:
-        alternatives && alternatives.length > 0
-          ? alternatives.map(alternativeMapper)
-          : votation.alternatives.length > 0
-          ? votation.alternatives.map(alternativeMapper)
-          : [getEmptyAlternative()],
-    };
-  };
-
-  /**
-   * @description formats all votations and couple it with its results if the
-   * votation results are published.
-   * @param votations votations from meetingById.votations
-   * @param winners list of result from resultsOfPublishedVotations containing
-   * votationId and alternatives including whether they are winners or not.
-   * @returns votations formatted correctly for further use and editing
-   */
-  const formatVotations = (votations: Votation[], winners?: Votation[]) => {
-    if (!votations) return;
-    return votations.map((votation) => {
-      if (winners && votation.status === VotationStatus.PublishedResult) {
-        const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
-        if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
-      }
-      return formatVotation(votation);
-    });
-  };
-
   const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -242,8 +244,8 @@ const VotationList: React.FC<VotationListProps> = ({
         index,
       };
     });
-    await updateIndexes(updatedVotations);
     setVotations(updatedVotations);
+    await updateIndexes(updatedVotations);
   }
 
   // updates the indexes of the votations in backend
@@ -460,7 +462,7 @@ const VotationList: React.FC<VotationListProps> = ({
   }
 
   return (
-    <VStack w="100%" h="100%" alignItems="start" spacing="32px">
+    <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
       {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {openVotation && navigateToOpenVotation && (

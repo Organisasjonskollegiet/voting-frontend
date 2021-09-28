@@ -73,7 +73,10 @@ const AddVotationForm: React.FC<IProps> = ({
             marginBottom="16px"
             sx={collapsedStyle}
             cursor={isAdmin ? 'pointer' : 'default'}
-            onClick={toggleCollapsedVotation}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCollapsedVotation();
+            }}
             _hover={isAdmin ? expandAndLift : {}}
           >
             <HStack spacing="8">
@@ -101,6 +104,7 @@ const AddVotationForm: React.FC<IProps> = ({
           width="90vw"
           maxWidth="800px"
           spacing="5"
+          onClick={(e) => e.stopPropagation()}
         >
           <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">
             <VStack spacing="7" flex="2">
