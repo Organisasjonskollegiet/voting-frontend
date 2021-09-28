@@ -2,6 +2,7 @@ import React from 'react';
 import EndedVotationTemplate, { EndedVotationProps } from './EndedVotationTemplate';
 import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, HStack, Text } from '@chakra-ui/react';
 import { collapsedStyle } from '../../styles/formStyles';
+import AlternativesString from '../../common/AlternativesString';
 
 const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
   const winners = votation.alternatives.filter((a) => a.isWinner);
@@ -36,7 +37,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           <Text fontWeight="bold" fontSize="1rem">
             Vinnere:
           </Text>
-          <Text>{winnerString}</Text>
+          <AlternativesString fontWeight="normal" alternatives={winners.map((w) => w.text)} />
         </HStack>
       </AccordionPanel>
     </AccordionItem>
