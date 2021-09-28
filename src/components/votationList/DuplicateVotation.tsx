@@ -7,6 +7,11 @@ interface DuplicateVotationProps {
 }
 
 const DuplicateVotation: React.FC<DuplicateVotationProps> = ({ handleDuplicateVotation }) => {
+  const onDuplicateVotationClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    handleDuplicateVotation();
+  };
+
   return (
     <>
       <Tooltip label="Dupliser votering">
@@ -16,7 +21,7 @@ const DuplicateVotation: React.FC<DuplicateVotationProps> = ({ handleDuplicateVo
           bg={'white'}
           p="1em"
           borderRadius="4px"
-          onClick={handleDuplicateVotation}
+          onClick={onDuplicateVotationClick}
           icon={<img alt="duplicate" src={DuplicateIcon} style={{ padding: '1em 0' }} />}
         />
       </Tooltip>
