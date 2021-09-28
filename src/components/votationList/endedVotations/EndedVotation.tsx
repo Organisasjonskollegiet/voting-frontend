@@ -38,7 +38,6 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
             Vinnere:
           </Text>
           <AlternativesString fontWeight="normal" alternatives={winners.map((w) => w.text)} />
-          {/* <Text>{winnerString}</Text> */}
         </HStack>
       </AccordionPanel>
     </AccordionItem>
