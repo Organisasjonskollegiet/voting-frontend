@@ -938,7 +938,7 @@ export type GetStvResultQuery = (
         & Pick<Alternative, 'votationId' | 'id' | 'text'>
       )>, losers: Array<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'text'>
+        & Pick<Alternative, 'text' | 'id'>
       )>, alternativesWithRoundVoteCount: Array<(
         { __typename?: 'AlternativeRoundVoteCount' }
         & Pick<AlternativeRoundVoteCount, 'voteCount'>
@@ -2039,6 +2039,7 @@ export const GetStvResultDocument = gql`
       }
       losers {
         text
+        id
       }
       alternativesWithRoundVoteCount {
         alternative {

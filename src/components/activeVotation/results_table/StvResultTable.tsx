@@ -59,7 +59,9 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
                 {`Runde ${round.index + 1}`}
               </Heading>
               {isLoserRemovedRandomly(round as StvRoundResult) && (
-                <Text>Taperen har blitt plukket ut tilfeldig fra de alterantivene med færrest stemmer</Text>
+                <Text fontSize="14px">
+                  Taperen har blitt plukket ut tilfeldig fra de alterantivene med færrest stemmer.
+                </Text>
               )}
               {round.winners.length > 0 &&
                 formatAlternativesText(
