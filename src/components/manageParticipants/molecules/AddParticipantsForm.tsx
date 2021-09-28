@@ -16,7 +16,7 @@ import SearchBar from '../atoms/SearchBar';
 import InviteParticipant from '../atoms/InviteParticipant';
 import { useCallback } from 'react';
 import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
-import { checkIfEmailIsValid } from '../utils';
+import { checkIfEmailIsValid, onFileUpload } from '../utils';
 
 interface IProps {
   meetingId: string;
@@ -54,18 +54,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     // eslint-disable-next-line
   }, [deleteParticipantsResult.data]);
 
-  const getRole = (role: string) => {
-    if (!role) return Role.Participant;
-    switch (role.toLowerCase().trim()) {
-      case 'teller':
-        return Role.Counter;
-      case 'administrator' || 'admin':
-        return Role.Admin;
-      default:
-        return Role.Participant;
-    }
-  };
-
   const addParticipantByEmail = async (email: string) => {
     if (checkIfEmailIsValid(email)) {
       const lowerCaseEmail = email.toLowerCase().trim();
@@ -98,42 +86,13 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setReadingFiles(true);
-    const input = event.target as HTMLInputElement;
-    if (!(input.files && input.files.length > 0)) return;
-    if (!meetingId) throw new Error('Meeting id not defined');
-
-    const invalidEmailsLineNumbers: Array<string> = [];
-
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = async (evt: ProgressEvent<FileReader>) => {
-      const newParticipants: ParticipantOrInvite[] = [];
-      if (!evt.target) return;
-      const content = evt.target.result as string;
-      if (!content) return;
-      const lines = content.split('\n').filter((line: string) => line.length > 0);
-
-      for (let i = 0; i < lines.length; i++) {
-        const lineList = lines[i].split(',').filter((email: string) => email.trim().length > 0);
-        const email = lineList[0].toLowerCase().trim();
-        const role = lineList.length === 1 ? Role.Participant : getRole(lineList[1]);
-        const emailExists = [...participants, ...newParticipants].map((p) => p.email).indexOf(email) >= 0;
-
-        const isEmailValid = checkIfEmailIsValid(email);
-
-        if (!isEmailValid) {
-          invalidEmailsLineNumbers.push(String(i + 1));
-        } else if (!emailExists) {
-          newParticipants.push({
-            email,
-            role,
-            isVotingEligible: true,
-            // existsInDb: false,
-          });
-        }
-      }
+  const handleOnFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    ref: React.RefObject<HTMLInputElement>
+  ) => {
+    const response = await onFileUpload(event, setReadingFiles, meetingId, participants);
+    if (response) {
+      const { newParticipants, invalidEmailsLineNumbers } = response;
       await addParticipants({
         variables: {
           meetingId,
@@ -141,20 +100,20 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         },
       });
       setParticipants([...participants, ...newParticipants]);
-    };
-    reader.readAsText(file, 'UTF-8');
-    setReadingFiles(false);
-    const toastId = 'invalidEmails';
-    if (!toast.isActive(toastId) && invalidEmailsLineNumbers.length > 0)
-      toast({
-        id: toastId,
-        title: `Ugyldige epostadresser`,
-        description:
-          'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidEmailsLineNumbers,
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-      });
+      const toastId = 'invalidEmails';
+      if (!toast.isActive(toastId) && invalidEmailsLineNumbers.length > 0)
+        toast({
+          id: toastId,
+          title: `Ugyldige epostadresser`,
+          description:
+            'Epostadressene på følgende linjenummer er ugyldige og ble ikke lagt til: ' + invalidEmailsLineNumbers,
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        });
+      // after file is handled, remove it from input-field
+      if (ref.current) ref.current.value = '';
+    }
   };
 
   const deleteParticipantByEmail = (email: string) => {
@@ -210,7 +169,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       <VStack spacing="7">
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
-          <InviteParticipantByFileUpload handleFileUpload={onFileUpload} />
+          <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
           <InviteParticipant
             inviteParticipant={addParticipantByEmail}
             selectRole={(role: Role) => setInputRole(role)}
