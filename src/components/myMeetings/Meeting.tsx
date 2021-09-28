@@ -1,13 +1,15 @@
-import { Box, Flex, Heading, Text, Button, HStack } from '@chakra-ui/react';
+import { Heading, Text, HStack, VStack, Box } from '@chakra-ui/react';
 import { useHistory } from 'react-router';
 import React, { useEffect, useState } from 'react';
 import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
-import DeleteIcon from '../../static/deleteIcon.svg';
-import EditIcon from '../../static/editIcon.svg';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { boxShadow } from '../styles/formStyles';
 import { expandAndLift, transition } from '../styles/styles';
+import CustomTag from '../common/CustomTag';
+import { green, lightGray } from '../styles/theme';
+import { formatMeetingTime, formatTimeLeftToMeeting } from './utils';
+import MeetingActionsWithPopover from './MeetingActionsWithPopover';
 
 interface ParticipantResult {
   user: {
@@ -33,15 +35,9 @@ const styles = {
   ...transition,
 } as React.CSSProperties;
 
-const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => void }> = ({
-  id,
-  title,
-  startTime,
-  description,
-  organization,
-  participants,
-  handleDeleteMeeting,
-}) => {
+const Meeting: React.FC<
+  MeetingProps & { handleDeleteMeeting: (id: string) => void; meetingStatus: 'open' | 'upcoming' | 'ended' }
+> = ({ id, title, startTime, participants, handleDeleteMeeting, meetingStatus }) => {
   const { user } = useAuth0();
   const history = useHistory();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -74,42 +70,40 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
   };
 
   return (
-    <Box _hover={{ cursor: 'pointer', ...expandAndLift }} onClick={handleClick} sx={styles}>
-      <Flex justifyContent="space-between">
-        <Box width="100%">
-          {/* <button onClick={handleClick}> */}
-          <Heading as="h2" fontSize="1.125em">
-            {title}
-          </Heading>
-          {/* </button> */}
-          {description && (
-            <Text mb="1em" fontSize="0.75em">
-              {description}
-            </Text>
-          )}
-        </Box>
-
-        {isAdmin && (
-          <HStack>
-            <Button
-              bg="transparent"
-              name="edit-meeting"
-              leftIcon={<img src={EditIcon} alt="edit" />}
-              onClick={() => history.push(`/meeting/${id}/edit`)}
-            />
-            <Button
-              bg="transparent"
-              name="delete-meeting"
-              leftIcon={<img src={DeleteIcon} alt="delete" />}
-              onClick={() => setDialogIsOpen(true)}
-            />
-          </HStack>
+    <VStack
+      alignItems="start"
+      spacing="1rem"
+      _hover={meetingStatus !== 'ended' ? { cursor: 'pointer', ...expandAndLift } : {}}
+      onClick={handleClick}
+      sx={styles}
+    >
+      <HStack justifyContent="space-between" w="100%">
+        {meetingStatus === 'open' || meetingStatus === 'ended' ? (
+          <CustomTag
+            bgColor={meetingStatus === 'open' ? green : lightGray}
+            text={meetingStatus === 'open' ? 'Aktiv' : 'Avsluttet'}
+          />
+        ) : (
+          <Text color={lightGray} fontWeight="bold" fontSize="0.75rem">
+            {formatTimeLeftToMeeting(new Date(startTime), new Date())}
+          </Text>
         )}
-      </Flex>
-      <Flex justifyContent="space-between" fontSize="0.75em">
-        <Text fontWeight="bold"> {organization} </Text>
-        <Text fontWeight="bold">{new Date(startTime).toLocaleDateString('nb-no')}</Text>
-      </Flex>
+        {isAdmin && <CustomTag bgColor={lightGray} text="Admin" />}
+      </HStack>
+      <VStack alignItems="start">
+        <Heading as="h2" fontSize="1.5em">
+          {title}
+        </Heading>
+        <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
+      </VStack>
+      {meetingStatus !== 'ended' ? (
+        <MeetingActionsWithPopover
+          onEditClick={() => history.push(`/meeting/${id}/edit`)}
+          onDeleteClick={() => setDialogIsOpen(true)}
+        />
+      ) : (
+        <Box h="1rem" />
+      )}
       <CustomAlertDialog
         dialogIsOpen={dialogIsOpen}
         handleConfirm={() => {
@@ -119,7 +113,7 @@ const Meeting: React.FC<MeetingProps & { handleDeleteMeeting: (id: string) => vo
         handleCancel={() => setDialogIsOpen(false)}
         type={DialogType.MEETING}
       />
-    </Box>
+    </VStack>
   );
 };
 
