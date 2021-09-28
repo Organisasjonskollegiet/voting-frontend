@@ -4,13 +4,16 @@ import React from 'react';
 interface TableRowProps {
   elements: string[];
   style?: React.CSSProperties;
+  id: string;
 }
 
-const TableRow: React.FC<TableRowProps> = ({ elements, style }) => {
+const TableRow: React.FC<TableRowProps> = ({ elements, style, id }) => {
   return (
-    <HStack w="100%" style={style} alignItems="start">
+    <HStack id={id} w="100%" style={style} alignItems="start">
       {elements.map((e: string) => (
-        <Box w={`${(1 / elements.length) * 100}%`}>{e}</Box>
+        <Box id={id + e} w={`${(1 / elements.length) * 100}%`}>
+          {e}
+        </Box>
       ))}
     </HStack>
   );

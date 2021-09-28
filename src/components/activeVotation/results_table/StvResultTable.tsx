@@ -1,6 +1,6 @@
 import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
-import { GetStvResultQuery } from '../../../__generated__/graphql-types';
+import { GetStvResultQuery, StvRoundResult } from '../../../__generated__/graphql-types';
 import AlternativesString from '../../common/AlternativesString';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
@@ -28,6 +28,19 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
     return removeTrailingZeros(num.toFixed(2));
   };
 
+  const isLoserRemovedRandomly = (round: StvRoundResult | undefined) => {
+    if (!round || round.losers.length === 0) return false;
+    // vote count of the losers
+    const losersVoteCount = round.alternativesWithRoundVoteCount.find((a) => a.alternative.id === round.losers[0].id)
+      ?.voteCount;
+    // number of alterantives with equal amount of votes as the loser
+    const nrOfAlternativesWithLeastVotes = round.alternativesWithRoundVoteCount.filter(
+      (a) => a.voteCount === losersVoteCount
+    ).length;
+    // if there are fewer losers than alternatives with that amount of votes, the losers has been picked randomly
+    return round.losers.length < nrOfAlternativesWithLeastVotes;
+  };
+
   return (
     <VStack w="100%" spacing="2rem" alignItems="start">
       <VStack w="100%" alignItems="start">
@@ -45,6 +58,9 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
               <Heading fontSize="18px" alignSelf="start">
                 {`Runde ${round.index + 1}`}
               </Heading>
+              {isLoserRemovedRandomly(round as StvRoundResult) && (
+                <Text>Taperen har blitt plukket ut tilfeldig fra de alterantivene med færrest stemmer</Text>
+              )}
               {round.winners.length > 0 &&
                 formatAlternativesText(
                   round.winners.map((a) => a.text),
@@ -57,7 +73,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
                 )}
               <TableColumnNames columnNames={['Alternativ', 'Antall stemmer']} />
               {round.alternativesWithRoundVoteCount.map((a) => (
-                <TableRow elements={[a.alternative.text, formatNumber(a.voteCount)]} />
+                <TableRow id={a.alternative.id} elements={[a.alternative.text, formatNumber(a.voteCount)]} />
               ))}
             </VStack>
           </ResultTableContainer>

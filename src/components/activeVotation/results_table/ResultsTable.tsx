@@ -64,6 +64,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
             <React.Fragment key={alternative.id}>
               <Divider m="3em 0" />
               <TableRow
+                id={alternative.id}
                 elements={[
                   alternative.text,
                   alternative.votes.toString(),
