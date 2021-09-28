@@ -68,21 +68,22 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   const addParticipantByEmail = async (email: string) => {
     if (checkIfEmailIsValid(email)) {
-      const emailAlreadyAdded = participants.filter((participant) => participant.email === email).length > 0;
+      const lowerCaseEmail = email.toLowerCase().trim();
+      const emailAlreadyAdded = participants.filter((participant) => participant.email === lowerCaseEmail).length > 0;
       if (!emailAlreadyAdded && meetingId) {
         await addParticipants({
           variables: {
             meetingId,
             participants: [
               {
-                email,
+                email: lowerCaseEmail,
                 role: inputRole,
                 isVotingEligible: true,
               },
             ],
           },
         });
-        setParticipants([...participants, { email, role: inputRole, isVotingEligible: true }]);
+        setParticipants([...participants, { email: lowerCaseEmail, role: inputRole, isVotingEligible: true }]);
       }
     } else {
       const toastId = 'invalidEmail';
