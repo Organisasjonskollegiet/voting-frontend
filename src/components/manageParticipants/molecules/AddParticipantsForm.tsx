@@ -111,6 +111,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           duration: 5000,
           isClosable: true,
         });
+      // after file is handled, remove it from input-field
       if (ref.current) ref.current.value = '';
     }
   };
