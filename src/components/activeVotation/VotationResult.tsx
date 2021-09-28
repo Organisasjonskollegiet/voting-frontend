@@ -9,10 +9,10 @@ import {
 import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import ResultsTable from './ResultsTable';
+import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
-import StvResultTable from './StvResultTable';
+import StvResultTable from './results_table/StvResultTable';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;

@@ -1,6 +1,6 @@
 import { Box, Divider, HStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
-import { GetVotationResultsQuery } from '../../__generated__/graphql-types';
+import { GetVotationResultsQuery } from '../../../__generated__/graphql-types';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';

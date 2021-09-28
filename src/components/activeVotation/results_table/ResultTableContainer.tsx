@@ -1,6 +1,6 @@
 import { Box, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { boxShadow } from '../styles/formStyles';
+import { boxShadow } from '../../styles/formStyles';
 
 const ResultTableContainer: React.FC = ({ children }) => {
   return (

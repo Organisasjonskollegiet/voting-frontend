@@ -10,9 +10,9 @@ import {
   Alternative as AlternativeType,
 } from '../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
-import ResultsTable from './ResultsTable';
+import ResultsTable from './results_table/ResultsTable';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
-import StvResultTable from './StvResultTable';
+import StvResultTable from './results_table/StvResultTable';
 import AlternativesString from '../common/AlternativesString';
 
 interface CheckResultsProps {
