@@ -21,6 +21,7 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
+import VotationListSection from './VotationListSection';
 
 interface VotationListProps {
   meetingId: string;
@@ -199,8 +200,7 @@ const VotationList: React.FC<VotationListProps> = ({
       const winners = data.resultsOfPublishedVotations as Votation[];
       const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
       const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-      const shouldAddEmpty =
-        !isMeetingLobby && formattedVotations.filter((v) => v.status === VotationStatus.Upcoming).length === 0;
+      const shouldAddEmpty = formattedVotations.length === 0;
       if (shouldAddEmpty) {
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
       }
@@ -212,7 +212,7 @@ const VotationList: React.FC<VotationListProps> = ({
       );
       setOngoingVotation(ongoingVotation);
       setNextVotation(upcomingVotations.slice(0, 1)[0]);
-      setUpcomingVotations(upcomingVotations.slice(1));
+      if (upcomingVotations.length > 1) setUpcomingVotations(upcomingVotations.slice(1));
       setEndedVotations(
         sortedVotations.filter(
           (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
@@ -284,8 +284,12 @@ const VotationList: React.FC<VotationListProps> = ({
         newUpcoming.splice(0, 0, next);
         return { newNext, newUpcoming };
       } else {
+        console.log('oldUpc', upcoming);
         const newUpcoming = Array.from(upcoming);
+        console.log('startIndex', startIndex);
         const [removed] = newUpcoming.splice(startIndex, 1);
+        console.log('newUpcoming', newUpcoming);
+        console.log('removed', removed);
         newUpcoming.splice(endIndex, 0, removed);
         return { newNext: next, newUpcoming };
       }
@@ -307,6 +311,8 @@ const VotationList: React.FC<VotationListProps> = ({
 
     if (!nextVotation || !upcomingVotations) return;
 
+    console.log('result', result);
+
     const { newNext, newUpcoming } = reorder(
       nextVotation,
       upcomingVotations,
@@ -315,6 +321,9 @@ const VotationList: React.FC<VotationListProps> = ({
       result.source.index,
       result.destination.index
     );
+
+    console.log('newNext', newNext);
+    console.log('newUpc', newUpcoming);
 
     const updatedVotations: Votation[] = [newNext, ...newUpcoming].map((v, index) => {
       return {
@@ -586,9 +595,41 @@ const VotationList: React.FC<VotationListProps> = ({
           />
         </>
       )}
-      {nextVotation && upcomingVotations && upcomingVotations.length > 0 && (
+      {nextVotation && upcomingVotations && (
         <DragDropContext onDragEnd={onDragEnd}>
-          <UpcomingVotationLists
+          <VotationListSection
+            droppableId={'next'}
+            votations={[nextVotation]}
+            setActiveVotationId={setActiveVotationId}
+            activeVotationId={activeVotationId}
+            updateVotation={updateVotation}
+            handleDeleteVotation={handleDeleteVotation}
+            handleDeleteAlternative={handleDeleteAlternative}
+            duplicateVotation={duplicateVotation}
+            handleStartVotation={startVotation}
+            checkIfAnyChanges={checkIfAnyChanges}
+            handleSaveChanges={handleSave}
+            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
+            heading={'Neste votering'}
+            isAdmin={role === Role.Admin}
+          />
+          <VotationListSection
+            droppableId={'upcoming'}
+            votations={upcomingVotations}
+            setActiveVotationId={setActiveVotationId}
+            activeVotationId={activeVotationId}
+            updateVotation={updateVotation}
+            handleDeleteVotation={handleDeleteVotation}
+            handleDeleteAlternative={handleDeleteAlternative}
+            duplicateVotation={duplicateVotation}
+            handleStartVotation={startVotation}
+            checkIfAnyChanges={checkIfAnyChanges}
+            handleSaveChanges={handleSave}
+            showStartNextButton={false}
+            heading={'Neste votering'}
+            isAdmin={role === Role.Admin}
+          />
+          {/* <UpcomingVotationLists
             isMeetingLobby={isMeetingLobby}
             droppableId={'top-list'}
             votations={[nextVotation, ...upcomingVotations]}
@@ -604,7 +645,7 @@ const VotationList: React.FC<VotationListProps> = ({
             showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
-          />
+          /> */}
         </DragDropContext>
       )}
       {role === Role.Admin && (
@@ -616,10 +657,10 @@ const VotationList: React.FC<VotationListProps> = ({
             if (!nextVotation) {
               setNextVotation(newVotation);
             } else if (upcomingVotations) {
-              console.log('upcoming', upcomingVotations);
-              console.log('newupcoming', [...upcomingVotations, newVotation]);
+              console.log('upcoming', [...upcomingVotations, newVotation]);
               setUpcomingVotations([...upcomingVotations, newVotation]);
             } else {
+              console.log('set new', newVotation);
               setUpcomingVotations([newVotation]);
             }
             // setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);

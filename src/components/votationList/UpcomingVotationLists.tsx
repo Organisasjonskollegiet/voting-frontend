@@ -42,7 +42,7 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
         {votations.length > 1 && (
           <VotationListSection
             droppableId={'upcoming'}
-            votations={votations}
+            votations={votations.slice(1)}
             setActiveVotationId={setActiveVotationId}
             activeVotationId={activeVotationId}
             updateVotation={updateVotation}
