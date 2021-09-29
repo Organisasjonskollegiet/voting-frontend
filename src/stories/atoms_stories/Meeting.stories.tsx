@@ -15,7 +15,7 @@ const handleDeleteMeeting = (id: string) => {
 
 const Template: Story<MeetingProps> = (args) => (
   <Box width="600px">
-    <Meeting handleDeleteMeeting={handleDeleteMeeting} {...args} />
+    <Meeting meetingStatus="open" handleDeleteMeeting={handleDeleteMeeting} {...args} />
   </Box>
 );
 

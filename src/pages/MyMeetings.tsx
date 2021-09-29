@@ -69,23 +69,29 @@ const MyMeetings: React.FC = () => {
     );
   }
 
-  const upcomingMeetings = meetingsData.filter((meeting) => new Date() < new Date(meeting?.startTime));
+  const upcomingMeetings = meetingsData
+    .filter((meeting) => new Date() < new Date(meeting?.startTime))
+    .sort((a, b) => new Date(a?.startTime).getTime() - new Date(b?.startTime).getTime());
 
-  const ongoingMeetings = meetingsData.filter((meeting) => {
-    const start = new Date(meeting?.startTime);
-    const nextMorning = new Date(meeting?.startTime);
-    const now = new Date();
-    nextMorning.setDate(nextMorning.getDate() + 1);
-    nextMorning.setHours(6);
-    return start < now && now < nextMorning;
-  });
+  const ongoingMeetings = meetingsData
+    .filter((meeting) => {
+      const start = new Date(meeting?.startTime);
+      const nextMorning = new Date(meeting?.startTime);
+      const now = new Date();
+      nextMorning.setDate(nextMorning.getDate() + 1);
+      nextMorning.setHours(6);
+      return start < now && now < nextMorning;
+    })
+    .sort((a, b) => new Date(a?.startTime).getTime() - new Date(b?.startTime).getTime());
 
-  const endedMeetings = meetingsData.filter((meeting) => {
-    const nextMorning = new Date(meeting?.startTime);
-    nextMorning.setDate(nextMorning.getDate() + 1);
-    nextMorning.setHours(6);
-    return nextMorning < new Date();
-  });
+  const endedMeetings = meetingsData
+    .filter((meeting) => {
+      const nextMorning = new Date(meeting?.startTime);
+      nextMorning.setDate(nextMorning.getDate() + 1);
+      nextMorning.setHours(6);
+      return nextMorning < new Date();
+    })
+    .sort((a, b) => new Date(b?.startTime).getTime() - new Date(a?.startTime).getTime());
 
   return (
     <PageContainer>
@@ -97,22 +103,21 @@ const MyMeetings: React.FC = () => {
           </Center>
         )}
         {ongoingMeetings.length > 0 && (
-          <Box m="0 2em 2.625em">
+          <Box m="0 2em 1.5em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
-              Pågående møter
+              Mine møter
             </Heading>
             <MeetingList
+              meetingStatus="open"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
               meetings={ongoingMeetings as Array<MeetingProps>}
             />
           </Box>
         )}
         {upcomingMeetings.length > 0 && (
-          <Box m="0 2em 2.625em">
-            <Heading as="h1" fontSize="1em" mb="1.125em">
-              Kommende møter
-            </Heading>
+          <Box m="0 2em 1.5em">
             <MeetingList
+              meetingStatus="upcoming"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
               meetings={upcomingMeetings as Array<MeetingProps>}
             />
@@ -121,10 +126,10 @@ const MyMeetings: React.FC = () => {
         {endedMeetings.length > 0 && (
           <Box m="0 2em 2.625em">
             <Heading as="h1" fontSize="1em" mb="1.125em">
-              {' '}
-              Tidligere møter
+              Avsluttede møter
             </Heading>
             <MeetingList
+              meetingStatus="ended"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
               meetings={endedMeetings as Array<MeetingProps>}
             />
