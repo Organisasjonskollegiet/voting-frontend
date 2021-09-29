@@ -187,8 +187,10 @@ const VotationList: React.FC<VotationListProps> = ({
       if (shouldAddEmpty) {
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
       }
-      setVotations(formattedVotations.sort((a, b) => a.index - b.index));
-      setActiveVotationId(formattedVotations[formattedVotations.length - 1].id);
+      const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
+      setVotations(sortedVotations);
+      const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
+      if (upcomingVotations.length > 0) setActiveVotationId(upcomingVotations[0].id);
     }
   }, [data, formatVotations, isMeetingLobby, votations, votationsAreEmpty]);
 
