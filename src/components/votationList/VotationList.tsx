@@ -240,23 +240,33 @@ const VotationList: React.FC<VotationListProps> = ({
     startIndex: number,
     endIndex: number
   ) => {
+    // if the votation moved is the next votation...
     if (startList === 'next') {
+      // ...and its moved to top of upcoming, its still the next votation
       if (endList === 'upcoming' && endIndex === 0) {
         return { newNext: next, newUpcoming: upcoming };
+        // if not it should me moved, and the first upcoming should be set as next votation
       } else if (endList === 'upcoming') {
         const newUpcoming = Array.from(upcoming);
         const [newNext] = newUpcoming.splice(startIndex, 1);
         newUpcoming.splice(endIndex, 0, next);
         return { newNext, newUpcoming };
       }
+      // if the votation is moved from upcoming...
     } else {
+      // to next, but not to the top, it should be put on top of upcoming
       if (endList === 'next' && endIndex !== 0) {
-        return { newNext: next, newUpcoming: upcoming };
+        const newUpcoming = Array.from(upcoming);
+        const [removed] = newUpcoming.splice(startIndex, 1);
+        newUpcoming.splice(0, 0, removed);
+        return { newNext: next, newUpcoming };
+        // if it goes on top of next it should be set next and next bumped down
       } else if (endList === 'next') {
         const newUpcoming = Array.from(upcoming);
         const [newNext] = newUpcoming.splice(startIndex, 1);
         newUpcoming.splice(0, 0, next);
         return { newNext, newUpcoming };
+        // if it goes elsewhere it should move there
       } else {
         const newUpcoming = Array.from(upcoming);
         const [removed] = newUpcoming.splice(startIndex, 1);
@@ -290,6 +300,8 @@ const VotationList: React.FC<VotationListProps> = ({
       result.destination.index
     );
 
+    // the index the coming nextVotation will have must be larger than
+    // all ended votations and the ongoing one
     const indexOfNextVotation = ongoingVotation
       ? ongoingVotation.index + 1
       : endedVotations && endedVotations.length > 0
