@@ -264,12 +264,14 @@ const Votation: React.FC = () => {
       await castStvVote({
         variables: {
           votationId,
-          alternatives: alternatives.map((a) => {
-            return {
-              alternativeId: a.id,
-              ranking: a.index,
-            };
-          }),
+          alternatives: alternatives
+            .filter((a) => a.isRanked)
+            .map((a) => {
+              return {
+                alternativeId: a.id,
+                ranking: a.index,
+              };
+            }),
         },
       });
     } else if (selectedAlternativeId !== null) {
