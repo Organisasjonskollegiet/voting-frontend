@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useRef } from 'react';
+import { green } from '../styles/theme';
 
 interface StartNextVotationButtonProps {
   handleStartVotation: () => void;
@@ -44,7 +45,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
 
   return (
     <>
-      <Button onClick={openVotationIfNoChanges} w={'250px'} bg="green" color="white" borderRadius={'16em'}>
+      <Button onClick={openVotationIfNoChanges} w={'250px'} bg={green} color="white" borderRadius={'16em'}>
         Start neste votering
       </Button>
       <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>
@@ -57,7 +58,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
             <AlertDialogBody>Endringene dine vil bli forkastet om du starter votering uten å lagre</AlertDialogBody>
             <AlertDialogFooter justifyContent="center">
               <VStack alignItems="left" spacing="3">
-                <Button colorScheme="green" onClick={() => saveBeforeStartVotation(true)} minW="max-content">
+                <Button colorScheme={green} onClick={() => saveBeforeStartVotation(true)} minW="max-content">
                   Lagre endringer og start votering
                 </Button>
                 <Button colorScheme="red" onClick={() => saveBeforeStartVotation(false)} minW="max-content">
