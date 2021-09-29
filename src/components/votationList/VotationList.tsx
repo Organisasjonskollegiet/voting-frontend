@@ -12,6 +12,7 @@ import {
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
+  VotationType,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -53,6 +54,12 @@ const VotationList: React.FC<VotationListProps> = ({
   const [deleteVotations] = useDeleteVotationsMutation();
 
   const [votations, setVotations] = useState<Votation[]>([]);
+
+  const [nextVotation, setNextVotation] = useState<Votation>();
+
+  const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
+
+  const [endedVotations, setEndedVotations] = useState<Votation[]>();
 
   const [activeVotationId, setActiveVotationId] = useState<string>('');
 
@@ -188,9 +195,21 @@ const VotationList: React.FC<VotationListProps> = ({
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
       }
       const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
-      setVotations(sortedVotations);
+      // setVotations(sortedVotations);
       const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
-      if (upcomingVotations.length > 0) setActiveVotationId(upcomingVotations[0].id);
+      const ongoingVotation = sortedVotations.find(
+        (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+      );
+      setNextVotation(upcomingVotations.slice(0, 1)[0]);
+      setUpcomingVotations(upcomingVotations.slice(1));
+      setEndedVotations(
+        sortedVotations.filter(
+          (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+        )
+      );
+      if (upcomingVotations.length > 0) {
+        setActiveVotationId(upcomingVotations[0].id);
+      }
     }
   }, [data, formatVotations, isMeetingLobby, votations, votationsAreEmpty]);
 
@@ -441,17 +460,17 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const startVotation = () => {
-    updateVotationStatus({ variables: { votationId: upcomingVotations[0].id, status: VotationStatus.Open } });
+    if (nextVotation) updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
   };
 
   const openVotation = votations.find(
     (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
   );
-  const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
+  // const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
 
-  const endedVotations = votations.filter(
-    (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
-  );
+  // const endedVotations = votations.filter(
+  //   (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+  // );
 
   if (error) {
     return (
@@ -481,7 +500,7 @@ const VotationList: React.FC<VotationListProps> = ({
           />
         </>
       )}
-      {upcomingVotations.length > 0 && (
+      {upcomingVotations && upcomingVotations.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
           <UpcomingVotationLists
             isMeetingLobby={isMeetingLobby}
