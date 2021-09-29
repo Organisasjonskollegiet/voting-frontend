@@ -18,7 +18,22 @@ import {
   useVotationOpenedForMeetingSubscription,
   useGetStvResultLazyQuery,
 } from '../__generated__/graphql-types';
-import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
+import {
+  Heading,
+  Text,
+  Box,
+  Center,
+  VStack,
+  Divider,
+  Link,
+  Button,
+  HStack,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionButton,
+  AccordionIcon,
+} from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -31,6 +46,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
+import VotationTypeInformation from '../components/votationList/forms/VotationTypeInformation';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -38,6 +54,12 @@ export const subtitlesStyle = {
   fontWeight: 'bold',
   lineHeight: '150%',
 } as React.CSSProperties;
+
+const votationTypeToString = new Map([
+  [VotationType.Stv, 'Preferansevalg'],
+  [VotationType.Simple, 'Simpelt flertall'],
+  [VotationType.Qualified, 'Kvalifisert flertall'],
+]);
 
 export type AlternativeWithIndex = AlternativeType & {
   index: number;
@@ -355,18 +377,42 @@ const Votation: React.FC = () => {
           {(castVoteLoading || blankVoteLoading || stvLoading) && (
             <Loading text="Registrerer stemme" asOverlay={true} />
           )}
-          <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
-            <VStack alignItems="left" spacing="0.5rem">
-              <Heading as="h1" style={subtitlesStyle}>
-                Votering {data.votationById.index + 1}
-              </Heading>
-              <Heading as="h1" sx={h1Style}>
-                {data.votationById.title}
-              </Heading>
+          <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
+            <VStack alignItems="left" spacing="1rem">
+              <VStack alignItems="left" spacing="0.5rem">
+                <Heading as="h1" style={subtitlesStyle}>
+                  Votering {data.votationById.index + 1}
+                </Heading>
+                <Heading as="h1" sx={h1Style}>
+                  {data.votationById.title}
+                </Heading>
+              </VStack>
 
-              <Text mt="1em" mb="2em">
-                {data.votationById.description}
-              </Text>
+              <Text mt="1em">{data.votationById.description}</Text>
+              <Accordion allowToggle>
+                <AccordionItem maxWidth="250px">
+                  <AccordionButton>
+                    <HStack w="100%" justifyContent="space-between">
+                      <VStack alignItems="left">
+                        <HStack>
+                          <Text fontStyle="italic">Stemmeform</Text>
+                          <VotationTypeInformation />
+                        </HStack>
+                      </VStack>
+                      <AccordionIcon />
+                    </HStack>
+                  </AccordionButton>
+                  <AccordionPanel>
+                    <Text>{`${votationTypeToString.get(data.votationById.type)}`}</Text>
+                    {data.votationById.type === VotationType.Qualified && (
+                      <Text>{`Flertall krevd: ${data.votationById.majorityThreshold}%`}</Text>
+                    )}
+                    {data.votationById.type === VotationType.Stv && (
+                      <Text>{`Antall vinnere: ${data.votationById.numberOfWinners}`}</Text>
+                    )}
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
             </VStack>
 
             {status === VotationStatus.Open && (
