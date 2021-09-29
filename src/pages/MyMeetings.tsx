@@ -102,11 +102,13 @@ const MyMeetings: React.FC = () => {
             <Text>Du har ingen kommende møter</Text>
           </Center>
         )}
+        {(ongoingMeetings.length > 0 || upcomingMeetings.length > 0) && (
+          <Heading as="h1" fontSize="1em" mx="2em" mb="1.125em">
+            Mine møter
+          </Heading>
+        )}
         {ongoingMeetings.length > 0 && (
           <Box m="0 2em 1.5em">
-            <Heading as="h1" fontSize="1em" mb="1.125em">
-              Mine møter
-            </Heading>
             <MeetingList
               meetingStatus="open"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
