@@ -190,7 +190,6 @@ const VotationList: React.FC<VotationListProps> = ({
       const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
       setVotations(sortedVotations);
       const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
-      console.log('upcoming', upcomingVotations);
       if (upcomingVotations.length > 0) setActiveVotationId(upcomingVotations[0].id);
     }
   }, [data, formatVotations, isMeetingLobby, votations, votationsAreEmpty]);
