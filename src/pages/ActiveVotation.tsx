@@ -41,6 +41,7 @@ export const subtitlesStyle = {
 
 export type AlternativeWithIndex = AlternativeType & {
   index: number;
+  isRanked: boolean;
 };
 
 const Votation: React.FC = () => {
@@ -198,6 +199,7 @@ const Votation: React.FC = () => {
           return {
             ...a,
             index,
+            isRanked: false,
           };
         })
       );

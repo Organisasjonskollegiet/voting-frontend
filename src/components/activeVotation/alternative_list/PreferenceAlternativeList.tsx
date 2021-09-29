@@ -41,6 +41,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
         ...votation,
         index: index,
         isEdited: true,
+        isRanked: result.destination?.droppableId === 'ranked-alternatives',
       };
     });
     updateAlternatives(updatedAlternatives);
@@ -48,13 +49,29 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable isDropDisabled={userHasVoted} droppableId="alternatives">
+      <Droppable isDropDisabled={userHasVoted} droppableId="ranked-alternatives">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             <VStack spacing="0" opacity={userHasVoted ? 0.5 : 1}>
-              {alternatives.map((alt) => (
-                <DraggableAlternative showVote={!userHasVoted || showVote} alternative={alt} />
-              ))}
+              {alternatives
+                .filter((a) => a.isRanked)
+                .map((alt) => (
+                  <DraggableAlternative showVote={!userHasVoted || showVote} alternative={alt} />
+                ))}
+            </VStack>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+      <Droppable isDropDisabled={userHasVoted} droppableId="unranked-alternatives">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            <VStack spacing="0" opacity={userHasVoted ? 0.5 : 1}>
+              {alternatives
+                .filter((a) => !a.isRanked)
+                .map((alt) => (
+                  <DraggableAlternative showVote={!userHasVoted || showVote} alternative={alt} />
+                ))}
             </VStack>
             {provided.placeholder}
           </div>
