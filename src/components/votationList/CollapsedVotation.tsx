@@ -2,6 +2,7 @@ import { HStack, Text } from '@chakra-ui/react';
 import React from 'react';
 import CustomTag from '../common/CustomTag';
 import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
+import { green } from '../styles/theme';
 
 export interface CollapsedVotationProps {
   isAdmin: boolean;
@@ -17,7 +18,7 @@ const CollapsedVotation: React.FC<CollapsedVotationProps> = ({ isAdmin, votation
         <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
         <Text>{votationTitle}</Text>
       </HStack>
-      <CustomTag bgColor="green" text="Aktiv" />
+      <CustomTag bgColor={green} text="Aktiv" />
     </HStack>
   );
 };
