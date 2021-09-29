@@ -31,7 +31,7 @@ const styles = {
   borderRadius: '4px',
   boxShadow,
   padding: '1em 2em',
-  overflow: 'auto',
+  overflow: 'hidden',
   ...transition,
 } as React.CSSProperties;
 
@@ -73,7 +73,7 @@ const Meeting: React.FC<
     <VStack
       alignItems="start"
       spacing="1rem"
-      _hover={meetingStatus !== 'ended' ? { cursor: 'pointer', ...expandAndLift } : {}}
+      _hover={{ cursor: 'pointer', ...expandAndLift }}
       onClick={handleClick}
       sx={styles}
     >
@@ -96,7 +96,7 @@ const Meeting: React.FC<
         </Heading>
         <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
       </VStack>
-      {meetingStatus !== 'ended' ? (
+      {meetingStatus !== 'ended' && isAdmin ? (
         <MeetingActionsWithPopover
           onEditClick={() => history.push(`/meeting/${id}/edit`)}
           onDeleteClick={() => setDialogIsOpen(true)}
