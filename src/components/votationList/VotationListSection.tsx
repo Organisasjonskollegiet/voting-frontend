@@ -1,7 +1,7 @@
 import React from 'react';
 import VotationForm from './forms/VotationForm';
 import { Droppable } from 'react-beautiful-dnd';
-import { Box, Heading, HStack, VStack } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 
 import { Votation } from '../../types/types';
 import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
