@@ -14,7 +14,7 @@ const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({ alternative
   return (
     <Draggable key={alternative.id} draggableId={alternative.id} index={alternative.index}>
       {(provided) => (
-        <HStack w="100%" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+        <HStack py="0.5rem" w="100%" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
           <HStack w="100%">
             <Text w="30px" fontSize="24px" fontWeight="bold" opacity="0.5">
               {alternative.index + 1}

@@ -51,7 +51,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
       <Droppable isDropDisabled={userHasVoted} droppableId="alternatives">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <VStack spacing="1em" opacity={userHasVoted ? 0.5 : 1}>
+            <VStack spacing="0" opacity={userHasVoted ? 0.5 : 1}>
               {alternatives.map((alt) => (
                 <DraggableAlternative showVote={!userHasVoted || showVote} alternative={alt} />
               ))}
