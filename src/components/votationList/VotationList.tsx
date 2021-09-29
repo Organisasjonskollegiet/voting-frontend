@@ -12,7 +12,6 @@ import {
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
-  VotationType,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -21,7 +20,6 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
-import VotationListSection from './VotationListSection';
 
 interface VotationListProps {
   meetingId: string;
@@ -71,27 +69,6 @@ const VotationList: React.FC<VotationListProps> = ({
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
 
   const toast = useToast();
-
-  const alternativeIsEmpty = (alternative: Alternative) => {
-    return alternative.text === '';
-  };
-
-  // const votationsAreEmpty = useCallback(() => {
-  //   switch (votations.length) {
-  //     case 0:
-  //       return true;
-  //     case 1:
-  //       const votation = votations[0];
-  //       return (
-  //         votation.title === '' &&
-  //         votation.description === '' &&
-  //         (votation.alternatives.length === 0 ||
-  //           (votation.alternatives.length === 1 && alternativeIsEmpty(votation.alternatives[0])))
-  //       );
-  //     default:
-  //       return false;
-  //   }
-  // }, [votations]);
 
   useEffect(() => {
     if (role === Role.Admin && !ongoingVotation && !nextVotation && !upcomingVotations && !endedVotations && !loading) {
@@ -599,39 +576,7 @@ const VotationList: React.FC<VotationListProps> = ({
       )}
       {nextVotation && upcomingVotations && (
         <DragDropContext onDragEnd={onDragEnd}>
-          <VotationListSection
-            droppableId={'next'}
-            votations={[nextVotation]}
-            setActiveVotationId={setActiveVotationId}
-            activeVotationId={activeVotationId}
-            updateVotation={updateVotation}
-            handleDeleteVotation={handleDeleteVotation}
-            handleDeleteAlternative={handleDeleteAlternative}
-            duplicateVotation={duplicateVotation}
-            handleStartVotation={startVotation}
-            checkIfAnyChanges={checkIfAnyChanges}
-            handleSaveChanges={handleSave}
-            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
-            heading={'Neste votering'}
-            isAdmin={role === Role.Admin}
-          />
-          <VotationListSection
-            droppableId={'upcoming'}
-            votations={upcomingVotations}
-            setActiveVotationId={setActiveVotationId}
-            activeVotationId={activeVotationId}
-            updateVotation={updateVotation}
-            handleDeleteVotation={handleDeleteVotation}
-            handleDeleteAlternative={handleDeleteAlternative}
-            duplicateVotation={duplicateVotation}
-            handleStartVotation={startVotation}
-            checkIfAnyChanges={checkIfAnyChanges}
-            handleSaveChanges={handleSave}
-            showStartNextButton={false}
-            heading={'Neste votering'}
-            isAdmin={role === Role.Admin}
-          />
-          {/* <UpcomingVotationLists
+          <UpcomingVotationLists
             isMeetingLobby={isMeetingLobby}
             droppableId={'top-list'}
             votations={[nextVotation, ...upcomingVotations]}
@@ -647,7 +592,7 @@ const VotationList: React.FC<VotationListProps> = ({
             showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
-          /> */}
+          />
         </DragDropContext>
       )}
       {role === Role.Admin && (
