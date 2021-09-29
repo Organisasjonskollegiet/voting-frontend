@@ -284,12 +284,8 @@ const VotationList: React.FC<VotationListProps> = ({
         newUpcoming.splice(0, 0, next);
         return { newNext, newUpcoming };
       } else {
-        console.log('oldUpc', upcoming);
         const newUpcoming = Array.from(upcoming);
-        console.log('startIndex', startIndex);
         const [removed] = newUpcoming.splice(startIndex, 1);
-        console.log('newUpcoming', newUpcoming);
-        console.log('removed', removed);
         newUpcoming.splice(endIndex, 0, removed);
         return { newNext: next, newUpcoming };
       }
@@ -311,8 +307,6 @@ const VotationList: React.FC<VotationListProps> = ({
 
     if (!nextVotation || !upcomingVotations) return;
 
-    console.log('result', result);
-
     const { newNext, newUpcoming } = reorder(
       nextVotation,
       upcomingVotations,
@@ -322,17 +316,27 @@ const VotationList: React.FC<VotationListProps> = ({
       result.destination.index
     );
 
-    console.log('newNext', newNext);
-    console.log('newUpc', newUpcoming);
+    const indexOfNextVotation = ongoingVotation
+      ? ongoingVotation.index + 1
+      : endedVotations && endedVotations.length > 0
+      ? endedVotations[endedVotations.length - 1].index + 1
+      : 0;
 
     const updatedVotations: Votation[] = [newNext, ...newUpcoming].map((v, index) => {
       return {
         ...v,
-        index,
+        index: indexOfNextVotation + index,
       };
     });
-    setNextVotation(newNext);
-    setUpcomingVotations(newUpcoming);
+    setNextVotation({ ...newNext, index: indexOfNextVotation });
+    setUpcomingVotations([
+      ...newUpcoming.map((v, index) => {
+        return {
+          ...v,
+          index: indexOfNextVotation + 1 + index,
+        };
+      }),
+    ]);
     // setVotations(updatedVotations);
     await updateIndexes(updatedVotations);
   }
@@ -575,8 +579,6 @@ const VotationList: React.FC<VotationListProps> = ({
     );
   }
 
-  console.log('upc', upcomingVotations);
-
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
@@ -657,10 +659,8 @@ const VotationList: React.FC<VotationListProps> = ({
             if (!nextVotation) {
               setNextVotation(newVotation);
             } else if (upcomingVotations) {
-              console.log('upcoming', [...upcomingVotations, newVotation]);
               setUpcomingVotations([...upcomingVotations, newVotation]);
             } else {
-              console.log('set new', newVotation);
               setUpcomingVotations([newVotation]);
             }
             // setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
