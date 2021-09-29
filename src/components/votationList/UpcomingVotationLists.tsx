@@ -24,7 +24,7 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
     return (
       <>
         <VotationListSection
-          droppableId={'top-list'}
+          droppableId={'next'}
           votations={votations.slice(0, 1)}
           setActiveVotationId={setActiveVotationId}
           activeVotationId={activeVotationId}
@@ -41,7 +41,7 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
         />
         {votations.length > 1 && (
           <VotationListSection
-            droppableId={'bottom-list'}
+            droppableId={'upcoming'}
             votations={votations}
             setActiveVotationId={setActiveVotationId}
             activeVotationId={activeVotationId}

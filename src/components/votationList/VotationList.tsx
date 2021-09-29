@@ -53,7 +53,9 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [deleteVotations] = useDeleteVotationsMutation();
 
-  const [votations, setVotations] = useState<Votation[]>([]);
+  // const [votations, setVotations] = useState<Votation[]>([]);
+
+  const [ongoingVotation, setOngoingVotation] = useState<Votation>();
 
   const [nextVotation, setNextVotation] = useState<Votation>();
 
@@ -73,30 +75,31 @@ const VotationList: React.FC<VotationListProps> = ({
     return alternative.text === '';
   };
 
-  const votationsAreEmpty = useCallback(() => {
-    switch (votations.length) {
-      case 0:
-        return true;
-      case 1:
-        const votation = votations[0];
-        return (
-          votation.title === '' &&
-          votation.description === '' &&
-          (votation.alternatives.length === 0 ||
-            (votation.alternatives.length === 1 && alternativeIsEmpty(votation.alternatives[0])))
-        );
-      default:
-        return false;
-    }
-  }, [votations]);
+  // const votationsAreEmpty = useCallback(() => {
+  //   switch (votations.length) {
+  //     case 0:
+  //       return true;
+  //     case 1:
+  //       const votation = votations[0];
+  //       return (
+  //         votation.title === '' &&
+  //         votation.description === '' &&
+  //         (votation.alternatives.length === 0 ||
+  //           (votation.alternatives.length === 1 && alternativeIsEmpty(votation.alternatives[0])))
+  //       );
+  //     default:
+  //       return false;
+  //   }
+  // }, [votations]);
 
   useEffect(() => {
-    if (role === Role.Admin && votations.length === 0 && !loading) {
+    if (role === Role.Admin && !ongoingVotation && !nextVotation && !upcomingVotations && !endedVotations && !loading) {
       const emptyVotation = getEmptyVotation();
-      setVotations([emptyVotation]);
+      setNextVotation(emptyVotation);
+      setUpcomingVotations([]);
       setActiveVotationId(emptyVotation.id);
     }
-  }, [role, votations, loading]);
+  }, [role, ongoingVotation, nextVotation, upcomingVotations, endedVotations, loading]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend
@@ -184,7 +187,14 @@ const VotationList: React.FC<VotationListProps> = ({
   );
 
   useEffect(() => {
-    if (data?.meetingById?.votations && data.meetingById.votations.length > 0 && votationsAreEmpty()) {
+    if (
+      data?.meetingById?.votations &&
+      data.meetingById.votations.length > 0 &&
+      !ongoingVotation &&
+      !nextVotation &&
+      !upcomingVotations &&
+      !endedVotations
+    ) {
       const votations = data.meetingById.votations as Votation[];
       const winners = data.resultsOfPublishedVotations as Votation[];
       const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
@@ -200,6 +210,7 @@ const VotationList: React.FC<VotationListProps> = ({
       const ongoingVotation = sortedVotations.find(
         (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
       );
+      setOngoingVotation(ongoingVotation);
       setNextVotation(upcomingVotations.slice(0, 1)[0]);
       setUpcomingVotations(upcomingVotations.slice(1));
       setEndedVotations(
@@ -211,7 +222,7 @@ const VotationList: React.FC<VotationListProps> = ({
         setActiveVotationId(upcomingVotations[0].id);
       }
     }
-  }, [data, formatVotations, isMeetingLobby, votations, votationsAreEmpty]);
+  }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
 
   useEffect(() => {
     if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
@@ -226,9 +237,16 @@ const VotationList: React.FC<VotationListProps> = ({
     const updateResults = updateVotationsResult.data.updateVotations as Votation[];
     const createdVotations = formatVotations(createResults) as Votation[];
     const updatedVotations = formatVotations(updateResults) as Votation[];
+    const votations = [];
+    if (nextVotation) votations.push(nextVotation);
+    if (upcomingVotations) votations.push(...upcomingVotations);
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
     const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
-    setVotations(newVotations.sort((a, b) => a.index - b.index));
+    const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
+    if (sortedNewVotations.length > 0) {
+      setNextVotation(sortedNewVotations[0]);
+      setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
+    }
     // eslint-disable-next-line
   }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations]);
 
@@ -240,12 +258,39 @@ const VotationList: React.FC<VotationListProps> = ({
     };
   };
 
-  const reorder = (list: Votation[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
+  const reorder = (
+    next: Votation,
+    upcoming: Votation[],
+    startList: string,
+    endList: string,
+    startIndex: number,
+    endIndex: number
+  ) => {
+    if (startList === 'next') {
+      if (endList === 'upcoming' && endIndex === 0) {
+        return { newNext: next, newUpcoming: upcoming };
+      } else if (endList === 'upcoming') {
+        const newUpcoming = Array.from(upcoming);
+        const [newNext] = newUpcoming.splice(startIndex, 1);
+        newUpcoming.splice(endIndex, 0, next);
+        return { newNext, newUpcoming };
+      }
+    } else {
+      if (endList === 'next' && endIndex !== 0) {
+        return { newNext: next, newUpcoming: upcoming };
+      } else if (endList === 'next') {
+        const newUpcoming = Array.from(upcoming);
+        const [newNext] = newUpcoming.splice(startIndex, 1);
+        newUpcoming.splice(0, 0, next);
+        return { newNext, newUpcoming };
+      } else {
+        const newUpcoming = Array.from(upcoming);
+        const [removed] = newUpcoming.splice(startIndex, 1);
+        newUpcoming.splice(endIndex, 0, removed);
+        return { newNext: next, newUpcoming };
+      }
+    }
+    return { newNext: next, newUpcoming: upcoming };
   };
 
   async function onDragEnd(result: DropResult) {
@@ -253,19 +298,33 @@ const VotationList: React.FC<VotationListProps> = ({
       return;
     }
 
-    if (result.destination.index === result.source.index) {
+    if (
+      result.destination.index === result.source.index &&
+      result.destination.droppableId === result.source.droppableId
+    ) {
       return;
     }
 
-    const reorderedVotations = reorder(votations, result.source.index, result.destination.index);
+    if (!nextVotation || !upcomingVotations) return;
 
-    const updatedVotations: Votation[] = reorderedVotations.map((v, index) => {
+    const { newNext, newUpcoming } = reorder(
+      nextVotation,
+      upcomingVotations,
+      result.source.droppableId,
+      result.destination.droppableId,
+      result.source.index,
+      result.destination.index
+    );
+
+    const updatedVotations: Votation[] = [newNext, ...newUpcoming].map((v, index) => {
       return {
         ...v,
         index,
       };
     });
-    setVotations(updatedVotations);
+    setNextVotation(newNext);
+    setUpcomingVotations(newUpcoming);
+    // setVotations(updatedVotations);
     await updateIndexes(updatedVotations);
   }
 
@@ -303,6 +362,9 @@ const VotationList: React.FC<VotationListProps> = ({
           },
         });
       }
+      const votations = [];
+      if (nextVotation) votations.push(nextVotation);
+      if (upcomingVotations) votations.push(...upcomingVotations);
       const remainingVotations = votations
         .filter((v) => v.id !== votation.id)
         .sort((a, b) => a.index - b.index)
@@ -314,14 +376,10 @@ const VotationList: React.FC<VotationListProps> = ({
         });
       await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
-      setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
-      setActiveVotationId(
-        remainingVotations.length > votation.index
-          ? votations[votation.index].id
-          : remainingVotations.length > 0
-          ? votations[remainingVotations.length - 1].id
-          : keyOfEmptyVotation
-      );
+      setNextVotation(remainingVotations.length > 0 ? remainingVotations[0] : getEmptyVotation(keyOfEmptyVotation));
+      setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
+      // setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
+      setActiveVotationId('');
       toast({
         title: 'Votering slettet.',
         description: `${votation.title} ble slettet`,
@@ -347,6 +405,9 @@ const VotationList: React.FC<VotationListProps> = ({
           ids: [alternativeId],
         },
       });
+      const votations = [];
+      if (nextVotation) votations.push(nextVotation);
+      if (upcomingVotations) votations.push(...upcomingVotations);
       const updatedVotation = votations
         .filter((v) => v.id === votationId)
         .map((v) => {
@@ -374,16 +435,28 @@ const VotationList: React.FC<VotationListProps> = ({
 
   // update the state with an edited votation
   const updateVotation = (votation: Votation) => {
-    const votationsCopy = Array.from(votations);
-    const indexOfUpdatedVotation = votations.findIndex((v) => v.id === votation.id);
+    if (votation.id === nextVotation?.id) setNextVotation(votation);
+    if (!upcomingVotations) return;
+    const votationsCopy = Array.from(upcomingVotations);
+    const indexOfUpdatedVotation = upcomingVotations.findIndex((v) => v.id === votation.id);
     votationsCopy[indexOfUpdatedVotation] = votation;
-    setVotations(votationsCopy);
+    // setVotations(votationsCopy);
+    setUpcomingVotations(votationsCopy);
+  };
+
+  const getNextVotationIndex = () => {
+    const votations = [];
+    if (nextVotation) votations.push(nextVotation);
+    if (upcomingVotations) votations.push(...upcomingVotations);
+    if (endedVotations) votations.push(...endedVotations);
+    if (ongoingVotation) votations.push(ongoingVotation);
+    return votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
   };
 
   // copys a votation and adds the votation last in line
   const duplicateVotation = (votation: Votation) => {
     const newId = uuid();
-    const nextVotationIndex = votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
+    const nextVotationIndex = getNextVotationIndex();
     const newDuplicatedVotation = {
       ...votation,
       id: newId,
@@ -392,7 +465,12 @@ const VotationList: React.FC<VotationListProps> = ({
       status: VotationStatus.Upcoming,
       alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
     };
-    setVotations([...votations, newDuplicatedVotation]);
+    if (upcomingVotations) {
+      setUpcomingVotations([...upcomingVotations, newDuplicatedVotation]);
+    } else {
+      setUpcomingVotations([newDuplicatedVotation]);
+    }
+    // setVotations([...votations, newDuplicatedVotation]);
     setActiveVotationId(newId);
     toast({
       title: 'Votering duplisert',
@@ -447,7 +525,10 @@ const VotationList: React.FC<VotationListProps> = ({
     createVotations({ variables: { votations: preparedVotations, meetingId } });
   };
 
-  const handleSave = (votations: Votation[]) => {
+  const handleSave = () => {
+    const votations = [];
+    if (nextVotation) votations.push(nextVotation);
+    if (upcomingVotations) votations.push(...upcomingVotations);
     const validVotations = votations.filter((v) => v.title !== '');
     const votationsToCreate = validVotations.filter((votation) => !votation.existsInDb);
     const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
@@ -456,6 +537,9 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const checkIfAnyChanges = () => {
+    const votations = [];
+    if (nextVotation) votations.push(nextVotation);
+    if (upcomingVotations) votations.push(...upcomingVotations);
     return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
   };
 
@@ -463,9 +547,9 @@ const VotationList: React.FC<VotationListProps> = ({
     if (nextVotation) updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
   };
 
-  const openVotation = votations.find(
-    (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
-  );
+  // const openVotation = votations.find(
+  //   (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+  // );
   // const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
 
   // const endedVotations = votations.filter(
@@ -482,30 +566,32 @@ const VotationList: React.FC<VotationListProps> = ({
     );
   }
 
+  console.log('upc', upcomingVotations);
+
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
       {loading && <Loading text="Henter voteringer" asOverlay={true} />}
-      {openVotation && navigateToOpenVotation && (
+      {ongoingVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">
             {'Aktiv votering'}
           </Heading>
           <OpenVotation
-            onClick={() => navigateToOpenVotation(openVotation.id)}
+            onClick={() => navigateToOpenVotation(ongoingVotation.id)}
             isAdmin={role === Role.Admin}
-            votationTitle={openVotation.title}
-            index={openVotation.index}
+            votationTitle={ongoingVotation.title}
+            index={ongoingVotation.index}
             isActive={true}
           />
         </>
       )}
-      {upcomingVotations && upcomingVotations.length > 0 && (
+      {nextVotation && upcomingVotations && upcomingVotations.length > 0 && (
         <DragDropContext onDragEnd={onDragEnd}>
           <UpcomingVotationLists
             isMeetingLobby={isMeetingLobby}
             droppableId={'top-list'}
-            votations={upcomingVotations}
+            votations={[nextVotation, ...upcomingVotations]}
             setActiveVotationId={setActiveVotationId}
             activeVotationId={activeVotationId}
             updateVotation={updateVotation}
@@ -514,7 +600,7 @@ const VotationList: React.FC<VotationListProps> = ({
             duplicateVotation={duplicateVotation}
             handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
-            handleSaveChanges={() => handleSave(votations)}
+            handleSaveChanges={() => handleSave()}
             showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
@@ -525,16 +611,25 @@ const VotationList: React.FC<VotationListProps> = ({
         <VotationListButtonRow
           handleAddNewVotation={() => {
             const id = uuid();
-            const nextVotationIndex =
-              votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
-            setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
+            const nextVotationIndex = getNextVotationIndex();
+            const newVotation = { ...getEmptyVotation(id), index: nextVotationIndex };
+            if (!nextVotation) {
+              setNextVotation(newVotation);
+            } else if (upcomingVotations) {
+              console.log('upcoming', upcomingVotations);
+              console.log('newupcoming', [...upcomingVotations, newVotation]);
+              setUpcomingVotations([...upcomingVotations, newVotation]);
+            } else {
+              setUpcomingVotations([newVotation]);
+            }
+            // setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
             setActiveVotationId(id);
           }}
           saveIsDisabled={!checkIfAnyChanges()}
-          handleSave={() => handleSave(votations)}
+          handleSave={() => handleSave()}
         />
       )}
-      {endedVotations.length > 0 && (
+      {endedVotations && endedVotations.length > 0 && (
         <VStack spacing="16px" alignItems="start">
           <Heading as="h1" fontSize="1em" mb="1.125em">
             Avsluttede voteringer
