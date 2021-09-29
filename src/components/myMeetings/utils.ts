@@ -15,8 +15,15 @@ const months = [
 
 const daysOfMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+const prependZeroIfNecessary = (min: number) => {
+  if (min < 10) return '0' + min.toString();
+  return min.toString();
+};
+
 export const formatMeetingTime: (startTime: Date) => string = (startTime: Date) => {
-  return `${startTime.getHours()}:${startTime.getMinutes()}, ${startTime.getDate()}. ${months[startTime.getMonth()]}`;
+  return `${prependZeroIfNecessary(startTime.getHours())}:${prependZeroIfNecessary(
+    startTime.getMinutes()
+  )}, ${startTime.getDate()}. ${months[startTime.getMonth()]}`;
 };
 
 const modulo = (a: number, n: number) => {
