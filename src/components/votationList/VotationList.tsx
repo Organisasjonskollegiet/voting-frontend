@@ -52,8 +52,6 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [deleteVotations] = useDeleteVotationsMutation();
 
-  // const [votations, setVotations] = useState<Votation[]>([]);
-
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
 
   const [nextVotation, setNextVotation] = useState<Votation>();
@@ -182,7 +180,6 @@ const VotationList: React.FC<VotationListProps> = ({
         formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
       }
       const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
-      // setVotations(sortedVotations);
       const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
       const ongoingVotation = sortedVotations.find(
         (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
@@ -314,7 +311,6 @@ const VotationList: React.FC<VotationListProps> = ({
         };
       }),
     ]);
-    // setVotations(updatedVotations);
     await updateIndexes(updatedVotations);
   }
 
@@ -368,7 +364,6 @@ const VotationList: React.FC<VotationListProps> = ({
       const keyOfEmptyVotation = uuid();
       setNextVotation(remainingVotations.length > 0 ? remainingVotations[0] : getEmptyVotation(keyOfEmptyVotation));
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
-      // setVotations(remainingVotations.length > 0 ? remainingVotations : [getEmptyVotation(keyOfEmptyVotation)]);
       setActiveVotationId('');
       toast({
         title: 'Votering slettet.',
@@ -430,7 +425,6 @@ const VotationList: React.FC<VotationListProps> = ({
     const votationsCopy = Array.from(upcomingVotations);
     const indexOfUpdatedVotation = upcomingVotations.findIndex((v) => v.id === votation.id);
     votationsCopy[indexOfUpdatedVotation] = votation;
-    // setVotations(votationsCopy);
     setUpcomingVotations(votationsCopy);
   };
 
@@ -460,7 +454,6 @@ const VotationList: React.FC<VotationListProps> = ({
     } else {
       setUpcomingVotations([newDuplicatedVotation]);
     }
-    // setVotations([...votations, newDuplicatedVotation]);
     setActiveVotationId(newId);
     toast({
       title: 'Votering duplisert',
@@ -537,15 +530,6 @@ const VotationList: React.FC<VotationListProps> = ({
     if (nextVotation) updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
   };
 
-  // const openVotation = votations.find(
-  //   (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
-  // );
-  // const upcomingVotations = votations.filter((v) => v.status === VotationStatus.Upcoming);
-
-  // const endedVotations = votations.filter(
-  //   (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
-  // );
-
   if (error) {
     return (
       <>
@@ -608,7 +592,6 @@ const VotationList: React.FC<VotationListProps> = ({
             } else {
               setUpcomingVotations([newVotation]);
             }
-            // setVotations([...votations, { ...getEmptyVotation(id), index: nextVotationIndex }]);
             setActiveVotationId(id);
           }}
           saveIsDisabled={!checkIfAnyChanges()}
