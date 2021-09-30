@@ -47,6 +47,7 @@ import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
 import VotationTypeInformation from '../components/votationList/forms/VotationTypeInformation';
+import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -54,12 +55,6 @@ export const subtitlesStyle = {
   fontWeight: 'bold',
   lineHeight: '150%',
 } as React.CSSProperties;
-
-const votationTypeToString = new Map([
-  [VotationType.Stv, 'Preferansevalg'],
-  [VotationType.Simple, 'Simpelt flertall'],
-  [VotationType.Qualified, 'Kvalifisert flertall'],
-]);
 
 export type AlternativeWithIndex = AlternativeType & {
   index: number;
@@ -389,30 +384,11 @@ const Votation: React.FC = () => {
               </VStack>
 
               <Text mt="1em">{data.votationById.description}</Text>
-              <Accordion allowToggle>
-                <AccordionItem maxWidth="250px">
-                  <AccordionButton>
-                    <HStack w="100%" justifyContent="space-between">
-                      <VStack alignItems="left">
-                        <HStack>
-                          <Text fontStyle="italic">Stemmeform</Text>
-                          <VotationTypeInformation />
-                        </HStack>
-                      </VStack>
-                      <AccordionIcon />
-                    </HStack>
-                  </AccordionButton>
-                  <AccordionPanel>
-                    <Text>{`${votationTypeToString.get(data.votationById.type)}`}</Text>
-                    {data.votationById.type === VotationType.Qualified && (
-                      <Text>{`Flertall krevd: ${data.votationById.majorityThreshold}%`}</Text>
-                    )}
-                    {data.votationById.type === VotationType.Stv && (
-                      <Text>{`Antall vinnere: ${data.votationById.numberOfWinners}`}</Text>
-                    )}
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+              <VotationTypeAccordion
+                votationType={data.votationById.type}
+                majorityThreshold={data.votationById.majorityThreshold}
+                numberOfWinners={data.votationById.numberOfWinners}
+              />
             </VStack>
 
             {status === VotationStatus.Open && (
