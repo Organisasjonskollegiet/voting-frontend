@@ -34,7 +34,7 @@ const VotationTypeInformation: React.FC = () => {
         vinnere, men ikke muligheten til å stemme blankt.
       </Text>
       <Text>
-        Hvordan resultatet blir utregnet kan du se her:{' '}
+        Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
         <Link
           href="https://www.youtube.com/watch?v=bLH_w5kHJpA"
           textDecoration="underline"

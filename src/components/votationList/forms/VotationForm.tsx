@@ -86,7 +86,7 @@ const AddVotationForm: React.FC<IProps> = ({
             _hover={isAdmin ? expandAndLift : {}}
           >
             <HStack spacing="8">
-              <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
+              <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
               <Text>{votation.title}</Text>
             </HStack>
             {isAdmin && (

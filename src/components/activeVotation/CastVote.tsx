@@ -1,4 +1,4 @@
-import { Button, Center, Heading, VStack } from '@chakra-ui/react';
+import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
 import React from 'react';
 import { subtitlesStyle } from '../../pages/ActiveVotation';
 import VoteCount from './VoteCount';
@@ -44,6 +44,7 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
+        {isStv && <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>}
         {isStv ? (
           <PreferenceAlternativeList
             alternatives={alternatives}
