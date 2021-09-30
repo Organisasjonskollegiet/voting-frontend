@@ -24,7 +24,7 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
     return (
       <>
         <VotationListSection
-          droppableId={'top-list'}
+          droppableId={'next'}
           votations={votations.slice(0, 1)}
           setActiveVotationId={setActiveVotationId}
           activeVotationId={activeVotationId}
@@ -39,22 +39,24 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
           heading={'Neste votering'}
           isAdmin={isAdmin}
         />
-        <VotationListSection
-          droppableId={'bottom-list'}
-          votations={votations.slice(1)}
-          setActiveVotationId={setActiveVotationId}
-          activeVotationId={activeVotationId}
-          updateVotation={updateVotation}
-          handleDeleteVotation={handleDeleteVotation}
-          handleDeleteAlternative={handleDeleteAlternative}
-          duplicateVotation={duplicateVotation}
-          handleStartVotation={handleStartVotation}
-          checkIfAnyChanges={checkIfAnyChanges}
-          handleSaveChanges={handleSaveChanges}
-          showStartNextButton={false}
-          heading={'Kommende voteringer'}
-          isAdmin={isAdmin}
-        />
+        {votations.length > 1 && (
+          <VotationListSection
+            droppableId={'upcoming'}
+            votations={votations.slice(1)}
+            setActiveVotationId={setActiveVotationId}
+            activeVotationId={activeVotationId}
+            updateVotation={updateVotation}
+            handleDeleteVotation={handleDeleteVotation}
+            handleDeleteAlternative={handleDeleteAlternative}
+            duplicateVotation={duplicateVotation}
+            handleStartVotation={handleStartVotation}
+            checkIfAnyChanges={checkIfAnyChanges}
+            handleSaveChanges={handleSaveChanges}
+            showStartNextButton={false}
+            heading={'Kommende voteringer'}
+            isAdmin={isAdmin}
+          />
+        )}
       </>
     );
   } else {

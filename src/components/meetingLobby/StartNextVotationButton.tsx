@@ -58,7 +58,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
             <AlertDialogBody>Endringene dine vil bli forkastet om du starter votering uten å lagre</AlertDialogBody>
             <AlertDialogFooter justifyContent="center">
               <VStack alignItems="left" spacing="3">
-                <Button colorScheme={green} onClick={() => saveBeforeStartVotation(true)} minW="max-content">
+                <Button colorScheme={'green'} onClick={() => saveBeforeStartVotation(true)} minW="max-content">
                   Lagre endringer og start votering
                 </Button>
                 <Button colorScheme="red" onClick={() => saveBeforeStartVotation(false)} minW="max-content">
