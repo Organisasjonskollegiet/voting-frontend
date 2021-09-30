@@ -54,7 +54,7 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
 
-  const [nextVotation, setNextVotation] = useState<Votation>();
+  const [nextVotation, setNextVotation] = useState<Votation | null>();
 
   const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
 
@@ -277,6 +277,16 @@ const VotationList: React.FC<VotationListProps> = ({
     return { newNext: next, newUpcoming: upcoming };
   };
 
+  const getIndexOfNextVotation = () => {
+    // the index the coming nextVotation will have must be larger than
+    // all ended votations and the ongoing one
+    return ongoingVotation
+      ? ongoingVotation.index + 1
+      : endedVotations && endedVotations.length > 0
+      ? endedVotations[endedVotations.length - 1].index + 1
+      : 0;
+  };
+
   async function onDragEnd(result: DropResult) {
     if (!result.destination) {
       return;
@@ -302,11 +312,7 @@ const VotationList: React.FC<VotationListProps> = ({
 
     // the index the coming nextVotation will have must be larger than
     // all ended votations and the ongoing one
-    const indexOfNextVotation = ongoingVotation
-      ? ongoingVotation.index + 1
-      : endedVotations && endedVotations.length > 0
-      ? endedVotations[endedVotations.length - 1].index + 1
-      : 0;
+    const indexOfNextVotation = getIndexOfNextVotation();
 
     const updatedVotations: Votation[] = [newNext, ...newUpcoming].map((v, index) => {
       return {
@@ -363,18 +369,25 @@ const VotationList: React.FC<VotationListProps> = ({
       const votations = [];
       if (nextVotation) votations.push(nextVotation);
       if (upcomingVotations) votations.push(...upcomingVotations);
+      const indexOfNextVotation = getIndexOfNextVotation();
       const remainingVotations = votations
         .filter((v) => v.id !== votation.id)
         .sort((a, b) => a.index - b.index)
         .map((v, index) => {
           return {
             ...v,
-            index,
+            index: indexOfNextVotation + index,
           };
         });
       await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
-      setNextVotation(remainingVotations.length > 0 ? remainingVotations[0] : getEmptyVotation(keyOfEmptyVotation));
+      setNextVotation(
+        remainingVotations.length > 0
+          ? remainingVotations[0]
+          : ongoingVotation || (endedVotations && endedVotations?.length > 0)
+          ? null
+          : getEmptyVotation(keyOfEmptyVotation)
+      );
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
       setActiveVotationId('');
       toast({
@@ -461,10 +474,12 @@ const VotationList: React.FC<VotationListProps> = ({
       status: VotationStatus.Upcoming,
       alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
     };
-    if (upcomingVotations) {
-      setUpcomingVotations([...upcomingVotations, newDuplicatedVotation]);
+    if (!nextVotation) {
+      setNextVotation(newDuplicatedVotation);
+    } else if (upcomingVotations) {
+      setUpcomingVotations(Array.from([...upcomingVotations, newDuplicatedVotation]));
     } else {
-      setUpcomingVotations([newDuplicatedVotation]);
+      setUpcomingVotations(Array.from([newDuplicatedVotation]));
     }
     setActiveVotationId(newId);
     toast({
