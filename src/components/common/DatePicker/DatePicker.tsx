@@ -41,11 +41,13 @@ const DatePicker: React.FC<Props & HTMLAttributes<HTMLElement>> = ({
         dateFormat="HH:mm dd.MM.yyyy"
         selected={selectedDate}
         onChange={onChange}
+        shouldCloseOnSelect={false}
         locale="nb"
         isClearable={isClearable}
         showPopperArrow={showPopperArrow}
         showTimeInput
-        className="react-datapicker__input-text" //input is white by default and there is no already defined class for it so I created a new one
+        //input is white by default and there is no already defined class for it so I created a new one
+        className="react-datapicker__input-text"
         customInput={React.createElement(React.forwardRef(CustomInput))}
       />
     </div>
