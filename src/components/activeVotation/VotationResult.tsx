@@ -35,7 +35,8 @@ const VotationResult: React.FC<VotationResultProps> = ({
   type,
   stvResult,
 }) => {
-  if (loading || !winners) return <Loading text="Henter resultat" asOverlay={false} />;
+  if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
+  if (!winners) return <></>;
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
