@@ -31,7 +31,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
-import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
+// import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -372,11 +372,11 @@ const Votation: React.FC = () => {
               </VStack>
 
               <Text mt="1em">{data.votationById.description}</Text>
-              <VotationTypeAccordion
+              {/* <VotationTypeAccordion
                 votationType={data.votationById.type}
                 majorityThreshold={data.votationById.majorityThreshold}
                 numberOfWinners={data.votationById.numberOfWinners}
-              />
+              /> */}
             </VStack>
 
             {status === VotationStatus.Open && (
