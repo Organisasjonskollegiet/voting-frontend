@@ -31,6 +31,12 @@ const theme = extendTheme({
         bg: lightblue,
         p: '1.5em 4em',
       },
+      variants: {
+        link: {
+          py: '1rem',
+          bg: 'transparent',
+        },
+      },
     },
     MeetingInformationForm: MeetingInformationFormConfig,
     Spinner: {
