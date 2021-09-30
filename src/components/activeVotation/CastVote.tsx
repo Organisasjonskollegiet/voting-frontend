@@ -44,7 +44,7 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        {isStv && <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem over streken.</Text>}
+        {isStv && <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>}
         {isStv ? (
           <PreferenceAlternativeList
             alternatives={alternatives}

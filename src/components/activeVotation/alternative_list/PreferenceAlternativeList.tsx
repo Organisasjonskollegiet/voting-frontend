@@ -3,6 +3,7 @@ import { Divider, VStack } from '@chakra-ui/react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { AlternativeWithIndex } from '../../../pages/ActiveVotation';
 import DraggableAlternative from '../alternative/DraggableAlternative';
+import { lightGray } from '../../styles/theme';
 
 export interface AlternativeListProps {
   alternatives: AlternativeWithIndex[];
@@ -131,13 +132,20 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
       <Droppable isDropDisabled={userHasVoted} droppableId="ranked">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <VStack spacing="0" opacity={userHasVoted ? 0.5 : 1}>
+            <VStack
+              spacing="0"
+              opacity={userHasVoted ? 0.5 : 1}
+              minHeight="68px"
+              borderRadius="4px"
+              px="4px"
+              border={`${!rankedAlternatives || rankedAlternatives.length === 0 ? '1px' : '0'} dashed ${lightGray}`}
+            >
               {rankedAlternatives &&
                 rankedAlternatives.map((alt) => (
                   <DraggableAlternative isRanked={true} showVote={!userHasVoted || showVote} alternative={alt} />
                 ))}
+              {provided.placeholder}
             </VStack>
-            {provided.placeholder}
           </div>
         )}
       </Droppable>
@@ -145,13 +153,20 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
       <Droppable isDropDisabled={userHasVoted} droppableId="unranked">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <VStack spacing="0" opacity={userHasVoted ? 0.5 : 1}>
+            <VStack
+              minHeight="68px"
+              borderRadius="4px"
+              px="4px"
+              border={`${!unrankedAlternatives || unrankedAlternatives.length === 0 ? '1px' : '0'} dashed ${lightGray}`}
+              spacing="0"
+              opacity={userHasVoted ? 0.5 : 1}
+            >
               {unrankedAlternatives &&
                 unrankedAlternatives.map((alt) => (
                   <DraggableAlternative isRanked={false} showVote={!userHasVoted || showVote} alternative={alt} />
                 ))}
+              {provided.placeholder}
             </VStack>
-            {provided.placeholder}
           </div>
         )}
       </Droppable>
