@@ -277,6 +277,9 @@ const VotationList: React.FC<VotationListProps> = ({
     return { newNext: next, newUpcoming: upcoming };
   };
 
+  /**
+   * @returns the index of what is going to be the nextVotation
+   */
   const getIndexOfNextVotation = () => {
     // the index the coming nextVotation will have must be larger than
     // all ended votations and the ongoing one
@@ -453,6 +456,9 @@ const VotationList: React.FC<VotationListProps> = ({
     setUpcomingVotations(votationsCopy);
   };
 
+  /**
+   * @returns the index of the next votation to be created
+   */
   const getNextVotationIndex = () => {
     const votations = [];
     if (nextVotation) votations.push(nextVotation);
