@@ -18,22 +18,7 @@ import {
   useVotationOpenedForMeetingSubscription,
   useGetStvResultLazyQuery,
 } from '../__generated__/graphql-types';
-import {
-  Heading,
-  Text,
-  Box,
-  Center,
-  VStack,
-  Divider,
-  Link,
-  Button,
-  HStack,
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionButton,
-  AccordionIcon,
-} from '@chakra-ui/react';
+import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams, useHistory } from 'react-router';
@@ -46,7 +31,6 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
-import VotationTypeInformation from '../components/votationList/forms/VotationTypeInformation';
 import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export const subtitlesStyle = {
