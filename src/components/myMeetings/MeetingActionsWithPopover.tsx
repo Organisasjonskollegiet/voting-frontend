@@ -6,9 +6,14 @@ import { lightGray } from '../styles/theme';
 interface MeetingActionsWithPopoverProps {
   onEditClick: () => void;
   onDeleteClick: () => void;
+  meetingStatus: 'open' | 'upcoming' | 'ended';
 }
 
-const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({ onEditClick, onDeleteClick }) => {
+const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
+  onEditClick,
+  onDeleteClick,
+  meetingStatus,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <HStack justifyContent="end" w="100%">
@@ -30,17 +35,19 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({ o
           </Button>
         </PopoverTrigger>
         <PopoverContent w="fit-content">
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditClick();
-            }}
-            w="100%"
-            bgColor="transparent"
-            fontSize="0.75rem"
-          >
-            Rediger møte
-          </Button>
+          {meetingStatus !== 'ended' && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditClick();
+              }}
+              w="100%"
+              bgColor="transparent"
+              fontSize="0.75rem"
+            >
+              Rediger møte
+            </Button>
+          )}
           <Button
             onClick={(e) => {
               e.stopPropagation();

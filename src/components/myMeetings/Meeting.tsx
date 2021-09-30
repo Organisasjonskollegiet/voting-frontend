@@ -96,8 +96,9 @@ const Meeting: React.FC<
         </Heading>
         <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
       </VStack>
-      {meetingStatus !== 'ended' && isAdmin ? (
+      {isAdmin ? (
         <MeetingActionsWithPopover
+          meetingStatus={meetingStatus}
           onEditClick={() => history.push(`/meeting/${id}/edit`)}
           onDeleteClick={() => setDialogIsOpen(true)}
         />
