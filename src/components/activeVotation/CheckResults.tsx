@@ -15,6 +15,7 @@ import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import StvResultTable from './results_table/StvResultTable';
 import AlternativesString from '../common/AlternativesString';
 import { green } from '../styles/theme';
+import Loading from '../common/Loading';
 
 interface CheckResultsProps {
   votationId: string;
@@ -24,6 +25,7 @@ interface CheckResultsProps {
   result: GetVotationResultsQuery | null | undefined;
   stvResult: GetStvResultQuery | null | undefined;
   winners: AlternativeType[] | AlternativeResult[] | null;
+  loading: boolean;
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({
@@ -34,6 +36,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({
   result,
   stvResult,
   winners,
+  loading,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
@@ -45,7 +48,9 @@ const CheckResults: React.FC<CheckResultsProps> = ({
     history.push(`/meeting/${meetingId}`);
   };
 
-  if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult)) return <></>;
+  if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
+    return <Loading text="Henter resultater" asOverlay={false} />;
+  }
 
   return (
     <VStack spacing="2rem">

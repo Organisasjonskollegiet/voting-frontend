@@ -404,6 +404,7 @@ const Votation: React.FC = () => {
             {status === VotationStatus.CheckingResult &&
               (participantRole === Role.Counter || participantRole === Role.Admin) && (
                 <CheckResults
+                  loading={stvResultLoading || votationResultLoading}
                   result={votationResultData}
                   stvResult={stvResult}
                   isStv={data.votationById.type === VotationType.Stv}
