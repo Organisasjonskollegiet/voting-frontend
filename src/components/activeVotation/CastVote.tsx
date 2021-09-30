@@ -7,6 +7,7 @@ import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
 import { h1Style } from '../styles/formStyles';
+import { green } from '../styles/theme';
 
 interface CastVoteProps {
   handleSelect: (id: string | null) => void;
@@ -80,7 +81,7 @@ const CastVote: React.FC<CastVoteProps> = ({
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
         {!userHasVoted && isVotingEligible && (
           <Button
-            bg="green"
+            bg={green}
             color="white"
             w="200px"
             onClick={() => submitVote()}

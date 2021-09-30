@@ -14,6 +14,7 @@ import ResultsTable from './results_table/ResultsTable';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import StvResultTable from './results_table/StvResultTable';
 import AlternativesString from '../common/AlternativesString';
+import { green } from '../styles/theme';
 
 interface CheckResultsProps {
   votationId: string;
@@ -57,7 +58,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({
             <VStack alignItems="start">
               <AlternativesString
                 fontSize="24px"
-                color="green"
+                color={green}
                 alternatives={winners.map((a: AlternativeType | AlternativeResult) => a.text)}
               />
             </VStack>

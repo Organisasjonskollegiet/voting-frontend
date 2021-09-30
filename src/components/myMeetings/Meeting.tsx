@@ -5,7 +5,7 @@ import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { boxShadow } from '../styles/formStyles';
-import { expandAndLift, transition } from '../styles/styles';
+import { /*expandAndLift,*/ transition } from '../styles/styles';
 import CustomTag from '../common/CustomTag';
 import { green, lightGray } from '../styles/theme';
 import { formatMeetingTime, formatTimeLeftToMeeting } from './utils';
@@ -73,7 +73,7 @@ const Meeting: React.FC<
     <VStack
       alignItems="start"
       spacing="1rem"
-      _hover={{ cursor: 'pointer', ...expandAndLift }}
+      _hover={{ cursor: 'pointer' /*, ...expandAndLift*/ }}
       onClick={handleClick}
       sx={styles}
     >

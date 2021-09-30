@@ -10,14 +10,15 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ value, setInputValue }) => {
   return (
-    <InputGroup boxShadow={boxShadow} w="60%" bg="white">
+    <InputGroup boxShadow={boxShadow} borderRadius="20px" w="60%" bg="white">
       <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
       <Input
+        borderRadius="20px"
         placeholder="Søk etter deltager"
         aria-label="Søk etter deltager"
         value={value}
         onChange={(e) => setInputValue(e.target.value)}
-      ></Input>
+      />
       {value && (
         <InputRightElement>
           <CloseButton onClick={() => setInputValue('')}></CloseButton>
