@@ -31,6 +31,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
+import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export const subtitlesStyle = {
   fontStyle: 'normal',
@@ -359,18 +360,23 @@ const Votation: React.FC = () => {
           {(castVoteLoading || blankVoteLoading || stvLoading) && (
             <Loading text="Registrerer stemme" asOverlay={true} />
           )}
-          <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="3em">
-            <VStack alignItems="left" spacing="0.5rem">
-              <Heading as="h1" style={subtitlesStyle}>
-                Votering {data.votationById.index + 1}
-              </Heading>
-              <Heading as="h1" sx={h1Style}>
-                {data.votationById.title}
-              </Heading>
+          <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
+            <VStack alignItems="left" spacing="1rem">
+              <VStack alignItems="left" spacing="0.5rem">
+                <Heading as="h1" style={subtitlesStyle}>
+                  Votering {data.votationById.index + 1}
+                </Heading>
+                <Heading as="h1" sx={h1Style}>
+                  {data.votationById.title}
+                </Heading>
+              </VStack>
 
-              <Text mt="1em" mb="2em">
-                {data.votationById.description}
-              </Text>
+              <Text mt="1em">{data.votationById.description}</Text>
+              <VotationTypeAccordion
+                votationType={data.votationById.type}
+                majorityThreshold={data.votationById.majorityThreshold}
+                numberOfWinners={data.votationById.numberOfWinners}
+              />
             </VStack>
 
             {status === VotationStatus.Open && (
