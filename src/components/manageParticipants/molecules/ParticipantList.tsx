@@ -59,6 +59,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
             <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
               <HStack spacing="2">
                 <SelectParticipant
+                  participantEmail={participant.email}
                   checked={selectedParticipantsEmails.includes(participant.email)}
                   onChange={() => toggleSelectedParticipant(participant.email)}
                 />
