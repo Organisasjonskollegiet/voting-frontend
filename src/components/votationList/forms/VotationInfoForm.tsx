@@ -25,7 +25,7 @@ const VotationInfoForm: React.FC<IProps> = ({ votation, updateVotation }) => {
           }
           _focus={highlightedInputStyle}
           value={votation.title}
-          placeholder="F. eks valg av neste styreleder"
+          placeholder="F. eks. valg av neste styreleder"
         />
       </FormControl>
       <FormControl>
