@@ -56,7 +56,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
         participants.map((participant, index) => (
           <React.Fragment key={participant.email}>
             {index > 0 && <Divider width="100%" m="0.5em 0" />}
-            <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
+            <HStack key={participant.email} width="100%" justifyContent="space-between" p="1px" pl="1rem">
               <HStack spacing="2">
                 <SelectParticipant
                   participantEmail={participant.email}
