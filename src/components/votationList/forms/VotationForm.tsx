@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
-import DeleteIcon from '../../../static/deleteIcon.svg';
 import DuplicateIcon from '../../../static/duplicateIcon.svg';
 import { VotationType } from '../../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
@@ -13,6 +12,7 @@ import { Votation } from '../../../types/types';
 import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { expandAndLift } from '../../styles/styles';
+import DeleteButton from '../../common/DeleteButton';
 
 interface IProps {
   index: number;
@@ -132,14 +132,7 @@ const AddVotationForm: React.FC<IProps> = ({
             </HStack>
             <Divider m="3em 0" />
             <Box align="right" width="100%">
-              <Tooltip label="Slett votering">
-                <IconButton
-                  aria-label="Slett votering"
-                  bg={'white'}
-                  onClick={() => setVotationDialogIsOpen(true)}
-                  icon={<img alt="delete" src={DeleteIcon} />}
-                />
-              </Tooltip>
+              <DeleteButton onClick={() => setVotationDialogIsOpen(true)} label="Slett votering" />
               <Tooltip label="Dupliser votering">
                 <IconButton
                   aria-label="Dupliser votering"
