@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ParticipantOrInvite,
   Role,
@@ -172,6 +172,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
 
+  const numberOfVotingEligibleParticipants = useMemo(() => participants.filter((p) => p.isVotingEligible).length, [
+    participants,
+  ]);
+
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
@@ -191,7 +195,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
-          <Text mb="0.5em">{`Antall deltakere: ${participants.length}`}</Text>
+          <Text mb="0.5em">{`Antall deltakere med stemmerett:  ${numberOfVotingEligibleParticipants} av ${participants.length}`}</Text>
           <HStack justifyContent="space-between" spacing="1em" mb="2em">
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
