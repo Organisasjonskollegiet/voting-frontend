@@ -21,7 +21,7 @@ interface CustomAlertDialogProps {
 export enum DialogType {
   MEETING = 'Slett møte',
   VOTATION = 'Slett votering',
-  PARTICIPANT = 'Slett deltager',
+  PARTICIPANTS = 'Slett deltager',
   CLOSE = 'Avslutt votering',
   PUBLISH = 'Publiser resultat',
   INVALIDATE = 'Erklær resultatet ugyldig',
@@ -36,7 +36,7 @@ const WarningBody = new Map<DialogType, string>([
     DialogType.VOTATION,
     'Er du sikker på at du vil slette voteringen? All informasjon knyttet til voteringen vil bli slettet for godt.',
   ],
-  [DialogType.PARTICIPANT, 'Er du sikker på at du vil slette følgende deltager?'],
+  [DialogType.PARTICIPANTS, 'Er du sikker på at du vil slette følgende deltager(e)?'],
   [DialogType.CLOSE, 'Er du sikker på at du vil stenge voteringen?'],
   [DialogType.INVALIDATE, 'Er du sikker på at du vil erklære voteringen ugyldig?'],
   [DialogType.PUBLISH, 'Er du sikker på at du vil publisere resultatet?'],
