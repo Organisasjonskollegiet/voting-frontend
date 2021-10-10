@@ -1,11 +1,10 @@
-import { Divider, HStack, Text, VStack } from '@chakra-ui/react';
+import { Checkbox, Divider, HStack, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { ParticipantOrInvite, Role } from '../../../__generated__/graphql-types';
 import { boxShadow } from '../../styles/formStyles';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
 import { darkblue, lightblue } from '../../styles/theme';
-import SelectParticipant from '../atoms/SelectParticipant';
 
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
@@ -58,10 +57,10 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
             {index > 0 && <Divider width="100%" m="0.5em 0" />}
             <HStack key={participant.email} width="100%" justifyContent="space-between" p="1px" pl="1rem">
               <HStack spacing="2">
-                <SelectParticipant
-                  participantEmail={participant.email}
-                  checked={selectedParticipantsEmails.includes(participant.email)}
+                <Checkbox
+                  isChecked={selectedParticipantsEmails.includes(participant.email)}
                   onChange={() => toggleSelectedParticipant(participant.email)}
+                  isDisabled={participant.email === ownerEmail}
                 />
                 <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
                   {participant.email}
@@ -75,7 +74,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
                 <SelectRole
                   onChange={(role) => changeParticipantRights(participant, role)}
                   value={participant.role}
-                  disabled={ownerEmail === participant.email}
+                  disabled={participant.email === ownerEmail}
                 />
               </HStack>
             </HStack>
