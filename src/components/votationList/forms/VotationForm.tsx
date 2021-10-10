@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { VStack, Divider, HStack, Text, IconButton, Box, Tooltip } from '@chakra-ui/react';
+import { VStack, Divider, HStack, IconButton, Box, Tooltip } from '@chakra-ui/react';
 import DuplicateIcon from '../../../static/duplicateIcon.svg';
 import { VotationType } from '../../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
@@ -7,12 +7,11 @@ import AlternativesForm from './AlternativesForm';
 import VotationTypeSelect from './VotationTypeSelect';
 import VotationCheckboxes from './VotationCheckboxes';
 import VotationInfoForm from './VotationInfoForm';
-import { collapsedStyle, highlightedStyle, containerStyle } from '../../styles/formStyles';
+import { containerStyle } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
-import { DragHandleIcon } from '@chakra-ui/icons';
-import { expandAndLift } from '../../styles/styles';
 import DeleteButton from '../../common/DeleteButton';
+import CollapsedVotationForm from './CollapsedVotationForm';
 
 interface IProps {
   index: number;
@@ -68,35 +67,12 @@ const AddVotationForm: React.FC<IProps> = ({
 
   if (!isActive || !isAdmin) {
     return (
-      <Draggable isDragDisabled={!isAdmin} draggableId={votation.id} index={index}>
-        {(provided) => (
-          <HStack
-            w="90vw"
-            maxWidth="800px"
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            justify="space-between"
-            marginBottom="16px"
-            sx={collapsedStyle}
-            cursor={isAdmin ? 'pointer' : 'default'}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleCollapsedVotation();
-            }}
-            _hover={isAdmin ? expandAndLift : {}}
-          >
-            <HStack spacing="8">
-              <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-              <Text>{votation.title}</Text>
-            </HStack>
-            {isAdmin && (
-              <Box {...provided.dragHandleProps}>
-                <DragHandleIcon />
-              </Box>
-            )}
-          </HStack>
-        )}
-      </Draggable>
+      <CollapsedVotationForm
+        isAdmin={isAdmin}
+        votation={votation}
+        toggleCollapsedVotation={toggleCollapsedVotation}
+        index={index}
+      />
     );
   }
 

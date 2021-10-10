@@ -10,18 +10,16 @@ interface DeleteButtonProps {
 
 const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick, label, disabeled }) => {
   return (
-    <>
-      <Tooltip label={label}>
-        <IconButton
-          borderRadius="4px"
-          aria-label={label}
-          bg={'transparent'}
-          onClick={onClick}
-          icon={<img alt={label} src={DeleteIcon} />}
-          disabled={disabeled}
-        />
-      </Tooltip>
-    </>
+    <Tooltip label={label}>
+      <IconButton
+        borderRadius="4px"
+        aria-label={label}
+        bg={'transparent'}
+        onClick={onClick}
+        icon={<img alt={label} src={DeleteIcon} />}
+        disabled={disabeled}
+      />
+    </Tooltip>
   );
 };
 
