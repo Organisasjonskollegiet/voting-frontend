@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ParticipantOrInvite,
   Role,
@@ -6,7 +6,7 @@ import {
   useDeleteParticipantsMutation,
   useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text } from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text, Flex } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import Loading from '../../common/Loading';
 import { useEffect } from 'react';
@@ -17,6 +17,7 @@ import InviteParticipant from '../atoms/InviteParticipant';
 import { useCallback } from 'react';
 import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
 import { checkIfEmailIsValid, onFileUpload } from '../utils';
+import DeleteParticipants from '../atoms/DeleteParticipants';
 
 interface IProps {
   meetingId: string;
@@ -36,6 +37,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
+  const [selectedParticipantsEmails, setSelectedParticipantsEmails] = useState<string[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -116,8 +118,19 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     }
   };
 
-  const deleteParticipantByEmail = (email: string) => {
-    deleteParticipants({ variables: { meetingId, emails: [email] } });
+  const deleteSelectedParticipants = () => {
+    deleteParticipants({ variables: { meetingId, emails: [...selectedParticipantsEmails] } });
+    setSelectedParticipantsEmails([]);
+  };
+
+  const toggleSelectedParticipant = (participantEmail: string) => {
+    //TODO optimize
+    const emailIndex = selectedParticipantsEmails.findIndex((email) => email === participantEmail);
+    setSelectedParticipantsEmails(
+      emailIndex >= 0
+        ? selectedParticipantsEmails.filter((email) => email !== participantEmail)
+        : [...selectedParticipantsEmails, participantEmail]
+    );
   };
 
   const changeParticipantsRights = async (
@@ -141,7 +154,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   };
 
   const [ascVsDesc, setAscVsDesc] = useState<SortingType>(SortingType.ASC);
-
   const sortParticipantsAlphabetically = useCallback(() => {
     const reversed = ascVsDesc === SortingType.DESC;
     return [...participants].sort((a, b) =>
@@ -159,6 +171,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
   useEffect(() => {
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
+
+  const numberOfVotingEligibleParticipants = useMemo(() => participants.filter((p) => p.isVotingEligible).length, [
+    participants,
+  ]);
 
   return (
     <>
@@ -179,7 +195,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
-          <Text mb="0.5em">{`Antall deltakere: ${participants.length}`}</Text>
+          <Text mb="0.5em">{`Antall deltakere med stemmerett:  ${numberOfVotingEligibleParticipants} av ${participants.length}`}</Text>
           <HStack justifyContent="space-between" spacing="1em" mb="2em">
             <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
 
@@ -198,8 +214,22 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
             participants={filteredParticipants}
             ownerEmail={ownerEmail}
             changeParticipantRights={changeParticipantsRights}
-            deleteParticipant={deleteParticipantByEmail}
+            selectedParticipantsEmails={selectedParticipantsEmails}
+            toggleSelectedParticipant={toggleSelectedParticipant}
           />
+
+          <Flex justifyContent="flex-start" borderRadius="4px" alignItems="center" w="100%" mt="1rem">
+            <DeleteParticipants
+              handleDeleteParticipants={deleteSelectedParticipants}
+              disabled={selectedParticipantsEmails.length === 0}
+              participantsToDelete={selectedParticipantsEmails}
+            />
+            <Text as="span" pr="1rem" pt="0.3rem">
+              {selectedParticipantsEmails.length > 0
+                ? `Valgt ${selectedParticipantsEmails.length} av ${participants.length} deltagere`
+                : ''}
+            </Text>
+          </Flex>
         </FormControl>
       </VStack>
     </>

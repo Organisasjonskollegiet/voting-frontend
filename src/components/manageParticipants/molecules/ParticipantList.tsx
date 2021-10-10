@@ -1,8 +1,7 @@
-import { Divider, HStack, Text, VStack } from '@chakra-ui/react';
+import { Checkbox, Divider, HStack, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { ParticipantOrInvite, Role } from '../../../__generated__/graphql-types';
 import { boxShadow } from '../../styles/formStyles';
-import DeleteParticipant from '../atoms/DeleteParticipant';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
 import { darkblue, lightblue } from '../../styles/theme';
@@ -10,9 +9,9 @@ import { darkblue, lightblue } from '../../styles/theme';
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
   ownerEmail: string | undefined;
-  //TODO: fjerne undefined?
+  selectedParticipantsEmails: string[];
+  toggleSelectedParticipant: (participantEmail: string) => void;
 
-  deleteParticipant: (participantEmail: string) => void;
   changeParticipantRights: (
     participant: ParticipantOrInvite,
     role: Role | undefined,
@@ -22,7 +21,8 @@ interface ParticipantListProps {
 
 const ParticipantList: React.FC<ParticipantListProps> = ({
   participants,
-  deleteParticipant,
+  selectedParticipantsEmails,
+  toggleSelectedParticipant,
   changeParticipantRights,
   ownerEmail,
 }) => {
@@ -55,10 +55,17 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
         participants.map((participant, index) => (
           <React.Fragment key={participant.email}>
             {index > 0 && <Divider width="100%" m="0.5em 0" />}
-            <HStack key={participant.email} width="100%" justifyContent="space-between" padding="0 0 0 16px">
-              <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-                {participant.email}
-              </Text>
+            <HStack key={participant.email} width="100%" justifyContent="space-between" p="1px" pl="1rem">
+              <HStack spacing="2">
+                <Checkbox
+                  isChecked={selectedParticipantsEmails.includes(participant.email)}
+                  onChange={() => toggleSelectedParticipant(participant.email)}
+                  isDisabled={participant.email === ownerEmail}
+                />
+                <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+                  {participant.email}
+                </Text>
+              </HStack>
               <HStack spacing="1em">
                 <ToggleVotingEligibility
                   onChange={() => changeParticipantRights(participant, undefined, true)}
@@ -67,12 +74,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
                 <SelectRole
                   onChange={(role) => changeParticipantRights(participant, role)}
                   value={participant.role}
-                  disabled={ownerEmail === participant.email}
-                />
-                <DeleteParticipant
-                  handleDeleteParticipant={() => deleteParticipant(participant.email)}
-                  disabled={ownerEmail === participant.email}
-                  participantName={participant.email}
+                  disabled={participant.email === ownerEmail}
                 />
               </HStack>
             </HStack>
