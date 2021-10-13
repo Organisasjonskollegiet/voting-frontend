@@ -52,7 +52,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
         <Box>{`Antall avgitte stemmer: ${result?.getStvResult?.voteCount}`}</Box>
       </VStack>
       {result?.getStvResult?.stvRoundResults.map((round) => (
-        <Box maxW="600px" w="100%">
+        <Box maxW="600px" w="100%" key={round.index}>
           <ResultTableContainer>
             <VStack w="100%" alignSelf="start" alignItems="start">
               <Heading fontSize="18px" alignSelf="start">
@@ -75,7 +75,11 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
                 )}
               <TableColumnNames columnNames={['Alternativ', 'Antall stemmer']} />
               {round.alternativesWithRoundVoteCount.map((a) => (
-                <TableRow id={a.alternative.id} elements={[a.alternative.text, formatNumber(a.voteCount)]} />
+                <TableRow
+                  id={a.alternative.id}
+                  elements={[a.alternative.text, formatNumber(a.voteCount)]}
+                  key={a.alternative.id}
+                />
               ))}
             </VStack>
           </ResultTableContainer>
