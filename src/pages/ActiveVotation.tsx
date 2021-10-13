@@ -31,14 +31,8 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
+import { subtitlesStyle } from '../components/styles/styles';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
-
-export const subtitlesStyle = {
-  fontStyle: 'normal',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  lineHeight: '150%',
-} as React.CSSProperties;
 
 export type AlternativeWithIndex = AlternativeType & {
   index: number;
