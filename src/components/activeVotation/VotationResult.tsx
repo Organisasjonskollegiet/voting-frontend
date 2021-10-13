@@ -1,11 +1,5 @@
-import React from 'react';
-import {
-  Alternative as AlternativeType,
-  AlternativeResult,
-  GetStvResultQuery,
-  GetVotationResultsQuery,
-  VotationType,
-} from '../../__generated__/graphql-types';
+import React, { useContext } from 'react';
+import { Alternative as AlternativeType, AlternativeResult } from '../../__generated__/graphql-types';
 import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -13,28 +7,18 @@ import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
+import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
-  result: GetVotationResultsQuery | null | undefined;
-  votationId: string;
   backToVotationList: () => void;
   showResultsTable: boolean;
   loading: boolean;
-  type: VotationType;
-  stvResult: GetStvResultQuery | undefined;
 }
 
-const VotationResult: React.FC<VotationResultProps> = ({
-  winners,
-  backToVotationList,
-  result,
-  votationId,
-  showResultsTable,
-  loading,
-  type,
-  stvResult,
-}) => {
+const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
+  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
   return (
@@ -61,11 +45,7 @@ const VotationResult: React.FC<VotationResultProps> = ({
         </VStack>
       </Center>
       {showResultsTable &&
-        (type === VotationType.Stv ? (
-          <StvResultTable result={stvResult} />
-        ) : (
-          <ResultsTable result={result} votationId={votationId} />
-        ))}
+        (isStv ? <StvResultTable result={stvResult} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
       <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
         Gå tilbake til liste over voteringer

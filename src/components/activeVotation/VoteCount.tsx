@@ -1,6 +1,6 @@
 import { Center, VStack, Text, Heading } from '@chakra-ui/react';
 import React from 'react';
-import { subtitlesStyle } from '../../pages/ActiveVotation';
+import { subtitlesStyle } from '../styles/styles';
 
 interface VoteCountProps {
   voteCount: number;
