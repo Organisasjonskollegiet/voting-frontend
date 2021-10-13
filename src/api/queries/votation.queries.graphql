@@ -17,6 +17,7 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     numberOfWinners
     majorityThreshold
     meetingId
+    # resultReview
   }
 
   meetingById(meetingId: $meetingId) {
@@ -102,6 +103,7 @@ query GetVotationResults($votationId: String!) {
     blankVoteCount
     voteCount
     votingEligibleCount
+    # resultReview
   }
 }
 
@@ -119,6 +121,7 @@ query GetStvResult($votationId: String!) {
     quota
     voteCount
     votingEligibleCount
+    # resultReview
     stvRoundResults {
       index
       winners {

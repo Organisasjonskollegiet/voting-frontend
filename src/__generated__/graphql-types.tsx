@@ -113,6 +113,8 @@ export type Mutation = {
   castVote?: Maybe<Vote>;
   /** Returns the id of the votation */
   castBlankVote?: Maybe<Scalars['String']>;
+  /** Approve or disapprove a votation result */
+  reviewVotation?: Maybe<Scalars['String']>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
@@ -182,6 +184,12 @@ export type MutationCastVoteArgs = {
 
 export type MutationCastBlankVoteArgs = {
   votationId: Scalars['String'];
+};
+
+
+export type MutationReviewVotationArgs = {
+  votationId: Scalars['String'];
+  approved: Scalars['Boolean'];
 };
 
 
@@ -708,6 +716,17 @@ export type UpdateVotationStatusMutation = (
     { __typename: 'MaxOneOpenVotationError' }
     & Pick<MaxOneOpenVotationError, 'message'>
   )> }
+);
+
+export type CastVotationReviewMutationVariables = Exact<{
+  votationId: Scalars['String'];
+  approved: Scalars['Boolean'];
+}>;
+
+
+export type CastVotationReviewMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'reviewVotation'>
 );
 
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1526,6 +1545,38 @@ export function useUpdateVotationStatusMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateVotationStatusMutationHookResult = ReturnType<typeof useUpdateVotationStatusMutation>;
 export type UpdateVotationStatusMutationResult = Apollo.MutationResult<UpdateVotationStatusMutation>;
 export type UpdateVotationStatusMutationOptions = Apollo.BaseMutationOptions<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>;
+export const CastVotationReviewDocument = gql`
+    mutation CastVotationReview($votationId: String!, $approved: Boolean!) {
+  reviewVotation(votationId: $votationId, approved: $approved)
+}
+    `;
+export type CastVotationReviewMutationFn = Apollo.MutationFunction<CastVotationReviewMutation, CastVotationReviewMutationVariables>;
+
+/**
+ * __useCastVotationReviewMutation__
+ *
+ * To run a mutation, you first call `useCastVotationReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCastVotationReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [castVotationReviewMutation, { data, loading, error }] = useCastVotationReviewMutation({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *      approved: // value for 'approved'
+ *   },
+ * });
+ */
+export function useCastVotationReviewMutation(baseOptions?: Apollo.MutationHookOptions<CastVotationReviewMutation, CastVotationReviewMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CastVotationReviewMutation, CastVotationReviewMutationVariables>(CastVotationReviewDocument, options);
+      }
+export type CastVotationReviewMutationHookResult = ReturnType<typeof useCastVotationReviewMutation>;
+export type CastVotationReviewMutationResult = Apollo.MutationResult<CastVotationReviewMutation>;
+export type CastVotationReviewMutationOptions = Apollo.BaseMutationOptions<CastVotationReviewMutation, CastVotationReviewMutationVariables>;
 export const GetUserDocument = gql`
     query GetUser {
   user {

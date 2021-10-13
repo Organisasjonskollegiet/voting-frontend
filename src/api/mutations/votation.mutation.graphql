@@ -80,3 +80,7 @@ mutation UpdateVotationStatus($votationId: String!, $status: VotationStatus!) {
     }
   }
 }
+
+mutation CastVotationReview($votationId: String!, $approved: Boolean!) {
+  reviewVotation(votationId: $votationId, approved: $approved)
+}
