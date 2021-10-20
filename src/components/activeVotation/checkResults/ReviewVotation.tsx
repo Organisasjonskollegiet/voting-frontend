@@ -1,6 +1,5 @@
 import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
-import { HStack } from '@chakra-ui/layout';
-import { Button, Text } from '@chakra-ui/react';
+import { Button, Text, HStack, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { darkblue } from '../../styles/theme';
 
@@ -23,7 +22,8 @@ const ReviewVotation: React.FC<ReviewVotationProps> = ({ castVotationReview }) =
   };
 
   return (
-    <>
+    <Box mr="4rem">
+      <Text fontWeight="bold">Gi din tilbakemelding: </Text>
       <HStack spacing="0" border={`2px solid ${darkblue}`} borderRadius="0.5rem" overflow="hidden">
         <Button
           leftIcon={<CloseIcon color="red" w="3.5" />}
@@ -32,7 +32,7 @@ const ReviewVotation: React.FC<ReviewVotationProps> = ({ castVotationReview }) =
           borderRight={`2px solid ${darkblue}`}
         >
           <Text mt="0.25rem" as="span" color="inherit">
-            Avvis
+            Ugyldig
           </Text>
         </Button>
         <Button
@@ -41,11 +41,11 @@ const ReviewVotation: React.FC<ReviewVotationProps> = ({ castVotationReview }) =
           sx={{ ...buttonStyles, ...(activeChoice === ReviewStatus.Approved && activeButton) }}
         >
           <Text mt="0.25rem" as="span" color="inherit">
-            Godkjenn
+            Gyldig
           </Text>
         </Button>
       </HStack>
-    </>
+    </Box>
   );
 };
 

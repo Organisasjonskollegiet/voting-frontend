@@ -12,7 +12,7 @@ const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfAccepted, num
   const { participants } = useContext(ActiveVotationContext);
 
   const numberOfCounters = useMemo(
-    () => participants.reduce((sum, p) => (p.role === Role.Counter ? sum + 1 : sum), 0),
+    () => participants.reduce((sum, p) => (p.role === Role.Counter || p.role === Role.Admin ? sum + 1 : sum), 0),
     [participants]
   );
 
@@ -22,8 +22,8 @@ const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfAccepted, num
 
   return (
     <Text>
-      Av <b>{numberOfCounters}</b> tellere har <b>{numberOfAccepted}</b> godkjent og <b>{numberOfRejected}</b> avvist
-      resultatet
+      Av <b>{numberOfCounters}</b> tellere og administratorer har <b>{numberOfAccepted}</b> markert resultatet som{' '}
+      <i>gyldig</i>, mens <b>{numberOfRejected}</b> har market resultatet som <i>ugyldig</i>
     </Text>
   );
 };
