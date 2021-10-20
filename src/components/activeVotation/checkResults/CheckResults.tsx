@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { VStack, Button, Heading, HStack } from '@chakra-ui/react';
+import { VStack, Button, Heading } from '@chakra-ui/react';
 import {
   Role,
   useUpdateVotationStatusMutation,
@@ -14,9 +14,9 @@ import StvResultTable from '../results_table/StvResultTable';
 import AlternativesString from '../../common/AlternativesString';
 import { green } from '../../styles/theme';
 import Loading from '../../common/Loading';
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
+import ReviewVotation from './ReviewVotation';
 
 interface CheckResultsProps {
   meetingId: string;
@@ -72,6 +72,8 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
         numberOfRejected={0}
       />
 
+      {(role === Role.Counter || role === Role.Admin) && <ReviewVotation castVotationReview={castVotationReview} />}
+
       {role === Role.Admin && (
         <>
           <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
@@ -84,18 +86,6 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
             type={DialogType.INVALIDATE}
           />
         </>
-      )}
-
-      {/* check if counter has sumbitted review */}
-      {role === Role.Counter && (
-        <HStack>
-          <Button leftIcon={<CloseIcon />} colorScheme="red" onClick={() => castVotationReview(false)}>
-            Avvis
-          </Button>
-          <Button leftIcon={<CheckIcon />} colorScheme="green" onClick={() => castVotationReview(true)}>
-            Godkjenn
-          </Button>
-        </HStack>
       )}
     </VStack>
   );
