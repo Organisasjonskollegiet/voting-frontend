@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { VStack, Button, Heading } from '@chakra-ui/react';
+import { VStack, Flex, Button, Heading, Box } from '@chakra-ui/react';
 import {
   Role,
   useUpdateVotationStatusMutation,
@@ -66,26 +66,35 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
       </VStack>
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
 
-      <VotationReviews
-        // TODO: disse må fikses
-        numberOfAccepted={0}
-        numberOfRejected={0}
-      />
-
-      {(role === Role.Counter || role === Role.Admin) && <ReviewVotation castVotationReview={castVotationReview} />}
-
-      {role === Role.Admin && (
-        <>
-          <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
-            Erklær resultat ugyldig
-          </Button>
-          <CustomAlertDialog
-            dialogIsOpen={invalidateVotationDialogOpen}
-            handleCancel={() => setInvalidateVotationDialogOpen(false)}
-            handleConfirm={handleInvalidResult}
-            type={DialogType.INVALIDATE}
+      {(role === Role.Counter || role === Role.Admin) && (
+        <VStack spacing="2rem" pt="2rem">
+          <VotationReviews
+            // TODO: disse må fikses
+            numberOfAccepted={0}
+            numberOfRejected={0}
           />
-        </>
+          <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
+            <ReviewVotation castVotationReview={castVotationReview} />
+            {role === Role.Admin && (
+              <Box mt="2rem">
+                <Button
+                  p="1.5em 4em"
+                  mb="2px"
+                  borderRadius="16em"
+                  onClick={() => setInvalidateVotationDialogOpen(true)}
+                >
+                  Erklær resultat ugyldig
+                </Button>
+                <CustomAlertDialog
+                  dialogIsOpen={invalidateVotationDialogOpen}
+                  handleCancel={() => setInvalidateVotationDialogOpen(false)}
+                  handleConfirm={handleInvalidResult}
+                  type={DialogType.INVALIDATE}
+                />
+              </Box>
+            )}
+          </Flex>
+        </VStack>
       )}
     </VStack>
   );
