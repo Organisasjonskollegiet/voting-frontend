@@ -99,7 +99,7 @@ const MeetingLobby: React.FC = () => {
     <>
       <Box
         bg={offwhite}
-        w="100vw"
+        w="100%"
         minHeight="100vh"
         color="gray.500"
         pb="2em"
