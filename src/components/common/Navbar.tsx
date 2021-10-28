@@ -85,7 +85,7 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <Box pb={4} display={{ md: 'none' }}>
           <Divider mb="1rem" />
-          <Stack as={'nav'} spacing={2} pl="0.5em">
+          <Stack as={'nav'} spacing={2} pl="0.5em" onClick={onClose}>
             {pageNames.map((page) => (
               <NavigationLink key={page} link={links.get(page) || ''}>
                 {page}
