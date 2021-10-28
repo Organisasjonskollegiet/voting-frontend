@@ -24,7 +24,7 @@ export enum DialogType {
   PARTICIPANTS = 'Slett deltager',
   CLOSE = 'Avslutt votering',
   PUBLISH = 'Publiser resultat',
-  INVALIDATE = 'Erklær resultatet ugyldig',
+  INVALIDATE = 'Erklær votering ugyldig',
 }
 
 const WarningBody = new Map<DialogType, string>([
