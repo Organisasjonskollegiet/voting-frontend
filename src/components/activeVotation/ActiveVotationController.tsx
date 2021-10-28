@@ -67,10 +67,10 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
       {status === VotationStatus.Open ? (
         <FormControl display="flex" width="fit-content">
-          <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
-            Vis min stemme
+            Vis meg hva jeg stemte
           </FormLabel>
+          <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
         </FormControl>
       ) : (
         <Box></Box>
