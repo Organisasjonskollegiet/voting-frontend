@@ -81,7 +81,7 @@ const AddVotationForm: React.FC<IProps> = ({
       {(provided) => (
         <Box ref={provided.innerRef} {...provided.draggableProps} onClick={(e) => e.stopPropagation()}>
           <VStack
-            style={{ scrollMargin: '4rem' }}
+            style={{ scrollMargin: '7rem' }}
             ref={ref}
             sx={containerStyle}
             width="90vw"

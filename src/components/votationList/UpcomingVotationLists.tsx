@@ -74,7 +74,6 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
         checkIfAnyChanges={checkIfAnyChanges}
         handleSaveChanges={handleSaveChanges}
         showStartNextButton={false}
-        heading={'Kommende voteringer'}
         isAdmin={isAdmin}
       />
     );
