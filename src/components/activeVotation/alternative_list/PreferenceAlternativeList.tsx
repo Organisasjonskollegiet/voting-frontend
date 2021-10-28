@@ -79,27 +79,21 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
     }
   };
 
-  async function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
-
-    if (
-      result.destination.index === result.source.index &&
-      result.destination.droppableId === result.source.droppableId
-    ) {
-      return;
-    }
-
-    if (!unrankedAlternatives || !rankedAlternatives) return;
-
+  const updateOrderOfAlternatives = (
+    ranked: AlternativeWithIndex[],
+    unranked: AlternativeWithIndex[],
+    oldList: string,
+    newList: string,
+    oldIndex: number,
+    newIndex: number
+  ) => {
     const { newRankedAlternatives, newUnrankedAlternatives } = reorder(
-      rankedAlternatives,
-      unrankedAlternatives,
-      result.source.droppableId,
-      result.destination.droppableId,
-      result.source.index,
-      result.destination.index
+      ranked,
+      unranked,
+      oldList,
+      newList,
+      oldIndex,
+      newIndex
     );
 
     setRankedAlternatives(newRankedAlternatives);
@@ -125,7 +119,66 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
     ];
 
     updateAlternatives(updatedAlternatives);
+  };
+
+  async function onDragEnd(result: DropResult) {
+    if (!result.destination) {
+      return;
+    }
+
+    if (
+      result.destination.index === result.source.index &&
+      result.destination.droppableId === result.source.droppableId
+    ) {
+      return;
+    }
+
+    if (!unrankedAlternatives || !rankedAlternatives) return;
+
+    updateOrderOfAlternatives(
+      rankedAlternatives,
+      unrankedAlternatives,
+      result.source.droppableId,
+      result.destination.droppableId,
+      result.source.index,
+      result.destination.index
+    );
   }
+
+  const move = (
+    alternative: AlternativeWithIndex,
+    list: AlternativeWithIndex[],
+    listName: 'ranked' | 'unranked',
+    direction: 'up' | 'down'
+  ) => {
+    if (!rankedAlternatives || !unrankedAlternatives) return;
+    const index = list.indexOf(alternative);
+    // if alternative is on the bottom of a list and down is pressed, it is moved to
+    // unranked if in ranked, and nothing happens if else
+    if (index === list.length - 1 && listName === 'ranked' && direction === 'down') {
+      updateOrderOfAlternatives(rankedAlternatives, unrankedAlternatives, 'ranked', 'unranked', index, 0);
+      // if alternative is on the top of a list and up is pressed, it is moved to
+      // ranked if in unranked, and nothing happens if else
+    } else if (listName === 'unranked' && direction === 'up') {
+      updateOrderOfAlternatives(
+        rankedAlternatives,
+        unrankedAlternatives,
+        'unranked',
+        'ranked',
+        index,
+        rankedAlternatives.length
+      );
+    } else {
+      updateOrderOfAlternatives(
+        rankedAlternatives,
+        unrankedAlternatives,
+        listName,
+        listName,
+        index,
+        index + (direction === 'up' ? -1 : 1)
+      );
+    }
+  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -142,7 +195,13 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
             >
               {rankedAlternatives &&
                 rankedAlternatives.map((alt) => (
-                  <DraggableAlternative isRanked={true} showVote={!userHasVoted || showVote} alternative={alt} />
+                  <DraggableAlternative
+                    moveUp={() => move(alt, rankedAlternatives, 'ranked', 'up')}
+                    moveDown={() => move(alt, rankedAlternatives, 'ranked', 'down')}
+                    isRanked={true}
+                    showVote={!userHasVoted || showVote}
+                    alternative={alt}
+                  />
                 ))}
               {provided.placeholder}
             </VStack>
@@ -163,7 +222,13 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
             >
               {unrankedAlternatives &&
                 unrankedAlternatives.map((alt) => (
-                  <DraggableAlternative isRanked={false} showVote={!userHasVoted || showVote} alternative={alt} />
+                  <DraggableAlternative
+                    moveUp={() => move(alt, unrankedAlternatives, 'unranked', 'up')}
+                    moveDown={() => move(alt, unrankedAlternatives, 'unranked', 'down')}
+                    isRanked={false}
+                    showVote={!userHasVoted || showVote}
+                    alternative={alt}
+                  />
                 ))}
               {provided.placeholder}
             </VStack>
