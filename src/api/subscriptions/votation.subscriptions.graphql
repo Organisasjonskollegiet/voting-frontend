@@ -15,3 +15,10 @@ subscription NewVoteRegistered($votationId: String!) {
 subscription VotationOpenedForMeeting($meetingId: String!) {
   votationOpenedForMeeting(meetingId: $meetingId)
 }
+
+subscription ReviewAdded($votationId: String!) {
+  reviewAdded(votationId: $votationId) {
+    approved
+    disapproved
+  }
+}

@@ -143,3 +143,14 @@ query GetStvResult($votationId: String!) {
     }
   }
 }
+
+query GetMyReview($votationId: String!) {
+  getMyReview(votationId: $votationId) {
+    ... on VotationReview {
+      approved
+    }
+    ... on NoReview {
+      message
+    }
+  }
+}
