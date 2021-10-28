@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const VotationTypeInformation: React.FC = () => {
   return (
-    <InformationModal title="Flertallsformer" ariaLabel="Informasjon om stemmeformer" alignWithText={true}>
+    <InformationModal title="Flertallsformer" ariaLabel="Informasjon om flertallsformer" alignWithText={true}>
       <Heading as="h2" fontSize="1.1rem">
         Simpelt flertall
       </Heading>

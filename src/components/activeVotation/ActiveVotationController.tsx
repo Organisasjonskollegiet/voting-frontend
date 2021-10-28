@@ -28,7 +28,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   const getText = () => {
     switch (status) {
       case VotationStatus.Open:
-        return <Text>Steng avstemning</Text>;
+        return <Text>Steng votering</Text>;
       case VotationStatus.CheckingResult:
         return <Text>Publiser resultater</Text>;
     }

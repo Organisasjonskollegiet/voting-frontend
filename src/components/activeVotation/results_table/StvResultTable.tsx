@@ -47,7 +47,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
         <Heading fontSize="18px" alignSelf="start">
           Oversikt
         </Heading>
-        <Box>{`Antall stemmer som kreves for å vinne: ${result?.getStvResult?.quota}`}</Box>
+        <Box>{`Antall stemmer som krevdes for å vinne: ${result?.getStvResult?.quota}`}</Box>
         <Box>{`Antall stemmeberettigede deltakere: ${result?.getStvResult?.votingEligibleCount}`}</Box>
         <Box>{`Antall avgitte stemmer: ${result?.getStvResult?.voteCount}`}</Box>
       </VStack>
