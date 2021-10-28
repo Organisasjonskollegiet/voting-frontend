@@ -24,9 +24,11 @@ const links: Map<string, string> = new Map([
 ]);
 const pageNames = Array.from(links.keys());
 
-const NavigationLink = ({ children, link }: { children: ReactNode; link: string }) => (
+const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link: string; onClose: () => void }) => (
   <NavLink style={{ fontWeight: 'bold' }} to={link}>
-    <Button variant="link">{children}</Button>
+    <Button w="100%" justifyContent="left" variant="link" onClick={onClose}>
+      {children}
+    </Button>
   </NavLink>
 );
 
@@ -49,7 +51,7 @@ const Navbar: React.FC = () => {
 
         <HStack as={'nav'} spacing="3.5em" display={{ base: 'none', md: 'flex' }}>
           {pageNames.map((page) => (
-            <NavigationLink key={page} link={links.get(page) || ''}>
+            <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
               {page}
             </NavigationLink>
           ))}
@@ -87,7 +89,7 @@ const Navbar: React.FC = () => {
           <Divider mb="1rem" />
           <Stack as={'nav'} spacing={2} pl="0.5em">
             {pageNames.map((page) => (
-              <NavigationLink key={page} link={links.get(page) || ''}>
+              <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
                 {page}
               </NavigationLink>
             ))}
