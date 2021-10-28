@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { VStack, Flex, Button, Heading, Box } from '@chakra-ui/react';
 import {
   Role,
@@ -6,6 +6,8 @@ import {
   VotationStatus,
   AlternativeResult,
   Alternative as AlternativeType,
+  useReviewAddedSubscription,
+  useGetMyReviewQuery,
 } from '../../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
 import ResultsTable from '../results_table/ResultsTable';
@@ -26,12 +28,23 @@ interface CheckResultsProps {
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
-  const [updateVotationStatus] = useUpdateVotationStatusMutation();
-  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
-  const history = useHistory();
-
   const { result, stvResult, votationId, role, isStv } = useContext(ActiveVotationContext);
 
+  const [updateVotationStatus] = useUpdateVotationStatusMutation();
+  const history = useHistory();
+
+  const { data: reviewResult } = useReviewAddedSubscription({ variables: { votationId } });
+
+  const { data: myReviewResult } = useGetMyReviewQuery({ variables: { votationId } });
+  const myReview =
+    myReviewResult?.getMyReview?.__typename === 'VotationReview' ? myReviewResult.getMyReview.approved : undefined;
+  const [currentReview, setCurrentReview] = useState<boolean | undefined>(myReview);
+  const handleCastReview = (approved: boolean) => {
+    setCurrentReview(approved);
+    castVotationReview(approved);
+  };
+
+  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
   const handleInvalidResult = async () => {
     setInvalidateVotationDialogOpen(false);
     await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
@@ -69,12 +82,11 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem">
           <VotationReviews
-            // TODO: disse må fikses
-            numberOfAccepted={0}
-            numberOfRejected={0}
+            numberOfApproved={reviewResult?.reviewAdded?.approved || 0}
+            numberOfDisapproved={reviewResult?.reviewAdded?.disapproved || 0}
           />
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
-            <ReviewVotation castVotationReview={castVotationReview} />
+            <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
             {role === Role.Admin && (
               <Box mt="2rem">
                 <Button

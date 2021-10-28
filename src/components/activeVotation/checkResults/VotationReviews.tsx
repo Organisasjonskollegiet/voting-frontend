@@ -4,11 +4,11 @@ import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import { Role } from '../../../__generated__/graphql-types';
 
 interface VotationReviewsProps {
-  numberOfAccepted: number;
-  numberOfRejected: number;
+  numberOfApproved: number;
+  numberOfDisapproved: number;
 }
 
-const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfAccepted, numberOfRejected }) => {
+const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfApproved, numberOfDisapproved }) => {
   const { participants } = useContext(ActiveVotationContext);
 
   const numberOfCounters = useMemo(
@@ -22,8 +22,8 @@ const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfAccepted, num
 
   return (
     <Text>
-      Av <b>{numberOfCounters}</b> tellere og administratorer har <b>{numberOfAccepted}</b> markert resultatet som{' '}
-      <i>gyldig</i>, mens <b>{numberOfRejected}</b> har market resultatet som <i>ugyldig</i>
+      Av <b>{numberOfCounters}</b> tellere og administratorer har <b>{numberOfApproved}</b> markert resultatet som{' '}
+      <i>gyldig</i>, mens <b>{numberOfDisapproved}</b> har market resultatet som <i>ugyldig</i>
     </Text>
   );
 };
