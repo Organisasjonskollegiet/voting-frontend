@@ -89,7 +89,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             borderRadius="16em"
             isDisabled={submitButtonDisabled}
           >
-            Avgi Stemme
+            Avgi stemme
           </Button>
         )}
       </VStack>

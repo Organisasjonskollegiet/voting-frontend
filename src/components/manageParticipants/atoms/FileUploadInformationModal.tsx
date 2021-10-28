@@ -10,10 +10,8 @@ const FileUploadInformationModal: React.FC = () => {
       <ul>
         <li>Alle epostene må befinne seg i første kolonne på hver sin rad.</li>
         <li>I den andre kolonnen skriver dere inn hvilken rolle personen knyttet til eposten innehar.</li>
-        <li>
-          Rollene kan være 'administrator', 'teller' eller 'deltager', hvis ingen rolle er spesifisert blir deltager
-          valgt automatisk.
-        </li>
+        <li>Rollene kan være 'administrator', 'teller' eller 'deltager'.</li>
+        <li>Hvis ingen rolle er spesifisert blir 'deltager' valgt automatisk.</li>
       </ul>
 
       <Divider my="1.5rem" />

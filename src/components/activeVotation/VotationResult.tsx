@@ -55,7 +55,7 @@ const VotationResult: React.FC<VotationResultProps> = ({
           ) : (
             <>
               <Text fontSize="2.25em">Ingen vinner</Text>
-              <Text>Ingen av alternativnene oppnådde tilstrekkelig flertall</Text>
+              <Text>Ingen av alternativene oppnådde tilstrekkelig flertall</Text>
             </>
           )}
         </VStack>

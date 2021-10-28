@@ -5,9 +5,9 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const VotationTypeInformation: React.FC = () => {
   return (
-    <InformationModal title="Stemmeformer" ariaLabel="Informasjon om stemmeformer" alignWithText={true}>
+    <InformationModal title="Flertallsformer" ariaLabel="Informasjon om stemmeformer" alignWithText={true}>
       <Heading as="h2" fontSize="1.1rem">
-        Simpelt Flertall
+        Simpelt flertall
       </Heading>
       <Text mb="1rem">
         Alternativet med flest stemmer vinner. <br />
@@ -30,8 +30,9 @@ const VotationTypeInformation: React.FC = () => {
         Preferansevalg
       </Heading>
       <Text mb="1rem">
-        Velgerne rangerer alternativene i den rekkefølgen de foretrekker dem. Her har man mulighet til å velge flere
-        vinnere, men ikke muligheten til å stemme blankt.
+        Velgerne rangerer de alternativene de ønsker i den rekkefølgen de foretrekker dem. Her har man mulighet til å
+        velge flere vinnere. <br />
+        Man kan stemme blankt ved å ikke rangerer noen alternativer.
       </Text>
       <Text>
         Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
