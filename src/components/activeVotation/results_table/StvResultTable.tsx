@@ -75,7 +75,13 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
                 )}
               <TableColumnNames columnNames={['Alternativ', 'Antall stemmer']} />
               {round.alternativesWithRoundVoteCount.map((a) => (
-                <TableRow id={a.alternative.id} elements={[a.alternative.text, formatNumber(a.voteCount)]} />
+                <TableRow
+                  id={a.alternative.id}
+                  elements={[
+                    { id: 'alt', content: a.alternative.text },
+                    { id: 'vot', content: formatNumber(a.voteCount) },
+                  ]}
+                />
               ))}
             </VStack>
           </ResultTableContainer>
