@@ -154,3 +154,10 @@ query GetMyReview($votationId: String!) {
     }
   }
 }
+
+query GetReviews($votationId: String!) {
+  getReviews(votationId: $votationId) {
+    approved
+    disapproved
+  }
+}

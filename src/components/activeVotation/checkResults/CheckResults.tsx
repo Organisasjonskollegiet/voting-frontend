@@ -8,6 +8,8 @@ import {
   Alternative as AlternativeType,
   useReviewAddedSubscription,
   useGetMyReviewQuery,
+  useGetReviewsQuery,
+  ReviewResult,
 } from '../../../__generated__/graphql-types';
 import { useHistory } from 'react-router';
 import ResultsTable from '../results_table/ResultsTable';
@@ -33,12 +35,31 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const history = useHistory();
 
-  const { data: reviewResult } = useReviewAddedSubscription({ variables: { votationId } });
+  const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
+  const { data: updatedReviewsResult } = useReviewAddedSubscription({ variables: { votationId } });
+  const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
+
+  useEffect(() => {
+    if (reviewsResult?.getReviews) {
+      setReviews(reviewsResult.getReviews);
+    }
+  }, [reviewsResult?.getReviews]);
+
+  useEffect(() => {
+    if (updatedReviewsResult?.reviewAdded) {
+      setReviews(updatedReviewsResult?.reviewAdded);
+    }
+  }, [updatedReviewsResult]);
 
   const { data: myReviewResult } = useGetMyReviewQuery({ variables: { votationId } });
-  const myReview =
-    myReviewResult?.getMyReview?.__typename === 'VotationReview' ? myReviewResult.getMyReview.approved : undefined;
-  const [currentReview, setCurrentReview] = useState<boolean | undefined>(myReview);
+  const [currentReview, setCurrentReview] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    const myReview =
+      myReviewResult?.getMyReview?.__typename === 'VotationReview' ? myReviewResult.getMyReview.approved : undefined;
+    setCurrentReview(myReview);
+  }, [myReviewResult]);
+
   const handleCastReview = (approved: boolean) => {
     setCurrentReview(approved);
     castVotationReview(approved);
@@ -54,6 +75,8 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
     return <Loading text="Henter resultater" asOverlay={false} />;
   }
+
+  console.log('rerender');
 
   return (
     <VStack spacing="2rem">
@@ -81,10 +104,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
 
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem">
-          <VotationReviews
-            numberOfApproved={reviewResult?.reviewAdded?.approved || 0}
-            numberOfDisapproved={reviewResult?.reviewAdded?.disapproved || 0}
-          />
+          <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
             {role === Role.Admin && (

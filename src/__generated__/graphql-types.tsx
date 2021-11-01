@@ -266,6 +266,8 @@ export type Query = {
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
   resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
   getOpenVotation?: Maybe<Scalars['String']>;
+  /** Return the number of approvals and disapprovals of a votation */
+  getReviews?: Maybe<ReviewResult>;
   getMyReview?: Maybe<MyReviewResult>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
@@ -308,6 +310,11 @@ export type QueryResultsOfPublishedVotationsArgs = {
 
 export type QueryGetOpenVotationArgs = {
   meetingId: Scalars['String'];
+};
+
+
+export type QueryGetReviewsArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -993,6 +1000,19 @@ export type GetMyReviewQuery = (
   ) | (
     { __typename?: 'NoReview' }
     & Pick<NoReview, 'message'>
+  )> }
+);
+
+export type GetReviewsQueryVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type GetReviewsQuery = (
+  { __typename?: 'Query' }
+  & { getReviews?: Maybe<(
+    { __typename?: 'ReviewResult' }
+    & Pick<ReviewResult, 'approved' | 'disapproved'>
   )> }
 );
 
@@ -2210,6 +2230,42 @@ export function useGetMyReviewLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetMyReviewQueryHookResult = ReturnType<typeof useGetMyReviewQuery>;
 export type GetMyReviewLazyQueryHookResult = ReturnType<typeof useGetMyReviewLazyQuery>;
 export type GetMyReviewQueryResult = Apollo.QueryResult<GetMyReviewQuery, GetMyReviewQueryVariables>;
+export const GetReviewsDocument = gql`
+    query GetReviews($votationId: String!) {
+  getReviews(votationId: $votationId) {
+    approved
+    disapproved
+  }
+}
+    `;
+
+/**
+ * __useGetReviewsQuery__
+ *
+ * To run a query within a React component, call `useGetReviewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReviewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReviewsQuery({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useGetReviewsQuery(baseOptions: Apollo.QueryHookOptions<GetReviewsQuery, GetReviewsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReviewsQuery, GetReviewsQueryVariables>(GetReviewsDocument, options);
+      }
+export function useGetReviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReviewsQuery, GetReviewsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReviewsQuery, GetReviewsQueryVariables>(GetReviewsDocument, options);
+        }
+export type GetReviewsQueryHookResult = ReturnType<typeof useGetReviewsQuery>;
+export type GetReviewsLazyQueryHookResult = ReturnType<typeof useGetReviewsLazyQuery>;
+export type GetReviewsQueryResult = Apollo.QueryResult<GetReviewsQuery, GetReviewsQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id) {
