@@ -16,7 +16,7 @@ export interface VotationListSectionProps {
   duplicateVotation: (votation: Votation) => void;
   handleStartVotation: () => void;
   checkIfAnyChanges: () => boolean;
-  handleSaveChanges: () => void;
+  handleSaveChanges: () => Promise<void>;
   showStartNextButton: boolean;
   heading?: string;
   droppableId?: string;

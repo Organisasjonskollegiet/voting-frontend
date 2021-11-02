@@ -15,7 +15,7 @@ import { green } from '../styles/theme';
 interface StartNextVotationButtonProps {
   handleStartVotation: () => void;
   checkIfAnyChanges: () => boolean;
-  handleSaveChanges: () => void;
+  handleSaveChanges: () => Promise<void>;
 }
 
 const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
@@ -35,10 +35,10 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
     }
   };
 
-  const saveBeforeStartVotation = (saveChanges: boolean) => {
+  const saveBeforeStartVotation = async (saveChanges: boolean) => {
     setIsOpen(false);
     if (saveChanges) {
-      handleSaveChanges();
+      await handleSaveChanges();
     }
     handleStartVotation();
   };
