@@ -38,14 +38,17 @@ const CastVote: React.FC<CastVoteProps> = ({
   showVote,
   isVotingEligible,
 }) => {
+  const presentationMode = true;
   return (
     <WrapStack breakpoint={730} w="100%" justifyContent="space-between">
       <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        {isStv && <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>}
-        {isStv ? (
+        {isStv && !presentationMode && (
+          <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>
+        )}
+        {isStv && !presentationMode ? (
           <PreferenceAlternativeList
             alternatives={alternatives}
             updateAlternatives={updateAlternatives}
@@ -79,7 +82,7 @@ const CastVote: React.FC<CastVoteProps> = ({
           </Center>
         )}
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
-        {!userHasVoted && isVotingEligible && (
+        {!userHasVoted && isVotingEligible && !presentationMode && (
           <Button
             bg={green}
             color="white"

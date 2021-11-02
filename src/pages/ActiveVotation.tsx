@@ -352,6 +352,8 @@ const Votation: React.FC = () => {
     );
   }
 
+  const presentationMode = true;
+
   return (
     <PageContainer>
       <VStack>
@@ -396,12 +398,13 @@ const Votation: React.FC = () => {
                 isVotingEligible={isVotingEligible}
               />
             )}
-            {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (
+            {status === VotationStatus.CheckingResult && (participantRole === Role.Participant || presentationMode) && (
               <Box>
                 <Loading asOverlay={false} text={'Resultatene sjekkes'} />
               </Box>
             )}
-            {status === VotationStatus.CheckingResult &&
+            {!presentationMode &&
+              status === VotationStatus.CheckingResult &&
               (participantRole === Role.Counter || participantRole === Role.Admin) && (
                 <CheckResults
                   loading={stvResultLoading || votationResultLoading}
@@ -436,7 +439,7 @@ const Votation: React.FC = () => {
                 </Button>
               </VStack>
             )}
-            {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+            {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && !presentationMode && (
               <VStack>
                 <Divider />
                 <VotationController

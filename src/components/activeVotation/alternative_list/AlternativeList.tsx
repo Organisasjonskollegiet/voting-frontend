@@ -41,10 +41,12 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
   );
 
   const handleUpdateSelected = (id: string) => {
-    if (!userHasVoted) {
+    if (!userHasVoted && !presentationMode) {
       updateSelected(id);
     }
   };
+
+  const presentationMode = true;
 
   return (
     <ButtonGroup sx={styles} spacing={0} isDisabled={userHasVoted}>

@@ -10,6 +10,7 @@ interface AlternativeProps {
 
 const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, selected, disableVoting }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
+  const presentationMode = true;
   return (
     <Button
       disabled={disableVoting}
@@ -18,6 +19,7 @@ const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, select
       justifyContent="left"
       onClick={handleClick}
       sx={styles}
+      _hover={{ cursor: presentationMode ? 'default' : 'pointer' }}
     >
       <Text color={selected ? 'white' : 'inherit'} isTruncated>
         {children}
