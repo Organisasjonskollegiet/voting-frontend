@@ -48,11 +48,11 @@ export default ReviewVotation;
 const buttonStyles = {
   borderRadius: 0,
   width: '175px',
-  // boxShadow: `outset 0px 0px 20px ${darkblue}`,
+  backgroundColor: 'white',
 } as React.CSSProperties;
 
 const activeButton = {
-  boxShadow: `inset 0px 0px 10px ${darkblue}`,
+  boxShadow: `inset 0px 3px 10px ${darkblue}`,
   WebKitBoxShadow: `inset 0px 0px 10px ${darkblue}`,
   MozBoxShadow: `inset 0px 0px 10px ${darkblue}`,
 } as React.CSSProperties;
