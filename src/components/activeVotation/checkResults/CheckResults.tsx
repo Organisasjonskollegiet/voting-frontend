@@ -7,7 +7,6 @@ import {
   AlternativeResult,
   Alternative as AlternativeType,
   useReviewAddedSubscription,
-  useGetMyReviewQuery,
   useGetReviewsQuery,
   ReviewResult,
 } from '../../../__generated__/graphql-types';
@@ -36,29 +35,24 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   const history = useHistory();
 
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
-  const { data: updatedReviewsResult } = useReviewAddedSubscription({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
+  const [currentReview, setCurrentReview] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (reviewsResult?.getReviews) {
       setReviews(reviewsResult.getReviews);
     }
-  }, [reviewsResult?.getReviews]);
+    const myReview =
+      reviewsResult?.getMyReview?.__typename === 'VotationReview' ? reviewsResult.getMyReview.approved : undefined;
+    setCurrentReview(myReview);
+  }, [reviewsResult]);
 
+  const { data: updatedReviewsResult } = useReviewAddedSubscription({ variables: { votationId } });
   useEffect(() => {
     if (updatedReviewsResult?.reviewAdded) {
       setReviews(updatedReviewsResult?.reviewAdded);
     }
   }, [updatedReviewsResult]);
-
-  const { data: myReviewResult } = useGetMyReviewQuery({ variables: { votationId } });
-  const [currentReview, setCurrentReview] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    const myReview =
-      myReviewResult?.getMyReview?.__typename === 'VotationReview' ? myReviewResult.getMyReview.approved : undefined;
-    setCurrentReview(myReview);
-  }, [myReviewResult]);
 
   const handleCastReview = (approved: boolean) => {
     setCurrentReview(approved);
@@ -75,8 +69,6 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
     return <Loading text="Henter resultater" asOverlay={false} />;
   }
-
-  console.log('rerender');
 
   return (
     <VStack spacing="2rem">
