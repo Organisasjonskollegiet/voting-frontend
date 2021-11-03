@@ -1,7 +1,6 @@
 import React from 'react';
 import { VStack, Heading } from '@chakra-ui/react';
 import {
-  Role,
   GetVotationResultsQuery,
   GetStvResultQuery,
   AlternativeResult,
