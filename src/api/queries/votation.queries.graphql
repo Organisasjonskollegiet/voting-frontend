@@ -140,3 +140,18 @@ query GetStvResult($votationId: String!) {
     }
   }
 }
+
+query GetReviews($votationId: String!) {
+  getReviews(votationId: $votationId) {
+    approved
+    disapproved
+  }
+  getMyReview(votationId: $votationId) {
+    ... on VotationReview {
+      approved
+    }
+    ... on NoReview {
+      message
+    }
+  }
+}
