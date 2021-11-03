@@ -1,34 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
 import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
+import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
 interface VotationControllerProps {
-  votationId: string;
-  meetingId: string;
   status: VotationStatus;
   showVote: boolean;
   toggleShowVote: () => void;
   disableShowVote: boolean;
-  role: Role | null;
 }
 
 const ActiveVotationController: React.FC<VotationControllerProps> = ({
-  meetingId,
-  votationId,
   status,
   showVote,
   toggleShowVote,
   disableShowVote,
-  role,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
   const history = useHistory();
+  const { role, votationId, meetingId } = useContext(ActiveVotationContext);
 
   const getText = () => {
     switch (status) {

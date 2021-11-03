@@ -1,8 +1,8 @@
 import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
-import React from 'react';
-import { subtitlesStyle } from '../../pages/ActiveVotation';
+import React, { useContext } from 'react';
+import { subtitlesStyle } from '../styles/styles';
 import VoteCount from './VoteCount';
-import { AlternativeWithIndex } from '../../pages/ActiveVotation';
+import { ActiveVotationContext, AlternativeWithIndex } from '../../pages/ActiveVotation';
 import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
@@ -17,7 +17,6 @@ interface CastVoteProps {
   submitButtonDisabled: boolean;
   voteCount: number;
   votingEligibleCount: number | undefined;
-  isStv: boolean;
   updateAlternatives: (alternatives: AlternativeWithIndex[]) => void;
   userHasVoted: boolean;
   showVote: boolean;
@@ -32,12 +31,13 @@ const CastVote: React.FC<CastVoteProps> = ({
   submitButtonDisabled,
   voteCount,
   votingEligibleCount,
-  isStv,
   updateAlternatives,
   userHasVoted,
   showVote,
   isVotingEligible,
 }) => {
+  const { isStv } = useContext(ActiveVotationContext);
+
   return (
     <WrapStack breakpoint={730} w="100%" justifyContent="space-between">
       <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">

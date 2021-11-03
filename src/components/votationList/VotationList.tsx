@@ -530,7 +530,6 @@ const VotationList: React.FC<VotationListProps> = ({
     const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
     promises.push(handleCreateVotations(votationsToCreate), handleUpdateVotations(votationsToUpdate));
     const [createdVotations, updatedVotations] = await Promise.all(promises);
-    console.log('updated', updatedVotations);
     toast({
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
