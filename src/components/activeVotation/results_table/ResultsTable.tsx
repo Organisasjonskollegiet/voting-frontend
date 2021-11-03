@@ -63,19 +63,12 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
               <TableRow
                 id={alternative.id}
                 elements={[
-                  { id: 'alt', content: alternative.text },
-                  { id: 'nrVot', content: alternative.votes.toString() },
-                  {
-                    id: '%Vot',
-                    content: voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount).toString() : '0',
-                  },
-                  {
-                    id: '%VotEl',
-                    content:
-                      votingEligibleCount > 0
-                        ? getRoundedPercentage(alternative.votes / votingEligibleCount).toString()
-                        : '0',
-                  },
+                  alternative.text,
+                  alternative.votes.toString(),
+                  voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount).toString() : '0',
+                  votingEligibleCount > 0
+                    ? getRoundedPercentage(alternative.votes / votingEligibleCount).toString()
+                    : '0',
                 ]}
                 key={alternative.id + 'stack'}
                 style={alternative.isWinner ? { color: 'green', fontWeight: 'bold' } : {}}

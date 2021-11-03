@@ -1,11 +1,5 @@
-import React from 'react';
-import {
-  Alternative as AlternativeType,
-  AlternativeResult,
-  GetStvResultQuery,
-  GetVotationResultsQuery,
-  VotationType,
-} from '../../__generated__/graphql-types';
+import React, { useContext } from 'react';
+import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
 import { Center, VStack, Text, Divider, Button, HStack } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -14,34 +8,20 @@ import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
 import DownloadResultButton from './DownloadResultButton';
+import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
 export interface VotationResultProps {
-  isAdmin: boolean;
   winners: AlternativeType[] | AlternativeResult[] | null;
-  result: GetVotationResultsQuery | null | undefined;
-  votationId: string;
   backToVotationList: () => void;
   showResultsTable: boolean;
   loading: boolean;
-  type: VotationType;
-  stvResult: GetStvResultQuery | undefined;
 }
 
-const VotationResult: React.FC<VotationResultProps> = ({
-  isAdmin,
-  winners,
-  backToVotationList,
-  result,
-  votationId,
-  showResultsTable,
-  loading,
-  type,
-  stvResult,
-}) => {
+const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
+  const { result, stvResult, votationId, isStv, role } = useContext(ActiveVotationContext);
+
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
-  console.log('result', result);
-  console.log('stvresult', stvResult);
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
@@ -66,19 +46,13 @@ const VotationResult: React.FC<VotationResultProps> = ({
         </VStack>
       </Center>
       {showResultsTable &&
-        (type === VotationType.Stv ? (
-          <StvResultTable result={stvResult} />
-        ) : (
-          <ResultsTable result={result} votationId={votationId} />
-        ))}
+        (isStv ? <StvResultTable result={stvResult} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
       <HStack w="100%" justifyContent="space-between">
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           Gå tilbake til liste over voteringer
         </Button>
-        {(result || stvResult) && isAdmin && (
-          <DownloadResultButton isStv={type === VotationType.Stv} result={result} stvResult={stvResult} />
-        )}
+        {(result || stvResult) && role === Role.Admin && <DownloadResultButton />}
       </HStack>
     </VStack>
   );

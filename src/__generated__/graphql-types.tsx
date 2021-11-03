@@ -106,13 +106,13 @@ export type Mutation = {
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
   deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
-  createAlternative?: Maybe<Alternative>;
-  updateAlternative?: Maybe<Alternative>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castStvVote?: Maybe<Scalars['String']>;
   castVote?: Maybe<Vote>;
   /** Returns the id of the votation */
   castBlankVote?: Maybe<Scalars['String']>;
+  /** Approve or disapprove a votation result */
+  reviewVotation?: Maybe<Scalars['String']>;
   createMeeting?: Maybe<Meeting>;
   updateMeeting?: Maybe<Meeting>;
   deleteMeeting?: Maybe<Meeting>;
@@ -152,18 +152,6 @@ export type MutationDeleteVotationsArgs = {
 };
 
 
-export type MutationCreateAlternativeArgs = {
-  text: Scalars['String'];
-  votationId: Scalars['String'];
-};
-
-
-export type MutationUpdateAlternativeArgs = {
-  id: Scalars['String'];
-  text: Scalars['String'];
-};
-
-
 export type MutationDeleteAlternativesArgs = {
   ids: Array<Scalars['String']>;
 };
@@ -182,6 +170,12 @@ export type MutationCastVoteArgs = {
 
 export type MutationCastBlankVoteArgs = {
   votationId: Scalars['String'];
+};
+
+
+export type MutationReviewVotationArgs = {
+  votationId: Scalars['String'];
+  approved: Scalars['Boolean'];
 };
 
 
@@ -222,10 +216,17 @@ export type MutationChangeViewArgs = {
   state: ViewState;
 };
 
+export type MyReviewResult = VotationReview | NoReview;
+
 export type NewVoteRegisteredResponse = {
   __typename?: 'NewVoteRegisteredResponse';
   votationId: Scalars['String'];
   voteCount: Scalars['Int'];
+};
+
+export type NoReview = {
+  __typename?: 'NoReview';
+  message: Scalars['String'];
 };
 
 export type OwnerCannotBeRemovedFromParticipantError = {
@@ -257,7 +258,6 @@ export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
   votationById?: Maybe<Votation>;
-  alternativesByVotation?: Maybe<Array<Maybe<Alternative>>>;
   getVoteCount?: Maybe<VoteCountResult>;
   /** Get results from an stv votation */
   getStvResult?: Maybe<StvResult>;
@@ -266,6 +266,9 @@ export type Query = {
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
   resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
   getOpenVotation?: Maybe<Scalars['String']>;
+  /** Return the number of approvals and disapprovals of a votation */
+  getReviews?: Maybe<ReviewResult>;
+  getMyReview?: Maybe<MyReviewResult>;
   /** Find meetings you are participating in */
   meetings: Array<Maybe<Meeting>>;
   /** Find a meeting by id from meetings youre participating in */
@@ -276,11 +279,6 @@ export type Query = {
 
 
 export type QueryVotationByIdArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryAlternativesByVotationArgs = {
   votationId: Scalars['String'];
 };
 
@@ -315,6 +313,16 @@ export type QueryGetOpenVotationArgs = {
 };
 
 
+export type QueryGetReviewsArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetMyReviewArgs = {
+  votationId: Scalars['String'];
+};
+
+
 export type QueryMeetingByIdArgs = {
   meetingId: Scalars['String'];
 };
@@ -322,6 +330,12 @@ export type QueryMeetingByIdArgs = {
 
 export type QueryParticipantsArgs = {
   meetingId: Scalars['String'];
+};
+
+export type ReviewResult = {
+  __typename?: 'ReviewResult';
+  approved: Scalars['Int'];
+  disapproved: Scalars['Int'];
 };
 
 export enum Role {
@@ -359,6 +373,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
+  reviewAdded?: Maybe<ReviewResult>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   viewChanged?: Maybe<ViewState>;
 };
@@ -371,6 +386,11 @@ export type SubscriptionNewVoteRegisteredArgs = {
 
 export type SubscriptionVotationStatusUpdatedArgs = {
   id: Scalars['String'];
+};
+
+
+export type SubscriptionReviewAddedArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -471,6 +491,11 @@ export type VotationResults = {
   blankVoteCount: Scalars['Int'];
   voteCount: Scalars['Int'];
   votingEligibleCount: Scalars['Int'];
+};
+
+export type VotationReview = {
+  __typename?: 'VotationReview';
+  approved: Scalars['Boolean'];
 };
 
 export enum VotationStatus {
@@ -708,6 +733,17 @@ export type UpdateVotationStatusMutation = (
     { __typename: 'MaxOneOpenVotationError' }
     & Pick<MaxOneOpenVotationError, 'message'>
   )> }
+);
+
+export type CastVotationReviewMutationVariables = Exact<{
+  votationId: Scalars['String'];
+  approved: Scalars['Boolean'];
+}>;
+
+
+export type CastVotationReviewMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'reviewVotation'>
 );
 
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -951,6 +987,25 @@ export type GetStvResultQuery = (
   )> }
 );
 
+export type GetReviewsQueryVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type GetReviewsQuery = (
+  { __typename?: 'Query' }
+  & { getReviews?: Maybe<(
+    { __typename?: 'ReviewResult' }
+    & Pick<ReviewResult, 'approved' | 'disapproved'>
+  )>, getMyReview?: Maybe<(
+    { __typename?: 'VotationReview' }
+    & Pick<VotationReview, 'approved'>
+  ) | (
+    { __typename?: 'NoReview' }
+    & Pick<NoReview, 'message'>
+  )> }
+);
+
 export type VotationStatusUpdatedSubscriptionVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -985,6 +1040,19 @@ export type VotationOpenedForMeetingSubscriptionVariables = Exact<{
 export type VotationOpenedForMeetingSubscription = (
   { __typename?: 'Subscription' }
   & Pick<Subscription, 'votationOpenedForMeeting'>
+);
+
+export type ReviewAddedSubscriptionVariables = Exact<{
+  votationId: Scalars['String'];
+}>;
+
+
+export type ReviewAddedSubscription = (
+  { __typename?: 'Subscription' }
+  & { reviewAdded?: Maybe<(
+    { __typename?: 'ReviewResult' }
+    & Pick<ReviewResult, 'approved' | 'disapproved'>
+  )> }
 );
 
 
@@ -1526,6 +1594,38 @@ export function useUpdateVotationStatusMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateVotationStatusMutationHookResult = ReturnType<typeof useUpdateVotationStatusMutation>;
 export type UpdateVotationStatusMutationResult = Apollo.MutationResult<UpdateVotationStatusMutation>;
 export type UpdateVotationStatusMutationOptions = Apollo.BaseMutationOptions<UpdateVotationStatusMutation, UpdateVotationStatusMutationVariables>;
+export const CastVotationReviewDocument = gql`
+    mutation CastVotationReview($votationId: String!, $approved: Boolean!) {
+  reviewVotation(votationId: $votationId, approved: $approved)
+}
+    `;
+export type CastVotationReviewMutationFn = Apollo.MutationFunction<CastVotationReviewMutation, CastVotationReviewMutationVariables>;
+
+/**
+ * __useCastVotationReviewMutation__
+ *
+ * To run a mutation, you first call `useCastVotationReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCastVotationReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [castVotationReviewMutation, { data, loading, error }] = useCastVotationReviewMutation({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *      approved: // value for 'approved'
+ *   },
+ * });
+ */
+export function useCastVotationReviewMutation(baseOptions?: Apollo.MutationHookOptions<CastVotationReviewMutation, CastVotationReviewMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CastVotationReviewMutation, CastVotationReviewMutationVariables>(CastVotationReviewDocument, options);
+      }
+export type CastVotationReviewMutationHookResult = ReturnType<typeof useCastVotationReviewMutation>;
+export type CastVotationReviewMutationResult = Apollo.MutationResult<CastVotationReviewMutation>;
+export type CastVotationReviewMutationOptions = Apollo.BaseMutationOptions<CastVotationReviewMutation, CastVotationReviewMutationVariables>;
 export const GetUserDocument = gql`
     query GetUser {
   user {
@@ -2080,6 +2180,50 @@ export function useGetStvResultLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetStvResultQueryHookResult = ReturnType<typeof useGetStvResultQuery>;
 export type GetStvResultLazyQueryHookResult = ReturnType<typeof useGetStvResultLazyQuery>;
 export type GetStvResultQueryResult = Apollo.QueryResult<GetStvResultQuery, GetStvResultQueryVariables>;
+export const GetReviewsDocument = gql`
+    query GetReviews($votationId: String!) {
+  getReviews(votationId: $votationId) {
+    approved
+    disapproved
+  }
+  getMyReview(votationId: $votationId) {
+    ... on VotationReview {
+      approved
+    }
+    ... on NoReview {
+      message
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetReviewsQuery__
+ *
+ * To run a query within a React component, call `useGetReviewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetReviewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetReviewsQuery({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useGetReviewsQuery(baseOptions: Apollo.QueryHookOptions<GetReviewsQuery, GetReviewsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetReviewsQuery, GetReviewsQueryVariables>(GetReviewsDocument, options);
+      }
+export function useGetReviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetReviewsQuery, GetReviewsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetReviewsQuery, GetReviewsQueryVariables>(GetReviewsDocument, options);
+        }
+export type GetReviewsQueryHookResult = ReturnType<typeof useGetReviewsQuery>;
+export type GetReviewsLazyQueryHookResult = ReturnType<typeof useGetReviewsLazyQuery>;
+export type GetReviewsQueryResult = Apollo.QueryResult<GetReviewsQuery, GetReviewsQueryVariables>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id) {
@@ -2170,3 +2314,34 @@ export function useVotationOpenedForMeetingSubscription(baseOptions: Apollo.Subs
       }
 export type VotationOpenedForMeetingSubscriptionHookResult = ReturnType<typeof useVotationOpenedForMeetingSubscription>;
 export type VotationOpenedForMeetingSubscriptionResult = Apollo.SubscriptionResult<VotationOpenedForMeetingSubscription>;
+export const ReviewAddedDocument = gql`
+    subscription ReviewAdded($votationId: String!) {
+  reviewAdded(votationId: $votationId) {
+    approved
+    disapproved
+  }
+}
+    `;
+
+/**
+ * __useReviewAddedSubscription__
+ *
+ * To run a query within a React component, call `useReviewAddedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useReviewAddedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useReviewAddedSubscription({
+ *   variables: {
+ *      votationId: // value for 'votationId'
+ *   },
+ * });
+ */
+export function useReviewAddedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ReviewAddedSubscription, ReviewAddedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ReviewAddedSubscription, ReviewAddedSubscriptionVariables>(ReviewAddedDocument, options);
+      }
+export type ReviewAddedSubscriptionHookResult = ReturnType<typeof useReviewAddedSubscription>;
+export type ReviewAddedSubscriptionResult = Apollo.SubscriptionResult<ReviewAddedSubscription>;

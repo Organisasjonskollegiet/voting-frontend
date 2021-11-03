@@ -9,7 +9,7 @@ const TableColumnNames: React.FC<TableColumnNamesProps> = ({ columnNames }) => {
   return (
     <HStack width={'100%'}>
       {columnNames.map((name) => (
-        <Box key={name} fontWeight="bold" width={`${(1 / columnNames.length) * 100}%`}>
+        <Box id={name} fontWeight="bold" width={`${(1 / columnNames.length) * 100}%`} key={name}>
           {name}
         </Box>
       ))}
