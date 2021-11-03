@@ -408,9 +408,7 @@ const Votation: React.FC = () => {
                   result={votationResultData}
                   stvResult={stvResult}
                   isStv={data.votationById.type === VotationType.Stv}
-                  role={participantRole}
                   votationId={votationId}
-                  meetingId={meetingId}
                   winners={winners}
                 />
               )}
@@ -440,6 +438,7 @@ const Votation: React.FC = () => {
               <VStack>
                 <Divider />
                 <VotationController
+                  meetingId={meetingId}
                   showVote={showVote}
                   toggleShowVote={() => setShowVote(!showVote)}
                   votationId={votationId}

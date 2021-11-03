@@ -3,10 +3,12 @@ import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/re
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
+import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 
 interface VotationControllerProps {
   votationId: string;
+  meetingId: string;
   status: VotationStatus;
   showVote: boolean;
   toggleShowVote: () => void;
@@ -15,6 +17,7 @@ interface VotationControllerProps {
 }
 
 const ActiveVotationController: React.FC<VotationControllerProps> = ({
+  meetingId,
   votationId,
   status,
   showVote,
@@ -24,6 +27,8 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
+  const history = useHistory();
 
   const getText = () => {
     switch (status) {
@@ -63,31 +68,50 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
     setDialogOpen(false);
   };
 
+  const handleInvalidResult = async () => {
+    await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
+    history.push(`/meeting/${meetingId}`);
+  };
+
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
-      {status === VotationStatus.Open ? (
+      {status === VotationStatus.Open && (
         <FormControl display="flex" width="fit-content">
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
             Vis meg hva jeg stemte
           </FormLabel>
           <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
         </FormControl>
-      ) : (
-        <Box></Box>
       )}
       {role === Role.Admin && (
-        <Button
-          w="fit-content"
-          _hover={{ bg: 'transparent' }}
-          onClick={() => setDialogOpen(true)}
-          p="1.5em 4em"
-          borderRadius="16em"
-          bg="transparent"
-          rightIcon={<ArrowForwardIcon />}
-        >
-          {getText()}
-        </Button>
+        <>
+          <Button
+            p="1.5em 4em"
+            bg="transparent"
+            borderRadius="16em"
+            onClick={() => setInvalidateVotationDialogOpen(true)}
+          >
+            Avbryt votering
+          </Button>
+          <Button
+            w="fit-content"
+            _hover={{ bg: 'transparent' }}
+            onClick={() => setDialogOpen(true)}
+            p="1.5em 4em"
+            borderRadius="16em"
+            bg="transparent"
+            rightIcon={<ArrowForwardIcon />}
+          >
+            {getText()}
+          </Button>
+        </>
       )}
+      <CustomAlertDialog
+        dialogIsOpen={invalidateVotationDialogOpen}
+        handleCancel={() => setInvalidateVotationDialogOpen(false)}
+        handleConfirm={handleInvalidResult}
+        type={DialogType.INVALIDATE}
+      />
       <CustomAlertDialog
         dialogIsOpen={dialogOpen}
         handleCancel={() => setDialogOpen(false)}

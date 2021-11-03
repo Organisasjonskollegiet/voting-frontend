@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { VStack, Button, Heading } from '@chakra-ui/react';
+import React from 'react';
+import { VStack, Heading } from '@chakra-ui/react';
 import {
   Role,
-  useUpdateVotationStatusMutation,
-  VotationStatus,
   GetVotationResultsQuery,
   GetStvResultQuery,
   AlternativeResult,
   Alternative as AlternativeType,
 } from '../../__generated__/graphql-types';
-import { useHistory } from 'react-router';
 import ResultsTable from './results_table/ResultsTable';
-import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import StvResultTable from './results_table/StvResultTable';
 import AlternativesString from '../common/AlternativesString';
 import { green } from '../styles/theme';
@@ -19,8 +15,6 @@ import Loading from '../common/Loading';
 
 interface CheckResultsProps {
   votationId: string;
-  meetingId: string;
-  role: Role;
   isStv: boolean;
   result: GetVotationResultsQuery | null | undefined;
   stvResult: GetStvResultQuery | null | undefined;
@@ -28,26 +22,7 @@ interface CheckResultsProps {
   loading: boolean;
 }
 
-const CheckResults: React.FC<CheckResultsProps> = ({
-  votationId,
-  meetingId,
-  role,
-  isStv,
-  result,
-  stvResult,
-  winners,
-  loading,
-}) => {
-  const [updateVotationStatus] = useUpdateVotationStatusMutation();
-  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
-  const history = useHistory();
-
-  const handleInvalidResult = async () => {
-    setInvalidateVotationDialogOpen(false);
-    await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
-    history.push(`/meeting/${meetingId}`);
-  };
-
+const CheckResults: React.FC<CheckResultsProps> = ({ votationId, isStv, result, stvResult, winners, loading }) => {
   if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
     return <Loading text="Henter resultater" asOverlay={false} />;
   }
@@ -75,17 +50,6 @@ const CheckResults: React.FC<CheckResultsProps> = ({
         )}
       </VStack>
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
-      {role === Role.Admin && (
-        <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
-          Erklær resultat ugyldig
-        </Button>
-      )}
-      <CustomAlertDialog
-        dialogIsOpen={invalidateVotationDialogOpen}
-        handleCancel={() => setInvalidateVotationDialogOpen(false)}
-        handleConfirm={handleInvalidResult}
-        type={DialogType.INVALIDATE}
-      />
     </VStack>
   );
 };
