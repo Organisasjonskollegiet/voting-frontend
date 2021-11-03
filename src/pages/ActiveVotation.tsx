@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import {
   Alternative as AlternativeType,
   Participant,
@@ -17,6 +17,9 @@ import {
   AlternativeResult,
   useVotationOpenedForMeetingSubscription,
   useGetStvResultLazyQuery,
+  useCastVotationReviewMutation,
+  GetVotationResultsQuery,
+  GetStvResultQuery,
 } from '../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
@@ -28,22 +31,36 @@ import VotationController from '../components/activeVotation/ActiveVotationContr
 import { centerContainer, outerContainer } from '../components/styles/containerStyles';
 import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import CheckResults from '../components/activeVotation/CheckResults';
+import CheckResults from '../components/activeVotation/checkResults/CheckResults';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
+import { subtitlesStyle } from '../components/styles/styles';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
-
-export const subtitlesStyle = {
-  fontStyle: 'normal',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  lineHeight: '150%',
-} as React.CSSProperties;
 
 export type AlternativeWithIndex = AlternativeType & {
   index: number;
   isRanked: boolean;
 };
+
+export type ActiveVotationContextState = {
+  role: Role;
+  participants: Participant[];
+  result: GetVotationResultsQuery | null | undefined;
+  stvResult: GetStvResultQuery | null | undefined;
+  votationId: string;
+  isStv: boolean;
+};
+
+const contextDefualtValues: ActiveVotationContextState = {
+  role: Role.Participant,
+  participants: [],
+  result: undefined,
+  stvResult: undefined,
+  votationId: '',
+  isStv: false,
+};
+
+export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
 
 const Votation: React.FC = () => {
   const { user } = useAuth0();
@@ -75,6 +92,8 @@ const Votation: React.FC = () => {
       meetingId,
     },
   });
+
+  const [castVotationReview, { error: castVotationReviewError }] = useCastVotationReviewMutation();
 
   const { data: newStatus } = useVotationStatusUpdatedSubscription({
     variables: { id: votationId },
@@ -347,112 +366,120 @@ const Votation: React.FC = () => {
   if (castStvError || castVoteError || blankVoteError) {
     return (
       <Center mt="10vh">
-        <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdatert siden og prøv på ny.</Text>
+        <Text>Det skjedde noe galt med registreringen av stemmen din. Oppdater siden og prøv på ny.</Text>
       </Center>
     );
   }
 
-  return (
-    <PageContainer>
-      <VStack>
-        {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
-        <Center sx={outerContainer}>
-          {(castVoteLoading || blankVoteLoading || stvLoading) && (
-            <Loading text="Registrerer stemme" asOverlay={true} />
-          )}
-          <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
-            <VStack alignItems="left" spacing="1rem">
-              <VStack alignItems="left" spacing="0.5rem">
-                <Heading as="h1" style={subtitlesStyle}>
-                  Votering {data.votationById.index + 1}
-                </Heading>
-                <Heading as="h1" sx={h1Style}>
-                  {data.votationById.title}
-                </Heading>
-              </VStack>
+  if (castVotationReviewError) {
+    <Center mt="10vh">
+      <Text>Det skjedde noe galt med registreringen av din anmeldelse. Oppdater siden og prøv på ny.</Text>
+    </Center>;
+  }
 
-              <Text mt="1em">{data.votationById.description}</Text>
-              {/* <VotationTypeAccordion
+  return (
+    <ActiveVotationContext.Provider
+      value={{
+        participants: (data?.meetingById?.participants as Participant[]) || [],
+        role: participantRole || Role.Participant,
+        result: votationResultData,
+        stvResult: stvResult,
+        votationId: votationId,
+        isStv: data.votationById.type === VotationType.Stv,
+      }}
+    >
+      <PageContainer>
+        <VStack>
+          {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
+          <Center sx={outerContainer}>
+            {(castVoteLoading || blankVoteLoading || stvLoading) && (
+              <Loading text="Registrerer stemme" asOverlay={true} />
+            )}
+            <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
+              <VStack alignItems="left" spacing="1rem">
+                <VStack alignItems="left" spacing="0.5rem">
+                  <Heading as="h1" style={subtitlesStyle}>
+                    Votering {data.votationById.index + 1}
+                  </Heading>
+                  <Heading as="h1" sx={h1Style}>
+                    {data.votationById.title}
+                  </Heading>
+                </VStack>
+
+                <Text mt="1em">{data.votationById.description}</Text>
+                {/* <VotationTypeAccordion
                 votationType={data.votationById.type}
                 majorityThreshold={data.votationById.majorityThreshold}
                 numberOfWinners={data.votationById.numberOfWinners}
               /> */}
-            </VStack>
+              </VStack>
 
-            {status === VotationStatus.Open && (
-              <CastVote
-                alternatives={alternatives || []}
-                handleSelect={handleSelect}
-                blankVotes={data.votationById.blankVotes || false}
-                submitVote={submitVote}
-                submitButtonDisabled={selectedAlternativeId === null && data.votationById.type !== VotationType.Stv}
-                voteCount={voteCount}
-                votingEligibleCount={data?.getVoteCount?.votingEligibleCount}
-                isStv={data.votationById.type === VotationType.Stv}
-                updateAlternatives={setAlternatives}
-                userHasVoted={userHasVoted}
-                // show vote if showVote is true, or the user has not voted and is not waiting for vote to be registered
-                showVote={showVote || (!userHasVoted && !stvLoading && !castVoteLoading && !blankVoteLoading)}
-                isVotingEligible={isVotingEligible}
-              />
-            )}
-            {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (
-              <Box>
-                <Loading asOverlay={false} text={'Resultatene sjekkes'} />
-              </Box>
-            )}
-            {status === VotationStatus.CheckingResult &&
-              (participantRole === Role.Counter || participantRole === Role.Admin) && (
-                <CheckResults
-                  loading={stvResultLoading || votationResultLoading}
-                  result={votationResultData}
-                  stvResult={stvResult}
-                  isStv={data.votationById.type === VotationType.Stv}
-                  role={participantRole}
-                  votationId={votationId}
-                  meetingId={meetingId}
-                  winners={winners}
+              {status === VotationStatus.Open && (
+                <CastVote
+                  alternatives={alternatives || []}
+                  handleSelect={handleSelect}
+                  blankVotes={data.votationById.blankVotes || false}
+                  submitVote={submitVote}
+                  submitButtonDisabled={selectedAlternativeId === null && data.votationById.type !== VotationType.Stv}
+                  voteCount={voteCount}
+                  votingEligibleCount={data?.getVoteCount?.votingEligibleCount}
+                  updateAlternatives={setAlternatives}
+                  userHasVoted={userHasVoted}
+                  // show vote if showVote is true, or the user has not voted and is not waiting for vote to be registered
+                  showVote={showVote || (!userHasVoted && !stvLoading && !castVoteLoading && !blankVoteLoading)}
+                  isVotingEligible={isVotingEligible}
                 />
               )}
-            {status === VotationStatus.PublishedResult && (
-              <Box mt="4em">
-                <VotationResult
-                  loading={votationResultLoading || winnerLoading || stvResultLoading}
-                  result={votationResultData}
-                  stvResult={stvResult}
-                  votationId={votationId}
-                  showResultsTable={!data.votationById.hiddenVotes}
-                  backToVotationList={backToVotationList}
-                  winners={winners}
-                  type={data.votationById.type}
-                />
-              </Box>
-            )}
-            {status === VotationStatus.Invalid && (
-              <VStack>
-                <Text>Voteringen er erklært ugyldig</Text>
-                <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-                  Gå tilbake til liste over voteringer
-                </Button>
-              </VStack>
-            )}
-            {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-              <VStack>
-                <Divider />
-                <VotationController
-                  showVote={showVote}
-                  toggleShowVote={() => setShowVote(!showVote)}
-                  votationId={votationId}
-                  status={status}
-                  disableShowVote={disableToggleShowVote}
-                  role={participantRole}
-                />
-              </VStack>
-            )}
-          </VStack>
-        </Center>
-      </VStack>
-    </PageContainer>
+              {status === VotationStatus.CheckingResult && participantRole === Role.Participant && (
+                <Box>
+                  <Loading asOverlay={false} text={'Resultatene sjekkes'} />
+                </Box>
+              )}
+              {status === VotationStatus.CheckingResult &&
+                (participantRole === Role.Counter || participantRole === Role.Admin) && (
+                  <CheckResults
+                    loading={stvResultLoading || votationResultLoading}
+                    meetingId={meetingId}
+                    winners={winners}
+                    castVotationReview={(approved: boolean) =>
+                      castVotationReview({ variables: { votationId, approved } })
+                    }
+                  />
+                )}
+              {status === VotationStatus.PublishedResult && (
+                <Box mt="4em">
+                  <VotationResult
+                    loading={votationResultLoading || winnerLoading || stvResultLoading}
+                    showResultsTable={!data.votationById.hiddenVotes}
+                    backToVotationList={backToVotationList}
+                    winners={winners}
+                  />
+                </Box>
+              )}
+              {status === VotationStatus.Invalid && (
+                <VStack>
+                  <Text>Voteringen er erklært ugyldig</Text>
+                  <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+                    Gå tilbake til liste over voteringer
+                  </Button>
+                </VStack>
+              )}
+              {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+                <VStack>
+                  <Divider />
+                  <VotationController
+                    showVote={showVote}
+                    toggleShowVote={() => setShowVote(!showVote)}
+                    status={status}
+                    disableShowVote={disableToggleShowVote}
+                  />
+                </VStack>
+              )}
+            </VStack>
+          </Center>
+        </VStack>
+      </PageContainer>
+    </ActiveVotationContext.Provider>
   );
 };
 
