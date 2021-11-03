@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Button, Heading } from '@chakra-ui/react';
+import { VStack, Button, Heading, HStack } from '@chakra-ui/react';
 import {
   Role,
   useUpdateVotationStatusMutation,
@@ -16,6 +16,7 @@ import StvResultTable from './results_table/StvResultTable';
 import AlternativesString from '../common/AlternativesString';
 import { green } from '../styles/theme';
 import Loading from '../common/Loading';
+import DownloadResultButton from './DownloadResultButton';
 
 interface CheckResultsProps {
   votationId: string;
@@ -75,11 +76,16 @@ const CheckResults: React.FC<CheckResultsProps> = ({
         )}
       </VStack>
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
-      {role === Role.Admin && (
-        <Button mt="10em" p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
-          Erklær resultat ugyldig
-        </Button>
-      )}
+      <HStack w="100%" justifyContent="space-between">
+        {role === Role.Admin && (
+          <Button p="1.5em 4em" borderRadius="16em" onClick={() => setInvalidateVotationDialogOpen(true)}>
+            Erklær resultat ugyldig
+          </Button>
+        )}
+        {role === Role.Admin && (result || stvResult) && (
+          <DownloadResultButton isStv={isStv} result={result} stvResult={stvResult} />
+        )}
+      </HStack>
       <CustomAlertDialog
         dialogIsOpen={invalidateVotationDialogOpen}
         handleCancel={() => setInvalidateVotationDialogOpen(false)}

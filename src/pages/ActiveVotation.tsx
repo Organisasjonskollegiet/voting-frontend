@@ -417,6 +417,7 @@ const Votation: React.FC = () => {
             {status === VotationStatus.PublishedResult && (
               <Box mt="4em">
                 <VotationResult
+                  isAdmin={participantRole === Role.Admin}
                   loading={votationResultLoading || winnerLoading || stvResultLoading}
                   result={votationResultData}
                   stvResult={stvResult}

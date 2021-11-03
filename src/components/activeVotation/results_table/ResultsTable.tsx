@@ -1,6 +1,7 @@
 import { Box, Divider, HStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
 import { GetVotationResultsQuery } from '../../../__generated__/graphql-types';
+import { getRoundedPercentage } from '../utils';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
@@ -28,10 +29,6 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
       setVotingEligibleCount(result.getVotationResults.votingEligibleCount);
     }
   }, [result?.getVotationResults?.votingEligibleCount, votingEligibleCount]);
-
-  const getRoundedPercentage = (share: number) => {
-    return Math.round(share * 100 * 100) / 100;
-  };
 
   const getBlankAlternative = (blankVoteCount: number) => {
     return {
@@ -66,12 +63,19 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
               <TableRow
                 id={alternative.id}
                 elements={[
-                  alternative.text,
-                  alternative.votes.toString(),
-                  voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount).toString() : '0',
-                  votingEligibleCount > 0
-                    ? getRoundedPercentage(alternative.votes / votingEligibleCount).toString()
-                    : '0',
+                  { id: 'alt', content: alternative.text },
+                  { id: 'nrVot', content: alternative.votes.toString() },
+                  {
+                    id: '%Vot',
+                    content: voteCount > 0 ? getRoundedPercentage(alternative.votes / voteCount).toString() : '0',
+                  },
+                  {
+                    id: '%VotEl',
+                    content:
+                      votingEligibleCount > 0
+                        ? getRoundedPercentage(alternative.votes / votingEligibleCount).toString()
+                        : '0',
+                  },
                 ]}
                 key={alternative.id + 'stack'}
                 style={alternative.isWinner ? { color: 'green', fontWeight: 'bold' } : {}}

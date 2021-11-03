@@ -6,15 +6,17 @@ import {
   GetVotationResultsQuery,
   VotationType,
 } from '../../__generated__/graphql-types';
-import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
+import { Center, VStack, Text, Divider, Button, HStack } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
+import DownloadResultButton from './DownloadResultButton';
 
 export interface VotationResultProps {
+  isAdmin: boolean;
   winners: AlternativeType[] | AlternativeResult[] | null;
   result: GetVotationResultsQuery | null | undefined;
   votationId: string;
@@ -26,6 +28,7 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({
+  isAdmin,
   winners,
   backToVotationList,
   result,
@@ -37,6 +40,8 @@ const VotationResult: React.FC<VotationResultProps> = ({
 }) => {
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
+  console.log('result', result);
+  console.log('stvresult', stvResult);
   return (
     <VStack spacing="2em">
       <Center paddingLeft="34px">
@@ -67,9 +72,14 @@ const VotationResult: React.FC<VotationResultProps> = ({
           <ResultsTable result={result} votationId={votationId} />
         ))}
       <Divider m="3em 0" />
-      <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-        Gå tilbake til liste over voteringer
-      </Button>
+      <HStack w="100%" justifyContent="space-between">
+        <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+          Gå tilbake til liste over voteringer
+        </Button>
+        {(result || stvResult) && isAdmin && (
+          <DownloadResultButton isStv={type === VotationType.Stv} result={result} stvResult={stvResult} />
+        )}
+      </HStack>
     </VStack>
   );
 };
