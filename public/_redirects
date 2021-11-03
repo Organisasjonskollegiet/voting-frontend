@@ -1,1 +1,9 @@
-/*  /index.html  200
+/meeting/:meetingId/votation/:votationId /meeting/:meetingId/votation/:votationId  200
+
+/meeting/:meetingId/edit /meeting/:meetingId/edit 200
+
+/meeting/new /meeting/new 200
+
+/meeting/:meetingId /meeting/:meetingId 200
+
+/* /index.html 200
