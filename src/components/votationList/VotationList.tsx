@@ -194,7 +194,7 @@ const VotationList: React.FC<VotationListProps> = ({
       );
       setOngoingVotation(ongoingVotation);
       setNextVotation(upcomingVotations.slice(0, 1)[0]);
-      if (upcomingVotations.length > 1) setUpcomingVotations(upcomingVotations.slice(1));
+      setUpcomingVotations(upcomingVotations.slice(1));
       setEndedVotations(
         sortedVotations.filter(
           (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
