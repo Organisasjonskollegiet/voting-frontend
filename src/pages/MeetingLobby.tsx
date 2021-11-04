@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
@@ -6,6 +6,10 @@ import {
   useGetMeetingForLobbyQuery,
   useGetRoleQuery,
   Role,
+  VotationStatus,
+  Participant,
+  GetVotationResultsQuery,
+  GetStvResultQuery,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -17,6 +21,26 @@ import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import { useLastLocation } from 'react-router-last-location';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
+
+export type ActiveVotationContextState = {
+  role: Role;
+  participants: Participant[];
+  result: GetVotationResultsQuery | null | undefined;
+  stvResult: GetStvResultQuery | null | undefined;
+  votationId: string;
+  isStv: boolean;
+};
+
+const contextDefualtValues: ActiveVotationContextState = {
+  role: Role.Participant,
+  participants: [],
+  result: undefined,
+  stvResult: undefined,
+  votationId: '',
+  isStv: false,
+};
+
+export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -54,7 +78,7 @@ const MeetingLobby: React.FC = () => {
 
   const navigateToOpenVotation = useCallback(
     (openVotation: string | null) => {
-      setLocation('activeVotation');
+      if (openVotation) setLocation('activeVotation');
       // if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
     },
     [meetingId, history]
@@ -62,14 +86,14 @@ const MeetingLobby: React.FC = () => {
 
   const handleOpenVotation = useCallback(
     (openVotation: string) => {
-      if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
-        setOpenVotation(openVotation);
-      } else if (role) {
-        // navigateToOpenVotation(openVotation);
-        console.log('open', openVotation);
-        setOpenVotation(openVotation);
-        setLocation('activeVotation');
-      }
+      // if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
+      // setOpenVotation(openVotation);
+      // } else if (role) {
+      // navigateToOpenVotation(openVotation);
+      console.log('open', openVotation);
+      setOpenVotation(openVotation);
+      setLocation('activeVotation');
+      // }
     },
     [role, lastLocation?.pathname, meetingId, navigateToOpenVotation]
   );
@@ -88,6 +112,14 @@ const MeetingLobby: React.FC = () => {
 
   const backToMyMeetings = () => {
     history.push('/');
+  };
+
+  const returnToVotationList = (status: VotationStatus) => {
+    console.log('status', status);
+    if (status !== VotationStatus.Open && status !== VotationStatus.CheckingResult) {
+      setOpenVotation(null);
+    }
+    setLocation('lobby');
   };
 
   if (loading) {
@@ -114,7 +146,7 @@ const MeetingLobby: React.FC = () => {
           />
         )}
         {location === 'activeVotation' && openVotation ? (
-          <ActiveVotation setLocation={setLocation} votationId={openVotation} />
+          <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
         ) : (
           <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
             <VStack alignItems="left">

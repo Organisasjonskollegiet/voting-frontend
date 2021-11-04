@@ -62,9 +62,9 @@ const contextDefualtValues: ActiveVotationContextState = {
 
 export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
 
-const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' | 'activeVotation') => void }> = ({
+const Votation: React.FC<{ votationId: string; backToVotationList: (status: VotationStatus) => void }> = ({
   votationId,
-  setLocation,
+  backToVotationList,
 }) => {
   const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string; votationId: string }>();
@@ -90,11 +90,11 @@ const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' |
 
   const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
-  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-    variables: {
-      meetingId,
-    },
-  });
+  // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+  //   variables: {
+  //     meetingId,
+  //   },
+  // });
 
   const [castVotationReview, { error: castVotationReviewError }] = useCastVotationReviewMutation();
 
@@ -272,11 +272,11 @@ const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' |
   }, [newVoteCountData, voteCount, votationId]);
 
   // go to new votation if another votation opens
-  useEffect(() => {
-    if (votationOpened && votationOpened.votationOpenedForMeeting !== votationId) {
-      history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
-    }
-  }, [votationOpened, history, meetingId, votationId]);
+  // useEffect(() => {
+  //   if (votationOpened && votationOpened.votationOpenedForMeeting !== votationId) {
+  //     history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
+  //   }
+  // }, [votationOpened, history, meetingId, votationId]);
 
   //Register the vote
   const [castVote, { loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
@@ -309,10 +309,10 @@ const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' |
     setDisableToggleShowVote(false);
   };
 
-  const backToVotationList = () => {
-    setLocation('lobby');
-    history.push(`/meeting/${meetingId}`);
-  };
+  // const backToVotationList = () => {
+  //   setLocation('lobby');
+  //   // history.push(`/meeting/${meetingId}`);
+  // };
 
   const shuffleAlternatives = (alternatives: AlternativeType[]) => {
     let currentIndex = alternatives.length;
@@ -370,7 +370,7 @@ const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' |
             <VotationResult
               loading={votationResultLoading || winnerLoading || stvResultLoading}
               showResultsTable={!data.votationById.hiddenVotes}
-              backToVotationList={backToVotationList}
+              backToVotationList={() => backToVotationList(status)}
               winners={winners}
             />
           </Box>
@@ -379,7 +379,7 @@ const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' |
         return (
           <VStack>
             <Text>Voteringen er erklært ugyldig</Text>
-            <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+            <Button borderRadius={'16em'} onClick={() => backToVotationList(status)} leftIcon={<ArrowBackIcon />}>
               Gå tilbake til liste over voteringer
             </Button>
           </VStack>

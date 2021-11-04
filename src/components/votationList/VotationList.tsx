@@ -12,6 +12,7 @@ import {
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
+  useVotationOpenedForMeetingSubscription,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -20,6 +21,7 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
+import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
@@ -42,6 +44,7 @@ const VotationList: React.FC<VotationListProps> = ({
     variables: {
       meetingId,
     },
+    fetchPolicy: 'no-cache',
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
@@ -66,10 +69,20 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
 
+  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
+    variables: {
+      meetingId,
+    },
+  });
+
   const toast = useToast();
 
   useEffect(() => {
-    if (role === Role.Admin && data?.meetingById?.votations && data.meetingById.votations.length === 0) {
+    if (
+      !nextVotation &&
+      role === Role.Admin &&
+      ((data?.meetingById?.votations && data.meetingById.votations.length === 0) || !votationsMayExist)
+    ) {
       const emptyVotation = getEmptyVotation();
       setNextVotation(emptyVotation);
       setUpcomingVotations([]);
@@ -179,6 +192,7 @@ const VotationList: React.FC<VotationListProps> = ({
       !upcomingVotations &&
       !endedVotations
     ) {
+      console.log('new', data);
       const votations = data.meetingById.votations as Votation[];
       const winners = data.resultsOfPublishedVotations as Votation[];
       const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
@@ -577,8 +591,6 @@ const VotationList: React.FC<VotationListProps> = ({
       </>
     );
   }
-
-  console.log(data);
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
