@@ -22,25 +22,21 @@ import { useLastLocation } from 'react-router-last-location';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
 
-export type ActiveVotationContextState = {
+export type MeetingContextState = {
   role: Role;
   participants: Participant[];
-  result: GetVotationResultsQuery | null | undefined;
-  stvResult: GetStvResultQuery | null | undefined;
-  votationId: string;
-  isStv: boolean;
+  meetingId: string;
+  presentationMode: boolean;
 };
 
-const contextDefualtValues: ActiveVotationContextState = {
+const contextDefualtValues: MeetingContextState = {
   role: Role.Participant,
   participants: [],
-  result: undefined,
-  stvResult: undefined,
-  votationId: '',
-  isStv: false,
+  meetingId: '',
+  presentationMode: false,
 };
 
-export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
+export const MeetingContext = createContext<MeetingContextState>(contextDefualtValues);
 
 const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
@@ -53,7 +49,7 @@ const MeetingLobby: React.FC = () => {
 
   const [location, setLocation] = useState<'lobby' | 'activeVotation'>('lobby');
 
-  const { data: roleResult, error: roleError } = useGetRoleQuery({ variables: { meetingId } });
+  const { data: participantResult, error: participantError } = useGetRoleQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
   const [openVotation, setOpenVotation] = useState<string | null>(null);
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
@@ -65,16 +61,18 @@ const MeetingLobby: React.FC = () => {
   const history = useHistory();
   const lastLocation = useLastLocation();
 
+  const [presentationMode, setPresentationMode] = useState(false);
+
   useEffect(() => {
-    if (roleResult && roleResult.meetingById?.participants) {
-      const myRole = roleResult.meetingById.participants.filter(
+    if (participantResult && participantResult.meetingById?.participants) {
+      const myRole = participantResult.meetingById.participants.filter(
         (participant) => `auth0|${participant?.user?.id ?? ''}` === user?.sub
       )[0]?.role;
       if (myRole && myRole !== role) {
         setRole(myRole);
       }
     }
-  }, [roleResult, role, user?.sub]);
+  }, [participantResult, role, user?.sub]);
 
   const navigateToOpenVotation = useCallback(
     (openVotation: string | null) => {
@@ -126,7 +124,7 @@ const MeetingLobby: React.FC = () => {
     return <Loading asOverlay={false} text={'Henter møte'} />;
   }
 
-  if (error || roleError) {
+  if (error || participantError) {
     return (
       <Center mt="10vh">
         <Text>Det skjedde noe galt under innlastingen</Text>
@@ -135,49 +133,58 @@ const MeetingLobby: React.FC = () => {
   }
 
   return (
-    <PageContainer>
-      <Box color="gray.500" pb="2em" display="flex" flexDirection="column" alignItems="center">
-        {role === Role.Admin && (
-          <LobbyNavigation
-            openVotation={openVotation}
-            meetingId={meetingId}
-            location={location}
-            setLocation={setLocation}
-          />
-        )}
-        {location === 'activeVotation' && openVotation ? (
-          <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
-        ) : (
-          <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
-            <VStack alignItems="left">
-              <Heading sx={h1Style} as="h1">
-                {data?.meetingById?.title}
-              </Heading>
-              <VStack align="start">
-                <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-                <VotationList
-                  navigateToOpenVotation={navigateToOpenVotation}
-                  hideOpenVotationButton={!!openVotation}
-                  role={role}
-                  isMeetingLobby={true}
-                  votationsMayExist={true}
-                  meetingId={meetingId}
-                />
+    <MeetingContext.Provider
+      value={{
+        participants: participantResult?.meetingById?.participants as Participant[],
+        role: role ?? Role.Participant,
+        meetingId,
+        presentationMode,
+      }}
+    >
+      <PageContainer>
+        <Box color="gray.500" pb="2em" display="flex" flexDirection="column" alignItems="center">
+          {role === Role.Admin && (
+            <LobbyNavigation
+              openVotation={openVotation}
+              meetingId={meetingId}
+              location={location}
+              setLocation={setLocation}
+            />
+          )}
+          {location === 'activeVotation' && openVotation ? (
+            <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
+          ) : (
+            <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
+              <VStack alignItems="left">
+                <Heading sx={h1Style} as="h1">
+                  {data?.meetingById?.title}
+                </Heading>
+                <VStack align="start">
+                  <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
+                  <VotationList
+                    navigateToOpenVotation={navigateToOpenVotation}
+                    hideOpenVotationButton={!!openVotation}
+                    role={role}
+                    isMeetingLobby={true}
+                    votationsMayExist={true}
+                    meetingId={meetingId}
+                  />
+                </VStack>
+              </VStack>
+              <VStack alignItems="left" spacing="1em">
+                <Divider />
+                <HStack justifyContent="space-between">
+                  <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
+                  {role === Role.Admin && (
+                    <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
+                  )}
+                </HStack>
               </VStack>
             </VStack>
-            <VStack alignItems="left" spacing="1em">
-              <Divider />
-              <HStack justifyContent="space-between">
-                <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
-                {role === Role.Admin && (
-                  <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
-                )}
-              </HStack>
-            </VStack>
-          </VStack>
-        )}
-      </Box>
-    </PageContainer>
+          )}
+        </Box>
+      </PageContainer>
+    </MeetingContext.Provider>
   );
 };
 

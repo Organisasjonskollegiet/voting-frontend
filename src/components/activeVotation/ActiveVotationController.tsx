@@ -6,6 +6,7 @@ import WrapStack from '../common/WrapStack';
 import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 interface VotationControllerProps {
   status: VotationStatus;
@@ -24,7 +25,8 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
   const history = useHistory();
-  const { role, votationId, meetingId } = useContext(ActiveVotationContext);
+  const { votationId, meetingId } = useContext(ActiveVotationContext);
+  const { role } = useContext(MeetingContext);
 
   const getText = () => {
     switch (status) {

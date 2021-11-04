@@ -19,16 +19,16 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     meetingId
   }
 
-  meetingById(meetingId: $meetingId) {
-    participants {
-      user {
-        id
-        email
-      }
-      role
-      isVotingEligible
-    }
-  }
+  # meetingById(meetingId: $meetingId) {
+  #   participants {
+  #     user {
+  #       id
+  #       email
+  #     }
+  #     role
+  #     isVotingEligible
+  #   }
+  # }
 
   getVoteCount(votationId: $votationId) {
     votingEligibleCount

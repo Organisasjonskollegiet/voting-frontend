@@ -43,8 +43,8 @@ export type AlternativeWithIndex = AlternativeType & {
 };
 
 export type ActiveVotationContextState = {
-  role: Role;
-  participants: Participant[];
+  // role: Role;
+  // participants: Participant[];
   result: GetVotationResultsQuery | null | undefined;
   stvResult: GetStvResultQuery | null | undefined;
   votationId: string;
@@ -53,8 +53,8 @@ export type ActiveVotationContextState = {
 };
 
 const contextDefualtValues: ActiveVotationContextState = {
-  role: Role.Participant,
-  participants: [],
+  // role: Role.Participant,
+  // participants: [],
   result: undefined,
   stvResult: undefined,
   votationId: '',
@@ -445,8 +445,8 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   return (
     <ActiveVotationContext.Provider
       value={{
-        participants: (data?.meetingById?.participants as Participant[]) || [],
-        role: participantRole || Role.Participant,
+        // participants: (data?.meetingById?.participants as Participant[]) || [],
+        // role: participantRole || Role.Participant,
         result: votationResultData,
         stvResult: stvResult,
         votationId: votationId,

@@ -2,6 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
 import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import { Role } from '../../../__generated__/graphql-types';
+import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface VotationReviewsProps {
   numberOfApproved: number;
@@ -9,7 +10,7 @@ interface VotationReviewsProps {
 }
 
 const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfApproved, numberOfDisapproved }) => {
-  const { participants } = useContext(ActiveVotationContext);
+  const { participants } = useContext(MeetingContext);
 
   const numberOfCounters = useMemo(
     () => participants.reduce((sum, p) => (p.role === Role.Counter || p.role === Role.Admin ? sum + 1 : sum), 0),

@@ -17,6 +17,7 @@ import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
 import ReviewVotation from './ReviewVotation';
 import DownloadResultButton from '../DownloadResultButton';
+import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface CheckResultsProps {
   meetingId: string;
@@ -26,8 +27,8 @@ interface CheckResultsProps {
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
-  const { result, stvResult, votationId, role, isStv } = useContext(ActiveVotationContext);
-
+  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { role } = useContext(MeetingContext);
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
   const [currentReview, setCurrentReview] = useState<boolean | undefined>(undefined);
