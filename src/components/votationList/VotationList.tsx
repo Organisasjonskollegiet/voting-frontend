@@ -116,6 +116,14 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
+  const alternativeMapper = (alternative: Alternative, index: number) => {
+    return {
+      ...alternative,
+      index: index,
+      existsInDb: true,
+    };
+  };
+
   /**
    * @description adds existsInDb and isEdited to the votations. If the results of the
    * votation is published, alternatives prop is used and alternatives include isWinner.
@@ -186,7 +194,7 @@ const VotationList: React.FC<VotationListProps> = ({
       );
       setOngoingVotation(ongoingVotation);
       setNextVotation(upcomingVotations.slice(0, 1)[0]);
-      if (upcomingVotations.length > 1) setUpcomingVotations(upcomingVotations.slice(1));
+      setUpcomingVotations(upcomingVotations.slice(1));
       setEndedVotations(
         sortedVotations.filter(
           (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
@@ -197,40 +205,6 @@ const VotationList: React.FC<VotationListProps> = ({
       }
     }
   }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
-
-  useEffect(() => {
-    if (!createVotationsResult.data?.createVotations || !updateVotationsResult.data?.updateVotations) return;
-    toast({
-      title: 'Voteringer oppdatert.',
-      description: 'Voteringene har blitt opprettet',
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-    });
-    const createResults = createVotationsResult.data.createVotations as Votation[];
-    const updateResults = updateVotationsResult.data.updateVotations as Votation[];
-    const createdVotations = formatVotations(createResults) as Votation[];
-    const updatedVotations = formatVotations(updateResults) as Votation[];
-    const votations = [];
-    if (nextVotation) votations.push(nextVotation);
-    if (upcomingVotations) votations.push(...upcomingVotations);
-    const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
-    const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
-    const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
-    if (sortedNewVotations.length > 0) {
-      setNextVotation(sortedNewVotations[0]);
-      setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
-    }
-    // eslint-disable-next-line
-  }, [createVotationsResult.data?.createVotations, updateVotationsResult.data?.updateVotations]);
-
-  const alternativeMapper = (alternative: Alternative, index: number) => {
-    return {
-      ...alternative,
-      index: index,
-      existsInDb: true,
-    };
-  };
 
   const reorder = (
     next: Votation,
@@ -497,7 +471,7 @@ const VotationList: React.FC<VotationListProps> = ({
     });
   };
 
-  const handleUpdateVotations = (votations: Votation[]) => {
+  const handleUpdateVotations = async (votations: Votation[]) => {
     const preparedVotations = votations.map((votation) => {
       return {
         id: votation.id,
@@ -519,7 +493,10 @@ const VotationList: React.FC<VotationListProps> = ({
           .filter((alternative) => alternative.text !== ''),
       };
     });
-    updateVotations({ variables: { votations: preparedVotations } });
+
+    const updateResponse = await updateVotations({ variables: { votations: preparedVotations } });
+    const updateResults = updateResponse.data?.updateVotations as Votation[];
+    return formatVotations(updateResults) as Votation[];
   };
 
   const handleCreateVotations = async (votations: Votation[]) => {
@@ -538,18 +515,35 @@ const VotationList: React.FC<VotationListProps> = ({
           .filter((alternative) => alternative !== ''),
       };
     });
-    createVotations({ variables: { votations: preparedVotations, meetingId } });
+    const createResponse = await createVotations({ variables: { votations: preparedVotations, meetingId } });
+    const createResults = createResponse.data?.createVotations as Votation[];
+    return formatVotations(createResults) as Votation[];
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const votations = [];
+    const promises: Promise<Votation[]>[] = [];
     if (nextVotation) votations.push(nextVotation);
     if (upcomingVotations) votations.push(...upcomingVotations);
     const validVotations = votations.filter((v) => v.title !== '');
     const votationsToCreate = validVotations.filter((votation) => !votation.existsInDb);
     const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
-    handleCreateVotations(votationsToCreate);
-    handleUpdateVotations(votationsToUpdate);
+    promises.push(handleCreateVotations(votationsToCreate), handleUpdateVotations(votationsToUpdate));
+    const [createdVotations, updatedVotations] = await Promise.all(promises);
+    toast({
+      title: 'Voteringer oppdatert.',
+      description: 'Voteringene har blitt opprettet',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+    const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
+    const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
+    const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
+    if (sortedNewVotations.length > 0) {
+      setNextVotation(sortedNewVotations[0]);
+      setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
+    }
   };
 
   const checkIfAnyChanges = () => {
@@ -560,7 +554,18 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const startVotation = () => {
-    if (nextVotation) updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
+    if (!nextVotation) return;
+    if (nextVotation.alternatives.filter((a) => a.existsInDb || a.text !== '').length === 0) {
+      toast({
+        title: 'Kunne ikke åpne votering.',
+        description: 'Kan ikke åpne voteringen da den ikke har noen alternativer.',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+    } else {
+      updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
+    }
   };
 
   if (error) {
@@ -575,7 +580,9 @@ const VotationList: React.FC<VotationListProps> = ({
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
-      {createVotationsResult.loading && <Loading asOverlay={true} text="Oppretter votering" />}
+      {(createVotationsResult.loading || updateVotationsResult.loading) && (
+        <Loading asOverlay={true} text="Oppdaterer votering" />
+      )}
       {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {ongoingVotation && navigateToOpenVotation && (
         <>
