@@ -24,7 +24,7 @@ export enum DialogType {
   PARTICIPANTS = 'Slett deltager',
   CLOSE = 'Avslutt votering',
   PUBLISH = 'Publiser resultat',
-  INVALIDATE = 'Erklær votering ugyldig',
+  INVALIDATE = 'Avbryt votering',
 }
 
 const WarningBody = new Map<DialogType, string>([
@@ -38,7 +38,7 @@ const WarningBody = new Map<DialogType, string>([
   ],
   [DialogType.PARTICIPANTS, 'Er du sikker på at du vil slette følgende deltager(e)?'],
   [DialogType.CLOSE, 'Er du sikker på at du vil stenge voteringen?'],
-  [DialogType.INVALIDATE, 'Er du sikker på at du vil erklære voteringen ugyldig?'],
+  [DialogType.INVALIDATE, 'Er du sikker på at du vil avbryte voteringen? Voteringen vil da bli erklært ugyldig.'],
   [DialogType.PUBLISH, 'Er du sikker på at du vil publisere resultatet?'],
 ]);
 
