@@ -36,7 +36,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   showVote,
   isVotingEligible,
 }) => {
-  const presentationMode = true;
+  const presentationMode = false;
   const { isStv } = useContext(ActiveVotationContext);
 
   return (

@@ -1,14 +1,17 @@
-import { Box, Button, HStack, VStack } from '@chakra-ui/react';
+import { HStack } from '@chakra-ui/react';
 import React from 'react';
 import { useHistory } from 'react-router';
+import { setLastLocation } from 'react-router-last-location/dist/LastLocationProvider';
+import LobbyNavigationButton from './LobbyNavigationButton';
 
 interface LobbyNavigationProps {
   openVotation?: string | null;
   meetingId: string;
   location: 'lobby' | 'activeVotation';
+  setLocation: (location: 'lobby' | 'activeVotation') => void;
 }
 
-const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meetingId, location }) => {
+const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meetingId, location, setLocation }) => {
   const history = useHistory();
 
   return (
@@ -21,34 +24,21 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meeting
       justifyContent="center"
       spacing="2em"
     >
-      <VStack spacing="0">
-        <Button
-          _hover={{ bg: 'transparent' }}
-          bg="transparent"
-          onClick={() => {
-            if (location !== 'lobby') history.push(`/meeting/${meetingId}`);
-          }}
-          fontSize="12px"
-        >
-          Voteringsliste
-        </Button>
-        {location === 'lobby' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
-      </VStack>
-      <VStack spacing="0">
-        <Button
-          _hover={{ bg: 'transparent' }}
-          bg="transparent"
-          disabled={location !== 'activeVotation' && !openVotation}
-          onClick={() => {
-            if (openVotation && location !== 'activeVotation')
-              history.push(`/meeting/${meetingId}/votation/${openVotation}`);
-          }}
-          fontSize="12px"
-        >
-          Aktiv votering
-        </Button>
-        {location === 'activeVotation' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
-      </VStack>
+      <LobbyNavigationButton
+        selected={location === 'lobby'}
+        text="Voteringsliste"
+        onClick={() => {
+          setLocation('lobby');
+        }}
+      />
+      <LobbyNavigationButton
+        selected={location === 'activeVotation'}
+        isDisabled={!openVotation && location != 'activeVotation'}
+        text="Aktiv votering"
+        onClick={() => {
+          setLocation('activeVotation');
+        }}
+      />
     </HStack>
   );
 };

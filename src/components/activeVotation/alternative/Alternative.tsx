@@ -10,7 +10,7 @@ interface AlternativeProps {
 
 const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, selected, disableVoting }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
-  const presentationMode = true;
+  const presentationMode = false;
   return (
     <Button
       disabled={disableVoting}

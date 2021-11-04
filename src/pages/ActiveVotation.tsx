@@ -62,9 +62,12 @@ const contextDefualtValues: ActiveVotationContextState = {
 
 export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
 
-const Votation: React.FC = () => {
+const Votation: React.FC<{ votationId: string; setLocation: (location: 'lobby' | 'activeVotation') => void }> = ({
+  votationId,
+  setLocation,
+}) => {
   const { user } = useAuth0();
-  const { meetingId, votationId } = useParams<{ meetingId: string; votationId: string }>();
+  const { meetingId } = useParams<{ meetingId: string; votationId: string }>();
   const history = useHistory();
 
   //Get votation data and participants from meeting
@@ -278,6 +281,7 @@ const Votation: React.FC = () => {
   //Register the vote
   const [castVote, { loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
   const [castBlankVote, { loading: blankVoteLoading, error: blankVoteError }] = useCastBlankVoteMutation();
+  const presentationMode = false;
 
   const submitVote = async () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
@@ -306,6 +310,7 @@ const Votation: React.FC = () => {
   };
 
   const backToVotationList = () => {
+    setLocation('lobby');
     history.push(`/meeting/${meetingId}`);
   };
 
@@ -347,7 +352,7 @@ const Votation: React.FC = () => {
           />
         );
       case VotationStatus.CheckingResult:
-        return participantRole === Role.Admin || participantRole === Role.Counter ? (
+        return (participantRole === Role.Admin || participantRole === Role.Counter) && !presentationMode ? (
           <CheckResults
             loading={stvResultLoading || votationResultLoading}
             meetingId={meetingId}
@@ -446,47 +451,45 @@ const Votation: React.FC = () => {
         isStv: data.votationById.type === VotationType.Stv,
       }}
     >
-      <PageContainer>
-        <VStack>
-          {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" />}
-          <Center sx={outerContainer}>
-            {(castVoteLoading || blankVoteLoading || stvLoading) && (
-              <Loading text="Registrerer stemme" asOverlay={true} />
-            )}
-            <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
-              <VStack alignItems="left" spacing="1rem">
-                <VStack alignItems="left" spacing="0.5rem">
-                  <Heading as="h1" style={subtitlesStyle}>
-                    Votering {data.votationById.index + 1}
-                  </Heading>
-                  <Heading as="h1" sx={h1Style}>
-                    {data.votationById.title}
-                  </Heading>
-                </VStack>
+      {/* <PageContainer> */}
+      {/* <VStack> */}
+      {/* {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" setLocation/>} */}
+      <Center sx={outerContainer}>
+        {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
+        <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
+          <VStack alignItems="left" spacing="1rem">
+            <VStack alignItems="left" spacing="0.5rem">
+              <Heading as="h1" style={subtitlesStyle}>
+                Votering {data.votationById.index + 1}
+              </Heading>
+              <Heading as="h1" sx={h1Style}>
+                {data.votationById.title}
+              </Heading>
+            </VStack>
 
-                <Text mt="1em">{data.votationById.description}</Text>
-                {/* <VotationTypeAccordion
+            <Text mt="1em">{data.votationById.description}</Text>
+            {/* <VotationTypeAccordion
                 votationType={data.votationById.type}
                 majorityThreshold={data.votationById.majorityThreshold}
                 numberOfWinners={data.votationById.numberOfWinners}
               /> */}
-              </VStack>
-              {getViewFromStatus()}
-              {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
-                <VStack>
-                  <Divider />
-                  <VotationController
-                    showVote={showVote}
-                    toggleShowVote={() => setShowVote(!showVote)}
-                    status={status}
-                    disableShowVote={disableToggleShowVote}
-                  />
-                </VStack>
-              )}
+          </VStack>
+          {getViewFromStatus()}
+          {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+            <VStack>
+              <Divider />
+              <VotationController
+                showVote={showVote}
+                toggleShowVote={() => setShowVote(!showVote)}
+                status={status}
+                disableShowVote={disableToggleShowVote}
+              />
             </VStack>
-          </Center>
+          )}
         </VStack>
-      </PageContainer>
+      </Center>
+      {/* </VStack> */}
+      {/* </PageContainer> */}
     </ActiveVotationContext.Provider>
   );
 };

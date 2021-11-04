@@ -46,7 +46,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
     }
   };
 
-  const presentationMode = true;
+  const presentationMode = false;
 
   return (
     <ButtonGroup sx={styles} spacing={0} isDisabled={userHasVoted}>

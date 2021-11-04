@@ -69,7 +69,7 @@ const VotationList: React.FC<VotationListProps> = ({
   const toast = useToast();
 
   useEffect(() => {
-    if (role === Role.Admin && !ongoingVotation && !nextVotation && !upcomingVotations && !endedVotations && !loading) {
+    if (role === Role.Admin && data?.meetingById?.votations && data.meetingById.votations.length === 0) {
       const emptyVotation = getEmptyVotation();
       setNextVotation(emptyVotation);
       setUpcomingVotations([]);
@@ -577,6 +577,8 @@ const VotationList: React.FC<VotationListProps> = ({
       </>
     );
   }
+
+  console.log(data);
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
