@@ -49,6 +49,7 @@ export type ActiveVotationContextState = {
   stvResult: GetStvResultQuery | null | undefined;
   votationId: string;
   isStv: boolean;
+  meetingId: string;
 };
 
 const contextDefualtValues: ActiveVotationContextState = {
@@ -58,6 +59,7 @@ const contextDefualtValues: ActiveVotationContextState = {
   stvResult: undefined,
   votationId: '',
   isStv: false,
+  meetingId: '',
 };
 
 export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
@@ -386,6 +388,7 @@ const Votation: React.FC = () => {
         stvResult: stvResult,
         votationId: votationId,
         isStv: data.votationById.type === VotationType.Stv,
+        meetingId: meetingId,
       }}
     >
       <PageContainer>

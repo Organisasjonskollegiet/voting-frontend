@@ -1,6 +1,7 @@
 import { Box, Divider, HStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
 import { GetVotationResultsQuery } from '../../../__generated__/graphql-types';
+import { getRoundedPercentage } from '../utils';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
@@ -28,10 +29,6 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
       setVotingEligibleCount(result.getVotationResults.votingEligibleCount);
     }
   }, [result?.getVotationResults?.votingEligibleCount, votingEligibleCount]);
-
-  const getRoundedPercentage = (share: number) => {
-    return Math.round(share * 100 * 100) / 100;
-  };
 
   const getBlankAlternative = (blankVoteCount: number) => {
     return {

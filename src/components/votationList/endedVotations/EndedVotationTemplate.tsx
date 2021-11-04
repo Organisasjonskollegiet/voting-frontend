@@ -28,7 +28,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({ role, votation, d
               {children}
             </HStack>
           )}
-          {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Ugyldig" />}
+          {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Avbrutt" />}
         </HStack>
       </HStack>
       {role === Role.Admin && <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />}

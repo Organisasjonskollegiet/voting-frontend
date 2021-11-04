@@ -96,47 +96,45 @@ const MeetingLobby: React.FC = () => {
   }
 
   return (
-    <>
-      <Box
-        bg={offwhite}
-        w="100%"
-        minHeight="100vh"
-        color="gray.500"
-        pb="2em"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-      >
-        {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
-        <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
-          <VStack alignItems="left">
-            <Heading sx={h1Style} as="h1">
-              {data?.meetingById?.title}
-            </Heading>
-            <VStack align="start">
-              <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
-              <VotationList
-                navigateToOpenVotation={navigateToOpenVotation}
-                hideOpenVotationButton={!!openVotation}
-                role={role}
-                isMeetingLobby={true}
-                votationsMayExist={true}
-                meetingId={meetingId}
-              />
-            </VStack>
-          </VStack>
-          <VStack alignItems="left" spacing="1em">
-            <Divider />
-            <HStack justifyContent="space-between">
-              <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
-              {role === Role.Admin && (
-                <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
-              )}
-            </HStack>
+    <Box
+      bg={offwhite}
+      w="100%"
+      minHeight="100vh"
+      color="gray.500"
+      pb="2em"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
+      {role === Role.Admin && <LobbyNavigation openVotation={openVotation} meetingId={meetingId} location="lobby" />}
+      <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
+        <VStack alignItems="left">
+          <Heading sx={h1Style} as="h1">
+            {data?.meetingById?.title}
+          </Heading>
+          <VStack align="start">
+            <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
+            <VotationList
+              navigateToOpenVotation={navigateToOpenVotation}
+              hideOpenVotationButton={!!openVotation}
+              role={role}
+              isMeetingLobby={true}
+              votationsMayExist={true}
+              meetingId={meetingId}
+            />
           </VStack>
         </VStack>
-      </Box>
-    </>
+        <VStack alignItems="left" spacing="1em">
+          <Divider />
+          <HStack justifyContent="space-between">
+            <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
+            {role === Role.Admin && (
+              <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
+            )}
+          </HStack>
+        </VStack>
+      </VStack>
+    </Box>
   );
 };
 
