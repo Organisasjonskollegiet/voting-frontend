@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
-import { ArrowForwardIcon } from '@chakra-ui/icons';
+import { ArrowForwardIcon, CloseIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
 import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
@@ -86,19 +86,19 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
             bg="transparent"
             borderRadius="16em"
             onClick={() => setInvalidateVotationDialogOpen(true)}
+            leftIcon={<CloseIcon h="2.5" />}
           >
-            Avbryt votering
+            <Text mt="0.25rem">Avbryt votering</Text>
           </Button>
           <Button
             w="fit-content"
-            _hover={{ bg: 'transparent' }}
             onClick={() => setDialogOpen(true)}
             p="1.5em 4em"
             borderRadius="16em"
             bg="transparent"
             rightIcon={<ArrowForwardIcon />}
           >
-            {getText()}
+            <Text mt="0.25rem">{getText()}</Text>
           </Button>
         </>
       )}
