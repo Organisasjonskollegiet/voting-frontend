@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
-import { Alternative as AlternativeType, AlternativeResult } from '../../__generated__/graphql-types';
-import { Center, VStack, Text, Divider, Button } from '@chakra-ui/react';
+import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
+import { Center, VStack, Text, Divider, Button, HStack } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
 import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
+import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
 export interface VotationResultProps {
@@ -17,7 +18,7 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
-  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { result, stvResult, votationId, isStv, role } = useContext(ActiveVotationContext);
 
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
@@ -47,9 +48,12 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
       {showResultsTable &&
         (isStv ? <StvResultTable result={stvResult} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
-      <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-        Gå tilbake til liste over voteringer
-      </Button>
+      <HStack w="100%" justifyContent="space-between">
+        <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
+          Gå tilbake til liste over voteringer
+        </Button>
+        {(result || stvResult) && role === Role.Admin && <DownloadResultButton />}
+      </HStack>
     </VStack>
   );
 };

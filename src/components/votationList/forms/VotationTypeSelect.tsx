@@ -52,7 +52,7 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType, up
       <FormControl>
         <FormLabel sx={labelStyle} mr="0">
           <Flex justifyContent="space-between" alignItems="flex-end">
-            <span>Stemmeform</span>
+            <span>Flertallsform</span>
             <VotationTypeInformation />
           </Flex>
         </FormLabel>

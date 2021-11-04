@@ -36,7 +36,7 @@ const VotationTypeAccordion: React.FC<VotationTypeAccordionProps> = ({
           <HStack w="100%" justifyContent="space-between">
             <VStack alignItems="left">
               <HStack>
-                <Text fontStyle="italic">Stemmeform</Text>
+                <Text fontStyle="italic">Flertallsform</Text>
                 <VotationTypeInformation />
               </HStack>
             </VStack>

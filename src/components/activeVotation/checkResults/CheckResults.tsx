@@ -1,18 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { VStack, Flex, Button, Heading, Box } from '@chakra-ui/react';
+import { VStack, Flex, Heading } from '@chakra-ui/react';
 import {
   Role,
-  useUpdateVotationStatusMutation,
-  VotationStatus,
   AlternativeResult,
   Alternative as AlternativeType,
   useReviewAddedSubscription,
   useGetReviewsQuery,
   ReviewResult,
 } from '../../../__generated__/graphql-types';
-import { useHistory } from 'react-router';
 import ResultsTable from '../results_table/ResultsTable';
-import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
 import StvResultTable from '../results_table/StvResultTable';
 import AlternativesString from '../../common/AlternativesString';
 import { green } from '../../styles/theme';
@@ -20,6 +16,7 @@ import Loading from '../../common/Loading';
 import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
 import ReviewVotation from './ReviewVotation';
+import DownloadResultButton from '../DownloadResultButton';
 
 interface CheckResultsProps {
   meetingId: string;
@@ -30,9 +27,6 @@ interface CheckResultsProps {
 
 const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
   const { result, stvResult, votationId, role, isStv } = useContext(ActiveVotationContext);
-
-  const [updateVotationStatus] = useUpdateVotationStatusMutation();
-  const history = useHistory();
 
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
@@ -57,13 +51,6 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   const handleCastReview = (approved: boolean) => {
     setCurrentReview(approved);
     castVotationReview(approved);
-  };
-
-  const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
-  const handleInvalidResult = async () => {
-    setInvalidateVotationDialogOpen(false);
-    await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
-    history.push(`/meeting/${meetingId}`);
   };
 
   if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
@@ -95,28 +82,11 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
 
       {(role === Role.Counter || role === Role.Admin) && (
-        <VStack spacing="2rem" pt="2rem">
+        <VStack spacing="2rem" pt="2rem" alignItems="start">
           <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
-            {role === Role.Admin && (
-              <Box mt="2rem">
-                <Button
-                  p="1.5em 4em"
-                  mb="2px"
-                  borderRadius="16em"
-                  onClick={() => setInvalidateVotationDialogOpen(true)}
-                >
-                  Erklær resultat ugyldig
-                </Button>
-                <CustomAlertDialog
-                  dialogIsOpen={invalidateVotationDialogOpen}
-                  handleCancel={() => setInvalidateVotationDialogOpen(false)}
-                  handleConfirm={handleInvalidResult}
-                  type={DialogType.INVALIDATE}
-                />
-              </Box>
-            )}
+            {role === Role.Admin && (result || stvResult) && <DownloadResultButton />}
           </Flex>
         </VStack>
       )}
