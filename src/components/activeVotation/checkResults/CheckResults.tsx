@@ -83,10 +83,10 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
 
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem" alignItems="start">
-          {role === Role.Admin && (result || stvResult) && <DownloadResultButton />}
           <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
+            {role === Role.Admin && (result || stvResult) && <DownloadResultButton />}
           </Flex>
         </VStack>
       )}
