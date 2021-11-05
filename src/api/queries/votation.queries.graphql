@@ -1,4 +1,4 @@
-query GetVotationById($votationId: String!, $meetingId: String!) {
+query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -18,17 +18,6 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     majorityThreshold
     meetingId
   }
-
-  # meetingById(meetingId: $meetingId) {
-  #   participants {
-  #     user {
-  #       id
-  #       email
-  #     }
-  #     role
-  #     isVotingEligible
-  #   }
-  # }
 
   getVoteCount(votationId: $votationId) {
     votingEligibleCount

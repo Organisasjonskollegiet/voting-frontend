@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
-import ActiveVotation from './pages/ActiveVotation';
 import ManageMeeting from './pages/ManageMeeting';
 import MyMeetings from './pages/MyMeetings';
 import MeetingLobby from './pages/MeetingLobby';

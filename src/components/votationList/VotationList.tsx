@@ -21,7 +21,7 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
-import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
+// import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
@@ -68,12 +68,6 @@ const VotationList: React.FC<VotationListProps> = ({
   const [deleteAlternatives] = useDeleteAlternativesMutation();
 
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
-
-  const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-    variables: {
-      meetingId,
-    },
-  });
 
   const toast = useToast();
 
@@ -192,7 +186,6 @@ const VotationList: React.FC<VotationListProps> = ({
       !upcomingVotations &&
       !endedVotations
     ) {
-      console.log('new', data);
       const votations = data.meetingById.votations as Votation[];
       const winners = data.resultsOfPublishedVotations as Votation[];
       const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];

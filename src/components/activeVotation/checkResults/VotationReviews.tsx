@@ -1,7 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
-import { ActiveVotationContext } from '../../../pages/ActiveVotation';
-import { Role } from '../../../__generated__/graphql-types';
+import { Participant, Role, useGetParticipantsByMeetingIdQuery } from '../../../__generated__/graphql-types';
 import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface VotationReviewsProps {
@@ -10,12 +9,23 @@ interface VotationReviewsProps {
 }
 
 const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfApproved, numberOfDisapproved }) => {
-  const { participants } = useContext(MeetingContext);
+  const { meetingId } = useContext(MeetingContext);
 
-  const numberOfCounters = useMemo(
-    () => participants.reduce((sum, p) => (p.role === Role.Counter || p.role === Role.Admin ? sum + 1 : sum), 0),
-    [participants]
-  );
+  const { data, error } = useGetParticipantsByMeetingIdQuery({
+    variables: { meetingId },
+  });
+
+  const numberOfCounters = useMemo(() => {
+    if (!data?.participants) return 0;
+    return (data.participants as Participant[]).reduce(
+      (sum, p) => (p.role === Role.Counter || p.role === Role.Admin ? sum + 1 : sum),
+      0
+    );
+  }, [data]);
+
+  if (error) {
+    return <Text>Kunne ikke hente tilbakemeldinger på resultat.</Text>;
+  }
 
   if (numberOfCounters === 0) {
     return <></>;

@@ -1,5 +1,6 @@
 import { useStyleConfig, Button, Text, ComponentStyleConfig } from '@chakra-ui/react';
-import React from 'react';
+import React, { useContext } from 'react';
+import { MeetingContext } from '../../../pages/MeetingLobby';
 import { boxShadow } from '../../styles/formStyles';
 
 interface AlternativeProps {
@@ -10,7 +11,7 @@ interface AlternativeProps {
 
 const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, selected, disableVoting }) => {
   const styles = useStyleConfig('Alternative', { variant: selected ? 'selected' : undefined });
-  const presentationMode = false;
+  const { presentationMode } = useContext(MeetingContext);
   return (
     <Button
       disabled={disableVoting}

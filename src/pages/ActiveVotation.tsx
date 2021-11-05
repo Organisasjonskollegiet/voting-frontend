@@ -1,7 +1,6 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import {
   Alternative as AlternativeType,
-  Participant,
   Role,
   VotationStatus,
   useCastVoteMutation,
@@ -15,7 +14,6 @@ import {
   Alternative,
   useGetVotationResultsLazyQuery,
   AlternativeResult,
-  useVotationOpenedForMeetingSubscription,
   useGetStvResultLazyQuery,
   useCastVotationReviewMutation,
   GetVotationResultsQuery,
@@ -24,7 +22,6 @@ import {
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useParams, useHistory } from 'react-router';
 import VotationResult from '../components/activeVotation/VotationResult';
 import { h1Style } from '../components/styles/formStyles';
 import VotationController from '../components/activeVotation/ActiveVotationController';
@@ -32,9 +29,8 @@ import { centerContainer, outerContainer } from '../components/styles/containerS
 import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/checkResults/CheckResults';
-import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import PageContainer from '../components/common/PageContainer';
 import { subtitlesStyle } from '../components/styles/styles';
+import { MeetingContext } from './MeetingLobby';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export type AlternativeWithIndex = AlternativeType & {
@@ -43,8 +39,6 @@ export type AlternativeWithIndex = AlternativeType & {
 };
 
 export type ActiveVotationContextState = {
-  // role: Role;
-  // participants: Participant[];
   result: GetVotationResultsQuery | null | undefined;
   stvResult: GetStvResultQuery | null | undefined;
   votationId: string;
@@ -53,8 +47,6 @@ export type ActiveVotationContextState = {
 };
 
 const contextDefualtValues: ActiveVotationContextState = {
-  // role: Role.Participant,
-  // participants: [],
   result: undefined,
   stvResult: undefined,
   votationId: '',
@@ -69,12 +61,11 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   backToVotationList,
 }) => {
   const { user } = useAuth0();
-  const { meetingId } = useParams<{ meetingId: string; votationId: string }>();
-  const history = useHistory();
+  const { presentationMode, isVotingEligible, role, meetingId } = useContext(MeetingContext);
 
   //Get votation data and participants from meeting
   const { data, loading, error, refetch } = useGetVotationByIdQuery({
-    variables: { votationId: votationId, meetingId: meetingId },
+    variables: { votationId: votationId },
   });
 
   const [getWinner, { data: winnerResult, loading: winnerLoading }] = useGetWinnerOfVotationLazyQuery({
@@ -92,12 +83,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
-  // const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
-  //   variables: {
-  //     meetingId,
-  //   },
-  // });
-
   const [castVotationReview, { error: castVotationReviewError }] = useCastVotationReviewMutation();
 
   const { data: newStatus } = useVotationStatusUpdatedSubscription({
@@ -111,8 +96,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   const [status, setStatus] = useState<VotationStatus | null>(null);
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
-  const [participantRole, setParticipantRole] = useState<Role | null>(null);
-  const [isVotingEligible, setIsVotingEligible] = useState(false);
   const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
@@ -155,10 +138,10 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   // or if the results are published and the votes are not hidden
   const checkShouldGetResults = useCallback(() => {
     return (
-      (status === VotationStatus.CheckingResult && participantRole !== Role.Participant) ||
+      (status === VotationStatus.CheckingResult && role !== Role.Participant) ||
       (status === VotationStatus.PublishedResult && data?.votationById?.hiddenVotes === false)
     );
-  }, [status, data?.votationById?.hiddenVotes, participantRole]);
+  }, [status, data?.votationById?.hiddenVotes, role]);
 
   // fetch result or winners when status has changed
   useEffect(() => {
@@ -172,7 +155,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     }
   }, [
     status,
-    participantRole,
+    role,
     data?.votationById?.hiddenVotes,
     getResult,
     getWinner,
@@ -203,16 +186,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
       if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
   }, [votationResultData, winners]);
-
-  // Update role after data of participants is received
-  useEffect(() => {
-    if (data?.meetingById?.participants) {
-      const participants = data?.meetingById?.participants as Array<Participant>;
-      const participant = participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0];
-      if (participantRole !== participant.role) setParticipantRole(participant.role);
-      if (isVotingEligible !== participant.isVotingEligible) setIsVotingEligible(participant.isVotingEligible);
-    }
-  }, [data?.meetingById, user?.sub, participantRole, isVotingEligible]);
 
   // set alternatives when data arrives
   useEffect(() => {
@@ -273,17 +246,9 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     setVoteCount(newVoteCount);
   }, [newVoteCountData, voteCount, votationId]);
 
-  // go to new votation if another votation opens
-  // useEffect(() => {
-  //   if (votationOpened && votationOpened.votationOpenedForMeeting !== votationId) {
-  //     history.push(`/meeting/${meetingId}/votation/${votationOpened.votationOpenedForMeeting}`);
-  //   }
-  // }, [votationOpened, history, meetingId, votationId]);
-
   //Register the vote
   const [castVote, { loading: castVoteLoading, error: castVoteError }] = useCastVoteMutation();
   const [castBlankVote, { loading: blankVoteLoading, error: blankVoteError }] = useCastBlankVoteMutation();
-  const presentationMode = false;
 
   const submitVote = async () => {
     if (data?.votationById?.type === VotationType.Stv && alternatives) {
@@ -310,11 +275,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     setUserHasVoted(true);
     setDisableToggleShowVote(false);
   };
-
-  // const backToVotationList = () => {
-  //   setLocation('lobby');
-  //   // history.push(`/meeting/${meetingId}`);
-  // };
 
   const shuffleAlternatives = (alternatives: AlternativeType[]) => {
     let currentIndex = alternatives.length;
@@ -354,7 +314,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           />
         );
       case VotationStatus.CheckingResult:
-        return (participantRole === Role.Admin || participantRole === Role.Counter) && !presentationMode ? (
+        return (role === Role.Admin || role === Role.Counter) && !presentationMode ? (
           <CheckResults
             loading={stvResultLoading || votationResultLoading}
             meetingId={meetingId}
@@ -379,8 +339,8 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         );
       case VotationStatus.Invalid:
         return (
-          <VStack>
-            <Text>Voteringen er erklært ugyldig</Text>
+          <VStack w="100%" alignItems="start">
+            <Text>Voteringen er ble avbrutt av administrator</Text>
             <Button borderRadius={'16em'} onClick={() => backToVotationList(status)} leftIcon={<ArrowBackIcon />}>
               Gå tilbake til liste over voteringer
             </Button>
@@ -445,8 +405,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   return (
     <ActiveVotationContext.Provider
       value={{
-        // participants: (data?.meetingById?.participants as Participant[]) || [],
-        // role: participantRole || Role.Participant,
         result: votationResultData,
         stvResult: stvResult,
         votationId: votationId,
@@ -454,9 +412,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         meetingId: meetingId,
       }}
     >
-      {/* <PageContainer> */}
-      {/* <VStack> */}
-      {/* {participantRole === Role.Admin && <LobbyNavigation meetingId={meetingId} location="activeVotation" setLocation/>} */}
       <Center sx={outerContainer}>
         {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
         <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
@@ -481,18 +436,18 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
             <VStack>
               <Divider />
-              <VotationController
-                showVote={showVote}
-                toggleShowVote={() => setShowVote(!showVote)}
-                status={status}
-                disableShowVote={disableToggleShowVote}
-              />
+              {!presentationMode && (
+                <VotationController
+                  showVote={showVote}
+                  toggleShowVote={() => setShowVote(!showVote)}
+                  status={status}
+                  disableShowVote={disableToggleShowVote}
+                />
+              )}
             </VStack>
           )}
         </VStack>
       </Center>
-      {/* </VStack> */}
-      {/* </PageContainer> */}
     </ActiveVotationContext.Provider>
   );
 };

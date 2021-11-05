@@ -7,7 +7,8 @@ import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
 import { h1Style } from '../styles/formStyles';
-import { green } from '../styles/theme';
+import { green } from '../styles/colors';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 interface CastVoteProps {
   handleSelect: (id: string | null) => void;
@@ -36,8 +37,8 @@ const CastVote: React.FC<CastVoteProps> = ({
   showVote,
   isVotingEligible,
 }) => {
-  const presentationMode = false;
   const { isStv } = useContext(ActiveVotationContext);
+  const { presentationMode } = useContext(MeetingContext);
 
   return (
     <WrapStack breakpoint={730} w="100%" justifyContent="space-between">

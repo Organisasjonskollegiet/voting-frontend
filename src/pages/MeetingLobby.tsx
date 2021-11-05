@@ -4,42 +4,36 @@ import { useParams, useHistory } from 'react-router';
 import {
   useVotationOpenedForMeetingSubscription,
   useGetMeetingForLobbyQuery,
-  useGetRoleQuery,
   Role,
   VotationStatus,
-  Participant,
-  GetVotationResultsQuery,
-  GetStvResultQuery,
+  useGetParticipantQuery,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
-import { useAuth0 } from '@auth0/auth0-react';
 import { h1Style } from '../components/styles/formStyles';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import { useLastLocation } from 'react-router-last-location';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
 
 export type MeetingContextState = {
   role: Role;
-  participants: Participant[];
   meetingId: string;
   presentationMode: boolean;
+  isVotingEligible: boolean;
 };
 
 const contextDefualtValues: MeetingContextState = {
   role: Role.Participant,
-  participants: [],
   meetingId: '',
   presentationMode: false,
+  isVotingEligible: false,
 };
 
 export const MeetingContext = createContext<MeetingContextState>(contextDefualtValues);
 
 const MeetingLobby: React.FC = () => {
-  const { user } = useAuth0();
   const { meetingId } = useParams<{ meetingId: string }>();
   const { data, loading, error } = useGetMeetingForLobbyQuery({
     variables: {
@@ -48,8 +42,9 @@ const MeetingLobby: React.FC = () => {
   });
 
   const [location, setLocation] = useState<'lobby' | 'activeVotation'>('lobby');
+  const [isVotingEligible, setIsVotingEligible] = useState(false);
 
-  const { data: participantResult, error: participantError } = useGetRoleQuery({ variables: { meetingId } });
+  const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
   const [openVotation, setOpenVotation] = useState<string | null>(null);
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
@@ -59,42 +54,23 @@ const MeetingLobby: React.FC = () => {
   });
 
   const history = useHistory();
-  const lastLocation = useLastLocation();
 
   const [presentationMode, setPresentationMode] = useState(false);
 
   useEffect(() => {
-    if (participantResult && participantResult.meetingById?.participants) {
-      const myRole = participantResult.meetingById.participants.filter(
-        (participant) => `auth0|${participant?.user?.id ?? ''}` === user?.sub
-      )[0]?.role;
-      if (myRole && myRole !== role) {
-        setRole(myRole);
-      }
-    }
-  }, [participantResult, role, user?.sub]);
+    if (!participantResult?.myParticipant) return;
+    setRole(participantResult.myParticipant.role);
+    setIsVotingEligible(participantResult.myParticipant.isVotingEligible);
+  }, [participantResult]);
 
-  const navigateToOpenVotation = useCallback(
-    (openVotation: string | null) => {
-      if (openVotation) setLocation('activeVotation');
-      // if (openVotation) history.push(`/meeting/${meetingId}/votation/${openVotation}`);
-    },
-    [meetingId, history]
-  );
+  const navigateToOpenVotation = useCallback((openVotation: string | null) => {
+    if (openVotation) setLocation('activeVotation');
+  }, []);
 
-  const handleOpenVotation = useCallback(
-    (openVotation: string) => {
-      // if (role === Role.Admin && lastLocation?.pathname === `/meeting/${meetingId}/votation/${openVotation}`) {
-      // setOpenVotation(openVotation);
-      // } else if (role) {
-      // navigateToOpenVotation(openVotation);
-      console.log('open', openVotation);
-      setOpenVotation(openVotation);
-      setLocation('activeVotation');
-      // }
-    },
-    [role, lastLocation?.pathname, meetingId, navigateToOpenVotation]
-  );
+  const handleOpenVotation = useCallback((openVotation: string) => {
+    setOpenVotation(openVotation);
+    setLocation('activeVotation');
+  }, []);
 
   // handle votation being open initially
   useEffect(() => {
@@ -113,7 +89,6 @@ const MeetingLobby: React.FC = () => {
   };
 
   const returnToVotationList = (status: VotationStatus) => {
-    console.log('status', status);
     if (status !== VotationStatus.Open && status !== VotationStatus.CheckingResult) {
       setOpenVotation(null);
     }
@@ -135,18 +110,18 @@ const MeetingLobby: React.FC = () => {
   return (
     <MeetingContext.Provider
       value={{
-        participants: participantResult?.meetingById?.participants as Participant[],
         role: role ?? Role.Participant,
         meetingId,
         presentationMode,
+        isVotingEligible,
       }}
     >
       <PageContainer>
         <Box color="gray.500" pb="2em" display="flex" flexDirection="column" alignItems="center">
           {role === Role.Admin && (
             <LobbyNavigation
+              togglePresentationMode={() => setPresentationMode(!presentationMode)}
               openVotation={openVotation}
-              meetingId={meetingId}
               location={location}
               setLocation={setLocation}
             />

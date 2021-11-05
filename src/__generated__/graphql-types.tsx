@@ -275,6 +275,8 @@ export type Query = {
   meetingById?: Maybe<Meeting>;
   /** Return relevant information about invites and participants connected to meeting */
   participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
+  /** Return participant belonging to the user for the meeting specified. */
+  myParticipant?: Maybe<ParticipantOrInvite>;
 };
 
 
@@ -329,6 +331,11 @@ export type QueryMeetingByIdArgs = {
 
 
 export type QueryParticipantsArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryMyParticipantArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -782,24 +789,16 @@ export type GetMeetingsQuery = (
   )>> }
 );
 
-export type GetRoleQueryVariables = Exact<{
+export type GetParticipantQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetRoleQuery = (
+export type GetParticipantQuery = (
   { __typename?: 'Query' }
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id'>
-    & { participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id'>
-      )> }
-    )>> }
+  & { myParticipant?: Maybe<(
+    { __typename?: 'ParticipantOrInvite' }
+    & Pick<ParticipantOrInvite, 'role' | 'isVotingEligible'>
   )> }
 );
 
@@ -835,7 +834,6 @@ export type GetParticipantsByMeetingIdQuery = (
 
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
-  meetingId: Scalars['String'];
 }>;
 
 
@@ -848,16 +846,6 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text' | 'votationId'>
     )>>> }
-  )>, meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & { participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role' | 'isVotingEligible'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'email'>
-      )> }
-    )>> }
   )>, getVoteCount?: Maybe<(
     { __typename?: 'VoteCountResult' }
     & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
@@ -1715,47 +1703,42 @@ export function useGetMeetingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
-export const GetRoleDocument = gql`
-    query GetRole($meetingId: String!) {
-  meetingById(meetingId: $meetingId) {
-    id
-    participants {
-      user {
-        id
-      }
-      role
-    }
+export const GetParticipantDocument = gql`
+    query GetParticipant($meetingId: String!) {
+  myParticipant(meetingId: $meetingId) {
+    role
+    isVotingEligible
   }
 }
     `;
 
 /**
- * __useGetRoleQuery__
+ * __useGetParticipantQuery__
  *
- * To run a query within a React component, call `useGetRoleQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRoleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetParticipantQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetParticipantQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetRoleQuery({
+ * const { data, loading, error } = useGetParticipantQuery({
  *   variables: {
  *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
-export function useGetRoleQuery(baseOptions: Apollo.QueryHookOptions<GetRoleQuery, GetRoleQueryVariables>) {
+export function useGetParticipantQuery(baseOptions: Apollo.QueryHookOptions<GetParticipantQuery, GetParticipantQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRoleQuery, GetRoleQueryVariables>(GetRoleDocument, options);
+        return Apollo.useQuery<GetParticipantQuery, GetParticipantQueryVariables>(GetParticipantDocument, options);
       }
-export function useGetRoleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoleQuery, GetRoleQueryVariables>) {
+export function useGetParticipantLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetParticipantQuery, GetParticipantQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRoleQuery, GetRoleQueryVariables>(GetRoleDocument, options);
+          return Apollo.useLazyQuery<GetParticipantQuery, GetParticipantQueryVariables>(GetParticipantDocument, options);
         }
-export type GetRoleQueryHookResult = ReturnType<typeof useGetRoleQuery>;
-export type GetRoleLazyQueryHookResult = ReturnType<typeof useGetRoleLazyQuery>;
-export type GetRoleQueryResult = Apollo.QueryResult<GetRoleQuery, GetRoleQueryVariables>;
+export type GetParticipantQueryHookResult = ReturnType<typeof useGetParticipantQuery>;
+export type GetParticipantLazyQueryHookResult = ReturnType<typeof useGetParticipantLazyQuery>;
+export type GetParticipantQueryResult = Apollo.QueryResult<GetParticipantQuery, GetParticipantQueryVariables>;
 export const GetMeetingByIdDocument = gql`
     query GetMeetingById($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
@@ -1838,7 +1821,7 @@ export type GetParticipantsByMeetingIdQueryHookResult = ReturnType<typeof useGet
 export type GetParticipantsByMeetingIdLazyQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingIdLazyQuery>;
 export type GetParticipantsByMeetingIdQueryResult = Apollo.QueryResult<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: String!, $meetingId: String!) {
+    query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -1857,16 +1840,6 @@ export const GetVotationByIdDocument = gql`
     numberOfWinners
     majorityThreshold
     meetingId
-  }
-  meetingById(meetingId: $meetingId) {
-    participants {
-      user {
-        id
-        email
-      }
-      role
-      isVotingEligible
-    }
   }
   getVoteCount(votationId: $votationId) {
     votingEligibleCount
@@ -1888,7 +1861,6 @@ export const GetVotationByIdDocument = gql`
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
  *      votationId: // value for 'votationId'
- *      meetingId: // value for 'meetingId'
  *   },
  * });
  */

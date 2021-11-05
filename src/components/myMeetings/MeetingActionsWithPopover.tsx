@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, HStack, Popover, PopoverContent, PopoverTrigger } from '@chakra-ui/react';
 import MoreIcon from '../../static/more.svg';
-import { lightGray } from '../styles/theme';
+import { lightGray } from '../styles/colors';
 
 interface MeetingActionsWithPopoverProps {
   onEditClick: () => void;

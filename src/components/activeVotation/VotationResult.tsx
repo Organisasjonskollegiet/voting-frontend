@@ -20,7 +20,7 @@ export interface VotationResultProps {
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
   const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
-  const { role } = useContext(MeetingContext);
+  const { role, presentationMode } = useContext(MeetingContext);
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
   return (
@@ -53,7 +53,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           Gå tilbake til liste over voteringer
         </Button>
-        {(result || stvResult) && role === Role.Admin && <DownloadResultButton />}
+        {(result || stvResult) && role === Role.Admin && !presentationMode && <DownloadResultButton />}
       </HStack>
     </VStack>
   );
