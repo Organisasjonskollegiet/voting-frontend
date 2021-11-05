@@ -12,7 +12,6 @@ import {
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
-  useVotationOpenedForMeetingSubscription,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -82,7 +81,16 @@ const VotationList: React.FC<VotationListProps> = ({
       setUpcomingVotations([]);
       setActiveVotationId(emptyVotation.id);
     }
-  }, [role, ongoingVotation, nextVotation, upcomingVotations, endedVotations, loading]);
+  }, [
+    data?.meetingById?.votations,
+    votationsMayExist,
+    role,
+    ongoingVotation,
+    nextVotation,
+    upcomingVotations,
+    endedVotations,
+    loading,
+  ]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend

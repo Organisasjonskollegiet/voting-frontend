@@ -254,6 +254,12 @@ export type ParticipantOrInvite = {
   isVotingEligible: Scalars['Boolean'];
 };
 
+export type ParticipantUpdatedResponse = {
+  __typename?: 'ParticipantUpdatedResponse';
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
+};
+
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
@@ -382,6 +388,7 @@ export type Subscription = {
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
+  participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   viewChanged?: Maybe<ViewState>;
 };
 
@@ -403,6 +410,12 @@ export type SubscriptionReviewAddedArgs = {
 
 export type SubscriptionVotationOpenedForMeetingArgs = {
   meetingId: Scalars['String'];
+};
+
+
+export type SubscriptionParticipantUpdatedArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 export type UpdateMeetingInput = {
@@ -991,6 +1004,20 @@ export type GetReviewsQuery = (
   ) | (
     { __typename?: 'NoReview' }
     & Pick<NoReview, 'message'>
+  )> }
+);
+
+export type ParticipantUpdatedSubscriptionVariables = Exact<{
+  userId: Scalars['String'];
+  meetingId: Scalars['String'];
+}>;
+
+
+export type ParticipantUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & { participantUpdated?: Maybe<(
+    { __typename?: 'ParticipantUpdatedResponse' }
+    & Pick<ParticipantUpdatedResponse, 'role' | 'isVotingEligible'>
   )> }
 );
 
@@ -2196,6 +2223,38 @@ export function useGetReviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetReviewsQueryHookResult = ReturnType<typeof useGetReviewsQuery>;
 export type GetReviewsLazyQueryHookResult = ReturnType<typeof useGetReviewsLazyQuery>;
 export type GetReviewsQueryResult = Apollo.QueryResult<GetReviewsQuery, GetReviewsQueryVariables>;
+export const ParticipantUpdatedDocument = gql`
+    subscription ParticipantUpdated($userId: String!, $meetingId: String!) {
+  participantUpdated(userId: $userId, meetingId: $meetingId) {
+    role
+    isVotingEligible
+  }
+}
+    `;
+
+/**
+ * __useParticipantUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useParticipantUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useParticipantUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useParticipantUpdatedSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useParticipantUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ParticipantUpdatedSubscription, ParticipantUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ParticipantUpdatedSubscription, ParticipantUpdatedSubscriptionVariables>(ParticipantUpdatedDocument, options);
+      }
+export type ParticipantUpdatedSubscriptionHookResult = ReturnType<typeof useParticipantUpdatedSubscription>;
+export type ParticipantUpdatedSubscriptionResult = Apollo.SubscriptionResult<ParticipantUpdatedSubscription>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id) {

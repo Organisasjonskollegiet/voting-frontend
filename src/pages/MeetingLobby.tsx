@@ -7,6 +7,7 @@ import {
   Role,
   VotationStatus,
   useGetParticipantQuery,
+  useParticipantUpdatedSubscription,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
 import { h1Style } from '../components/styles/formStyles';
@@ -16,6 +17,7 @@ import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton'
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export type MeetingContextState = {
   role: Role;
@@ -35,6 +37,7 @@ export const MeetingContext = createContext<MeetingContextState>(contextDefualtV
 
 const MeetingLobby: React.FC = () => {
   const { meetingId } = useParams<{ meetingId: string }>();
+  const { user } = useAuth0();
   const { data, loading, error } = useGetMeetingForLobbyQuery({
     variables: {
       meetingId,
@@ -53,6 +56,14 @@ const MeetingLobby: React.FC = () => {
     },
   });
 
+  const { data: updatedParticipant } = useParticipantUpdatedSubscription({
+    variables: {
+      // remove auth0| from beginning of sub to get userId
+      userId: user && user.sub ? user.sub.slice(6) : '',
+      meetingId,
+    },
+  });
+
   const history = useHistory();
 
   const [presentationMode, setPresentationMode] = useState(false);
@@ -62,6 +73,12 @@ const MeetingLobby: React.FC = () => {
     setRole(participantResult.myParticipant.role);
     setIsVotingEligible(participantResult.myParticipant.isVotingEligible);
   }, [participantResult]);
+
+  useEffect(() => {
+    if (!updatedParticipant?.participantUpdated) return;
+    setRole(updatedParticipant.participantUpdated.role);
+    setIsVotingEligible(updatedParticipant.participantUpdated.isVotingEligible);
+  }, [updatedParticipant]);
 
   const navigateToOpenVotation = useCallback((openVotation: string | null) => {
     if (openVotation) setLocation('activeVotation');
