@@ -12,6 +12,8 @@ import {
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
+  useVotationsUpdatedSubscription,
+  VotationsUpdatedSubscription,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
@@ -50,6 +52,8 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
 
+  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
+
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
   const [deleteVotations] = useDeleteVotationsMutation();
@@ -66,7 +70,9 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [deleteAlternatives] = useDeleteAlternativesMutation();
 
-  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
+  const { data: votationsUpdated } = useVotationsUpdatedSubscription({ variables: { meetingId } });
+
+  const [lastUpdate, setLastUpdate] = useState<VotationsUpdatedSubscription | undefined>();
 
   const toast = useToast();
 
@@ -91,6 +97,32 @@ const VotationList: React.FC<VotationListProps> = ({
     endedVotations,
     loading,
   ]);
+
+  useEffect(() => {
+    if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated || !upcomingVotations || !nextVotation)
+      return;
+    setLastUpdate(votationsUpdated);
+    const updatedVotations = [...upcomingVotations, nextVotation].map((votation) => {
+      const updatedVotation = votationsUpdated.votationsUpdated?.find((updated) => updated?.id === votation.id);
+      if (!updatedVotation) return votation;
+      return {
+        ...votation,
+        title: updatedVotation.title,
+        description: updatedVotation.description,
+        index: updatedVotation.index,
+        blankVotes: updatedVotation.blankVotes,
+        hiddenVotes: updatedVotation.hiddenVotes,
+        type: updatedVotation.type,
+        numberOfWinners: updatedVotation.numberOfWinners,
+        majorityThreshold: updatedVotation.majorityThreshold,
+      };
+    });
+    const updatedVotationList = updatedVotations.sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
+    if (updatedVotationList.length > 0) {
+      setNextVotation(updatedVotationList[0]);
+      setUpcomingVotations(updatedVotationList.slice(1));
+    }
+  }, [votationsUpdated, nextVotation, upcomingVotations, lastUpdate]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend
@@ -336,7 +368,7 @@ const VotationList: React.FC<VotationListProps> = ({
       });
     if (upcomingVotations.length > 0) {
       try {
-        await updateVotationIndexes({ variables: { votations: upcomingVotations } });
+        await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
       } catch (error) {
         toast({
           title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
@@ -509,7 +541,8 @@ const VotationList: React.FC<VotationListProps> = ({
       };
     });
 
-    const updateResponse = await updateVotations({ variables: { votations: preparedVotations } });
+    const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
+    console.log('response', updateResponse);
     const updateResults = updateResponse.data?.updateVotations as Votation[];
     return formatVotations(updateResults) as Votation[];
   };

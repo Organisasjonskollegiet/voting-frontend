@@ -22,3 +22,17 @@ subscription ReviewAdded($votationId: String!) {
     disapproved
   }
 }
+
+subscription VotationsUpdated($meetingId: String!) {
+  votationsUpdated(meetingId: $meetingId) {
+    id
+    title
+    description
+    index
+    blankVotes
+    hiddenVotes
+    type
+    numberOfWinners
+    majorityThreshold
+  }
+}

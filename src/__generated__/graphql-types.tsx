@@ -103,6 +103,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
+  /** Update votations belonging to a meeting. */
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
   deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
@@ -132,11 +133,13 @@ export type MutationCreateVotationsArgs = {
 
 
 export type MutationUpdateVotationIndexesArgs = {
+  meetingId: Scalars['String'];
   votations: Array<UpdateVotationIndexInput>;
 };
 
 
 export type MutationUpdateVotationsArgs = {
+  meetingId: Scalars['String'];
   votations: Array<UpdateVotationInput>;
 };
 
@@ -387,6 +390,8 @@ export type Subscription = {
   newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
+  /** Returns the updated votations of a meeting. */
+  votationsUpdated?: Maybe<Array<Maybe<Votation>>>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   viewChanged?: Maybe<ViewState>;
@@ -405,6 +410,11 @@ export type SubscriptionVotationStatusUpdatedArgs = {
 
 export type SubscriptionReviewAddedArgs = {
   votationId: Scalars['String'];
+};
+
+
+export type SubscriptionVotationsUpdatedArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -653,6 +663,7 @@ export type CreateVotationsMutation = (
 
 export type UpdateVotationIndexesMutationVariables = Exact<{
   votations: Array<UpdateVotationIndexInput> | UpdateVotationIndexInput;
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -666,6 +677,7 @@ export type UpdateVotationIndexesMutation = (
 
 export type UpdateVotationsMutationVariables = Exact<{
   votations: Array<UpdateVotationInput> | UpdateVotationInput;
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -1070,6 +1082,19 @@ export type ReviewAddedSubscription = (
   )> }
 );
 
+export type VotationsUpdatedSubscriptionVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type VotationsUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & { votationsUpdated?: Maybe<Array<Maybe<(
+    { __typename?: 'Votation' }
+    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
+  )>>> }
+);
+
 
 export const CreateMeetingDocument = gql`
     mutation CreateMeeting($meeting: CreateMeetingInput!) {
@@ -1329,8 +1354,8 @@ export type CreateVotationsMutationHookResult = ReturnType<typeof useCreateVotat
 export type CreateVotationsMutationResult = Apollo.MutationResult<CreateVotationsMutation>;
 export type CreateVotationsMutationOptions = Apollo.BaseMutationOptions<CreateVotationsMutation, CreateVotationsMutationVariables>;
 export const UpdateVotationIndexesDocument = gql`
-    mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!) {
-  updateVotationIndexes(votations: $votations) {
+    mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!, $meetingId: String!) {
+  updateVotationIndexes(votations: $votations, meetingId: $meetingId) {
     id
     index
   }
@@ -1352,6 +1377,7 @@ export type UpdateVotationIndexesMutationFn = Apollo.MutationFunction<UpdateVota
  * const [updateVotationIndexesMutation, { data, loading, error }] = useUpdateVotationIndexesMutation({
  *   variables: {
  *      votations: // value for 'votations'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
@@ -1363,8 +1389,8 @@ export type UpdateVotationIndexesMutationHookResult = ReturnType<typeof useUpdat
 export type UpdateVotationIndexesMutationResult = Apollo.MutationResult<UpdateVotationIndexesMutation>;
 export type UpdateVotationIndexesMutationOptions = Apollo.BaseMutationOptions<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>;
 export const UpdateVotationsDocument = gql`
-    mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
-  updateVotations(votations: $votations) {
+    mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String!) {
+  updateVotations(votations: $votations, meetingId: $meetingId) {
     id
     title
     description
@@ -1398,6 +1424,7 @@ export type UpdateVotationsMutationFn = Apollo.MutationFunction<UpdateVotationsM
  * const [updateVotationsMutation, { data, loading, error }] = useUpdateVotationsMutation({
  *   variables: {
  *      votations: // value for 'votations'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
@@ -2376,3 +2403,43 @@ export function useReviewAddedSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type ReviewAddedSubscriptionHookResult = ReturnType<typeof useReviewAddedSubscription>;
 export type ReviewAddedSubscriptionResult = Apollo.SubscriptionResult<ReviewAddedSubscription>;
+export const VotationsUpdatedDocument = gql`
+    subscription VotationsUpdated($meetingId: String!) {
+  votationsUpdated(meetingId: $meetingId) {
+    id
+    title
+    description
+    index
+    status
+    blankVotes
+    hiddenVotes
+    type
+    numberOfWinners
+    majorityThreshold
+    meetingId
+  }
+}
+    `;
+
+/**
+ * __useVotationsUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useVotationsUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useVotationsUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationsUpdatedSubscription({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useVotationsUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<VotationsUpdatedSubscription, VotationsUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<VotationsUpdatedSubscription, VotationsUpdatedSubscriptionVariables>(VotationsUpdatedDocument, options);
+      }
+export type VotationsUpdatedSubscriptionHookResult = ReturnType<typeof useVotationsUpdatedSubscription>;
+export type VotationsUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationsUpdatedSubscription>;
