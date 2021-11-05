@@ -340,7 +340,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
       case VotationStatus.Invalid:
         return (
           <VStack w="100%" alignItems="start">
-            <Text>Voteringen er ble avbrutt av administrator</Text>
+            <Text mb="2rem">Voteringen er ble avbrutt av administrator</Text>
             <Button borderRadius={'16em'} onClick={() => backToVotationList(status)} leftIcon={<ArrowBackIcon />}>
               Gå tilbake til liste over voteringer
             </Button>
@@ -436,14 +436,13 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
             <VStack>
               <Divider />
-              {!presentationMode && (
-                <VotationController
-                  showVote={showVote}
-                  toggleShowVote={() => setShowVote(!showVote)}
-                  status={status}
-                  disableShowVote={disableToggleShowVote}
-                />
-              )}
+              <VotationController
+                backToVotationList={() => backToVotationList(status)}
+                showVote={showVote}
+                toggleShowVote={() => setShowVote(!showVote)}
+                status={status}
+                disableShowVote={disableToggleShowVote}
+              />
             </VStack>
           )}
         </VStack>

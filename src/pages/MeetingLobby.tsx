@@ -155,7 +155,6 @@ const MeetingLobby: React.FC = () => {
                   <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
                   <VotationList
                     navigateToOpenVotation={navigateToOpenVotation}
-                    hideOpenVotationButton={!!openVotation}
                     role={role}
                     isMeetingLobby={true}
                     votationsMayExist={true}

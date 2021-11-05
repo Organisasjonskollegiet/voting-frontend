@@ -27,7 +27,7 @@ interface VotationListProps {
   votationsMayExist: boolean;
   isMeetingLobby: boolean;
   role: Role | undefined;
-  hideOpenVotationButton: boolean;
+  hideStartNextButton?: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
 }
 
@@ -36,7 +36,7 @@ const VotationList: React.FC<VotationListProps> = ({
   votationsMayExist,
   isMeetingLobby,
   role,
-  hideOpenVotationButton,
+  hideStartNextButton,
   navigateToOpenVotation,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
@@ -628,7 +628,7 @@ const VotationList: React.FC<VotationListProps> = ({
             handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
-            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
+            showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
           />
