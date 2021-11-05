@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon, CloseIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
@@ -73,20 +73,17 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
 
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
-      {status === VotationStatus.Open && !presentationMode ? (
-        <FormControl flex="1" minW="15rem" display="flex" width="fit-content">
+      {status === VotationStatus.Open && !presentationMode && (
+        <FormControl display="flex" width="fit-content">
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
             Vis meg hva jeg stemte
           </FormLabel>
           <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
         </FormControl>
-      ) : (
-        <Box flex="1" />
       )}
       {role === Role.Admin && (
         <>
           <Button
-            flex="1"
             p="1.5em 4em"
             bg="transparent"
             borderRadius="16em"
@@ -96,7 +93,6 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
             <Text mt="0.25rem">Avbryt votering</Text>
           </Button>
           <Button
-            flex="1"
             w="fit-content"
             onClick={() => setDialogOpen(true)}
             p="1.5em 4em"
@@ -104,7 +100,9 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
             bg="transparent"
             rightIcon={<ArrowForwardIcon />}
           >
-            <Text mt="0.25rem">{getText()}</Text>
+            <Text justifyContent="end" mt="0.25rem">
+              {getText()}
+            </Text>
           </Button>
         </>
       )}
