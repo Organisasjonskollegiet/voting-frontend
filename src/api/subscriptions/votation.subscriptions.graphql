@@ -29,10 +29,16 @@ subscription VotationsUpdated($meetingId: String!) {
     title
     description
     index
+    status
     blankVotes
     hiddenVotes
     type
     numberOfWinners
     majorityThreshold
+    alternatives {
+      id
+      text
+      index
+    }
   }
 }

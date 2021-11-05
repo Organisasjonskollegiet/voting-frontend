@@ -20,18 +20,15 @@ export type Alternative = {
   __typename?: 'Alternative';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   votationId: Scalars['String'];
-};
-
-export type AlternativeInput = {
-  id: Scalars['String'];
-  text: Scalars['String'];
 };
 
 export type AlternativeResult = {
   __typename?: 'AlternativeResult';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   votationId: Scalars['String'];
   isWinner: Scalars['Boolean'];
   votes: Scalars['Int'];
@@ -48,7 +45,13 @@ export type AlternativeWithWinner = {
   __typename?: 'AlternativeWithWinner';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   isWinner: Scalars['Boolean'];
+};
+
+export type CreateAlternativeInput = {
+  text: Scalars['String'];
+  index: Scalars['Int'];
 };
 
 export type CreateMeetingInput = {
@@ -67,7 +70,7 @@ export type CreateVotationInput = {
   numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<Scalars['String']>>;
+  alternatives?: Maybe<Array<CreateAlternativeInput>>;
 };
 
 
@@ -391,7 +394,7 @@ export type Subscription = {
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
   /** Returns the updated votations of a meeting. */
-  votationsUpdated?: Maybe<Array<Maybe<Votation>>>;
+  votationsUpdated?: Maybe<Array<Maybe<VotationWithAlternative>>>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   viewChanged?: Maybe<ViewState>;
@@ -428,6 +431,12 @@ export type SubscriptionParticipantUpdatedArgs = {
   userId: Scalars['String'];
 };
 
+export type UpdateAlternativeInput = {
+  id: Scalars['String'];
+  text: Scalars['String'];
+  index: Scalars['Int'];
+};
+
 export type UpdateMeetingInput = {
   id: Scalars['String'];
   organization?: Maybe<Scalars['String']>;
@@ -459,7 +468,7 @@ export type UpdateVotationInput = {
   numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<AlternativeInput>>;
+  alternatives?: Maybe<Array<UpdateAlternativeInput>>;
 };
 
 export type UpdateVotationStatusResult = Votation | MaxOneOpenVotationError;
@@ -500,7 +509,6 @@ export type Votation = {
   id: Scalars['ID'];
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  order?: Maybe<Scalars['Int']>;
   status: VotationStatus;
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
@@ -547,6 +555,22 @@ export enum VotationType {
   Simple = 'SIMPLE',
   Stv = 'STV'
 }
+
+export type VotationWithAlternative = {
+  __typename?: 'VotationWithAlternative';
+  id: Scalars['ID'];
+  title: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  status: VotationStatus;
+  blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  type: VotationType;
+  numberOfWinners: Scalars['Int'];
+  majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
+  meetingId: Scalars['String'];
+  alternatives?: Maybe<Array<Maybe<Alternative>>>;
+};
 
 export type VotationWithWinner = {
   __typename?: 'VotationWithWinner';
@@ -656,7 +680,7 @@ export type CreateVotationsMutation = (
     & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text'>
+      & Pick<Alternative, 'id' | 'text' | 'index'>
     )>>> }
   )>>> }
 );
@@ -688,7 +712,7 @@ export type UpdateVotationsMutation = (
     & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'status'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text'>
+      & Pick<Alternative, 'id' | 'text' | 'index'>
     )>>> }
   )>>> }
 );
@@ -869,7 +893,7 @@ export type GetVotationByIdQuery = (
     & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'votationId'>
+      & Pick<Alternative, 'id' | 'text' | 'index' | 'votationId'>
     )>>> }
   )>, getVoteCount?: Maybe<(
     { __typename?: 'VoteCountResult' }
@@ -913,7 +937,7 @@ export type VotationsByMeetingIdQuery = (
       & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'id' | 'text'>
+        & Pick<Alternative, 'id' | 'text' | 'index'>
       )>>> }
     )>>> }
   )>, resultsOfPublishedVotations?: Maybe<Array<Maybe<(
@@ -921,7 +945,7 @@ export type VotationsByMeetingIdQuery = (
     & Pick<VotationWithWinner, 'id'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeWithWinner' }
-      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
+      & Pick<AlternativeWithWinner, 'id' | 'text' | 'index' | 'isWinner'>
     )>> }
   )>>> }
 );
@@ -951,7 +975,7 @@ export type GetVotationResultsQuery = (
     & Pick<VotationResults, 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeResult' }
-      & Pick<AlternativeResult, 'id' | 'text' | 'isWinner' | 'votes'>
+      & Pick<AlternativeResult, 'id' | 'text' | 'index' | 'isWinner' | 'votes'>
     )>> }
   )> }
 );
@@ -984,16 +1008,16 @@ export type GetStvResultQuery = (
       & Pick<StvRoundResult, 'index'>
       & { winners: Array<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'votationId' | 'id' | 'text'>
+        & Pick<Alternative, 'votationId' | 'id' | 'index' | 'text'>
       )>, losers: Array<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'text' | 'id'>
+        & Pick<Alternative, 'text' | 'id' | 'index'>
       )>, alternativesWithRoundVoteCount: Array<(
         { __typename?: 'AlternativeRoundVoteCount' }
         & Pick<AlternativeRoundVoteCount, 'voteCount'>
         & { alternative: (
           { __typename?: 'Alternative' }
-          & Pick<Alternative, 'id' | 'text'>
+          & Pick<Alternative, 'id' | 'index' | 'text'>
         ) }
       )> }
     )> }
@@ -1090,8 +1114,12 @@ export type VotationsUpdatedSubscriptionVariables = Exact<{
 export type VotationsUpdatedSubscription = (
   { __typename?: 'Subscription' }
   & { votationsUpdated?: Maybe<Array<Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
+    { __typename?: 'VotationWithAlternative' }
+    & Pick<VotationWithAlternative, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
+    & { alternatives?: Maybe<Array<Maybe<(
+      { __typename?: 'Alternative' }
+      & Pick<Alternative, 'id' | 'text' | 'index'>
+    )>>> }
   )>>> }
 );
 
@@ -1322,6 +1350,7 @@ export const CreateVotationsDocument = gql`
     alternatives {
       id
       text
+      index
     }
   }
 }
@@ -1404,6 +1433,7 @@ export const UpdateVotationsDocument = gql`
     alternatives {
       id
       text
+      index
     }
   }
 }
@@ -1885,6 +1915,7 @@ export const GetVotationByIdDocument = gql`
     alternatives {
       id
       text
+      index
       votationId
     }
     status
@@ -1991,6 +2022,7 @@ export const VotationsByMeetingIdDocument = gql`
       alternatives {
         id
         text
+        index
       }
     }
   }
@@ -1999,6 +2031,7 @@ export const VotationsByMeetingIdDocument = gql`
     alternatives {
       id
       text
+      index
       isWinner
     }
   }
@@ -2074,6 +2107,7 @@ export const GetVotationResultsDocument = gql`
     alternatives {
       id
       text
+      index
       isWinner
       votes
     }
@@ -2161,15 +2195,18 @@ export const GetStvResultDocument = gql`
       winners {
         votationId
         id
+        index
         text
       }
       losers {
         text
         id
+        index
       }
       alternativesWithRoundVoteCount {
         alternative {
           id
+          index
           text
         }
         voteCount
@@ -2416,7 +2453,11 @@ export const VotationsUpdatedDocument = gql`
     type
     numberOfWinners
     majorityThreshold
-    meetingId
+    alternatives {
+      id
+      text
+      index
+    }
   }
 }
     `;

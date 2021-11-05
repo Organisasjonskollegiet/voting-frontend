@@ -14,6 +14,7 @@ mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]
     alternatives {
       id
       text
+      index
     }
   }
 }
@@ -40,6 +41,7 @@ mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String
     alternatives {
       id
       text
+      index
     }
   }
 }

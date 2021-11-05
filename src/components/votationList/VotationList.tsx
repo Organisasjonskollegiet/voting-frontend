@@ -76,6 +76,59 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const toast = useToast();
 
+  const alternativeMapper = (alternative: Alternative) => {
+    return {
+      ...alternative,
+      existsInDb: true,
+    };
+  };
+
+  /**
+   * @description adds existsInDb and isEdited to the votations. If the results of the
+   * votation is published, alternatives prop is used and alternatives include isWinner.
+   * If the results are not published, the alternatives from the votation is used.
+   * If the votations has no alternatives, an empty alternative is added.
+   * @param votation
+   * @param alternatives is set only if the votationstatus is published, and includes
+   * isWinner
+   * @returns
+   */
+  const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
+    return {
+      ...votation,
+      existsInDb: true,
+      isEdited: false,
+      alternatives:
+        alternatives && alternatives.length > 0
+          ? alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
+          : votation.alternatives.length > 0
+          ? votation.alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
+          : [getEmptyAlternative()],
+    };
+  }, []);
+
+  /**
+   * @description formats all votations and couple it with its results if the
+   * votation results are published.
+   * @param votations votations from meetingById.votations
+   * @param winners list of result from resultsOfPublishedVotations containing
+   * votationId and alternatives including whether they are winners or not.
+   * @returns votations formatted correctly for further use and editing
+   */
+  const formatVotations = useCallback(
+    (votations: Votation[], winners?: Votation[]) => {
+      if (!votations) return;
+      return votations.map((votation) => {
+        if (winners && votation.status === VotationStatus.PublishedResult) {
+          const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
+          if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
+        }
+        return formatVotation(votation);
+      });
+    },
+    [formatVotation]
+  );
+
   useEffect(() => {
     if (
       !nextVotation &&
@@ -102,27 +155,18 @@ const VotationList: React.FC<VotationListProps> = ({
     if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated || !upcomingVotations || !nextVotation)
       return;
     setLastUpdate(votationsUpdated);
-    const updatedVotations = [...upcomingVotations, nextVotation].map((votation) => {
-      const updatedVotation = votationsUpdated.votationsUpdated?.find((updated) => updated?.id === votation.id);
-      if (!updatedVotation) return votation;
-      return {
-        ...votation,
-        title: updatedVotation.title,
-        description: updatedVotation.description,
-        index: updatedVotation.index,
-        blankVotes: updatedVotation.blankVotes,
-        hiddenVotes: updatedVotation.hiddenVotes,
-        type: updatedVotation.type,
-        numberOfWinners: updatedVotation.numberOfWinners,
-        majorityThreshold: updatedVotation.majorityThreshold,
-      };
-    });
-    const updatedVotationList = updatedVotations.sort((a, b) => (a?.index ?? 0) - (b?.index ?? 0)) as Votation[];
+    const changedVotationIds = votationsUpdated.votationsUpdated.map((v) => (v ? v.id : ''));
+    const votations = votationsUpdated.votationsUpdated as Votation[];
+    const updatedVotations = formatVotations(votations);
+    const unchangedVotations = [...upcomingVotations, nextVotation].filter((v) => !changedVotationIds.includes(v.id));
+    const updatedVotationList = [...(updatedVotations ?? []), ...unchangedVotations].sort(
+      (a, b) => (a?.index ?? 0) - (b?.index ?? 0)
+    ) as Votation[];
     if (updatedVotationList.length > 0) {
       setNextVotation(updatedVotationList[0]);
       setUpcomingVotations(updatedVotationList.slice(1));
     }
-  }, [votationsUpdated, nextVotation, upcomingVotations, lastUpdate]);
+  }, [votationsUpdated, nextVotation, upcomingVotations, lastUpdate, formatVotations]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend
@@ -163,60 +207,6 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
-  const alternativeMapper = (alternative: Alternative, index: number) => {
-    return {
-      ...alternative,
-      index: index,
-      existsInDb: true,
-    };
-  };
-
-  /**
-   * @description adds existsInDb and isEdited to the votations. If the results of the
-   * votation is published, alternatives prop is used and alternatives include isWinner.
-   * If the results are not published, the alternatives from the votation is used.
-   * If the votations has no alternatives, an empty alternative is added.
-   * @param votation
-   * @param alternatives is set only if the votationstatus is published, and includes
-   * isWinner
-   * @returns
-   */
-  const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
-    return {
-      ...votation,
-      existsInDb: true,
-      isEdited: false,
-      alternatives:
-        alternatives && alternatives.length > 0
-          ? alternatives.map(alternativeMapper)
-          : votation.alternatives.length > 0
-          ? votation.alternatives.map(alternativeMapper)
-          : [getEmptyAlternative()],
-    };
-  }, []);
-
-  /**
-   * @description formats all votations and couple it with its results if the
-   * votation results are published.
-   * @param votations votations from meetingById.votations
-   * @param winners list of result from resultsOfPublishedVotations containing
-   * votationId and alternatives including whether they are winners or not.
-   * @returns votations formatted correctly for further use and editing
-   */
-  const formatVotations = useCallback(
-    (votations: Votation[], winners?: Votation[]) => {
-      if (!votations) return;
-      return votations.map((votation) => {
-        if (winners && votation.status === VotationStatus.PublishedResult) {
-          const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
-          if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
-        }
-        return formatVotation(votation);
-      });
-    },
-    [formatVotation]
-  );
-
   useEffect(() => {
     if (
       data?.meetingById?.votations &&
@@ -227,6 +217,7 @@ const VotationList: React.FC<VotationListProps> = ({
       !endedVotations
     ) {
       const votations = data.meetingById.votations as Votation[];
+      console.log(votations);
       const winners = data.resultsOfPublishedVotations as Votation[];
       const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
       const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
@@ -405,15 +396,15 @@ const VotationList: React.FC<VotationListProps> = ({
         });
       await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
-      setNextVotation(
+      const newNextVotation =
         remainingVotations.length > 0
           ? remainingVotations[0]
           : ongoingVotation || (endedVotations && endedVotations?.length > 0)
           ? null
-          : getEmptyVotation(keyOfEmptyVotation)
-      );
+          : getEmptyVotation(keyOfEmptyVotation);
+      setNextVotation(newNextVotation);
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
-      setActiveVotationId('');
+      setActiveVotationId(newNextVotation?.id ?? '');
       toast({
         title: 'Votering slettet.',
         description: `${votation.title} ble slettet`,
@@ -535,6 +526,7 @@ const VotationList: React.FC<VotationListProps> = ({
             return {
               id: alternative.id,
               text: alternative.text,
+              index: alternative.index,
             };
           })
           .filter((alternative) => alternative.text !== ''),
@@ -542,7 +534,6 @@ const VotationList: React.FC<VotationListProps> = ({
     });
 
     const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
-    console.log('response', updateResponse);
     const updateResults = updateResponse.data?.updateVotations as Votation[];
     return formatVotations(updateResults) as Votation[];
   };
@@ -559,8 +550,13 @@ const VotationList: React.FC<VotationListProps> = ({
         numberOfWinners: votation.numberOfWinners,
         majorityThreshold: votation.majorityThreshold,
         alternatives: votation.alternatives
-          .map((alternative) => alternative.text)
-          .filter((alternative) => alternative !== ''),
+          .filter((alternative) => alternative.text !== '')
+          .map((alternative, index) => {
+            return {
+              text: alternative.text,
+              index: alternative.index ?? index,
+            };
+          }),
       };
     });
     const createResponse = await createVotations({ variables: { votations: preparedVotations, meetingId } });
