@@ -10,9 +10,6 @@ const App: FC = () => {
     <>
       <Navbar />
       <Switch>
-        {/* <Route path="/meeting/:meetingId/votation/:votationId">
-          <ActiveVotation />
-        </Route> */}
         <Route key="edit-meeting" path="/meeting/:meetingId/edit">
           <ManageMeeting />
         </Route>
