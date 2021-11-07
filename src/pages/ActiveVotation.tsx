@@ -241,7 +241,7 @@ const Votation: React.FC = () => {
     if (voteCount !== data.getVoteCount.voteCount) setVoteCount(data.getVoteCount.voteCount);
     if (votingEligibleCount !== data.getVoteCount.votingEligibleCount)
       setVotingEligibleCount(data.getVoteCount.votingEligibleCount);
-  }, [data?.getVoteCount, voteCount, votingEligibleCount]);
+  }, [data?.getVoteCount, voteCount, votingEligibleCount, newVoteCountData]);
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
@@ -266,7 +266,7 @@ const Votation: React.FC = () => {
     const newVotingEligibleCount = newVoteCountData.newVoteRegistered.votingEligibleCount;
     if (newVoteCount !== voteCount) setVoteCount(newVoteCount);
     if (newVotingEligibleCount !== votingEligibleCount) setVotingEligibleCount(newVotingEligibleCount);
-  }, [newVoteCountData, voteCount, votationId]);
+  }, [newVoteCountData, voteCount, votationId, votingEligibleCount]);
 
   // go to new votation if another votation opens
   useEffect(() => {
