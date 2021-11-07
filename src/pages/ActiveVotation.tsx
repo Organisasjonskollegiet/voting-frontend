@@ -106,6 +106,7 @@ const Votation: React.FC = () => {
   const [status, setStatus] = useState<VotationStatus | null>(null);
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
+  const [votingEligibleCount, setVotingEligibleCount] = useState<number>(0);
   const [participantRole, setParticipantRole] = useState<Role | null>(null);
   const [isVotingEligible, setIsVotingEligible] = useState(false);
   const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
@@ -132,6 +133,7 @@ const Votation: React.FC = () => {
     setShowVote(false);
     setStatus(null);
     setVoteCount(0);
+    setVotingEligibleCount(0);
     setUserHasVoted(false);
   }, [votationId, refetch]);
 
@@ -235,10 +237,11 @@ const Votation: React.FC = () => {
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
-    if (data?.votationById?.hasVoted && data.votationById.hasVoted.length > voteCount) {
-      setVoteCount(data.votationById.hasVoted.length);
-    }
-  }, [data?.votationById?.hasVoted, voteCount]);
+    if (!data?.getVoteCount || newVoteCountData) return;
+    if (voteCount !== data.getVoteCount.voteCount) setVoteCount(data.getVoteCount.voteCount);
+    if (votingEligibleCount !== data.getVoteCount.votingEligibleCount)
+      setVotingEligibleCount(data.getVoteCount.votingEligibleCount);
+  }, [data?.getVoteCount, voteCount, votingEligibleCount]);
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
@@ -258,14 +261,11 @@ const Votation: React.FC = () => {
 
   // update vote count when new vote count arrives from subscription
   useEffect(() => {
-    if (
-      !newVoteCountData?.newVoteRegistered ||
-      newVoteCountData.newVoteRegistered.voteCount === voteCount ||
-      newVoteCountData.newVoteRegistered.votationId !== votationId
-    )
-      return;
+    if (!newVoteCountData?.newVoteRegistered || newVoteCountData.newVoteRegistered.votationId !== votationId) return;
     const newVoteCount = newVoteCountData.newVoteRegistered.voteCount;
-    setVoteCount(newVoteCount);
+    const newVotingEligibleCount = newVoteCountData.newVoteRegistered.votingEligibleCount;
+    if (newVoteCount !== voteCount) setVoteCount(newVoteCount);
+    if (newVotingEligibleCount !== votingEligibleCount) setVotingEligibleCount(newVotingEligibleCount);
   }, [newVoteCountData, voteCount, votationId]);
 
   // go to new votation if another votation opens
