@@ -1,9 +1,8 @@
-import { Flex, Heading, VStack } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
-import { GetStvResultQuery, GetVotationResultsQuery } from '../../../__generated__/graphql-types';
+import { AlternativeResult, GetStvResultQuery, GetVotationResultsQuery } from '../../../__generated__/graphql-types';
 import AlternativesString from '../../common/AlternativesString';
 import { green } from '../../styles/theme';
-import DownloadResultButton from '../DownloadResultButton';
 import ResultsTable from '../results_table/ResultsTable';
 import StvResultTable from '../results_table/StvResultTable';
 
@@ -23,7 +22,11 @@ const DisplayResults: React.FC<DisplayResultsProps> = ({ stvResult, result, isSt
     if (stvResult?.getStvResult) {
       stvResult.getStvResult.stvRoundResults.forEach((r) => newWinners.push(...r.winners.map((w) => w.text)));
     } else if (result?.getVotationResults) {
-      newWinners.push(...result.getVotationResults.alternatives.filter((a) => a && a.isWinner).map((a) => a!.text));
+      newWinners.push(
+        ...result.getVotationResults.alternatives
+          .filter((a) => a && a.isWinner)
+          .map((a) => (a as AlternativeResult).text)
+      );
     }
     setWinners(newWinners);
   }, [winners, setWinners, stvResult?.getStvResult, result?.getVotationResults]);
