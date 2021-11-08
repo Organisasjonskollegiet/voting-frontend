@@ -20,6 +20,7 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
+import ResultModal from '../myMeetings/ResultModal';
 
 interface VotationListProps {
   meetingId: string;
@@ -65,6 +66,8 @@ const VotationList: React.FC<VotationListProps> = ({
   const [deleteAlternatives] = useDeleteAlternativesMutation();
 
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
+
+  const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
 
   const toast = useToast();
 
@@ -645,11 +648,18 @@ const VotationList: React.FC<VotationListProps> = ({
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <EndedVotation key={votation.id} role={role} votation={votation} duplicateVotation={duplicateVotation} />
+              <EndedVotation
+                key={votation.id}
+                role={role}
+                votation={votation}
+                duplicateVotation={duplicateVotation}
+                onClick={() => setShowResultOf(votation)}
+              />
             ))}
           </Accordion>
         </VStack>
       )}
+      <ResultModal isOpen={!!showResultOf} onClose={() => setShowResultOf(null)} votation={showResultOf} />
     </VStack>
   );
 };

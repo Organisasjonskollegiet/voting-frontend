@@ -4,7 +4,7 @@ import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, HSt
 import { collapsedStyle } from '../../styles/formStyles';
 import AlternativesString from '../../common/AlternativesString';
 
-const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
+const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role, onClick }) => {
   const winners = votation.alternatives.filter((a) => a.isWinner);
   const numberOfWinners = winners.length;
   const winnerString =
@@ -23,7 +23,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
 
   return numberOfWinners > 1 ? (
     <AccordionItem key={votation.id} sx={styles}>
-      <EndedVotationTemplate votation={votation} role={role} duplicateVotation={duplicateVotation}>
+      <EndedVotationTemplate onClick={onClick} votation={votation} role={role} duplicateVotation={duplicateVotation}>
         <AccordionButton p="1em 0">
           <Text isTruncated maxWidth="150px">
             {winnerString}
@@ -43,7 +43,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
     </AccordionItem>
   ) : (
     <Box key={votation.id} sx={styles}>
-      <EndedVotationTemplate votation={votation} duplicateVotation={duplicateVotation} role={role}>
+      <EndedVotationTemplate onClick={onClick} votation={votation} duplicateVotation={duplicateVotation} role={role}>
         <Text isTruncated maxWidth="150px">
           {winnerString}
         </Text>

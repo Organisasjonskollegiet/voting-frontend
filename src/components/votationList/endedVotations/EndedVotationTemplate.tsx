@@ -11,11 +11,25 @@ export interface EndedVotationProps {
   votation: Votation;
   duplicateVotation: (votation: Votation) => void;
   role: Role | undefined;
+  onClick: () => void;
 }
 
-const EndedVotationTemplate: React.FC<EndedVotationProps> = ({ role, votation, duplicateVotation, children }) => {
+const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
+  role,
+  votation,
+  duplicateVotation,
+  onClick,
+  children,
+}) => {
   return (
-    <HStack w="90vw" maxW="800px" h="56px" justifyContent="space-between" pr={role !== Role.Admin ? '1.5em' : '0'}>
+    <HStack
+      onClick={onClick}
+      w="90vw"
+      maxW="800px"
+      h="56px"
+      justifyContent="space-between"
+      pr={role !== Role.Admin ? '1.5em' : '0'}
+    >
       <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
         <HStack spacing="8" opacity="0.6">
           <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>

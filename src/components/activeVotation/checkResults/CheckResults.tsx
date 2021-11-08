@@ -17,6 +17,7 @@ import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
 import ReviewVotation from './ReviewVotation';
 import DownloadResultButton from '../DownloadResultButton';
+import DisplayResults from './DisplayResults';
 
 interface CheckResultsProps {
   meetingId: string;
@@ -59,7 +60,8 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
 
   return (
     <VStack spacing="2rem">
-      <VStack alignSelf="flex-start" alignItems="flex-start">
+      <DisplayResults result={result} stvResult={stvResult} isStv={isStv} votationId={votationId} />
+      {/* <VStack alignSelf="flex-start" alignItems="flex-start">
         {winners && winners.length > 0 ? (
           <>
             <Heading fontSize="16px" as="h3">
@@ -79,14 +81,16 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
           </Heading>
         )}
       </VStack>
-      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />}
+      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />} */}
 
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem" alignItems="start">
           <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
-            {role === Role.Admin && (result || stvResult) && <DownloadResultButton />}
+            {role === Role.Admin && (result || stvResult) && (
+              <DownloadResultButton result={result} stvResult={stvResult} isStv={isStv} />
+            )}
           </Flex>
         </VStack>
       )}

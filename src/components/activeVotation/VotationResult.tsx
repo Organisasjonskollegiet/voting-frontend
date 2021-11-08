@@ -52,7 +52,9 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           Gå tilbake til liste over voteringer
         </Button>
-        {(result || stvResult) && role === Role.Admin && <DownloadResultButton />}
+        {(result || stvResult) && role === Role.Admin && (
+          <DownloadResultButton result={result} stvResult={stvResult} isStv={isStv} />
+        )}
       </HStack>
     </VStack>
   );
