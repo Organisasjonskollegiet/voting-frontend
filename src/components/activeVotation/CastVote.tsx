@@ -71,7 +71,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             </Heading>
           </Center>
         )}
-        {!isVotingEligible && (
+        {!isVotingEligible && !userHasVoted && (
           <Center w="300px" mt="4em">
             <Heading as="h1" sx={h1Style}>
               Du har ikke stemmerett.

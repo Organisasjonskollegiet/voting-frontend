@@ -222,6 +222,7 @@ export type NewVoteRegisteredResponse = {
   __typename?: 'NewVoteRegisteredResponse';
   votationId: Scalars['String'];
   voteCount: Scalars['Int'];
+  votingEligibleCount: Scalars['Int'];
 };
 
 export type NoReview = {
@@ -1028,7 +1029,7 @@ export type NewVoteRegisteredSubscription = (
   { __typename?: 'Subscription' }
   & { newVoteRegistered?: Maybe<(
     { __typename?: 'NewVoteRegisteredResponse' }
-    & Pick<NewVoteRegisteredResponse, 'votationId' | 'voteCount'>
+    & Pick<NewVoteRegisteredResponse, 'votationId' | 'voteCount' | 'votingEligibleCount'>
   )> }
 );
 
@@ -2260,6 +2261,7 @@ export const NewVoteRegisteredDocument = gql`
   newVoteRegistered(votationId: $votationId) {
     votationId
     voteCount
+    votingEligibleCount
   }
 }
     `;
