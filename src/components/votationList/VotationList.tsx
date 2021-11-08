@@ -659,7 +659,7 @@ const VotationList: React.FC<VotationListProps> = ({
           </Accordion>
         </VStack>
       )}
-      {(role === Role.Admin || role === Role.Counter) && (
+      {(role === Role.Admin || role === Role.Counter) && isMeetingLobby && (
         <ResultModal isOpen={!!showResultOf} onClose={() => setShowResultOf(null)} votation={showResultOf} />
       )}
     </VStack>
