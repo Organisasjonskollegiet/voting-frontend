@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { VStack, Flex, Heading } from '@chakra-ui/react';
+import { VStack, Flex } from '@chakra-ui/react';
 import {
   Role,
   AlternativeResult,
@@ -8,10 +8,6 @@ import {
   useGetReviewsQuery,
   ReviewResult,
 } from '../../../__generated__/graphql-types';
-import ResultsTable from '../results_table/ResultsTable';
-import StvResultTable from '../results_table/StvResultTable';
-import AlternativesString from '../../common/AlternativesString';
-import { green } from '../../styles/theme';
 import Loading from '../../common/Loading';
 import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
@@ -61,28 +57,6 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   return (
     <VStack spacing="2rem">
       <DisplayResults result={result} stvResult={stvResult} isStv={isStv} votationId={votationId} />
-      {/* <VStack alignSelf="flex-start" alignItems="flex-start">
-        {winners && winners.length > 0 ? (
-          <>
-            <Heading fontSize="16px" as="h3">
-              {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
-            </Heading>
-            <VStack alignItems="start">
-              <AlternativesString
-                fontSize="24px"
-                color={green}
-                alternatives={winners.map((a: AlternativeType | AlternativeResult) => a.text)}
-              />
-            </VStack>
-          </>
-        ) : (
-          <Heading fontSize="24px" as="h3">
-            Voteringen hadde ingen vinner
-          </Heading>
-        )}
-      </VStack>
-      {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={stvResult} />} */}
-
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem" alignItems="start">
           <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />

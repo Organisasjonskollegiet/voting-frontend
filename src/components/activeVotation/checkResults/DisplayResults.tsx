@@ -17,10 +17,7 @@ interface DisplayResultsProps {
 const DisplayResults: React.FC<DisplayResultsProps> = ({ stvResult, result, isStv, votationId }) => {
   const [winners, setWinners] = useState<string[]>();
 
-  console.log(winners);
-
   useEffect(() => {
-    console.log(result);
     if (winners || (!stvResult?.getStvResult && !result?.getVotationResults)) return;
     const newWinners: string[] = [];
     if (stvResult?.getStvResult) {

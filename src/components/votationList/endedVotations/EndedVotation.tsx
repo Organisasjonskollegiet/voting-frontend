@@ -24,7 +24,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
   return numberOfWinners > 1 ? (
     <AccordionItem key={votation.id} sx={styles}>
       <EndedVotationTemplate onClick={onClick} votation={votation} role={role} duplicateVotation={duplicateVotation}>
-        <AccordionButton p="1em 0">
+        <AccordionButton onClick={(e) => e.stopPropagation()} p="1em 0">
           <Text isTruncated maxWidth="150px">
             {winnerString}
           </Text>

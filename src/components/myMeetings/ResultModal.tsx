@@ -13,7 +13,6 @@ import { Votation } from '../../types/types';
 import {
   useGetStvResultLazyQuery,
   useGetVotationResultsLazyQuery,
-  VotationOpenedForMeetingDocument,
   VotationType,
 } from '../../__generated__/graphql-types';
 import DisplayResults from '../activeVotation/checkResults/DisplayResults';
@@ -45,12 +44,12 @@ const ResultModal: React.FC<ResultModalProps> = ({ isOpen, onClose, votation }) 
       getResult({ variables: { votationId: votation.id } });
     }
     setIdOfVotationResult(votation.id);
-  }, [votation, result, stvResult]);
+  }, [votation, result, stvResult, getStvResult, getResult, idOfVotationResult]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
-      <ModalContent bg={offwhite} textColor={darkblue} p="2em">
+      <ModalContent mx="2rem" bg={offwhite} textColor={darkblue} p="2em">
         <ModalHeader>{`Resultat for ${votation?.title}`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -63,13 +62,15 @@ const ResultModal: React.FC<ResultModalProps> = ({ isOpen, onClose, votation }) 
                 isStv={votation.type === VotationType.Stv}
                 votationId={votation.id}
               />
-              <DownloadResultButton result={result} stvResult={stvResult} isStv={votation.type === VotationType.Stv} />
             </VStack>
           )}
         </ModalBody>
 
-        <ModalFooter justifyContent="flex-start">
+        <ModalFooter justifyContent="space-between">
           <ReturnToPreviousButton onClick={onClose} text="Tilbake"></ReturnToPreviousButton>
+          {votation && (
+            <DownloadResultButton result={result} stvResult={stvResult} isStv={votation.type === VotationType.Stv} />
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

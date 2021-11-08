@@ -28,6 +28,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
       maxW="800px"
       h="56px"
       justifyContent="space-between"
+      _hover={role === Role.Admin || role === Role.Counter ? { cursor: 'pointer' } : {}}
       pr={role !== Role.Admin ? '1.5em' : '0'}
     >
       <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
