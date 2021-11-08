@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EndedVotationTemplate, { EndedVotationProps } from './EndedVotationTemplate';
-import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, HStack, Text } from '@chakra-ui/react';
+import {
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  HStack,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react';
 import { collapsedStyle } from '../../styles/formStyles';
 import AlternativesString from '../../common/AlternativesString';
 
 const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotation, role }) => {
+  const [isOverflown, setIsOverflown] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
   const winners = votation.alternatives.filter((a) => a.isWinner);
   const numberOfWinners = winners.length;
   const winnerString =
@@ -13,6 +25,12 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           (a, index) => `${a.text}${index !== votation.alternatives.filter((a) => a.isWinner).length - 1 ? ', ' : ''}`
         )
       : 'Ingen vinner';
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const element = ref.current;
+    setIsOverflown(element.scrollWidth > element.clientWidth);
+  }, [ref]);
 
   const styles = {
     ...collapsedStyle,
@@ -25,9 +43,11 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
     <AccordionItem key={votation.id} sx={styles}>
       <EndedVotationTemplate votation={votation} role={role} duplicateVotation={duplicateVotation}>
         <AccordionButton p="1em 0">
-          <Text isTruncated maxWidth="150px">
-            {winnerString}
-          </Text>
+          <Tooltip label={winnerString} isDisabled={!isOverflown}>
+            <Text ref={ref} isTruncated maxWidth="150px">
+              {winnerString}
+            </Text>
+          </Tooltip>
           <AccordionIcon />
         </AccordionButton>
       </EndedVotationTemplate>
@@ -44,9 +64,11 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
   ) : (
     <Box key={votation.id} sx={styles}>
       <EndedVotationTemplate votation={votation} duplicateVotation={duplicateVotation} role={role}>
-        <Text isTruncated maxWidth="150px">
-          {winnerString}
-        </Text>
+        <Tooltip label={winnerString} isDisabled={!isOverflown}>
+          <Text isTruncated ref={ref} maxWidth="150px">
+            {winnerString}
+          </Text>
+        </Tooltip>
       </EndedVotationTemplate>
     </Box>
   );
