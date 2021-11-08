@@ -217,29 +217,32 @@ const VotationList: React.FC<VotationListProps> = ({
       !endedVotations
     ) {
       const votations = data.meetingById.votations as Votation[];
-      console.log(votations);
       const winners = data.resultsOfPublishedVotations as Votation[];
-      const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
-      const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-      const shouldAddEmpty = formattedVotations.length === 0;
-      if (shouldAddEmpty) {
-        formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
-      }
-      const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
-      const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
-      const ongoingVotation = sortedVotations.find(
-        (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
-      );
-      setOngoingVotation(ongoingVotation);
-      setNextVotation(upcomingVotations.slice(0, 1)[0]);
-      setUpcomingVotations(upcomingVotations.slice(1));
-      setEndedVotations(
-        sortedVotations.filter(
-          (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
-        )
-      );
-      if (upcomingVotations.length > 0) {
-        setActiveVotationId(upcomingVotations[0].id);
+      try {
+        const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
+        const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+        const shouldAddEmpty = formattedVotations.length === 0;
+        if (shouldAddEmpty) {
+          formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
+        }
+        const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
+        const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
+        const ongoingVotation = sortedVotations.find(
+          (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+        );
+        setOngoingVotation(ongoingVotation);
+        setNextVotation(upcomingVotations.slice(0, 1)[0]);
+        setUpcomingVotations(upcomingVotations.slice(1));
+        setEndedVotations(
+          sortedVotations.filter(
+            (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+          )
+        );
+        if (upcomingVotations.length > 0) {
+          setActiveVotationId(upcomingVotations[0].id);
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
   }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
@@ -337,12 +340,10 @@ const VotationList: React.FC<VotationListProps> = ({
     });
     setNextVotation({ ...newNext, index: indexOfNextVotation });
     setUpcomingVotations([
-      ...newUpcoming.map((v, index) => {
-        return {
-          ...v,
-          index: indexOfNextVotation + 1 + index,
-        };
-      }),
+      ...newUpcoming.map((v, index) => ({
+        ...v,
+        index: indexOfNextVotation + 1 + index,
+      })),
     ]);
     await updateIndexes(updatedVotations);
   }
@@ -388,12 +389,10 @@ const VotationList: React.FC<VotationListProps> = ({
       const remainingVotations = votations
         .filter((v) => v.id !== votation.id)
         .sort((a, b) => a.index - b.index)
-        .map((v, index) => {
-          return {
-            ...v,
-            index: indexOfNextVotation + index,
-          };
-        });
+        .map((v, index) => ({
+          ...v,
+          index: indexOfNextVotation + index,
+        }));
       await updateIndexes(remainingVotations);
       const keyOfEmptyVotation = uuid();
       const newNextVotation =
@@ -435,9 +434,7 @@ const VotationList: React.FC<VotationListProps> = ({
       if (upcomingVotations) votations.push(...upcomingVotations);
       const updatedVotation = votations
         .filter((v) => v.id === votationId)
-        .map((v) => {
-          return { ...v, alternatives: v.alternatives.filter((a) => a.id !== alternativeId) };
-        });
+        .map((v) => ({ ...v, alternatives: v.alternatives.filter((a) => a.id !== alternativeId) }));
       if (updatedVotation.length > 0) {
         updateVotation(updatedVotation[0]);
       }
@@ -510,28 +507,24 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleUpdateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => {
-      return {
-        id: votation.id,
-        title: votation.title,
-        description: votation.description,
-        index: votation.index,
-        blankVotes: votation.blankVotes,
-        hiddenVotes: votation.hiddenVotes,
-        type: votation.type,
-        numberOfWinners: votation.numberOfWinners,
-        majorityThreshold: votation.majorityThreshold,
-        alternatives: votation.alternatives
-          .map((alternative) => {
-            return {
-              id: alternative.id,
-              text: alternative.text,
-              index: alternative.index,
-            };
-          })
-          .filter((alternative) => alternative.text !== ''),
-      };
-    });
+    const preparedVotations = votations.map((votation) => ({
+      id: votation.id,
+      title: votation.title,
+      description: votation.description,
+      index: votation.index,
+      blankVotes: votation.blankVotes,
+      hiddenVotes: votation.hiddenVotes,
+      type: votation.type,
+      numberOfWinners: votation.numberOfWinners,
+      majorityThreshold: votation.majorityThreshold,
+      alternatives: votation.alternatives
+        .map((alternative) => ({
+          id: alternative.id,
+          text: alternative.text,
+          index: alternative.index,
+        }))
+        .filter((alternative) => alternative.text !== ''),
+    }));
 
     const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
     const updateResults = updateResponse.data?.updateVotations as Votation[];
@@ -539,26 +532,22 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleCreateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => {
-      return {
-        title: votation.title,
-        description: votation.description,
-        index: votation.index,
-        blankVotes: votation.blankVotes,
-        hiddenVotes: votation.hiddenVotes,
-        type: votation.type,
-        numberOfWinners: votation.numberOfWinners,
-        majorityThreshold: votation.majorityThreshold,
-        alternatives: votation.alternatives
-          .filter((alternative) => alternative.text !== '')
-          .map((alternative, index) => {
-            return {
-              text: alternative.text,
-              index: alternative.index ?? index,
-            };
-          }),
-      };
-    });
+    const preparedVotations = votations.map((votation) => ({
+      title: votation.title,
+      description: votation.description,
+      index: votation.index,
+      blankVotes: votation.blankVotes,
+      hiddenVotes: votation.hiddenVotes,
+      type: votation.type,
+      numberOfWinners: votation.numberOfWinners,
+      majorityThreshold: votation.majorityThreshold,
+      alternatives: votation.alternatives
+        .filter((alternative) => alternative.text !== '')
+        .map((alternative, index) => ({
+          text: alternative.text,
+          index: alternative.index ?? index,
+        })),
+    }));
     const createResponse = await createVotations({ variables: { votations: preparedVotations, meetingId } });
     const createResults = createResponse.data?.createVotations as Votation[];
     return formatVotations(createResults) as Votation[];
