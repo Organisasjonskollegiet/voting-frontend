@@ -152,16 +152,19 @@ const VotationList: React.FC<VotationListProps> = ({
   ]);
 
   useEffect(() => {
-    if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated || !upcomingVotations || !nextVotation)
-      return;
+    if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated) return;
     setLastUpdate(votationsUpdated);
     const changedVotationIds = votationsUpdated.votationsUpdated.map((v) => (v ? v.id : ''));
     const votations = votationsUpdated.votationsUpdated as Votation[];
     const updatedVotations = formatVotations(votations);
-    const unchangedVotations = [...upcomingVotations, nextVotation].filter((v) => !changedVotationIds.includes(v.id));
+    const allVotations = [];
+    if (upcomingVotations) allVotations.push(...upcomingVotations);
+    if (nextVotation) allVotations.push(nextVotation);
+    const unchangedVotations = allVotations.filter((v) => !changedVotationIds.includes(v.id));
     const updatedVotationList = [...(updatedVotations ?? []), ...unchangedVotations].sort(
       (a, b) => (a?.index ?? 0) - (b?.index ?? 0)
     ) as Votation[];
+    console.log('updated', updatedVotations);
     if (updatedVotationList.length > 0) {
       setNextVotation(updatedVotationList[0]);
       setUpcomingVotations(updatedVotationList.slice(1));
@@ -231,7 +234,7 @@ const VotationList: React.FC<VotationListProps> = ({
           (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
         );
         setOngoingVotation(ongoingVotation);
-        setNextVotation(upcomingVotations.slice(0, 1)[0]);
+        setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
         setUpcomingVotations(upcomingVotations.slice(1));
         setEndedVotations(
           sortedVotations.filter(
