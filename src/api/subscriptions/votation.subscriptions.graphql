@@ -9,6 +9,7 @@ subscription NewVoteRegistered($votationId: String!) {
   newVoteRegistered(votationId: $votationId) {
     votationId
     voteCount
+    votingEligibleCount
   }
 }
 

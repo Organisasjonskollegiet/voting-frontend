@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 
 interface AlternativesStringProps {
   alternatives: string[];
@@ -9,24 +9,19 @@ interface AlternativesStringProps {
 }
 
 const AlternativesString: React.FC<AlternativesStringProps> = ({ alternatives, fontSize, color, fontWeight }) => {
-  switch (alternatives.length) {
-    case 0:
-      return <></>;
-    case 1:
-      return (
-        <Text fontSize={fontSize} color={color} fontWeight={fontWeight ?? 'bold'}>
-          {alternatives[0]}
-        </Text>
-      );
-    default:
-      return (
-        <HStack color={color ?? 'inherit'} fontWeight={fontWeight ?? 'bold'} fontSize={fontSize ?? 'inherit'}>
-          <Text color="inherit">{alternatives.slice(0, -1).reduce((a, b) => a + ', ' + b)}</Text>
-          <Text color="inherit">{'og'}</Text>
-          <Text color="inherit">{alternatives[alternatives.length - 1]}</Text>
-        </HStack>
-      );
-  }
+  const length = alternatives.length;
+  return (
+    <Text
+      textAlign="center"
+      color={color ?? 'inherit'}
+      fontWeight={fontWeight ?? 'bold'}
+      fontSize={fontSize ?? 'inherit'}
+    >
+      {length > 0
+        ? alternatives.map((a, index) => `${a}${index < length - 2 ? ', ' : index === length - 2 ? ' og ' : ''}`)
+        : 'Ingen vinner'}
+    </Text>
+  );
 };
 
 export default AlternativesString;
