@@ -23,3 +23,7 @@ subscription ReviewAdded($votationId: String!) {
     disapproved
   }
 }
+
+subscription VotationDeleted($meetingId: String!) {
+  votationDeleted(meetingId: $meetingId)
+}
