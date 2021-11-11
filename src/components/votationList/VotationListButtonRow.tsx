@@ -19,7 +19,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
       position="sticky"
       bottom="3rem"
       onClick={(e) => e.stopPropagation()}
-      w="800px"
+      width="100%"
       justifyContent="space-between"
     >
       <Button
