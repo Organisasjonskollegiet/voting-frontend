@@ -9,6 +9,7 @@ subscription NewVoteRegistered($votationId: String!) {
   newVoteRegistered(votationId: $votationId) {
     votationId
     voteCount
+    votingEligibleCount
   }
 }
 
@@ -41,4 +42,8 @@ subscription VotationsUpdated($meetingId: String!) {
       index
     }
   }
+}
+
+subscription VotationDeleted($meetingId: String!) {
+  votationDeleted(meetingId: $meetingId)
 }

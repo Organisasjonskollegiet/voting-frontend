@@ -46,8 +46,8 @@ mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String
   }
 }
 
-mutation DeleteVotations($ids: [String!]!) {
-  deleteVotations(ids: $ids)
+mutation DeleteVotation($votationId: String!) {
+  deleteVotation(votationId: $votationId)
 }
 
 mutation DeleteAlternatives($ids: [String!]!) {

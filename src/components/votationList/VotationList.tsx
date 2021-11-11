@@ -6,7 +6,8 @@ import {
   Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
-  useDeleteVotationsMutation,
+  useDeleteVotationMutation,
+  useVotationDeletedSubscription,
   useUpdateVotationsMutation,
   useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
@@ -56,7 +57,7 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
 
-  const [deleteVotations] = useDeleteVotationsMutation();
+  const [deleteVotation] = useDeleteVotationMutation();
 
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
 
@@ -73,6 +74,12 @@ const VotationList: React.FC<VotationListProps> = ({
   const { data: votationsUpdated } = useVotationsUpdatedSubscription({ variables: { meetingId } });
 
   const [lastUpdate, setLastUpdate] = useState<VotationsUpdatedSubscription | undefined>();
+
+  const { data: deletedVotation } = useVotationDeletedSubscription({
+    variables: {
+      meetingId,
+    },
+  });
 
   const toast = useToast();
 
@@ -210,6 +217,171 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
+  /**
+   * @returns the index of what is going to be the nextVotation
+   */
+  const getIndexOfNextVotation = useCallback(() => {
+    // the index the coming nextVotation will have must be larger than
+    // all ended votations and the ongoing one
+    return ongoingVotation
+      ? ongoingVotation.index + 1
+      : endedVotations && endedVotations.length > 0
+      ? endedVotations[endedVotations.length - 1].index + 1
+      : 0;
+  }, [ongoingVotation, endedVotations]);
+
+  // updates the indexes of the votations in backend
+  // const updateIndexes = useCallback(
+  //   async (votations: Votation[]) => {
+  //     const upcomingVotations = votations
+  //       .filter((v) => v.status === VotationStatus.Upcoming)
+  //       .map((v) => {
+  //         return {
+  //           id: v.id,
+  //           index: v.index,
+  //         };
+  //       });
+  //     if (upcomingVotations.length > 0) {
+  //       try {
+  //         await updateVotationIndexes({ variables: { votations: upcomingVotations } });
+  //       } catch (error) {
+  //         toast({
+  //           title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+  //           description: 'Last inn siden på nytt, og prøv igjen.',
+  //           status: 'error',
+  //           duration: 5000,
+  //           isClosable: true,
+  //         });
+  //       }
+  //     }
+  //   },
+  //   [toast, updateVotationIndexes]
+  // );
+
+  // updates the indexes of the votations in backend
+  const updateIndexes = useCallback(
+    async (votations: Votation[]) => {
+      const upcomingVotations = votations
+        .filter((v) => v.status === VotationStatus.Upcoming)
+        .map((v) => {
+          return {
+            id: v.id,
+            index: v.index,
+          };
+        });
+      if (upcomingVotations.length > 0) {
+        try {
+          await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
+        } catch (error) {
+          toast({
+            title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+            description: 'Last inn siden på nytt, og prøv igjen.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      }
+    },
+    [meetingId, toast, updateVotationIndexes]
+  );
+
+  const updateVotationsAfterDeletion = useCallback(
+    async (votations: Votation[], deletedVotation: string, shouldUpdateIndexes: boolean) => {
+      const indexOfNextVotation = getIndexOfNextVotation();
+      const remainingVotations = votations
+        .filter((v) => v.id !== deletedVotation)
+        .sort((a, b) => a.index - b.index)
+        .map((v, index) => {
+          return {
+            ...v,
+            index: indexOfNextVotation + index,
+          };
+        });
+      if (shouldUpdateIndexes && role === Role.Admin) await updateIndexes(remainingVotations);
+      const keyOfEmptyVotation = uuid();
+      setNextVotation(
+        remainingVotations.length > 0
+          ? remainingVotations[0]
+          : !ongoingVotation && (!endedVotations || endedVotations?.length === 0) && role === Role.Admin
+          ? getEmptyVotation(keyOfEmptyVotation)
+          : null
+      );
+      setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
+      setActiveVotationId('');
+      toast({
+        title: 'Votering slettet.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    [toast, endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
+  );
+
+  useEffect(() => {
+    if (!deletedVotation?.votationDeleted) return;
+    const allVotations = [];
+    if (nextVotation) allVotations.push(nextVotation);
+    if (upcomingVotations) allVotations.push(...upcomingVotations);
+    if (!allVotations.map((v) => v.id).includes(deletedVotation.votationDeleted)) return;
+    updateVotationsAfterDeletion(allVotations, deletedVotation.votationDeleted, false);
+  }, [deletedVotation?.votationDeleted, nextVotation, upcomingVotations, updateVotationsAfterDeletion]);
+
+  // const alternativeMapper = (alternative: Alternative, index: number) => {
+  //   return {
+  //     ...alternative,
+  //     index: index,
+  //     existsInDb: true,
+  //   };
+  // };
+
+  // /**
+  //  * @description adds existsInDb and isEdited to the votations. If the results of the
+  //  * votation is published, alternatives prop is used and alternatives include isWinner.
+  //  * If the results are not published, the alternatives from the votation is used.
+  //  * If the votations has no alternatives, an empty alternative is added.
+  //  * @param votation
+  //  * @param alternatives is set only if the votationstatus is published, and includes
+  //  * isWinner
+  //  * @returns
+  //  */
+  // const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
+  //   return {
+  //     ...votation,
+  //     existsInDb: true,
+  //     isEdited: false,
+  //     alternatives:
+  //       alternatives && alternatives.length > 0
+  //         ? alternatives.map(alternativeMapper)
+  //         : votation.alternatives.length > 0
+  //         ? votation.alternatives.map(alternativeMapper)
+  //         : [getEmptyAlternative()],
+  //   };
+  // }, []);
+
+  /**
+   * @description formats all votations and couple it with its results if the
+   * votation results are published.
+   * @param votations votations from meetingById.votations
+   * @param winners list of result from resultsOfPublishedVotations containing
+   * votationId and alternatives including whether they are winners or not.
+   * @returns votations formatted correctly for further use and editing
+   */
+  // const formatVotations = useCallback(
+  //   (votations: Votation[], winners?: Votation[]) => {
+  //     if (!votations) return;
+  //     return votations.map((votation) => {
+  //       if (winners && votation.status === VotationStatus.PublishedResult) {
+  //         const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
+  //         if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
+  //       }
+  //       return formatVotation(votation);
+  //     });
+  //   },
+  //   [formatVotation]
+  // );
+
   useEffect(() => {
     if (
       data?.meetingById?.votations &&
@@ -295,19 +467,6 @@ const VotationList: React.FC<VotationListProps> = ({
     return { newNext: next, newUpcoming: upcoming };
   };
 
-  /**
-   * @returns the index of what is going to be the nextVotation
-   */
-  const getIndexOfNextVotation = () => {
-    // the index the coming nextVotation will have must be larger than
-    // all ended votations and the ongoing one
-    return ongoingVotation
-      ? ongoingVotation.index + 1
-      : endedVotations && endedVotations.length > 0
-      ? endedVotations[endedVotations.length - 1].index + 1
-      : 0;
-  };
-
   async function onDragEnd(result: DropResult) {
     if (!result.destination) {
       return;
@@ -351,69 +510,19 @@ const VotationList: React.FC<VotationListProps> = ({
     await updateIndexes(updatedVotations);
   }
 
-  // updates the indexes of the votations in backend
-  const updateIndexes = async (votations: Votation[]) => {
-    const upcomingVotations = votations
-      .filter((v) => v.status === VotationStatus.Upcoming)
-      .map((v) => {
-        return {
-          id: v.id,
-          index: v.index,
-        };
-      });
-    if (upcomingVotations.length > 0) {
-      try {
-        await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
-      } catch (error) {
-        toast({
-          title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
-          description: 'Last inn siden på nytt, og prøv igjen.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    }
-  };
-
   const handleDeleteVotation = async (votation: Votation) => {
     try {
       if (votation.existsInDb) {
-        await deleteVotations({
+        await deleteVotation({
           variables: {
-            ids: [votation.id],
+            votationId: votation.id,
           },
         });
       }
       const votations = [];
       if (nextVotation) votations.push(nextVotation);
       if (upcomingVotations) votations.push(...upcomingVotations);
-      const indexOfNextVotation = getIndexOfNextVotation();
-      const remainingVotations = votations
-        .filter((v) => v.id !== votation.id)
-        .sort((a, b) => a.index - b.index)
-        .map((v, index) => ({
-          ...v,
-          index: indexOfNextVotation + index,
-        }));
-      await updateIndexes(remainingVotations);
-      const keyOfEmptyVotation = uuid();
-      const newNextVotation =
-        remainingVotations.length > 0
-          ? remainingVotations[0]
-          : ongoingVotation || (endedVotations && endedVotations?.length > 0)
-          ? null
-          : getEmptyVotation(keyOfEmptyVotation);
-      setNextVotation(newNextVotation);
-      setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
-      setActiveVotationId(newNextVotation?.id ?? '');
-      toast({
-        title: 'Votering slettet.',
-        description: `${votation.title} ble slettet`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      updateVotationsAfterDeletion(votations, votation.id, true);
     } catch (error) {
       toast({
         title: 'Det oppstod et problem.',
@@ -521,10 +630,10 @@ const VotationList: React.FC<VotationListProps> = ({
       numberOfWinners: votation.numberOfWinners,
       majorityThreshold: votation.majorityThreshold,
       alternatives: votation.alternatives
-        .map((alternative) => ({
+        .map((alternative, index) => ({
           id: alternative.id,
           text: alternative.text,
-          index: alternative.index,
+          index: alternative.index ?? index,
         }))
         .filter((alternative) => alternative.text !== ''),
     }));
@@ -605,6 +714,7 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   if (error) {
+    console.log(error);
     return (
       <>
         <Center mt="10vh">
