@@ -130,7 +130,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     if (winnerResult?.getWinnerOfVotation) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       const newWinners = result.map((a) => {
-        return { id: a.id, text: a.text, votationId: a.votationId };
+        return { id: a.id, text: a.text, votationId: a.votationId, index: a.index };
       });
       if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }

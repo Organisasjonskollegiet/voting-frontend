@@ -8,6 +8,7 @@ query GetVotationById($votationId: String!) {
     alternatives {
       id
       text
+      index
       votationId
     }
     status
@@ -58,6 +59,7 @@ query VotationsByMeetingId($meetingId: String!) {
       alternatives {
         id
         text
+        index
       }
     }
   }
@@ -67,6 +69,7 @@ query VotationsByMeetingId($meetingId: String!) {
     alternatives {
       id
       text
+      index
       isWinner
     }
   }
@@ -84,6 +87,7 @@ query GetVotationResults($votationId: String!) {
     alternatives {
       id
       text
+      index
       isWinner
       votes
     }
@@ -113,15 +117,18 @@ query GetStvResult($votationId: String!) {
       winners {
         votationId
         id
+        index
         text
       }
       losers {
         text
         id
+        index
       }
       alternativesWithRoundVoteCount {
         alternative {
           id
+          index
           text
         }
         voteCount

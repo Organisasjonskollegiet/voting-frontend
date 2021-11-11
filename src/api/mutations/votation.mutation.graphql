@@ -14,19 +14,20 @@ mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]
     alternatives {
       id
       text
+      index
     }
   }
 }
 
-mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!) {
-  updateVotationIndexes(votations: $votations) {
+mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!, $meetingId: String!) {
+  updateVotationIndexes(votations: $votations, meetingId: $meetingId) {
     id
     index
   }
 }
 
-mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
-  updateVotations(votations: $votations) {
+mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String!) {
+  updateVotations(votations: $votations, meetingId: $meetingId) {
     id
     title
     description
@@ -40,6 +41,7 @@ mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
     alternatives {
       id
       text
+      index
     }
   }
 }

@@ -24,7 +24,7 @@ interface IProps {
 
 const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAlternative }) => {
   const [nextIndex, setNextIndex] = useState<number>(
-    Math.max(...votation.alternatives.map((alternative, index) => alternative.index ?? index)) + 1
+    Math.max(...votation.alternatives.map((alternative) => alternative.index)) + 1
   );
 
   const handleClickRemoveAlterantive = (alternative: Alternative) => {

@@ -20,18 +20,15 @@ export type Alternative = {
   __typename?: 'Alternative';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   votationId: Scalars['String'];
-};
-
-export type AlternativeInput = {
-  id: Scalars['String'];
-  text: Scalars['String'];
 };
 
 export type AlternativeResult = {
   __typename?: 'AlternativeResult';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   votationId: Scalars['String'];
   isWinner: Scalars['Boolean'];
   votes: Scalars['Int'];
@@ -48,7 +45,13 @@ export type AlternativeWithWinner = {
   __typename?: 'AlternativeWithWinner';
   id: Scalars['ID'];
   text: Scalars['String'];
+  index: Scalars['Int'];
   isWinner: Scalars['Boolean'];
+};
+
+export type CreateAlternativeInput = {
+  text: Scalars['String'];
+  index: Scalars['Int'];
 };
 
 export type CreateMeetingInput = {
@@ -67,7 +70,7 @@ export type CreateVotationInput = {
   numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<Scalars['String']>>;
+  alternatives?: Maybe<Array<CreateAlternativeInput>>;
 };
 
 
@@ -103,6 +106,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
+  /** Update votations belonging to a meeting. */
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
   deleteVotation?: Maybe<Scalars['String']>;
@@ -132,11 +136,13 @@ export type MutationCreateVotationsArgs = {
 
 
 export type MutationUpdateVotationIndexesArgs = {
+  meetingId: Scalars['String'];
   votations: Array<UpdateVotationIndexInput>;
 };
 
 
 export type MutationUpdateVotationsArgs = {
+  meetingId: Scalars['String'];
   votations: Array<UpdateVotationInput>;
 };
 
@@ -388,6 +394,8 @@ export type Subscription = {
   newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
+  /** Returns the updated votations of a meeting. */
+  votationsUpdated?: Maybe<Array<Maybe<VotationWithAlternative>>>;
   votationDeleted?: Maybe<Scalars['String']>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   participantUpdated?: Maybe<ParticipantUpdatedResponse>;
@@ -410,6 +418,11 @@ export type SubscriptionReviewAddedArgs = {
 };
 
 
+export type SubscriptionVotationsUpdatedArgs = {
+  meetingId: Scalars['String'];
+};
+
+
 export type SubscriptionVotationDeletedArgs = {
   meetingId: Scalars['String'];
 };
@@ -423,6 +436,12 @@ export type SubscriptionVotationOpenedForMeetingArgs = {
 export type SubscriptionParticipantUpdatedArgs = {
   meetingId: Scalars['String'];
   userId: Scalars['String'];
+};
+
+export type UpdateAlternativeInput = {
+  id: Scalars['String'];
+  text: Scalars['String'];
+  index: Scalars['Int'];
 };
 
 export type UpdateMeetingInput = {
@@ -456,7 +475,7 @@ export type UpdateVotationInput = {
   numberOfWinners: Scalars['Int'];
   majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<AlternativeInput>>;
+  alternatives?: Maybe<Array<UpdateAlternativeInput>>;
 };
 
 export type UpdateVotationStatusResult = Votation | MaxOneOpenVotationError;
@@ -497,7 +516,6 @@ export type Votation = {
   id: Scalars['ID'];
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  order?: Maybe<Scalars['Int']>;
   status: VotationStatus;
   blankVotes: Scalars['Boolean'];
   hiddenVotes: Scalars['Boolean'];
@@ -544,6 +562,22 @@ export enum VotationType {
   Simple = 'SIMPLE',
   Stv = 'STV'
 }
+
+export type VotationWithAlternative = {
+  __typename?: 'VotationWithAlternative';
+  id: Scalars['ID'];
+  title: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  status: VotationStatus;
+  blankVotes: Scalars['Boolean'];
+  hiddenVotes: Scalars['Boolean'];
+  type: VotationType;
+  numberOfWinners: Scalars['Int'];
+  majorityThreshold: Scalars['Int'];
+  index: Scalars['Int'];
+  meetingId: Scalars['String'];
+  alternatives?: Maybe<Array<Maybe<Alternative>>>;
+};
 
 export type VotationWithWinner = {
   __typename?: 'VotationWithWinner';
@@ -653,13 +687,14 @@ export type CreateVotationsMutation = (
     & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text'>
+      & Pick<Alternative, 'id' | 'text' | 'index'>
     )>>> }
   )>>> }
 );
 
 export type UpdateVotationIndexesMutationVariables = Exact<{
   votations: Array<UpdateVotationIndexInput> | UpdateVotationIndexInput;
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -673,6 +708,7 @@ export type UpdateVotationIndexesMutation = (
 
 export type UpdateVotationsMutationVariables = Exact<{
   votations: Array<UpdateVotationInput> | UpdateVotationInput;
+  meetingId: Scalars['String'];
 }>;
 
 
@@ -683,7 +719,7 @@ export type UpdateVotationsMutation = (
     & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'status'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text'>
+      & Pick<Alternative, 'id' | 'text' | 'index'>
     )>>> }
   )>>> }
 );
@@ -864,7 +900,7 @@ export type GetVotationByIdQuery = (
     & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
     & { alternatives?: Maybe<Array<Maybe<(
       { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'votationId'>
+      & Pick<Alternative, 'id' | 'text' | 'index' | 'votationId'>
     )>>> }
   )>, getVoteCount?: Maybe<(
     { __typename?: 'VoteCountResult' }
@@ -908,7 +944,7 @@ export type VotationsByMeetingIdQuery = (
       & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'index'>
       & { alternatives?: Maybe<Array<Maybe<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'id' | 'text'>
+        & Pick<Alternative, 'id' | 'text' | 'index'>
       )>>> }
     )>>> }
   )>, resultsOfPublishedVotations?: Maybe<Array<Maybe<(
@@ -916,7 +952,7 @@ export type VotationsByMeetingIdQuery = (
     & Pick<VotationWithWinner, 'id'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeWithWinner' }
-      & Pick<AlternativeWithWinner, 'id' | 'text' | 'isWinner'>
+      & Pick<AlternativeWithWinner, 'id' | 'text' | 'index' | 'isWinner'>
     )>> }
   )>>> }
 );
@@ -946,7 +982,7 @@ export type GetVotationResultsQuery = (
     & Pick<VotationResults, 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeResult' }
-      & Pick<AlternativeResult, 'id' | 'text' | 'isWinner' | 'votes'>
+      & Pick<AlternativeResult, 'id' | 'text' | 'index' | 'isWinner' | 'votes'>
     )>> }
   )> }
 );
@@ -979,16 +1015,16 @@ export type GetStvResultQuery = (
       & Pick<StvRoundResult, 'index'>
       & { winners: Array<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'votationId' | 'id' | 'text'>
+        & Pick<Alternative, 'votationId' | 'id' | 'index' | 'text'>
       )>, losers: Array<(
         { __typename?: 'Alternative' }
-        & Pick<Alternative, 'text' | 'id'>
+        & Pick<Alternative, 'text' | 'id' | 'index'>
       )>, alternativesWithRoundVoteCount: Array<(
         { __typename?: 'AlternativeRoundVoteCount' }
         & Pick<AlternativeRoundVoteCount, 'voteCount'>
         & { alternative: (
           { __typename?: 'Alternative' }
-          & Pick<Alternative, 'id' | 'text'>
+          & Pick<Alternative, 'id' | 'index' | 'text'>
         ) }
       )> }
     )> }
@@ -1075,6 +1111,23 @@ export type ReviewAddedSubscription = (
     { __typename?: 'ReviewResult' }
     & Pick<ReviewResult, 'approved' | 'disapproved'>
   )> }
+);
+
+export type VotationsUpdatedSubscriptionVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type VotationsUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & { votationsUpdated?: Maybe<Array<Maybe<(
+    { __typename?: 'VotationWithAlternative' }
+    & Pick<VotationWithAlternative, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
+    & { alternatives?: Maybe<Array<Maybe<(
+      { __typename?: 'Alternative' }
+      & Pick<Alternative, 'id' | 'text' | 'index'>
+    )>>> }
+  )>>> }
 );
 
 export type VotationDeletedSubscriptionVariables = Exact<{
@@ -1314,6 +1367,7 @@ export const CreateVotationsDocument = gql`
     alternatives {
       id
       text
+      index
     }
   }
 }
@@ -1346,8 +1400,8 @@ export type CreateVotationsMutationHookResult = ReturnType<typeof useCreateVotat
 export type CreateVotationsMutationResult = Apollo.MutationResult<CreateVotationsMutation>;
 export type CreateVotationsMutationOptions = Apollo.BaseMutationOptions<CreateVotationsMutation, CreateVotationsMutationVariables>;
 export const UpdateVotationIndexesDocument = gql`
-    mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!) {
-  updateVotationIndexes(votations: $votations) {
+    mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!, $meetingId: String!) {
+  updateVotationIndexes(votations: $votations, meetingId: $meetingId) {
     id
     index
   }
@@ -1369,6 +1423,7 @@ export type UpdateVotationIndexesMutationFn = Apollo.MutationFunction<UpdateVota
  * const [updateVotationIndexesMutation, { data, loading, error }] = useUpdateVotationIndexesMutation({
  *   variables: {
  *      votations: // value for 'votations'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
@@ -1380,8 +1435,8 @@ export type UpdateVotationIndexesMutationHookResult = ReturnType<typeof useUpdat
 export type UpdateVotationIndexesMutationResult = Apollo.MutationResult<UpdateVotationIndexesMutation>;
 export type UpdateVotationIndexesMutationOptions = Apollo.BaseMutationOptions<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>;
 export const UpdateVotationsDocument = gql`
-    mutation UpdateVotations($votations: [UpdateVotationInput!]!) {
-  updateVotations(votations: $votations) {
+    mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String!) {
+  updateVotations(votations: $votations, meetingId: $meetingId) {
     id
     title
     description
@@ -1395,6 +1450,7 @@ export const UpdateVotationsDocument = gql`
     alternatives {
       id
       text
+      index
     }
   }
 }
@@ -1415,6 +1471,7 @@ export type UpdateVotationsMutationFn = Apollo.MutationFunction<UpdateVotationsM
  * const [updateVotationsMutation, { data, loading, error }] = useUpdateVotationsMutation({
  *   variables: {
  *      votations: // value for 'votations'
+ *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
@@ -1875,6 +1932,7 @@ export const GetVotationByIdDocument = gql`
     alternatives {
       id
       text
+      index
       votationId
     }
     status
@@ -1981,6 +2039,7 @@ export const VotationsByMeetingIdDocument = gql`
       alternatives {
         id
         text
+        index
       }
     }
   }
@@ -1989,6 +2048,7 @@ export const VotationsByMeetingIdDocument = gql`
     alternatives {
       id
       text
+      index
       isWinner
     }
   }
@@ -2064,6 +2124,7 @@ export const GetVotationResultsDocument = gql`
     alternatives {
       id
       text
+      index
       isWinner
       votes
     }
@@ -2151,15 +2212,18 @@ export const GetStvResultDocument = gql`
       winners {
         votationId
         id
+        index
         text
       }
       losers {
         text
         id
+        index
       }
       alternativesWithRoundVoteCount {
         alternative {
           id
+          index
           text
         }
         voteCount
@@ -2394,6 +2458,50 @@ export function useReviewAddedSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type ReviewAddedSubscriptionHookResult = ReturnType<typeof useReviewAddedSubscription>;
 export type ReviewAddedSubscriptionResult = Apollo.SubscriptionResult<ReviewAddedSubscription>;
+export const VotationsUpdatedDocument = gql`
+    subscription VotationsUpdated($meetingId: String!) {
+  votationsUpdated(meetingId: $meetingId) {
+    id
+    title
+    description
+    index
+    status
+    blankVotes
+    hiddenVotes
+    type
+    numberOfWinners
+    majorityThreshold
+    alternatives {
+      id
+      text
+      index
+    }
+  }
+}
+    `;
+
+/**
+ * __useVotationsUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useVotationsUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useVotationsUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationsUpdatedSubscription({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useVotationsUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<VotationsUpdatedSubscription, VotationsUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<VotationsUpdatedSubscription, VotationsUpdatedSubscriptionVariables>(VotationsUpdatedDocument, options);
+      }
+export type VotationsUpdatedSubscriptionHookResult = ReturnType<typeof useVotationsUpdatedSubscription>;
+export type VotationsUpdatedSubscriptionResult = Apollo.SubscriptionResult<VotationsUpdatedSubscription>;
 export const VotationDeletedDocument = gql`
     subscription VotationDeleted($meetingId: String!) {
   votationDeleted(meetingId: $meetingId)
