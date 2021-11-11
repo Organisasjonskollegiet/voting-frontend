@@ -105,7 +105,7 @@ export type Mutation = {
   updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
   updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
-  deleteVotations?: Maybe<Array<Maybe<Scalars['String']>>>;
+  deleteVotation?: Maybe<Scalars['String']>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castStvVote?: Maybe<Scalars['String']>;
   castVote?: Maybe<Vote>;
@@ -147,8 +147,8 @@ export type MutationUpdateVotationStatusArgs = {
 };
 
 
-export type MutationDeleteVotationsArgs = {
-  ids: Array<Scalars['String']>;
+export type MutationDeleteVotationArgs = {
+  votationId: Scalars['String'];
 };
 
 
@@ -388,6 +388,7 @@ export type Subscription = {
   newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
   votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
+  votationDeleted?: Maybe<Scalars['String']>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   viewChanged?: Maybe<ViewState>;
@@ -406,6 +407,11 @@ export type SubscriptionVotationStatusUpdatedArgs = {
 
 export type SubscriptionReviewAddedArgs = {
   votationId: Scalars['String'];
+};
+
+
+export type SubscriptionVotationDeletedArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -682,14 +688,14 @@ export type UpdateVotationsMutation = (
   )>>> }
 );
 
-export type DeleteVotationsMutationVariables = Exact<{
-  ids: Array<Scalars['String']> | Scalars['String'];
+export type DeleteVotationMutationVariables = Exact<{
+  votationId: Scalars['String'];
 }>;
 
 
-export type DeleteVotationsMutation = (
+export type DeleteVotationMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteVotations'>
+  & Pick<Mutation, 'deleteVotation'>
 );
 
 export type DeleteAlternativesMutationVariables = Exact<{
@@ -1071,6 +1077,16 @@ export type ReviewAddedSubscription = (
   )> }
 );
 
+export type VotationDeletedSubscriptionVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type VotationDeletedSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'votationDeleted'>
+);
+
 
 export const CreateMeetingDocument = gql`
     mutation CreateMeeting($meeting: CreateMeetingInput!) {
@@ -1409,37 +1425,37 @@ export function useUpdateVotationsMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateVotationsMutationHookResult = ReturnType<typeof useUpdateVotationsMutation>;
 export type UpdateVotationsMutationResult = Apollo.MutationResult<UpdateVotationsMutation>;
 export type UpdateVotationsMutationOptions = Apollo.BaseMutationOptions<UpdateVotationsMutation, UpdateVotationsMutationVariables>;
-export const DeleteVotationsDocument = gql`
-    mutation DeleteVotations($ids: [String!]!) {
-  deleteVotations(ids: $ids)
+export const DeleteVotationDocument = gql`
+    mutation DeleteVotation($votationId: String!) {
+  deleteVotation(votationId: $votationId)
 }
     `;
-export type DeleteVotationsMutationFn = Apollo.MutationFunction<DeleteVotationsMutation, DeleteVotationsMutationVariables>;
+export type DeleteVotationMutationFn = Apollo.MutationFunction<DeleteVotationMutation, DeleteVotationMutationVariables>;
 
 /**
- * __useDeleteVotationsMutation__
+ * __useDeleteVotationMutation__
  *
- * To run a mutation, you first call `useDeleteVotationsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteVotationsMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useDeleteVotationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteVotationMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [deleteVotationsMutation, { data, loading, error }] = useDeleteVotationsMutation({
+ * const [deleteVotationMutation, { data, loading, error }] = useDeleteVotationMutation({
  *   variables: {
- *      ids: // value for 'ids'
+ *      votationId: // value for 'votationId'
  *   },
  * });
  */
-export function useDeleteVotationsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteVotationsMutation, DeleteVotationsMutationVariables>) {
+export function useDeleteVotationMutation(baseOptions?: Apollo.MutationHookOptions<DeleteVotationMutation, DeleteVotationMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteVotationsMutation, DeleteVotationsMutationVariables>(DeleteVotationsDocument, options);
+        return Apollo.useMutation<DeleteVotationMutation, DeleteVotationMutationVariables>(DeleteVotationDocument, options);
       }
-export type DeleteVotationsMutationHookResult = ReturnType<typeof useDeleteVotationsMutation>;
-export type DeleteVotationsMutationResult = Apollo.MutationResult<DeleteVotationsMutation>;
-export type DeleteVotationsMutationOptions = Apollo.BaseMutationOptions<DeleteVotationsMutation, DeleteVotationsMutationVariables>;
+export type DeleteVotationMutationHookResult = ReturnType<typeof useDeleteVotationMutation>;
+export type DeleteVotationMutationResult = Apollo.MutationResult<DeleteVotationMutation>;
+export type DeleteVotationMutationOptions = Apollo.BaseMutationOptions<DeleteVotationMutation, DeleteVotationMutationVariables>;
 export const DeleteAlternativesDocument = gql`
     mutation DeleteAlternatives($ids: [String!]!) {
   deleteAlternatives(ids: $ids)
@@ -2378,3 +2394,31 @@ export function useReviewAddedSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type ReviewAddedSubscriptionHookResult = ReturnType<typeof useReviewAddedSubscription>;
 export type ReviewAddedSubscriptionResult = Apollo.SubscriptionResult<ReviewAddedSubscription>;
+export const VotationDeletedDocument = gql`
+    subscription VotationDeleted($meetingId: String!) {
+  votationDeleted(meetingId: $meetingId)
+}
+    `;
+
+/**
+ * __useVotationDeletedSubscription__
+ *
+ * To run a query within a React component, call `useVotationDeletedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useVotationDeletedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVotationDeletedSubscription({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useVotationDeletedSubscription(baseOptions: Apollo.SubscriptionHookOptions<VotationDeletedSubscription, VotationDeletedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<VotationDeletedSubscription, VotationDeletedSubscriptionVariables>(VotationDeletedDocument, options);
+      }
+export type VotationDeletedSubscriptionHookResult = ReturnType<typeof useVotationDeletedSubscription>;
+export type VotationDeletedSubscriptionResult = Apollo.SubscriptionResult<VotationDeletedSubscription>;
