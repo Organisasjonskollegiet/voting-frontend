@@ -176,8 +176,6 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     participants,
   ]);
 
-  console.log(searchInputValue);
-
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
