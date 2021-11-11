@@ -33,6 +33,11 @@ const contextDefualtValues: MeetingContextState = {
   isVotingEligible: false,
 };
 
+export enum MeetingLocation {
+  LOBBY,
+  ACTIVEVOTATION,
+}
+
 export const MeetingContext = createContext<MeetingContextState>(contextDefualtValues);
 
 const MeetingLobby: React.FC = () => {
@@ -44,7 +49,7 @@ const MeetingLobby: React.FC = () => {
     },
   });
 
-  const [location, setLocation] = useState<'lobby' | 'activeVotation'>('lobby');
+  const [location, setLocation] = useState<MeetingLocation>(MeetingLocation.LOBBY);
   const [isVotingEligible, setIsVotingEligible] = useState(false);
 
   const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
@@ -81,12 +86,12 @@ const MeetingLobby: React.FC = () => {
   }, [updatedParticipant]);
 
   const navigateToOpenVotation = useCallback((openVotation: string | null) => {
-    if (openVotation) setLocation('activeVotation');
+    if (openVotation) setLocation(MeetingLocation.ACTIVEVOTATION);
   }, []);
 
   const handleOpenVotation = useCallback((openVotation: string) => {
     setOpenVotation(openVotation);
-    setLocation('activeVotation');
+    setLocation(MeetingLocation.ACTIVEVOTATION);
   }, []);
 
   // handle votation being open initially
@@ -109,7 +114,7 @@ const MeetingLobby: React.FC = () => {
     if (status !== VotationStatus.Open && status !== VotationStatus.CheckingResult) {
       setOpenVotation(null);
     }
-    setLocation('lobby');
+    setLocation(MeetingLocation.LOBBY);
   };
 
   if (loading) {
@@ -143,7 +148,7 @@ const MeetingLobby: React.FC = () => {
               setLocation={setLocation}
             />
           )}
-          {location === 'activeVotation' && openVotation ? (
+          {location === MeetingLocation.ACTIVEVOTATION && openVotation ? (
             <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
           ) : (
             <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">

@@ -1,11 +1,12 @@
 import { Box, FormControl, FormLabel, HStack, Switch } from '@chakra-ui/react';
 import React from 'react';
+import { MeetingLocation } from '../../pages/MeetingLobby';
 import LobbyNavigationButton from './LobbyNavigationButton';
 
 interface LobbyNavigationProps {
   openVotation?: string | null;
-  location: 'lobby' | 'activeVotation';
-  setLocation: (location: 'lobby' | 'activeVotation') => void;
+  location: MeetingLocation;
+  setLocation: (location: MeetingLocation) => void;
   togglePresentationMode: () => void;
 }
 
@@ -34,18 +35,18 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
       </FormControl>
       <HStack justifyContent="center" flex="1">
         <LobbyNavigationButton
-          selected={location === 'lobby'}
+          selected={location === MeetingLocation.LOBBY}
           text="Voteringsliste"
           onClick={() => {
-            setLocation('lobby');
+            setLocation(MeetingLocation.LOBBY);
           }}
         />
         <LobbyNavigationButton
-          selected={location === 'activeVotation'}
-          isDisabled={!openVotation && location !== 'activeVotation'}
+          selected={location === MeetingLocation.ACTIVEVOTATION}
+          isDisabled={!openVotation && location !== MeetingLocation.ACTIVEVOTATION}
           text="Aktiv votering"
           onClick={() => {
-            setLocation('activeVotation');
+            setLocation(MeetingLocation.ACTIVEVOTATION);
           }}
         />
       </HStack>
