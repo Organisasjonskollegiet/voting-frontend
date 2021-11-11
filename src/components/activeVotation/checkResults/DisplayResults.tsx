@@ -2,7 +2,7 @@ import { Heading, VStack } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import { AlternativeResult, GetStvResultQuery, GetVotationResultsQuery } from '../../../__generated__/graphql-types';
 import AlternativesString from '../../common/AlternativesString';
-import { green } from '../../styles/theme';
+import { green } from '../../styles/colors';
 import ResultsTable from '../results_table/ResultsTable';
 import StvResultTable from '../results_table/StvResultTable';
 

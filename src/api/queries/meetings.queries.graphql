@@ -19,15 +19,10 @@ query GetMeetings {
   }
 }
 
-query GetRole($meetingId: String!) {
-  meetingById(meetingId: $meetingId) {
-    id
-    participants {
-      user {
-        id
-      }
-      role
-    }
+query GetParticipant($meetingId: String!) {
+  myParticipant(meetingId: $meetingId) {
+    role
+    isVotingEligible
   }
 }
 

@@ -7,7 +7,8 @@ import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
 import { h1Style } from '../styles/formStyles';
-import { green } from '../styles/theme';
+import { green } from '../styles/colors';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 interface CastVoteProps {
   handleSelect: (id: string | null) => void;
@@ -37,6 +38,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   isVotingEligible,
 }) => {
   const { isStv } = useContext(ActiveVotationContext);
+  const { presentationMode } = useContext(MeetingContext);
 
   return (
     <WrapStack breakpoint={730} w="100%" justifyContent="space-between">
@@ -44,8 +46,10 @@ const CastVote: React.FC<CastVoteProps> = ({
         <Heading as="h2" sx={subtitlesStyle}>
           Alternativer
         </Heading>
-        {isStv && <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>}
-        {isStv ? (
+        {isStv && !presentationMode && (
+          <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>
+        )}
+        {isStv && !presentationMode ? (
           <PreferenceAlternativeList
             alternatives={alternatives}
             updateAlternatives={updateAlternatives}
@@ -71,7 +75,7 @@ const CastVote: React.FC<CastVoteProps> = ({
             </Heading>
           </Center>
         )}
-        {!isVotingEligible && (
+        {!isVotingEligible && !userHasVoted && (
           <Center w="300px" mt="4em">
             <Heading as="h1" sx={h1Style}>
               Du har ikke stemmerett.
@@ -79,7 +83,7 @@ const CastVote: React.FC<CastVoteProps> = ({
           </Center>
         )}
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
-        {!userHasVoted && isVotingEligible && (
+        {!userHasVoted && isVotingEligible && !presentationMode && (
           <Button
             bg={green}
             color="white"

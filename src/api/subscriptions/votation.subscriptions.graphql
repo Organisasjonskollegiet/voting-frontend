@@ -9,6 +9,7 @@ subscription NewVoteRegistered($votationId: String!) {
   newVoteRegistered(votationId: $votationId) {
     votationId
     voteCount
+    votingEligibleCount
   }
 }
 
@@ -21,4 +22,28 @@ subscription ReviewAdded($votationId: String!) {
     approved
     disapproved
   }
+}
+
+subscription VotationsUpdated($meetingId: String!) {
+  votationsUpdated(meetingId: $meetingId) {
+    id
+    title
+    description
+    index
+    status
+    blankVotes
+    hiddenVotes
+    type
+    numberOfWinners
+    majorityThreshold
+    alternatives {
+      id
+      text
+      index
+    }
+  }
+}
+
+subscription VotationDeleted($meetingId: String!) {
+  votationDeleted(meetingId: $meetingId)
 }

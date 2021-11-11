@@ -11,7 +11,7 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { darkblue } from '../styles/theme';
+import { darkblue } from '../styles/colors';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Logo from '../../static/logo.svg';

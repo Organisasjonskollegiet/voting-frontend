@@ -7,7 +7,7 @@ import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { boxShadow } from '../styles/formStyles';
 import { /*expandAndLift,*/ transition } from '../styles/styles';
 import CustomTag from '../common/CustomTag';
-import { green, lightGray } from '../styles/theme';
+import { green, lightGray } from '../styles/colors';
 import { formatMeetingTime, formatTimeLeftToMeeting } from './utils';
 import MeetingActionsWithPopover from './MeetingActionsWithPopover';
 

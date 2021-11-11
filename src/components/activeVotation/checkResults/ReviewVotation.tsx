@@ -1,7 +1,7 @@
 import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import { Button, Text, HStack, Box } from '@chakra-ui/react';
 import React from 'react';
-import { darkblue } from '../../styles/theme';
+import { darkblue } from '../../styles/colors';
 
 export interface ReviewStatus {
   status: boolean | undefined;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { VStack, Center, Spinner, Text } from '@chakra-ui/react';
-import { darkblue } from '../styles/theme';
+import { darkblue } from '../styles/colors';
 
 export interface LoadingProps {
   text: string;

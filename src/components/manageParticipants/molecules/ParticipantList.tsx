@@ -4,7 +4,7 @@ import { ParticipantOrInvite, Role } from '../../../__generated__/graphql-types'
 import { boxShadow } from '../../styles/formStyles';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
-import { darkblue, lightblue } from '../../styles/theme';
+import { darkblue, lightblue } from '../../styles/colors';
 
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
