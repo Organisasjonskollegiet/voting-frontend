@@ -338,6 +338,9 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleDeleteVotation = async (votation: Votation) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       if (votation.existsInDb) {
         await deleteVotations({
@@ -370,18 +373,18 @@ const VotationList: React.FC<VotationListProps> = ({
       );
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
       setActiveVotationId('');
-      toast({
-        title: 'Votering slettet.',
-        description: `${votation.title} ble slettet`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+
+      responseTitle = 'Votering slettet.';
+      responseDescription = `${votation.title} ble slettet`;
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.`,
-        status: 'error',
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
         duration: 5000,
         isClosable: true,
       });
@@ -389,6 +392,9 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleDeleteAlternative = async (alternativeId: string, votationId: string) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       await deleteAlternatives({
         variables: {
@@ -406,17 +412,16 @@ const VotationList: React.FC<VotationListProps> = ({
       if (updatedVotation.length > 0) {
         updateVotation(updatedVotation[0]);
       }
-      toast({
-        title: 'Alternativ slettet.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      responseTitle = 'Alternativ slettet.';
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kune ikke slette alternativet. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette alternativet. Prøv å laste inn siden på nytt.`,
-        status: 'error',
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
         duration: 5000,
         isClosable: true,
       });
