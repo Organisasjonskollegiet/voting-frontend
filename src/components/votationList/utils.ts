@@ -1,6 +1,11 @@
 import { v4 as uuid } from 'uuid';
 import { Votation, Alternative } from '../../types/types';
-import { VotationStatus, VotationType } from '../../__generated__/graphql-types';
+import {
+  CreateVotationInput,
+  UpdateVotationInput,
+  VotationStatus,
+  VotationType,
+} from '../../__generated__/graphql-types';
 
 export const getEmptyAlternative: () => Alternative = () => {
   return {
@@ -11,7 +16,7 @@ export const getEmptyAlternative: () => Alternative = () => {
   };
 };
 
-export const getEmptyVotation: (id?: string, index?: number) => Votation = (id?: string, index?: number) => {
+export const getEmptyVotation: (id?: string, index?: number) => Votation = (id?, index?) => {
   return {
     id: id ?? uuid(),
     title: '',
@@ -28,3 +33,86 @@ export const getEmptyVotation: (id?: string, index?: number) => Votation = (id?:
     isEdited: false,
   };
 };
+
+type ReorderType = (
+  next: Votation,
+  upcoming: Votation[],
+  startList: string,
+  endList: string,
+  startIndex: number,
+  endIndex: number
+) => { newNext: Votation; newUpcoming: Votation[] };
+
+export const reorder: ReorderType = (next, upcoming, startList, endList, startIndex, endIndex) => {
+  // if the votation moved is the next votation...
+  if (startList === 'next') {
+    // ...and its moved to top of upcoming, its still the next votation
+    if (endList === 'upcoming' && endIndex === 0) {
+      return { newNext: next, newUpcoming: upcoming };
+      // if not it should me moved, and the first upcoming should be set as next votation
+    } else if (endList === 'upcoming') {
+      const newUpcoming = Array.from(upcoming);
+      const [newNext] = newUpcoming.splice(startIndex, 1);
+      newUpcoming.splice(endIndex, 0, next);
+      return { newNext, newUpcoming };
+    }
+    // if the votation is moved from upcoming...
+  } else {
+    // to next, but not to the top, it should be put on top of upcoming
+    if (endList === 'next' && endIndex !== 0) {
+      const newUpcoming = Array.from(upcoming);
+      const [removed] = newUpcoming.splice(startIndex, 1);
+      newUpcoming.splice(0, 0, removed);
+      return { newNext: next, newUpcoming };
+      // if it goes on top of next it should be set next and next bumped down
+    } else if (endList === 'next') {
+      const newUpcoming = Array.from(upcoming);
+      const [newNext] = newUpcoming.splice(startIndex, 1);
+      newUpcoming.splice(0, 0, next);
+      return { newNext, newUpcoming };
+      // if it goes elsewhere it should move there
+    } else {
+      const newUpcoming = Array.from(upcoming);
+      const [removed] = newUpcoming.splice(startIndex, 1);
+      newUpcoming.splice(endIndex, 0, removed);
+      return { newNext: next, newUpcoming };
+    }
+  }
+  return { newNext: next, newUpcoming: upcoming };
+};
+
+export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotationInput[] = (votations: Votation[]) =>
+  votations.map((votation) => ({
+    title: votation.title,
+    description: votation.description,
+    index: votation.index,
+    blankVotes: votation.blankVotes,
+    hiddenVotes: votation.hiddenVotes,
+    type: votation.type,
+    numberOfWinners: votation.numberOfWinners,
+    majorityThreshold: votation.majorityThreshold,
+    alternatives: votation.alternatives
+      .map((alternative) => alternative.text)
+      .filter((alternative) => alternative !== ''),
+  }));
+
+export const removeEmptyAlternatives: (votations: Votation[]) => UpdateVotationInput[] = (votations) =>
+  votations.map((votation) => ({
+    id: votation.id,
+    title: votation.title,
+    description: votation.description,
+    index: votation.index,
+    blankVotes: votation.blankVotes,
+    hiddenVotes: votation.hiddenVotes,
+    type: votation.type,
+    numberOfWinners: votation.numberOfWinners,
+    majorityThreshold: votation.majorityThreshold,
+    alternatives: votation.alternatives
+      .map((alternative) => {
+        return {
+          id: alternative.id,
+          text: alternative.text,
+        };
+      })
+      .filter((alternative) => alternative.text !== ''),
+  }));
