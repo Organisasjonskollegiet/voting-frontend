@@ -52,29 +52,17 @@ const VotationList: React.FC<VotationListProps> = ({
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
-
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
-
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
-
   const [deleteVotations] = useDeleteVotationsMutation();
-
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
-
   const [nextVotation, setNextVotation] = useState<Votation | null>();
-
   const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
-
   const [endedVotations, setEndedVotations] = useState<Votation[]>();
-
   const [activeVotationId, setActiveVotationId] = useState<string>('');
-
   const [deleteAlternatives] = useDeleteAlternativesMutation();
-
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
-
   const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
-
   const toast = useToast();
 
   useEffect(() => {
@@ -96,28 +84,25 @@ const VotationList: React.FC<VotationListProps> = ({
 
   useEffect(() => {
     if (updateVotationStatusResult.data?.updateVotationStatus) {
-      const openedToastId = 'votationOpened';
-      const maxOneToastId = 'maxOneOpenVotation';
-      if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation' &&
-        !toast.isActive(openedToastId)
-      ) {
+      let responseTitle,
+        responseDescription,
+        responseStatus: 'success' | 'error' = 'error';
+
+      if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation') {
+        responseTitle = 'Voteringen ble åpnet.';
+        responseStatus = 'success';
+      } else if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError') {
+        responseTitle = 'Kunne ikke åpne votering.';
+        responseDescription = updateVotationStatusResult.data?.updateVotationStatus.message;
+      }
+
+      const toastId = 'votationOpenedResponse';
+      if (!toast.isActive(toastId)) {
         toast({
-          id: openedToastId,
-          title: 'Voteringen ble åpnet.',
-          status: 'success',
-          duration: 4000,
-          isClosable: true,
-        });
-      } else if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError' &&
-        !toast.isActive(maxOneToastId)
-      ) {
-        toast({
-          id: maxOneToastId,
-          title: 'Kunne ikke åpne votering.',
-          description: updateVotationStatusResult.data?.updateVotationStatus.message,
-          status: 'error',
+          id: toastId,
+          title: responseTitle,
+          description: responseDescription,
+          status: responseStatus,
           duration: 4000,
           isClosable: true,
         });
