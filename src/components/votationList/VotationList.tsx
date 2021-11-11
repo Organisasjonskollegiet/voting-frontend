@@ -18,11 +18,12 @@ import {
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
-import EndedVotation from './endedVotations/EndedVotation';
+import EndedVotation from './EndedVotation';
 import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
+import ResultModal from '../myMeetings/ResultModal';
 // import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
@@ -80,6 +81,8 @@ const VotationList: React.FC<VotationListProps> = ({
       meetingId,
     },
   });
+
+  const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
 
   const toast = useToast();
 
@@ -231,34 +234,6 @@ const VotationList: React.FC<VotationListProps> = ({
   }, [ongoingVotation, endedVotations]);
 
   // updates the indexes of the votations in backend
-  // const updateIndexes = useCallback(
-  //   async (votations: Votation[]) => {
-  //     const upcomingVotations = votations
-  //       .filter((v) => v.status === VotationStatus.Upcoming)
-  //       .map((v) => {
-  //         return {
-  //           id: v.id,
-  //           index: v.index,
-  //         };
-  //       });
-  //     if (upcomingVotations.length > 0) {
-  //       try {
-  //         await updateVotationIndexes({ variables: { votations: upcomingVotations } });
-  //       } catch (error) {
-  //         toast({
-  //           title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
-  //           description: 'Last inn siden på nytt, og prøv igjen.',
-  //           status: 'error',
-  //           duration: 5000,
-  //           isClosable: true,
-  //         });
-  //       }
-  //     }
-  //   },
-  //   [toast, updateVotationIndexes]
-  // );
-
-  // updates the indexes of the votations in backend
   const updateIndexes = useCallback(
     async (votations: Votation[]) => {
       const upcomingVotations = votations
@@ -327,60 +302,6 @@ const VotationList: React.FC<VotationListProps> = ({
     if (!allVotations.map((v) => v.id).includes(deletedVotation.votationDeleted)) return;
     updateVotationsAfterDeletion(allVotations, deletedVotation.votationDeleted, false);
   }, [deletedVotation?.votationDeleted, nextVotation, upcomingVotations, updateVotationsAfterDeletion]);
-
-  // const alternativeMapper = (alternative: Alternative, index: number) => {
-  //   return {
-  //     ...alternative,
-  //     index: index,
-  //     existsInDb: true,
-  //   };
-  // };
-
-  // /**
-  //  * @description adds existsInDb and isEdited to the votations. If the results of the
-  //  * votation is published, alternatives prop is used and alternatives include isWinner.
-  //  * If the results are not published, the alternatives from the votation is used.
-  //  * If the votations has no alternatives, an empty alternative is added.
-  //  * @param votation
-  //  * @param alternatives is set only if the votationstatus is published, and includes
-  //  * isWinner
-  //  * @returns
-  //  */
-  // const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
-  //   return {
-  //     ...votation,
-  //     existsInDb: true,
-  //     isEdited: false,
-  //     alternatives:
-  //       alternatives && alternatives.length > 0
-  //         ? alternatives.map(alternativeMapper)
-  //         : votation.alternatives.length > 0
-  //         ? votation.alternatives.map(alternativeMapper)
-  //         : [getEmptyAlternative()],
-  //   };
-  // }, []);
-
-  /**
-   * @description formats all votations and couple it with its results if the
-   * votation results are published.
-   * @param votations votations from meetingById.votations
-   * @param winners list of result from resultsOfPublishedVotations containing
-   * votationId and alternatives including whether they are winners or not.
-   * @returns votations formatted correctly for further use and editing
-   */
-  // const formatVotations = useCallback(
-  //   (votations: Votation[], winners?: Votation[]) => {
-  //     if (!votations) return;
-  //     return votations.map((votation) => {
-  //       if (winners && votation.status === VotationStatus.PublishedResult) {
-  //         const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
-  //         if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
-  //       }
-  //       return formatVotation(votation);
-  //     });
-  //   },
-  //   [formatVotation]
-  // );
 
   useEffect(() => {
     if (
@@ -791,10 +712,19 @@ const VotationList: React.FC<VotationListProps> = ({
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <EndedVotation key={votation.id} role={role} votation={votation} duplicateVotation={duplicateVotation} />
+              <EndedVotation
+                key={votation.id}
+                role={role}
+                votation={votation}
+                duplicateVotation={duplicateVotation}
+                onClick={() => setShowResultOf(votation)}
+              />
             ))}
           </Accordion>
         </VStack>
+      )}
+      {(role === Role.Admin || role === Role.Counter) && isMeetingLobby && (
+        <ResultModal isOpen={!!showResultOf} onClose={() => setShowResultOf(null)} votation={showResultOf} />
       )}
     </VStack>
   );

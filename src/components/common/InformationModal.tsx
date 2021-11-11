@@ -27,7 +27,7 @@ const InformationModal: React.FC<InformationModalProps> = ({ children, ariaLabel
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
-        <ModalContent bg={offwhite} textColor={darkblue} p="2em">
+        <ModalContent mx="2rem" bg={offwhite} textColor={darkblue} p="2em">
           <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{children}</ModalBody>
