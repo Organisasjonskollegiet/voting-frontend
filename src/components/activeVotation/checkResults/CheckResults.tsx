@@ -11,12 +11,13 @@ import {
 import ResultsTable from '../results_table/ResultsTable';
 import StvResultTable from '../results_table/StvResultTable';
 import AlternativesString from '../../common/AlternativesString';
-import { green } from '../../styles/theme';
+import { green } from '../../styles/colors';
 import Loading from '../../common/Loading';
 import { ActiveVotationContext } from '../../../pages/ActiveVotation';
 import VotationReviews from './VotationReviews';
 import ReviewVotation from './ReviewVotation';
 import DownloadResultButton from '../DownloadResultButton';
+import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface CheckResultsProps {
   meetingId: string;
@@ -26,8 +27,8 @@ interface CheckResultsProps {
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
-  const { result, stvResult, votationId, role, isStv } = useContext(ActiveVotationContext);
-
+  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { role } = useContext(MeetingContext);
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
   const [currentReview, setCurrentReview] = useState<boolean | undefined>(undefined);
@@ -83,7 +84,9 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
 
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem" alignItems="start">
-          <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
+          {role === Role.Admin && (
+            <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
+          )}
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
             {role === Role.Admin && (result || stvResult) && <DownloadResultButton />}

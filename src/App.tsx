@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
-import ActiveVotation from './pages/ActiveVotation';
 import ManageMeeting from './pages/ManageMeeting';
 import MyMeetings from './pages/MyMeetings';
 import MeetingLobby from './pages/MeetingLobby';
@@ -11,9 +10,6 @@ const App: FC = () => {
     <>
       <Navbar />
       <Switch>
-        <Route path="/meeting/:meetingId/votation/:votationId">
-          <ActiveVotation />
-        </Route>
         <Route key="edit-meeting" path="/meeting/:meetingId/edit">
           <ManageMeeting />
         </Route>

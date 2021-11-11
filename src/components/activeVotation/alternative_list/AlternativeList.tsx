@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { ButtonGroup, CSSObject } from '@chakra-ui/react';
 import Alternative from '../alternative/Alternative';
+import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface AlternativeChoice {
   id: string;
@@ -29,6 +30,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
   showVote,
   disableVoting,
 }) => {
+  const { presentationMode } = useContext(MeetingContext);
   const [selectedAlternativeId, setSelectedAlternativeId] = useState<string | null>(null);
 
   const updateSelected = useCallback(
@@ -41,7 +43,7 @@ const AlternativeList: React.FC<AlternativeListProps> = ({
   );
 
   const handleUpdateSelected = (id: string) => {
-    if (!userHasVoted) {
+    if (!userHasVoted && !presentationMode) {
       updateSelected(id);
     }
   };

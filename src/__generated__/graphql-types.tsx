@@ -255,6 +255,12 @@ export type ParticipantOrInvite = {
   isVotingEligible: Scalars['Boolean'];
 };
 
+export type ParticipantUpdatedResponse = {
+  __typename?: 'ParticipantUpdatedResponse';
+  role: Role;
+  isVotingEligible: Scalars['Boolean'];
+};
+
 export type Query = {
   __typename?: 'Query';
   user?: Maybe<GetUserResult>;
@@ -276,6 +282,8 @@ export type Query = {
   meetingById?: Maybe<Meeting>;
   /** Return relevant information about invites and participants connected to meeting */
   participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
+  /** Return participant belonging to the user for the meeting specified. */
+  myParticipant?: Maybe<ParticipantOrInvite>;
 };
 
 
@@ -333,6 +341,11 @@ export type QueryParticipantsArgs = {
   meetingId: Scalars['String'];
 };
 
+
+export type QueryMyParticipantArgs = {
+  meetingId: Scalars['String'];
+};
+
 export type ReviewResult = {
   __typename?: 'ReviewResult';
   approved: Scalars['Int'];
@@ -377,6 +390,7 @@ export type Subscription = {
   reviewAdded?: Maybe<ReviewResult>;
   votationDeleted?: Maybe<Scalars['String']>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
+  participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   viewChanged?: Maybe<ViewState>;
 };
 
@@ -403,6 +417,12 @@ export type SubscriptionVotationDeletedArgs = {
 
 export type SubscriptionVotationOpenedForMeetingArgs = {
   meetingId: Scalars['String'];
+};
+
+
+export type SubscriptionParticipantUpdatedArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 export type UpdateMeetingInput = {
@@ -789,24 +809,16 @@ export type GetMeetingsQuery = (
   )>> }
 );
 
-export type GetRoleQueryVariables = Exact<{
+export type GetParticipantQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetRoleQuery = (
+export type GetParticipantQuery = (
   { __typename?: 'Query' }
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id'>
-    & { participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id'>
-      )> }
-    )>> }
+  & { myParticipant?: Maybe<(
+    { __typename?: 'ParticipantOrInvite' }
+    & Pick<ParticipantOrInvite, 'role' | 'isVotingEligible'>
   )> }
 );
 
@@ -842,7 +854,6 @@ export type GetParticipantsByMeetingIdQuery = (
 
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
-  meetingId: Scalars['String'];
 }>;
 
 
@@ -855,16 +866,6 @@ export type GetVotationByIdQuery = (
       { __typename?: 'Alternative' }
       & Pick<Alternative, 'id' | 'text' | 'votationId'>
     )>>> }
-  )>, meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & { participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role' | 'isVotingEligible'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'email'>
-      )> }
-    )>> }
   )>, getVoteCount?: Maybe<(
     { __typename?: 'VoteCountResult' }
     & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
@@ -1010,6 +1011,20 @@ export type GetReviewsQuery = (
   ) | (
     { __typename?: 'NoReview' }
     & Pick<NoReview, 'message'>
+  )> }
+);
+
+export type ParticipantUpdatedSubscriptionVariables = Exact<{
+  userId: Scalars['String'];
+  meetingId: Scalars['String'];
+}>;
+
+
+export type ParticipantUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & { participantUpdated?: Maybe<(
+    { __typename?: 'ParticipantUpdatedResponse' }
+    & Pick<ParticipantUpdatedResponse, 'role' | 'isVotingEligible'>
   )> }
 );
 
@@ -1732,47 +1747,42 @@ export function useGetMeetingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetMeetingsQueryHookResult = ReturnType<typeof useGetMeetingsQuery>;
 export type GetMeetingsLazyQueryHookResult = ReturnType<typeof useGetMeetingsLazyQuery>;
 export type GetMeetingsQueryResult = Apollo.QueryResult<GetMeetingsQuery, GetMeetingsQueryVariables>;
-export const GetRoleDocument = gql`
-    query GetRole($meetingId: String!) {
-  meetingById(meetingId: $meetingId) {
-    id
-    participants {
-      user {
-        id
-      }
-      role
-    }
+export const GetParticipantDocument = gql`
+    query GetParticipant($meetingId: String!) {
+  myParticipant(meetingId: $meetingId) {
+    role
+    isVotingEligible
   }
 }
     `;
 
 /**
- * __useGetRoleQuery__
+ * __useGetParticipantQuery__
  *
- * To run a query within a React component, call `useGetRoleQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRoleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetParticipantQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetParticipantQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetRoleQuery({
+ * const { data, loading, error } = useGetParticipantQuery({
  *   variables: {
  *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
-export function useGetRoleQuery(baseOptions: Apollo.QueryHookOptions<GetRoleQuery, GetRoleQueryVariables>) {
+export function useGetParticipantQuery(baseOptions: Apollo.QueryHookOptions<GetParticipantQuery, GetParticipantQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRoleQuery, GetRoleQueryVariables>(GetRoleDocument, options);
+        return Apollo.useQuery<GetParticipantQuery, GetParticipantQueryVariables>(GetParticipantDocument, options);
       }
-export function useGetRoleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoleQuery, GetRoleQueryVariables>) {
+export function useGetParticipantLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetParticipantQuery, GetParticipantQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRoleQuery, GetRoleQueryVariables>(GetRoleDocument, options);
+          return Apollo.useLazyQuery<GetParticipantQuery, GetParticipantQueryVariables>(GetParticipantDocument, options);
         }
-export type GetRoleQueryHookResult = ReturnType<typeof useGetRoleQuery>;
-export type GetRoleLazyQueryHookResult = ReturnType<typeof useGetRoleLazyQuery>;
-export type GetRoleQueryResult = Apollo.QueryResult<GetRoleQuery, GetRoleQueryVariables>;
+export type GetParticipantQueryHookResult = ReturnType<typeof useGetParticipantQuery>;
+export type GetParticipantLazyQueryHookResult = ReturnType<typeof useGetParticipantLazyQuery>;
+export type GetParticipantQueryResult = Apollo.QueryResult<GetParticipantQuery, GetParticipantQueryVariables>;
 export const GetMeetingByIdDocument = gql`
     query GetMeetingById($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
@@ -1855,7 +1865,7 @@ export type GetParticipantsByMeetingIdQueryHookResult = ReturnType<typeof useGet
 export type GetParticipantsByMeetingIdLazyQueryHookResult = ReturnType<typeof useGetParticipantsByMeetingIdLazyQuery>;
 export type GetParticipantsByMeetingIdQueryResult = Apollo.QueryResult<GetParticipantsByMeetingIdQuery, GetParticipantsByMeetingIdQueryVariables>;
 export const GetVotationByIdDocument = gql`
-    query GetVotationById($votationId: String!, $meetingId: String!) {
+    query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -1874,16 +1884,6 @@ export const GetVotationByIdDocument = gql`
     numberOfWinners
     majorityThreshold
     meetingId
-  }
-  meetingById(meetingId: $meetingId) {
-    participants {
-      user {
-        id
-        email
-      }
-      role
-      isVotingEligible
-    }
   }
   getVoteCount(votationId: $votationId) {
     votingEligibleCount
@@ -1905,7 +1905,6 @@ export const GetVotationByIdDocument = gql`
  * const { data, loading, error } = useGetVotationByIdQuery({
  *   variables: {
  *      votationId: // value for 'votationId'
- *      meetingId: // value for 'meetingId'
  *   },
  * });
  */
@@ -2241,6 +2240,38 @@ export function useGetReviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetReviewsQueryHookResult = ReturnType<typeof useGetReviewsQuery>;
 export type GetReviewsLazyQueryHookResult = ReturnType<typeof useGetReviewsLazyQuery>;
 export type GetReviewsQueryResult = Apollo.QueryResult<GetReviewsQuery, GetReviewsQueryVariables>;
+export const ParticipantUpdatedDocument = gql`
+    subscription ParticipantUpdated($userId: String!, $meetingId: String!) {
+  participantUpdated(userId: $userId, meetingId: $meetingId) {
+    role
+    isVotingEligible
+  }
+}
+    `;
+
+/**
+ * __useParticipantUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useParticipantUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useParticipantUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useParticipantUpdatedSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useParticipantUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<ParticipantUpdatedSubscription, ParticipantUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ParticipantUpdatedSubscription, ParticipantUpdatedSubscriptionVariables>(ParticipantUpdatedDocument, options);
+      }
+export type ParticipantUpdatedSubscriptionHookResult = ReturnType<typeof useParticipantUpdatedSubscription>;
+export type ParticipantUpdatedSubscriptionResult = Apollo.SubscriptionResult<ParticipantUpdatedSubscription>;
 export const VotationStatusUpdatedDocument = gql`
     subscription VotationStatusUpdated($id: String!) {
   votationStatusUpdated(id: $id) {

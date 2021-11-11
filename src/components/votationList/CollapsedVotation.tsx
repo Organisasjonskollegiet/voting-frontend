@@ -2,7 +2,7 @@ import { HStack, Text } from '@chakra-ui/react';
 import React from 'react';
 import CustomTag from '../common/CustomTag';
 import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
-import { green } from '../styles/theme';
+import { green } from '../styles/colors';
 
 export interface CollapsedVotationProps {
   isAdmin: boolean;

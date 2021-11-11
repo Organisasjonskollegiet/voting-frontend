@@ -21,13 +21,14 @@ import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import { getEmptyAlternative, getEmptyVotation } from './utils';
+// import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
   votationsMayExist: boolean;
   isMeetingLobby: boolean;
   role: Role | undefined;
-  hideOpenVotationButton: boolean;
+  hideStartNextButton?: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
 }
 
@@ -36,13 +37,14 @@ const VotationList: React.FC<VotationListProps> = ({
   votationsMayExist,
   isMeetingLobby,
   role,
-  hideOpenVotationButton,
+  hideStartNextButton,
   navigateToOpenVotation,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
     },
+    fetchPolicy: 'no-cache',
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
@@ -76,13 +78,26 @@ const VotationList: React.FC<VotationListProps> = ({
   const toast = useToast();
 
   useEffect(() => {
-    if (role === Role.Admin && !ongoingVotation && !nextVotation && !upcomingVotations && !endedVotations && !loading) {
+    if (
+      !nextVotation &&
+      role === Role.Admin &&
+      ((data?.meetingById?.votations && data.meetingById.votations.length === 0) || !votationsMayExist)
+    ) {
       const emptyVotation = getEmptyVotation();
       setNextVotation(emptyVotation);
       setUpcomingVotations([]);
       setActiveVotationId(emptyVotation.id);
     }
-  }, [role, ongoingVotation, nextVotation, upcomingVotations, endedVotations, loading]);
+  }, [
+    data?.meetingById?.votations,
+    votationsMayExist,
+    role,
+    ongoingVotation,
+    nextVotation,
+    upcomingVotations,
+    endedVotations,
+    loading,
+  ]);
 
   // If there may exist votations (you are editing meeting or already
   // been on add votations page), fetch votations from the backend
@@ -639,7 +654,7 @@ const VotationList: React.FC<VotationListProps> = ({
             handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
-            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
+            showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
           />
