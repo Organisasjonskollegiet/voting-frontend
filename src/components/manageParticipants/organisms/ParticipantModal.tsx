@@ -14,7 +14,7 @@ import React from 'react';
 import participantIcon from '../../../static/participantIcon.svg';
 import ReturnToPreviousButton from '../../common/ReturnToPreviousButton';
 import ManageParticipants from './ManageParticipants';
-import { darkblue, offwhite } from '../../styles/theme';
+import { darkblue, offwhite } from '../../styles/colors';
 
 interface ParticipantModalProps {
   meetingId: string;

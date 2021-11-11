@@ -1,16 +1,21 @@
-import { Box, Button, HStack, VStack } from '@chakra-ui/react';
+import { Box, FormControl, FormLabel, HStack, Switch } from '@chakra-ui/react';
 import React from 'react';
-import { useHistory } from 'react-router';
+import { MeetingLocation } from '../../pages/MeetingLobby';
+import LobbyNavigationButton from './LobbyNavigationButton';
 
 interface LobbyNavigationProps {
   openVotation?: string | null;
-  meetingId: string;
-  location: 'lobby' | 'activeVotation';
+  location: MeetingLocation;
+  setLocation: (location: MeetingLocation) => void;
+  togglePresentationMode: () => void;
 }
 
-const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meetingId, location }) => {
-  const history = useHistory();
-
+const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
+  openVotation,
+  location,
+  setLocation,
+  togglePresentationMode,
+}) => {
   return (
     <HStack
       bg="white"
@@ -18,37 +23,34 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({ openVotation, meeting
       boxShadow={'0px 8px 10px rgba(0, 0, 0, 0.03)'}
       borderTop="1px solid rgba(0, 0, 0, 0.1)"
       w="100%"
-      justifyContent="center"
+      paddingX="2rem"
+      justifyContent="space-between"
       spacing="2em"
     >
-      <VStack spacing="0">
-        <Button
-          _hover={{ bg: 'transparent' }}
-          bg="transparent"
+      <FormControl flex="1" display="flex" width="fit-content">
+        <FormLabel ml="0.5em" fontSize="12px" mb="0" fontWeight="bold">
+          Presentasjonsmodus
+        </FormLabel>
+        <Switch onChange={togglePresentationMode} aria-label="Presentasjonsmodus" defaultChecked={false} />
+      </FormControl>
+      <HStack justifyContent="center" flex="1">
+        <LobbyNavigationButton
+          selected={location === MeetingLocation.LOBBY}
+          text="Voteringsliste"
           onClick={() => {
-            if (location !== 'lobby') history.push(`/meeting/${meetingId}`);
+            setLocation(MeetingLocation.LOBBY);
           }}
-          fontSize="12px"
-        >
-          Voteringsliste
-        </Button>
-        {location === 'lobby' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
-      </VStack>
-      <VStack spacing="0">
-        <Button
-          _hover={{ bg: 'transparent' }}
-          bg="transparent"
-          disabled={location !== 'activeVotation' && !openVotation}
+        />
+        <LobbyNavigationButton
+          selected={location === MeetingLocation.ACTIVEVOTATION}
+          isDisabled={!openVotation && location !== MeetingLocation.ACTIVEVOTATION}
+          text="Aktiv votering"
           onClick={() => {
-            if (openVotation && location !== 'activeVotation')
-              history.push(`/meeting/${meetingId}/votation/${openVotation}`);
+            setLocation(MeetingLocation.ACTIVEVOTATION);
           }}
-          fontSize="12px"
-        >
-          Aktiv votering
-        </Button>
-        {location === 'activeVotation' && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
-      </VStack>
+        />
+      </HStack>
+      <Box flex="1" />
     </HStack>
   );
 };

@@ -8,21 +8,18 @@ import reportWebVitals from './reportWebVitals';
 import ApolloAuthProvider from './services/apollo/ApolloProvider';
 import Auth0WithHistoryProvider from './services/auth/Auth0ProviderWithHistory';
 import AuthWrapper from './services/auth/AuthWrapper';
-import { LastLocationProvider } from 'react-router-last-location';
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <RouterProvider>
-        <LastLocationProvider>
-          <Auth0WithHistoryProvider>
-            <ApolloAuthProvider>
-              <AuthWrapper>
-                <App />
-              </AuthWrapper>
-            </ApolloAuthProvider>
-          </Auth0WithHistoryProvider>
-        </LastLocationProvider>
+        <Auth0WithHistoryProvider>
+          <ApolloAuthProvider>
+            <AuthWrapper>
+              <App />
+            </AuthWrapper>
+          </ApolloAuthProvider>
+        </Auth0WithHistoryProvider>
       </RouterProvider>
     </ChakraProvider>
   </React.StrictMode>,

@@ -9,6 +9,7 @@ import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
 import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -18,8 +19,8 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
-  const { result, stvResult, votationId, isStv, role } = useContext(ActiveVotationContext);
-
+  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { role, presentationMode } = useContext(MeetingContext);
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
   return (
@@ -52,7 +53,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           Gå tilbake til liste over voteringer
         </Button>
-        {(result || stvResult) && role === Role.Admin && (
+        {(result || stvResult) && role === Role.Admin && !presentationMode && (
           <DownloadResultButton result={result} stvResult={stvResult} isStv={isStv} />
         )}
       </HStack>

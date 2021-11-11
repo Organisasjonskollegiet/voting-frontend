@@ -11,7 +11,7 @@ export interface MeetingWorking {
 export interface Alternative {
   id: string;
   text: string;
-  index?: number;
+  index: number;
   existsInDb?: boolean;
   isWinner?: boolean;
 }

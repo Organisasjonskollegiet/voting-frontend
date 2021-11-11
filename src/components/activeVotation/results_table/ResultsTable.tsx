@@ -35,6 +35,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
       id: 'BLANK',
       isWinner: false,
       text: 'Blanke stemmer',
+      index: 0,
       votes: blankVoteCount,
       votationId,
     };

@@ -92,8 +92,11 @@ export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotat
     numberOfWinners: votation.numberOfWinners,
     majorityThreshold: votation.majorityThreshold,
     alternatives: votation.alternatives
-      .map((alternative) => alternative.text)
-      .filter((alternative) => alternative !== ''),
+      .filter((alternative) => alternative.text !== '')
+      .map((alternative, index) => ({
+        text: alternative.text,
+        index: alternative.index ?? index,
+      })),
   }));
 
 export const removeEmptyAlternatives: (votations: Votation[]) => UpdateVotationInput[] = (votations) =>
@@ -108,11 +111,10 @@ export const removeEmptyAlternatives: (votations: Votation[]) => UpdateVotationI
     numberOfWinners: votation.numberOfWinners,
     majorityThreshold: votation.majorityThreshold,
     alternatives: votation.alternatives
-      .map((alternative) => {
-        return {
-          id: alternative.id,
-          text: alternative.text,
-        };
-      })
+      .map((alternative, index) => ({
+        id: alternative.id,
+        text: alternative.text,
+        index: alternative.index ?? index,
+      }))
       .filter((alternative) => alternative.text !== ''),
   }));

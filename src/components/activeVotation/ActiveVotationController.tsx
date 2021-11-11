@@ -3,15 +3,16 @@ import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon, CloseIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
-import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 interface VotationControllerProps {
   status: VotationStatus;
   showVote: boolean;
   toggleShowVote: () => void;
   disableShowVote: boolean;
+  backToVotationList: () => void;
 }
 
 const ActiveVotationController: React.FC<VotationControllerProps> = ({
@@ -19,12 +20,13 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   showVote,
   toggleShowVote,
   disableShowVote,
+  backToVotationList,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
-  const history = useHistory();
-  const { role, votationId, meetingId } = useContext(ActiveVotationContext);
+  const { votationId } = useContext(ActiveVotationContext);
+  const { role, presentationMode } = useContext(MeetingContext);
 
   const getText = () => {
     switch (status) {
@@ -66,12 +68,12 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
 
   const handleInvalidResult = async () => {
     await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
-    history.push(`/meeting/${meetingId}`);
+    backToVotationList();
   };
 
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
-      {status === VotationStatus.Open && (
+      {status === VotationStatus.Open && !presentationMode && (
         <FormControl display="flex" width="fit-content">
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
             Vis meg hva jeg stemte
@@ -98,7 +100,9 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
             bg="transparent"
             rightIcon={<ArrowForwardIcon />}
           >
-            <Text mt="0.25rem">{getText()}</Text>
+            <Text justifyContent="end" mt="0.25rem">
+              {getText()}
+            </Text>
           </Button>
         </>
       )}

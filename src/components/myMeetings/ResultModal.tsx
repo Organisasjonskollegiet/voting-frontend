@@ -19,7 +19,7 @@ import DisplayResults from '../activeVotation/checkResults/DisplayResults';
 import DownloadResultButton from '../activeVotation/DownloadResultButton';
 import Loading from '../common/Loading';
 import ReturnToPreviousButton from '../common/ReturnToPreviousButton';
-import { darkblue, offwhite } from '../styles/theme';
+import { darkblue, offwhite } from '../styles/colors';
 
 interface ResultModalProps {
   isOpen: boolean;
