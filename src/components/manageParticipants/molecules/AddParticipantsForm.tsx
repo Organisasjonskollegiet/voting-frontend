@@ -176,6 +176,8 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     participants,
   ]);
 
+  console.log(searchInputValue);
+
   return (
     <>
       {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
@@ -197,7 +199,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
           <Text mb="0.5em">{`Antall deltakere med stemmerett:  ${numberOfVotingEligibleParticipants} av ${participants.length}`}</Text>
           <HStack justifyContent="space-between" spacing="1em" mb="2em">
-            <SearchBar value={searchInputValue} setInputValue={setSearchInputValue} />
+            <SearchBar setSearchValue={setSearchInputValue} />
 
             <Select
               onChange={(e) => setAscVsDesc(e.target.value as SortingType)}
