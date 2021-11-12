@@ -22,7 +22,13 @@ import EndedVotation from './EndedVotation';
 import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
-import { getEmptyAlternative, getEmptyVotation } from './utils';
+import {
+  getEmptyAlternative,
+  getEmptyVotation,
+  prepareVotationsForCreation,
+  prepareVotationsForUpdate,
+  reorder,
+} from './utils';
 import ResultModal from '../myMeetings/ResultModal';
 // import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
@@ -51,39 +57,24 @@ const VotationList: React.FC<VotationListProps> = ({
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
-
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
-
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
-
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
-
   const [deleteVotation] = useDeleteVotationMutation();
-
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
-
   const [nextVotation, setNextVotation] = useState<Votation | null>();
-
   const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
-
   const [endedVotations, setEndedVotations] = useState<Votation[]>();
-
   const [activeVotationId, setActiveVotationId] = useState<string>('');
-
+  const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
   const [deleteAlternatives] = useDeleteAlternativesMutation();
-
   const { data: votationsUpdated } = useVotationsUpdatedSubscription({ variables: { meetingId } });
-
   const [lastUpdate, setLastUpdate] = useState<VotationsUpdatedSubscription | undefined>();
-
   const { data: deletedVotation } = useVotationDeletedSubscription({
     variables: {
       meetingId,
     },
   });
-
-  const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
-
   const toast = useToast();
 
   const alternativeMapper = (alternative: Alternative) => {
@@ -191,28 +182,25 @@ const VotationList: React.FC<VotationListProps> = ({
 
   useEffect(() => {
     if (updateVotationStatusResult.data?.updateVotationStatus) {
-      const openedToastId = 'votationOpened';
-      const maxOneToastId = 'maxOneOpenVotation';
-      if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation' &&
-        !toast.isActive(openedToastId)
-      ) {
+      let responseTitle,
+        responseDescription,
+        responseStatus: 'success' | 'error' = 'error';
+
+      if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation') {
+        responseTitle = 'Voteringen ble åpnet.';
+        responseStatus = 'success';
+      } else if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError') {
+        responseTitle = 'Kunne ikke åpne votering.';
+        responseDescription = updateVotationStatusResult.data?.updateVotationStatus.message;
+      }
+
+      const toastId = 'votationOpenedResponse';
+      if (!toast.isActive(toastId)) {
         toast({
-          id: openedToastId,
-          title: 'Voteringen ble åpnet.',
-          status: 'success',
-          duration: 4000,
-          isClosable: true,
-        });
-      } else if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError' &&
-        !toast.isActive(maxOneToastId)
-      ) {
-        toast({
-          id: maxOneToastId,
-          title: 'Kunne ikke åpne votering.',
-          description: updateVotationStatusResult.data?.updateVotationStatus.message,
-          status: 'error',
+          id: toastId,
+          title: responseTitle,
+          description: responseDescription,
+          status: responseStatus,
           duration: 4000,
           isClosable: true,
         });
@@ -284,14 +272,8 @@ const VotationList: React.FC<VotationListProps> = ({
       );
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
       setActiveVotationId('');
-      toast({
-        title: 'Votering slettet.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
     },
-    [toast, endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
+    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
   );
 
   useEffect(() => {
@@ -343,62 +325,14 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
 
-  const reorder = (
-    next: Votation,
-    upcoming: Votation[],
-    startList: string,
-    endList: string,
-    startIndex: number,
-    endIndex: number
-  ) => {
-    // if the votation moved is the next votation...
-    if (startList === 'next') {
-      // ...and its moved to top of upcoming, its still the next votation
-      if (endList === 'upcoming' && endIndex === 0) {
-        return { newNext: next, newUpcoming: upcoming };
-        // if not it should me moved, and the first upcoming should be set as next votation
-      } else if (endList === 'upcoming') {
-        const newUpcoming = Array.from(upcoming);
-        const [newNext] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(endIndex, 0, next);
-        return { newNext, newUpcoming };
-      }
-      // if the votation is moved from upcoming...
-    } else {
-      // to next, but not to the top, it should be put on top of upcoming
-      if (endList === 'next' && endIndex !== 0) {
-        const newUpcoming = Array.from(upcoming);
-        const [removed] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(0, 0, removed);
-        return { newNext: next, newUpcoming };
-        // if it goes on top of next it should be set next and next bumped down
-      } else if (endList === 'next') {
-        const newUpcoming = Array.from(upcoming);
-        const [newNext] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(0, 0, next);
-        return { newNext, newUpcoming };
-        // if it goes elsewhere it should move there
-      } else {
-        const newUpcoming = Array.from(upcoming);
-        const [removed] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(endIndex, 0, removed);
-        return { newNext: next, newUpcoming };
-      }
-    }
-    return { newNext: next, newUpcoming: upcoming };
-  };
-
   async function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
+    if (!result.destination) return;
 
     if (
       result.destination.index === result.source.index &&
       result.destination.droppableId === result.source.droppableId
-    ) {
+    )
       return;
-    }
 
     if (!nextVotation || !upcomingVotations) return;
 
@@ -432,6 +366,9 @@ const VotationList: React.FC<VotationListProps> = ({
   }
 
   const handleDeleteVotation = async (votation: Votation) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       if (votation.existsInDb) {
         await deleteVotation({
@@ -444,11 +381,18 @@ const VotationList: React.FC<VotationListProps> = ({
       if (nextVotation) votations.push(nextVotation);
       if (upcomingVotations) votations.push(...upcomingVotations);
       updateVotationsAfterDeletion(votations, votation.id, true);
+
+      responseTitle = 'Votering slettet.';
+      responseDescription = `${votation.title} ble slettet`;
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.`,
-        status: 'error',
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
         duration: 5000,
         isClosable: true,
       });
@@ -456,6 +400,9 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleDeleteAlternative = async (alternativeId: string, votationId: string) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       await deleteAlternatives({
         variables: {
@@ -471,17 +418,16 @@ const VotationList: React.FC<VotationListProps> = ({
       if (updatedVotation.length > 0) {
         updateVotation(updatedVotation[0]);
       }
-      toast({
-        title: 'Alternativ slettet.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      responseTitle = 'Alternativ slettet.';
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kune ikke slette alternativet. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette alternativet. Prøv å laste inn siden på nytt.`,
-        status: 'error',
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
         duration: 5000,
         isClosable: true,
       });
@@ -540,47 +486,14 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleUpdateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => ({
-      id: votation.id,
-      title: votation.title,
-      description: votation.description,
-      index: votation.index,
-      blankVotes: votation.blankVotes,
-      hiddenVotes: votation.hiddenVotes,
-      type: votation.type,
-      numberOfWinners: votation.numberOfWinners,
-      majorityThreshold: votation.majorityThreshold,
-      alternatives: votation.alternatives
-        .map((alternative, index) => ({
-          id: alternative.id,
-          text: alternative.text,
-          index: alternative.index ?? index,
-        }))
-        .filter((alternative) => alternative.text !== ''),
-    }));
-
+    const preparedVotations = prepareVotationsForUpdate(votations);
     const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
     const updateResults = updateResponse.data?.updateVotations as Votation[];
     return formatVotations(updateResults) as Votation[];
   };
 
   const handleCreateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => ({
-      title: votation.title,
-      description: votation.description,
-      index: votation.index,
-      blankVotes: votation.blankVotes,
-      hiddenVotes: votation.hiddenVotes,
-      type: votation.type,
-      numberOfWinners: votation.numberOfWinners,
-      majorityThreshold: votation.majorityThreshold,
-      alternatives: votation.alternatives
-        .filter((alternative) => alternative.text !== '')
-        .map((alternative, index) => ({
-          text: alternative.text,
-          index: alternative.index ?? index,
-        })),
-    }));
+    const preparedVotations = prepareVotationsForCreation(votations);
     const createResponse = await createVotations({ variables: { votations: preparedVotations, meetingId } });
     const createResults = createResponse.data?.createVotations as Votation[];
     return formatVotations(createResults) as Votation[];
