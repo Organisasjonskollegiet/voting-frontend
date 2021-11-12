@@ -26,7 +26,7 @@ export const getEmptyVotation: (id?: string, index?: number) => Votation = (id?,
     blankVotes: false,
     status: VotationStatus.Upcoming,
     hiddenVotes: true,
-    type: 'SIMPLE' as VotationType,
+    type: VotationType.Simple,
     numberOfWinners: 1,
     majorityThreshold: 50,
     existsInDb: false,
@@ -99,7 +99,14 @@ export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotat
       })),
   }));
 
-export const removeEmptyAlternatives: (votations: Votation[]) => UpdateVotationInput[] = (votations) =>
+/**
+ * @description removes empty alternatives and other fields from Votation that are unrelevant for the 'updateVotations' mutation
+ *
+ * @param votations
+ *
+ * @returns list of object with the necessary fields for the 'updateVotation' mutation
+ */
+export const prepareVotationsForUpdate: (votations: Votation[]) => UpdateVotationInput[] = (votations) =>
   votations.map((votation) => ({
     id: votation.id,
     title: votation.title,

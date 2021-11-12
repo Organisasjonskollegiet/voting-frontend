@@ -26,7 +26,7 @@ import {
   getEmptyAlternative,
   getEmptyVotation,
   prepareVotationsForCreation,
-  removeEmptyAlternatives,
+  prepareVotationsForUpdate,
   reorder,
 } from './utils';
 import ResultModal from '../myMeetings/ResultModal';
@@ -486,7 +486,7 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   const handleUpdateVotations = async (votations: Votation[]) => {
-    const preparedVotations = removeEmptyAlternatives(votations);
+    const preparedVotations = prepareVotationsForUpdate(votations);
     const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
     const updateResults = updateResponse.data?.updateVotations as Votation[];
     return formatVotations(updateResults) as Votation[];
