@@ -91,6 +91,7 @@ query GetVotationResults($votationId: String!) {
       isWinner
       votes
     }
+    id
     blankVotes
     blankVoteCount
     voteCount
