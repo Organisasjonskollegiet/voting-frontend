@@ -35,7 +35,7 @@ const DisplayResults: React.FC<DisplayResultsProps> = ({ stvResult, result, isSt
       setWinners(newWinners);
       setVotationIdOfWinners(votationId);
     }
-  }, [winners, setWinners, stvResult?.getStvResult, result?.getVotationResults]);
+  }, [winners, setWinners, stvResult?.getStvResult, result?.getVotationResults, votationId, votationIdOfWinners]);
 
   return (
     <VStack spacing="2rem" w="100%">
