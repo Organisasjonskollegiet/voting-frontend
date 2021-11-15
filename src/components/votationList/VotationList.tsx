@@ -480,7 +480,7 @@ const VotationList: React.FC<VotationListProps> = ({
       title: 'Votering duplisert',
       description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
       status: 'success',
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
     });
   };
@@ -630,7 +630,9 @@ const VotationList: React.FC<VotationListProps> = ({
                 role={role}
                 votation={votation}
                 duplicateVotation={duplicateVotation}
-                onClick={() => setShowResultOf(votation)}
+                onClick={() => {
+                  if (votation.status === VotationStatus.PublishedResult) setShowResultOf(votation);
+                }}
               />
             ))}
           </Accordion>

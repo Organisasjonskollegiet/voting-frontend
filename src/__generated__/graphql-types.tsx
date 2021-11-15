@@ -125,7 +125,6 @@ export type Mutation = {
   /** Creates invites and participants for the emails provided. */
   addParticipants?: Maybe<Scalars['Int']>;
   deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
-  changeView?: Maybe<ViewState>;
 };
 
 
@@ -215,11 +214,6 @@ export type MutationAddParticipantsArgs = {
 export type MutationDeleteParticipantsArgs = {
   meetingId: Scalars['String'];
   emails: Array<Scalars['String']>;
-};
-
-
-export type MutationChangeViewArgs = {
-  state: ViewState;
 };
 
 export type MyReviewResult = VotationReview | NoReview;
@@ -399,7 +393,6 @@ export type Subscription = {
   votationDeleted?: Maybe<Scalars['String']>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
   participantUpdated?: Maybe<ParticipantUpdatedResponse>;
-  viewChanged?: Maybe<ViewState>;
 };
 
 
@@ -492,25 +485,6 @@ export type UserNotFoundError = {
   message: Scalars['String'];
 };
 
-/** The payload of viewChanged subscription */
-export type ViewChangedPayload = {
-  __typename?: 'ViewChangedPayload';
-  viewState: ViewState;
-};
-
-/**
- * LOADING: When the votation is loading for a new votation,
- * ONGOING: When the Votation is in process,
- * CLOSED: When the votation has closed and no new votes are allowed,
- * ENDED: When the votation has ended, the result will be announced and then switch to LOADING
- */
-export enum ViewState {
-  Loading = 'LOADING',
-  Ongoing = 'ONGOING',
-  Closed = 'CLOSED',
-  Ended = 'ENDED'
-}
-
 export type Votation = {
   __typename?: 'Votation';
   id: Scalars['ID'];
@@ -532,6 +506,7 @@ export type Votation = {
 export type VotationResults = {
   __typename?: 'VotationResults';
   alternatives: Array<Maybe<AlternativeResult>>;
+  id: Scalars['String'];
   blankVotes: Scalars['Boolean'];
   blankVoteCount: Scalars['Int'];
   voteCount: Scalars['Int'];
@@ -979,7 +954,7 @@ export type GetVotationResultsQuery = (
   { __typename?: 'Query' }
   & { getVotationResults?: Maybe<(
     { __typename?: 'VotationResults' }
-    & Pick<VotationResults, 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
+    & Pick<VotationResults, 'id' | 'blankVotes' | 'blankVoteCount' | 'voteCount' | 'votingEligibleCount'>
     & { alternatives: Array<Maybe<(
       { __typename?: 'AlternativeResult' }
       & Pick<AlternativeResult, 'id' | 'text' | 'index' | 'isWinner' | 'votes'>
@@ -2128,6 +2103,7 @@ export const GetVotationResultsDocument = gql`
       isWinner
       votes
     }
+    id
     blankVotes
     blankVoteCount
     voteCount

@@ -15,20 +15,26 @@ interface DisplayResultsProps {
 
 const DisplayResults: React.FC<DisplayResultsProps> = ({ stvResult, result, isStv, votationId }) => {
   const [winners, setWinners] = useState<string[]>();
+  // id of the votation the winners belong to
+  const [votationIdOfWinners, setVotationIdOfWinners] = useState<string>();
 
   useEffect(() => {
-    if (winners || (!stvResult?.getStvResult && !result?.getVotationResults)) return;
+    // return there are no results or if the winners for this votation is already set
+    if ((!stvResult?.getStvResult && !result?.getVotationResults) || votationIdOfWinners === votationId) return;
     const newWinners: string[] = [];
-    if (stvResult?.getStvResult) {
+    if (stvResult?.getStvResult?.votationId === votationId) {
       stvResult.getStvResult.stvRoundResults.forEach((r) => newWinners.push(...r.winners.map((w) => w.text)));
-    } else if (result?.getVotationResults) {
+      setWinners(newWinners);
+      setVotationIdOfWinners(votationId);
+    } else if (result?.getVotationResults?.id === votationId) {
       newWinners.push(
         ...result.getVotationResults.alternatives
           .filter((a) => a && a.isWinner)
           .map((a) => (a as AlternativeResult).text)
       );
+      setWinners(newWinners);
+      setVotationIdOfWinners(votationId);
     }
-    setWinners(newWinners);
   }, [winners, setWinners, stvResult?.getStvResult, result?.getVotationResults]);
 
   return (
