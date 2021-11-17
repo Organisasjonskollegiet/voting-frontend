@@ -68,8 +68,8 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
               </HStack>
               <HStack spacing="1em">
                 <ToggleVotingEligibility
-                  onChange={() => changeParticipantRights(participant, undefined, true)}
-                  defaultChecked={participant.isVotingEligible}
+                  toggle={() => changeParticipantRights(participant, undefined, true)}
+                  isChecked={participant.isVotingEligible}
                 />
                 <SelectRole
                   onChange={(role) => changeParticipantRights(participant, role)}
