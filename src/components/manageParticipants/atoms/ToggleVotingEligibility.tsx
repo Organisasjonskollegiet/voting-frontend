@@ -2,17 +2,17 @@ import { FormLabel, Text, Switch, HStack } from '@chakra-ui/react';
 import React from 'react';
 
 interface ToggleVotingEligibilityProps {
-  onChange: () => void;
-  defaultChecked: boolean;
+  toggle: () => void;
+  isChecked: boolean;
 }
 
-const ToggleVotingEligibility: React.FC<ToggleVotingEligibilityProps> = ({ onChange, defaultChecked }) => {
+const ToggleVotingEligibility: React.FC<ToggleVotingEligibilityProps> = ({ toggle, isChecked }) => {
   return (
     <HStack>
       <FormLabel mb="0">
         <Text whiteSpace="nowrap">Har stemmerett</Text>
       </FormLabel>
-      <Switch onChange={() => onChange()} aria-label="Har stemmerett" defaultChecked={defaultChecked}></Switch>
+      <Switch isChecked={isChecked} onChange={toggle} aria-label="Har stemmerett" />
     </HStack>
   );
 };
