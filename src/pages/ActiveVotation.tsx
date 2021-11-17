@@ -239,7 +239,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // update vote count when new vote count arrives from subscription
   useEffect(() => {
-    console.log(newVoteCountData);
     if (!newVoteCountData?.newVoteRegistered || newVoteCountData.newVoteRegistered.votationId !== votationId) return;
     const newVoteCount = newVoteCountData.newVoteRegistered.voteCount;
     const newVotingEligibleCount = newVoteCountData.newVoteRegistered.votingEligibleCount;
@@ -306,7 +305,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
             submitVote={submitVote}
             submitButtonDisabled={selectedAlternativeId === null && data.votationById.type !== VotationType.Stv}
             voteCount={voteCount}
-            votingEligibleCount={data?.getVoteCount?.votingEligibleCount}
+            votingEligibleCount={votingEligibleCount}
             updateAlternatives={setAlternatives}
             userHasVoted={userHasVoted}
             // show vote if showVote is true, or the user has not voted and is not waiting for vote to be registered
