@@ -24,7 +24,7 @@ interface CheckResultsProps {
 }
 
 const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
-  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role } = useContext(MeetingContext);
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
@@ -51,13 +51,13 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
     castVotationReview(approved);
   };
 
-  if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
+  if (!result && loading) {
     return <Loading text="Henter resultater" />;
   }
 
   return (
     <VStack spacing="2rem">
-      <DisplayResults result={result} stvResult={stvResult} isStv={isStv} votationId={votationId} />
+      <DisplayResults result={result} isStv={isStv} votationId={votationId} />
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack spacing="2rem" pt="2rem" alignItems="start">
           {role === Role.Admin && (
@@ -65,9 +65,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
           )}
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
-            {role === Role.Admin && (result || stvResult) && (
-              <DownloadResultButton result={result} stvResult={stvResult} isStv={isStv} />
-            )}
+            {role === Role.Admin && result && <DownloadResultButton result={result} isStv={isStv} />}
           </Flex>
         </VStack>
       )}

@@ -15,30 +15,29 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     color: darkblue,
   };
 
-  const overlaySpinnerStyle = {
-    position: 'absolute',
+  const loadingStyle = {
     justifyContent: 'center',
-    width: '100%',
-    height: '100%',
     left: '0',
     top: '0',
     backgroundColor: 'rgba(255, 255, 255, 0.4);',
-    // opacity: 0.2,
     zIndex: 10,
-  } as React.CSSProperties;
-
-  const style = {
-    position: 'fixed',
-    height: '100vh',
-    width: '100vw',
-    top: '0',
-    left: '0',
-    justifyContent: 'center',
     alignItems: 'center',
   } as React.CSSProperties;
 
+  const overlaySpinnerStyle = {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  } as React.CSSProperties;
+
+  const fixedStyle = {
+    position: 'fixed',
+    height: '100vh',
+    width: '100vw',
+  } as React.CSSProperties;
+
   return (
-    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : style}>
+    <VStack spacing="1.5em" sx={{ ...loadingStyle, ...(asOverlay ? overlaySpinnerStyle : fixedStyle) }}>
       <Center position="relative">
         <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>

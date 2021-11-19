@@ -1,12 +1,12 @@
 import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
-import { GetStvResultQuery, StvRoundResult } from '../../../__generated__/graphql-types';
+import { StvRoundResult, Result } from '../../../__generated__/graphql-types';
 import AlternativesString from '../../common/AlternativesString';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
 interface StvResultTableProps {
-  result: GetStvResultQuery | null | undefined;
+  result: Result | null;
 }
 
 const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
@@ -47,11 +47,12 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
         <Heading fontSize="18px" alignSelf="start">
           Oversikt
         </Heading>
-        <Box>{`Antall stemmer som krevdes for å vinne: ${result?.getStvResult?.quota}`}</Box>
-        <Box>{`Antall stemmeberettigede deltakere: ${result?.getStvResult?.votingEligibleCount}`}</Box>
-        <Box>{`Antall avgitte stemmer: ${result?.getStvResult?.voteCount}`}</Box>
+        <Box>{`Stemmer som krevdes for å vinne: ${result?.quota}`}</Box>
+        <Box>{`Stemmeberettigede deltakere: ${result?.votingEligibleCount}`}</Box>
+        <Box>{`Avgitte stemmer: ${result?.voteCount}`}</Box>
+        {result?.blankVoteCount !== undefined && <Box>{`Blanke stemmer: ${result.blankVoteCount}`}</Box>}
       </VStack>
-      {result?.getStvResult?.stvRoundResults.map((round) => (
+      {result?.stvRoundResults?.map((round) => (
         <Box maxW="600px" w="100%" key={round.index}>
           <ResultTableContainer>
             <VStack w="100%" alignSelf="start" alignItems="start">

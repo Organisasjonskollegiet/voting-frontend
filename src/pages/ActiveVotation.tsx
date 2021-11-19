@@ -14,10 +14,8 @@ import {
   Alternative,
   useGetVotationResultsLazyQuery,
   AlternativeResult,
-  useGetStvResultLazyQuery,
   useCastVotationReviewMutation,
-  GetVotationResultsQuery,
-  GetStvResultQuery,
+  Result,
 } from '../__generated__/graphql-types';
 import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chakra-ui/react';
 import Loading from '../components/common/Loading';
@@ -31,6 +29,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/checkResults/CheckResults';
 import { subtitlesStyle } from '../components/styles/styles';
 import { MeetingContext } from './MeetingLobby';
+import { getCorrectVotationResult } from '../components/activeVotation/utils';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
 
 export type AlternativeWithIndex = AlternativeType & {
@@ -39,16 +38,14 @@ export type AlternativeWithIndex = AlternativeType & {
 };
 
 export type ActiveVotationContextState = {
-  result: GetVotationResultsQuery | null | undefined;
-  stvResult: GetStvResultQuery | null | undefined;
+  result: Result | null;
   votationId: string;
   isStv: boolean;
   meetingId: string;
 };
 
 const contextDefualtValues: ActiveVotationContextState = {
-  result: undefined,
-  stvResult: undefined,
+  result: null,
   votationId: '',
   isStv: false,
   meetingId: '',
@@ -72,13 +69,12 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     variables: { votationId },
   });
 
-  const [getResult, { data: votationResultData, loading: votationResultLoading }] = useGetVotationResultsLazyQuery({
+  const [
+    getVotationResult,
+    { data: votationResultData, loading: votationResultLoading },
+  ] = useGetVotationResultsLazyQuery({
     variables: { votationId },
     fetchPolicy: 'cache-and-network',
-  });
-
-  const [getStvResult, { data: stvResult, loading: stvResultLoading }] = useGetStvResultLazyQuery({
-    variables: { votationId },
   });
 
   const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
@@ -148,36 +144,21 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   // fetch result or winners when status has changed
   useEffect(() => {
     const shouldGetResults = checkShouldGetResults();
-    if (shouldGetResults && data?.votationById?.type === VotationType.Stv) {
-      getStvResult();
-    } else if (shouldGetResults) {
-      getResult();
+    if (shouldGetResults) {
+      getVotationResult();
     } else if (!winnerResult && status === VotationStatus.PublishedResult) {
       getWinner();
     }
   }, [
+    getVotationResult,
     status,
     role,
     data?.votationById?.hiddenVotes,
-    getResult,
     getWinner,
     winnerResult,
     checkShouldGetResults,
     data?.votationById?.type,
-    getStvResult,
   ]);
-
-  useEffect(() => {
-    if (stvResult) {
-      const newWinners: AlternativeType[] = [];
-      stvResult.getStvResult?.stvRoundResults.forEach((round) =>
-        round.winners.forEach((w) => {
-          if (w) newWinners.push(w);
-        })
-      );
-      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
-    }
-  }, [stvResult, winners]);
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
@@ -316,7 +297,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
       case VotationStatus.CheckingResult:
         return (role === Role.Admin || role === Role.Counter) && !presentationMode ? (
           <CheckResults
-            loading={stvResultLoading || votationResultLoading}
+            loading={votationResultLoading}
             meetingId={meetingId}
             winners={winners}
             castVotationReview={(approved: boolean) => castVotationReview({ variables: { votationId, approved } })}
@@ -330,7 +311,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         return (
           <Box mt="4em">
             <VotationResult
-              loading={votationResultLoading || winnerLoading || stvResultLoading}
+              loading={votationResultLoading || winnerLoading}
               showResultsTable={!data.votationById.hiddenVotes}
               backToVotationList={() => backToVotationList(status)}
               winners={winners}
@@ -342,7 +323,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           <VStack w="100%" alignItems="start">
             <Text mb="2rem">Voteringen er ble avbrutt av administrator</Text>
             <Button borderRadius={'16em'} onClick={() => backToVotationList(status)} leftIcon={<ArrowBackIcon />}>
-              Gå tilbake til liste over voteringer
+              Tilbake til voteringsliste
             </Button>
           </VStack>
         );
@@ -405,8 +386,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   return (
     <ActiveVotationContext.Provider
       value={{
-        result: votationResultData,
-        stvResult: stvResult,
+        result: getCorrectVotationResult(votationResultData),
         votationId: votationId,
         isStv: data.votationById.type === VotationType.Stv,
         meetingId: meetingId,
