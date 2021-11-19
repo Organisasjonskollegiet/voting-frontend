@@ -23,7 +23,7 @@ export enum DialogType {
   MEETING = 'Slett møte',
   VOTATION = 'Slett votering',
   PARTICIPANTS = 'Slett deltager',
-  CLOSE = 'Gå videre',
+  CLOSE = 'Avslutt votering',
   PUBLISH = 'Publiser resultat',
   INVALIDATE = 'Avbryt votering',
 }
@@ -38,7 +38,7 @@ const WarningBody = new Map<DialogType, string>([
     'Er du sikker på at du vil slette voteringen? All informasjon knyttet til voteringen vil bli slettet for godt.',
   ],
   [DialogType.PARTICIPANTS, 'Er du sikker på at du vil slette følgende deltager(e)?'],
-  [DialogType.CLOSE, 'Er du sikker på at du vil gå videre?'],
+  [DialogType.CLOSE, 'Er du sikker på at du vil avslutte votering?'],
   [DialogType.INVALIDATE, 'Er du sikker på at du vil avbryte voteringen? Voteringen vil da bli erklært ugyldig.'],
   [DialogType.PUBLISH, 'Er du sikker på at du vil publisere resultatet?'],
 ]);
