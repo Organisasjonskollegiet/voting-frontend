@@ -51,7 +51,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
       <Divider m="3em 0" />
       <HStack w="100%" justifyContent="space-between">
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-          Gå tilbake til liste over voteringer
+          Tilbake til voteringsliste
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
       </HStack>

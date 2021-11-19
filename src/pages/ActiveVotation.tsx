@@ -323,7 +323,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           <VStack w="100%" alignItems="start">
             <Text mb="2rem">Voteringen er ble avbrutt av administrator</Text>
             <Button borderRadius={'16em'} onClick={() => backToVotationList(status)} leftIcon={<ArrowBackIcon />}>
-              Gå tilbake til liste over voteringer
+              Tilbake til voteringsliste
             </Button>
           </VStack>
         );
