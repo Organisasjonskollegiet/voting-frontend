@@ -30,6 +30,7 @@ const DeleteParticipants: React.FC<DeleteParticipantsProps> = ({
         }}
         itemToBeConfirmed={participantsToDeleteString}
         handleCancel={onClose}
+        confirmColor="red"
       />
     </>
   );

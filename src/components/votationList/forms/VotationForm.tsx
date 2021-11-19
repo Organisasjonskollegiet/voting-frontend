@@ -123,6 +123,7 @@ const AddVotationForm: React.FC<IProps> = ({
               handleConfirm={handleConfirmDelete}
               handleCancel={() => setVotationDialogIsOpen(false)}
               type={DialogType.VOTATION}
+              confirmColor="red"
             />
           </VStack>
         </Box>
