@@ -16,7 +16,7 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <HStack justifyContent="end" w="100%">
+    <HStack>
       <Popover placement="top-end" isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <PopoverTrigger>
           <Button

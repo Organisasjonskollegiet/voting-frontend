@@ -96,16 +96,11 @@ const MyMeetings: React.FC = () => {
   return (
     <PageContainer>
       {deleteMeetingLoading && <Loading asOverlay={true} text="Sletter møte" />}
-      <Box m="auto" pt="5em" pb="1.125em" maxWidth="600px">
+      <Box m="auto" pt="5em" pb="1.125em" maxWidth="800px">
         {meetingsData.length === 0 && (
           <Center m="0 2em 2.625em">
             <Text>Du har ingen kommende møter</Text>
           </Center>
-        )}
-        {(ongoingMeetings.length > 0 || upcomingMeetings.length > 0) && (
-          <Heading as="h1" fontSize="1em" mx="2em" mb="1.125em">
-            Mine møter
-          </Heading>
         )}
         {ongoingMeetings.length > 0 && (
           <Box m="0 2em 1.5em">
