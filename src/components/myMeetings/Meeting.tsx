@@ -116,6 +116,7 @@ const Meeting: React.FC<
         }}
         handleCancel={() => setDialogIsOpen(false)}
         type={DialogType.MEETING}
+        confirmColor="red"
       />
     </VStack>
   );

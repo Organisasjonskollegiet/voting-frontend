@@ -38,18 +38,19 @@ const Navbar: React.FC = () => {
   const history = useHistory();
 
   return (
-    <Box bg="white" px="5%" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" zIndex="2" position="relative">
+    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" zIndex="2" position="relative">
       <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
-        <Image
-          _hover={{ cursor: 'pointer' }}
-          onClick={() => history.push('/')}
-          src={Logo}
-          alt="Organisasjonskollegiet"
-          h="3em"
-          w="100px"
-        />
+        <Box w="100px" justifyContent="start">
+          <Image
+            _hover={{ cursor: 'pointer' }}
+            onClick={() => history.push('/')}
+            src={Logo}
+            alt="Organisasjonskollegiet"
+            h="3em"
+          />
+        </Box>
 
-        <HStack as={'nav'} spacing="3.5em" display={{ base: 'none', md: 'flex' }}>
+        <HStack as={'nav'} spacing="2em" display={{ base: 'none', md: 'flex' }}>
           {pageNames.map((page) => (
             <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
               {page}

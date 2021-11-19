@@ -19,7 +19,7 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
-  const { result, stvResult, votationId, isStv } = useContext(ActiveVotationContext);
+  const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode } = useContext(MeetingContext);
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
@@ -47,15 +47,13 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         </VStack>
       </Center>
       {showResultsTable &&
-        (isStv ? <StvResultTable result={stvResult} /> : <ResultsTable result={result} votationId={votationId} />)}
+        (isStv ? <StvResultTable result={result} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
       <HStack w="100%" justifyContent="space-between">
         <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-          Gå tilbake til liste over voteringer
+          Tilbake til voteringsliste
         </Button>
-        {(result || stvResult) && role === Role.Admin && !presentationMode && (
-          <DownloadResultButton result={result} stvResult={stvResult} isStv={isStv} />
-        )}
+        {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
       </HStack>
     </VStack>
   );
