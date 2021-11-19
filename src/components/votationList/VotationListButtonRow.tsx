@@ -20,13 +20,13 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
       <HStack
         onClick={(e) => e.stopPropagation()}
         alignSelf="center"
-        width="100vw"
+        width="98vw"
         zIndex="1"
         justifyContent="center"
         bg={offwhite}
         paddingY="1rem"
       >
-        <HStack maxWidth="800px" w="100%" justifyContent="space-between">
+        <HStack maxWidth="800px" w="90%" justifyContent="space-between">
           <Button
             aria-label="Legg til votering"
             w={'200px'}
