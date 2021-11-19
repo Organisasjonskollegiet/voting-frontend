@@ -74,7 +74,7 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           },
         });
         setParticipants([...participants, { email: lowerCaseEmail, role: inputRole, isVotingEligible: true }]);
-      } else if (meetingId) {
+      } else if (emailAlreadyAdded) {
         const toastId = 'participantAdded';
         toast({
           id: toastId,
