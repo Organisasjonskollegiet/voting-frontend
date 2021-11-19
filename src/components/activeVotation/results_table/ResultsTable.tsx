@@ -45,9 +45,9 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
 
   return (
     <ResultTableContainer>
-      <HStack width={'100%'} justifyContent="space-around">
-        <Box>{`Antall stemmeberettigede deltakere: ${votingEligibleCount}`}</Box>
-        <Box>{`Antall avgitte stemmer: ${voteCount}`}</Box>
+      <HStack width={'100%'} justifyContent="space-between">
+        <Box flex="1">{`Antall stemmeberettigede deltakere: ${votingEligibleCount}`}</Box>
+        <Box flex="1">{`Antall avgitte stemmer: ${voteCount}`}</Box>
       </HStack>
       <Divider m="3em 0" />
       <TableColumnNames columnNames={['Alternativ', 'Antall stemmer', '% av stemmene', '% av stemmeberettigede']} />
