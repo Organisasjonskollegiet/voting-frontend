@@ -31,7 +31,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   const getText = () => {
     switch (status) {
       case VotationStatus.Open:
-        return <Text>Steng votering</Text>;
+        return <Text>Gå videre</Text>;
       case VotationStatus.CheckingResult:
         return <Text>Publiser resultater</Text>;
     }
@@ -111,12 +111,14 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
         handleCancel={() => setInvalidateVotationDialogOpen(false)}
         handleConfirm={handleInvalidResult}
         type={DialogType.INVALIDATE}
+        confirmColor="red"
       />
       <CustomAlertDialog
         dialogIsOpen={dialogOpen}
         handleCancel={() => setDialogOpen(false)}
         handleConfirm={handleConfirm}
         type={getDialogType()}
+        confirmColor={'green'}
       />
     </WrapStack>
   );
