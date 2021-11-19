@@ -26,7 +26,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
         bg={offwhite}
         paddingY="1rem"
       >
-        <HStack maxWidth="800px" w="90%" justifyContent="space-between">
+        <HStack maxWidth="800px" w="92%" justifyContent="space-between">
           <Button
             aria-label="Legg til votering"
             w={'200px'}
