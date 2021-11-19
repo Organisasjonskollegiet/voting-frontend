@@ -10,16 +10,13 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Votation } from '../../types/types';
-import {
-  useGetStvResultLazyQuery,
-  useGetVotationResultsLazyQuery,
-  VotationType,
-} from '../../__generated__/graphql-types';
+import { Result, useGetVotationResultsLazyQuery, VotationType } from '../../__generated__/graphql-types';
 import DisplayResults from '../activeVotation/checkResults/DisplayResults';
 import DownloadResultButton from '../activeVotation/DownloadResultButton';
 import Loading from '../common/Loading';
 import ReturnToPreviousButton from '../common/ReturnToPreviousButton';
 import { darkblue, offwhite } from '../styles/colors';
+import { getCorrectVotationResult } from '../activeVotation/utils';
 
 interface ResultModalProps {
   isOpen: boolean;
@@ -28,23 +25,21 @@ interface ResultModalProps {
 }
 
 const ResultModal: React.FC<ResultModalProps> = ({ isOpen, onClose, votation }) => {
-  const [getResult, { data: result, loading: votationResultLoading }] = useGetVotationResultsLazyQuery({
+  const [getResult, { data: votationResultResponse, loading: votationResultLoading }] = useGetVotationResultsLazyQuery({
     fetchPolicy: 'cache-and-network',
   });
 
-  const [getStvResult, { data: stvResult, loading: stvResultLoading }] = useGetStvResultLazyQuery({});
-
-  const [idOfVotationResult, setIdOfVotationResult] = useState<string | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
 
   useEffect(() => {
-    if (!votation || (votation.id === idOfVotationResult && (result || stvResult))) return;
-    if (votation.type === VotationType.Stv) {
-      getStvResult({ variables: { votationId: votation.id } });
-    } else {
-      getResult({ variables: { votationId: votation.id } });
-    }
-    setIdOfVotationResult(votation.id);
-  }, [votation, result, stvResult, getStvResult, getResult, idOfVotationResult]);
+    if (!votation || !votationResultResponse || result?.votationId === votation.id) return;
+    setResult(getCorrectVotationResult(votationResultResponse));
+  }, [votation, result, votationResultResponse]);
+
+  useEffect(() => {
+    if (!votation || votation.id === result?.votationId) return;
+    getResult({ variables: { votationId: votation.id } });
+  }, [votation, result, getResult]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
@@ -53,24 +48,17 @@ const ResultModal: React.FC<ResultModalProps> = ({ isOpen, onClose, votation }) 
         <ModalHeader>{`Resultat for ${votation?.title}`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {(votationResultLoading || stvResultLoading) && <Loading text="Laster resultat" asOverlay={true} />}
+          {votationResultLoading && <Loading text="Laster resultat" asOverlay={true} />}
           {votation && (
             <VStack>
-              <DisplayResults
-                stvResult={stvResult}
-                result={result}
-                isStv={votation.type === VotationType.Stv}
-                votationId={votation.id}
-              />
+              <DisplayResults result={result} isStv={votation.type === VotationType.Stv} votationId={votation.id} />
             </VStack>
           )}
         </ModalBody>
 
         <ModalFooter justifyContent="space-between">
           <ReturnToPreviousButton onClick={onClose} text="Tilbake"></ReturnToPreviousButton>
-          {votation && (
-            <DownloadResultButton result={result} stvResult={stvResult} isStv={votation.type === VotationType.Stv} />
-          )}
+          {votation && <DownloadResultButton result={result} isStv={votation.type === VotationType.Stv} />}
         </ModalFooter>
       </ModalContent>
     </Modal>

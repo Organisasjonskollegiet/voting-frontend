@@ -165,7 +165,6 @@ const VotationList: React.FC<VotationListProps> = ({
     const updatedVotationList = [...(updatedVotations ?? []), ...unchangedVotations].sort(
       (a, b) => (a?.index ?? 0) - (b?.index ?? 0)
     ) as Votation[];
-    console.log('updated', updatedVotations);
     if (updatedVotationList.length > 0) {
       setNextVotation(updatedVotationList[0]);
       setUpcomingVotations(updatedVotationList.slice(1));

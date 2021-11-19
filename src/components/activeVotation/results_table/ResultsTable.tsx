@@ -1,13 +1,13 @@
 import { Box, Divider, HStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
-import { GetVotationResultsQuery } from '../../../__generated__/graphql-types';
+import { Result } from '../../../__generated__/graphql-types';
 import { getRoundedPercentage } from '../utils';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
 
 interface ResultsTableProps {
-  result: GetVotationResultsQuery | null | undefined;
+  result: Result | null;
   votationId: string;
 }
 
@@ -16,19 +16,10 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
   const [voteCount, setVoteCount] = useState<number>(0);
 
   useEffect(() => {
-    if (result?.getVotationResults?.voteCount && result?.getVotationResults?.voteCount !== voteCount) {
-      setVoteCount(result.getVotationResults.voteCount);
-    }
-  }, [result?.getVotationResults?.voteCount, voteCount]);
-
-  useEffect(() => {
-    if (
-      result?.getVotationResults?.votingEligibleCount &&
-      result?.getVotationResults.votingEligibleCount !== votingEligibleCount
-    ) {
-      setVotingEligibleCount(result.getVotationResults.votingEligibleCount);
-    }
-  }, [result?.getVotationResults?.votingEligibleCount, votingEligibleCount]);
+    if (!result) return;
+    if (result.voteCount !== voteCount) setVoteCount(result.voteCount);
+    if (result.votingEligibleCount !== votingEligibleCount) setVotingEligibleCount(result.votingEligibleCount);
+  }, [result, voteCount, votingEligibleCount]);
 
   const getBlankAlternative = (blankVoteCount: number) => {
     return {
@@ -41,7 +32,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
     };
   };
 
-  if (!result || !result.getVotationResults) return <></>;
+  if (!result) return <></>;
 
   return (
     <ResultTableContainer>
@@ -51,10 +42,8 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ result, votationId }) => {
       </HStack>
       <Divider m="3em 0" />
       <TableColumnNames columnNames={['Alternativ', 'Antall stemmer', '% av stemmene', '% av stemmeberettigede']} />
-      {result.getVotationResults.alternatives
-        .concat(
-          result?.getVotationResults?.blankVotes ? getBlankAlternative(result.getVotationResults.blankVoteCount) : []
-        )
+      {result.alternatives
+        .concat(result.blankVoteCount ? getBlankAlternative(result.blankVoteCount) : [])
         .sort((a, b) => (b?.votes ?? 0) - (a?.votes ?? 0))
         .map((alternative) => {
           if (!alternative) return <></>;
