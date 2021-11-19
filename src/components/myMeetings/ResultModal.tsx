@@ -53,7 +53,7 @@ const ResultModal: React.FC<ResultModalProps> = ({ isOpen, onClose, votation }) 
         <ModalHeader>{`Resultat for ${votation?.title}`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {(votationResultLoading || stvResultLoading) && <Loading text="Laster resultat" asOverlay={true} />}
+          {(votationResultLoading || stvResultLoading) && <Loading text="Laster resultat" asOverlay />}
           {votation && (
             <VStack>
               <DisplayResults

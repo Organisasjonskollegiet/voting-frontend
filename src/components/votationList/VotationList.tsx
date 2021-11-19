@@ -547,8 +547,11 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   };
 
+  if (loading) {
+    return <Loading text={'Henter voteringer'} />;
+  }
+
   if (error) {
-    console.log(error);
     return (
       <>
         <Center mt="10vh">
@@ -561,9 +564,8 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {(createVotationsResult.loading || updateVotationsResult.loading) && (
-        <Loading asOverlay={true} text="Oppdaterer votering" />
+        <Loading asOverlay text="Oppdaterer votering" />
       )}
-      {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {ongoingVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">

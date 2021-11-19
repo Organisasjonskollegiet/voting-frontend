@@ -95,7 +95,7 @@ const MyMeetings: React.FC = () => {
 
   return (
     <PageContainer>
-      {deleteMeetingLoading && <Loading asOverlay={true} text="Sletter møte" />}
+      {deleteMeetingLoading && <Loading asOverlay text="Sletter møte" />}
       <Box m="auto" pt="5em" pb="1.125em" maxWidth="600px">
         {meetingsData.length === 0 && (
           <Center m="0 2em 2.625em">

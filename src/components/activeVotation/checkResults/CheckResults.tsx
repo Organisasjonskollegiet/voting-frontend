@@ -52,7 +52,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
   };
 
   if ((!result || !result.getVotationResults) && (!stvResult || !stvResult.getStvResult) && loading) {
-    return <Loading text="Henter resultater" asOverlay={false} />;
+    return <Loading text="Henter resultater" />;
   }
 
   return (

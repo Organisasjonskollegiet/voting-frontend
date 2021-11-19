@@ -150,7 +150,7 @@ const ManageMeeting: React.FC = () => {
   }
 
   if (loading) {
-    return <Loading asOverlay={false} text={'Henter møteinformasjon'} />;
+    return <Loading text={'Henter møteinformasjon'} />;
   }
 
   if (error) {
@@ -164,9 +164,7 @@ const ManageMeeting: React.FC = () => {
   return (
     <PageContainer>
       <Center sx={outerContainer}>
-        {(createMeetingResult.loading || updateMeetingResult.loading) && (
-          <Loading asOverlay={true} text="Oppretter møte" />
-        )}
+        {(createMeetingResult.loading || updateMeetingResult.loading) && <Loading asOverlay text="Oppretter møte" />}
         <VStack spacing="10" align="left" maxWidth="800px" sx={centerContainer}>
           <ManageMeetingInformation
             isActive={activeTab === 0}

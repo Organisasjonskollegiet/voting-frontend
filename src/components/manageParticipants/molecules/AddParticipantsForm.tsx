@@ -178,10 +178,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
 
   return (
     <>
-      {readingFiles && <Loading asOverlay={true} text="Henter deltakere fra fil" />}
-      {addParticipantsResult.loading && <Loading asOverlay={true} text="Legger til deltaker" />}
-      {updateParticipantResult.loading && <Loading asOverlay={true} text="Oppdaterer deltaker" />}
-      {deleteParticipantsResult.loading && <Loading asOverlay={true} text="Sletter deltaker" />}
+      {readingFiles && <Loading asOverlay text="Henter deltakere fra fil" />}
+      {addParticipantsResult.loading && <Loading asOverlay text="Legger til deltaker" />}
+      {updateParticipantResult.loading && <Loading asOverlay text="Oppdaterer deltaker" />}
+      {deleteParticipantsResult.loading && <Loading asOverlay text="Sletter deltaker" />}
       <VStack spacing="7">
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>

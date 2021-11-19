@@ -4,7 +4,7 @@ import { darkblue } from '../styles/colors';
 
 export interface LoadingProps {
   text: string;
-  asOverlay: boolean;
+  asOverlay?: boolean;
 }
 
 const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
@@ -27,8 +27,18 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     zIndex: 10,
   } as React.CSSProperties;
 
+  const style = {
+    position: 'fixed',
+    height: '100vh',
+    width: '100vw',
+    top: '0',
+    left: '0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  } as React.CSSProperties;
+
   return (
-    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : undefined}>
+    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : style}>
       <Center position="relative">
         <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>

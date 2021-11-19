@@ -40,7 +40,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
   if (!isActive) return <></>;
 
   if (loading) {
-    return <Loading text="henter deltagere" asOverlay={false} />;
+    return <Loading text="henter deltagere" />;
   }
 
   if (error || data?.participants === undefined) {
