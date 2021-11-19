@@ -16,13 +16,14 @@ interface CustomAlertDialogProps {
   handleConfirm: () => void;
   type: DialogType;
   itemToBeConfirmed?: string;
+  confirmColor: string;
 }
 
 export enum DialogType {
   MEETING = 'Slett møte',
   VOTATION = 'Slett votering',
   PARTICIPANTS = 'Slett deltager',
-  CLOSE = 'Avslutt votering',
+  CLOSE = 'Gå videre',
   PUBLISH = 'Publiser resultat',
   INVALIDATE = 'Avbryt votering',
 }
@@ -37,7 +38,7 @@ const WarningBody = new Map<DialogType, string>([
     'Er du sikker på at du vil slette voteringen? All informasjon knyttet til voteringen vil bli slettet for godt.',
   ],
   [DialogType.PARTICIPANTS, 'Er du sikker på at du vil slette følgende deltager(e)?'],
-  [DialogType.CLOSE, 'Er du sikker på at du vil stenge voteringen?'],
+  [DialogType.CLOSE, 'Er du sikker på at du vil gå videre?'],
   [DialogType.INVALIDATE, 'Er du sikker på at du vil avbryte voteringen? Voteringen vil da bli erklært ugyldig.'],
   [DialogType.PUBLISH, 'Er du sikker på at du vil publisere resultatet?'],
 ]);
@@ -48,6 +49,7 @@ const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
   handleConfirm,
   type,
   itemToBeConfirmed,
+  confirmColor,
 }) => {
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
@@ -71,7 +73,7 @@ const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
             <Button ref={cancelRef} onClick={handleCancel}>
               Avbryt
             </Button>
-            <Button colorScheme="red" onClick={handleConfirm} ml={3}>
+            <Button colorScheme={confirmColor} onClick={handleConfirm} ml={3}>
               Bekreft
             </Button>
           </AlertDialogFooter>
