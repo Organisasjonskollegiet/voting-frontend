@@ -28,8 +28,6 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, invit
     }
   };
 
-  console.log(email === '');
-
   return (
     <HStack w="100%" borderRadius="4px" bg="#fff" zIndex="10" sx={{ boxShadow }}>
       <Input
