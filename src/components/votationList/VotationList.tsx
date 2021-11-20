@@ -9,7 +9,6 @@ import {
   useDeleteVotationMutation,
   useVotationDeletedSubscription,
   useUpdateVotationsMutation,
-  useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
@@ -58,7 +57,6 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
-  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
   const [deleteVotation] = useDeleteVotationMutation();
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
@@ -178,34 +176,6 @@ const VotationList: React.FC<VotationListProps> = ({
       getVotationsByMeetingId();
     }
   }, [votationsMayExist, getVotationsByMeetingId]);
-
-  useEffect(() => {
-    if (updateVotationStatusResult.data?.updateVotationStatus) {
-      let responseTitle,
-        responseDescription,
-        responseStatus: 'success' | 'error' = 'error';
-
-      if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation') {
-        responseTitle = 'Voteringen ble åpnet.';
-        responseStatus = 'success';
-      } else if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError') {
-        responseTitle = 'Kunne ikke åpne votering.';
-        responseDescription = updateVotationStatusResult.data?.updateVotationStatus.message;
-      }
-
-      const toastId = 'votationOpenedResponse';
-      if (!toast.isActive(toastId)) {
-        toast({
-          id: toastId,
-          title: responseTitle,
-          description: responseDescription,
-          status: responseStatus,
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    }
-  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
 
   /**
    * @returns the index of what is going to be the nextVotation
@@ -531,23 +501,7 @@ const VotationList: React.FC<VotationListProps> = ({
     return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
   };
 
-  const startVotation = () => {
-    if (!nextVotation) return;
-    if (nextVotation.alternatives.filter((a) => a.existsInDb || a.text !== '').length === 0) {
-      toast({
-        title: 'Kunne ikke åpne votering.',
-        description: 'Kan ikke åpne voteringen da den ikke har noen alternativer.',
-        status: 'error',
-        duration: 4000,
-        isClosable: true,
-      });
-    } else {
-      updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
-    }
-  };
-
   if (error) {
-    console.log(error);
     return (
       <>
         <Center mt="10vh">
@@ -589,7 +543,6 @@ const VotationList: React.FC<VotationListProps> = ({
             handleDeleteVotation={handleDeleteVotation}
             handleDeleteAlternative={handleDeleteAlternative}
             duplicateVotation={duplicateVotation}
-            handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
             showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}

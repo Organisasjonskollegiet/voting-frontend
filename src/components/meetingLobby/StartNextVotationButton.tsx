@@ -7,40 +7,67 @@ import {
   AlertDialogFooter,
   Button,
   VStack,
+  useToast,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useRef } from 'react';
+import { MeetingContext } from '../../pages/MeetingLobby';
+import { useStartNextVotationMutation } from '../../__generated__/graphql-types';
 import { green } from '../styles/colors';
 
 interface StartNextVotationButtonProps {
-  handleStartVotation: () => void;
-  checkIfAnyChanges: () => boolean;
-  handleSaveChanges: () => Promise<void>;
+  checkIfAnyChanges?: () => boolean;
+  handleSaveChanges?: () => Promise<void>;
 }
 
-const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
-  handleStartVotation,
-  checkIfAnyChanges,
-  handleSaveChanges,
-}) => {
+const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({ checkIfAnyChanges, handleSaveChanges }) => {
+  const { meetingId } = useContext(MeetingContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const [startNextVotation] = useStartNextVotationMutation();
 
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-  const openVotationIfNoChanges = () => {
-    if (checkIfAnyChanges()) {
+  const toast = useToast();
+
+  const startVotation = async () => {
+    const response = await startNextVotation({ variables: { meetingId } });
+    if (!response.data?.startNextVotation?.__typename) return;
+    let toastTitle;
+    let toastDescription;
+    let toastStatus: 'error' | 'success';
+    if (response.data?.startNextVotation?.__typename === 'OpenedVotation') {
+      toastTitle = 'Votering åpnet.';
+      toastDescription = `${response.data.startNextVotation.title} ble åpnet.`;
+      toastStatus = 'success';
+    } else {
+      toastTitle = 'Kunne ikke åpne votering.';
+      toastDescription = response.data.startNextVotation.message;
+      toastStatus = 'error';
+    }
+    toast({
+      title: toastTitle,
+      description: toastDescription,
+      status: toastStatus,
+      duration: 4000,
+      isClosable: true,
+    });
+  };
+
+  const openVotationIfNoChanges = async () => {
+    if (checkIfAnyChanges && checkIfAnyChanges()) {
       setIsOpen(true);
     } else {
-      handleStartVotation();
+      startVotation();
     }
   };
 
   const saveBeforeStartVotation = async (saveChanges: boolean) => {
     setIsOpen(false);
-    if (saveChanges) {
+    if (saveChanges && handleSaveChanges) {
       await handleSaveChanges();
     }
-    handleStartVotation();
+    startVotation();
   };
 
   return (

@@ -162,7 +162,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
-    if (votationResultData?.getVotationResults) {
+    if (votationResultData?.getVotationResults && votationResultData?.getVotationResults.id === votationId) {
       const newWinners = votationResultData.getVotationResults.alternatives.filter(
         (a) => a?.isWinner
       ) as AlternativeResult[];
@@ -172,7 +172,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // set alternatives when data arrives
   useEffect(() => {
-    if (data?.votationById?.alternatives && !alternatives) {
+    if (data?.votationById?.id === votationId && data?.votationById?.alternatives && !alternatives) {
       const alternatives = data.votationById.alternatives.filter((a) => a) as AlternativeType[];
       const shuffledAlternatives = shuffleAlternatives(alternatives);
       setAlternatives(
@@ -189,14 +189,22 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // update initial votationStatus
   useEffect(() => {
-    if (data?.votationById?.status) {
+    if (data?.votationById?.id === votationId && data?.votationById?.status) {
       setStatus(data.votationById.status);
     }
   }, [data?.votationById?.status]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
-    if (!data?.getVoteCount || newVoteCountData) return;
+    // Return if the data is not for this votation,
+    // there is no votecount data
+    // or there is updated data from newVoteCountData for this votation
+    if (
+      data?.votationById?.id !== votationId ||
+      !data?.getVoteCount ||
+      (newVoteCountData && newVoteCountData.newVoteRegistered?.votationId === votationId)
+    )
+      return;
     if (voteCount !== data.getVoteCount.voteCount) setVoteCount(data.getVoteCount.voteCount);
     if (votingEligibleCount !== data.getVoteCount.votingEligibleCount)
       setVotingEligibleCount(data.getVoteCount.votingEligibleCount);
@@ -204,7 +212,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
-    if (data?.votationById?.hasVoted && user?.sub) {
+    if (data?.votationById?.id === votationId && data?.votationById?.hasVoted && user?.sub) {
       setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
     }
   }, [data?.votationById?.hasVoted, user]);

@@ -14,7 +14,6 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
   handleDeleteVotation,
   handleDeleteAlternative,
   duplicateVotation,
-  handleStartVotation,
   checkIfAnyChanges,
   handleSaveChanges,
   showStartNextButton,
@@ -32,7 +31,6 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
           handleDeleteVotation={handleDeleteVotation}
           handleDeleteAlternative={handleDeleteAlternative}
           duplicateVotation={duplicateVotation}
-          handleStartVotation={handleStartVotation}
           checkIfAnyChanges={checkIfAnyChanges}
           handleSaveChanges={handleSaveChanges}
           showStartNextButton={showStartNextButton}
@@ -49,7 +47,6 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
             handleDeleteVotation={handleDeleteVotation}
             handleDeleteAlternative={handleDeleteAlternative}
             duplicateVotation={duplicateVotation}
-            handleStartVotation={handleStartVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={handleSaveChanges}
             showStartNextButton={false}
@@ -70,7 +67,6 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
         handleDeleteVotation={handleDeleteVotation}
         handleDeleteAlternative={handleDeleteAlternative}
         duplicateVotation={duplicateVotation}
-        handleStartVotation={handleStartVotation}
         checkIfAnyChanges={checkIfAnyChanges}
         handleSaveChanges={handleSaveChanges}
         showStartNextButton={false}
