@@ -23,7 +23,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode, numberOfUpcomingVotations } = useContext(MeetingContext);
 
-  if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
+  if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
   return (
     <VStack spacing="2em">
