@@ -20,7 +20,7 @@ const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, select
       boxShadow={boxShadow}
       justifyContent="left"
       onClick={handleClick}
-      _focus={!selected ? { border: `2px solid ${green(0.4)}` } : undefined}
+      _focus={!selected ? { border: `2px solid ${green(0.3)}` } : undefined}
       _hover={{ cursor: presentationMode ? 'default' : 'pointer' }}
       sx={styles}
     >
