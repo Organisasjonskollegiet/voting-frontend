@@ -108,14 +108,19 @@ const MeetingLobby: React.FC = () => {
   useEffect(() => {
     if (!data?.numberOfUpcomingVotations || numberOfUpcomingVotations) return;
     setNumberOfUpcomingVotations(data.numberOfUpcomingVotations);
-  }, [data]);
+  }, [data, numberOfUpcomingVotations]);
 
   // handle votation opening
   useEffect(() => {
-    if (!votationOpened?.votationOpenedForMeeting || !numberOfUpcomingVotations) return;
+    if (
+      !votationOpened?.votationOpenedForMeeting ||
+      !numberOfUpcomingVotations ||
+      openVotation === votationOpened.votationOpenedForMeeting
+    )
+      return;
     setNumberOfUpcomingVotations(numberOfUpcomingVotations - 1);
     handleOpenVotation(votationOpened.votationOpenedForMeeting);
-  }, [votationOpened, handleOpenVotation]);
+  }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation]);
 
   const backToMyMeetings = () => {
     history.push('/');

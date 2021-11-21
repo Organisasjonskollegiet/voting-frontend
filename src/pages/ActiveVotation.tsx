@@ -168,7 +168,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
       ) as AlternativeResult[];
       if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
-  }, [votationResultData, winners]);
+  }, [votationResultData, winners, votationId]);
 
   // set alternatives when data arrives
   useEffect(() => {
@@ -185,14 +185,14 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         })
       );
     }
-  }, [data?.votationById?.alternatives, alternatives]);
+  }, [data?.votationById?.alternatives, alternatives, votationId]);
 
   // update initial votationStatus
   useEffect(() => {
     if (data?.votationById?.id === votationId && data?.votationById?.status) {
       setStatus(data.votationById.status);
     }
-  }, [data?.votationById?.status]);
+  }, [data?.votationById?.status, votationId]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
@@ -208,14 +208,14 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     if (voteCount !== data.getVoteCount.voteCount) setVoteCount(data.getVoteCount.voteCount);
     if (votingEligibleCount !== data.getVoteCount.votingEligibleCount)
       setVotingEligibleCount(data.getVoteCount.votingEligibleCount);
-  }, [data?.getVoteCount, voteCount, votingEligibleCount, newVoteCountData]);
+  }, [data?.getVoteCount, voteCount, votingEligibleCount, newVoteCountData, votationId]);
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
     if (data?.votationById?.id === votationId && data?.votationById?.hasVoted && user?.sub) {
       setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
     }
-  }, [data?.votationById?.hasVoted, user]);
+  }, [data?.votationById?.hasVoted, user, votationId]);
 
   // update status of votation when new data arrives on subscription
   useEffect(() => {

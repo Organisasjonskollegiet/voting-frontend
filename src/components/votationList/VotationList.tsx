@@ -246,7 +246,7 @@ const VotationList: React.FC<VotationListProps> = ({
       if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(remainingVotations.length);
       setActiveVotationId('');
     },
-    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
+    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role, setNumberOfUpcomingVotations]
   );
 
   useEffect(() => {
@@ -297,7 +297,16 @@ const VotationList: React.FC<VotationListProps> = ({
         console.log(error);
       }
     }
-  }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
+  }, [
+    data,
+    formatVotations,
+    isMeetingLobby,
+    ongoingVotation,
+    nextVotation,
+    upcomingVotations,
+    endedVotations,
+    setNumberOfUpcomingVotations,
+  ]);
 
   async function onDragEnd(result: DropResult) {
     if (!result.destination) return;
