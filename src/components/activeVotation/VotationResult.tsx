@@ -13,6 +13,7 @@ import NoWinner from '../../static/noWinner.svg';
 import { boxShadow } from '../styles/formStyles';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import WrapStack from '../common/WrapStack';
+import useScreenWidth from '../../hooks/ScreenWidth';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -22,20 +23,10 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
-  const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+  const screenWidth = useScreenWidth();
   const pageBreapoint = 850;
-
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      setScreenWidth(window.innerWidth);
-    });
-  }, []);
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode } = useContext(MeetingContext);
-
-  useEffect(() => {
-    console.log(screenWidth);
-  }, [screenWidth]);
   if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
   return (
