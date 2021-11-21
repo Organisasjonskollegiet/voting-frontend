@@ -85,7 +85,7 @@ const CastVote: React.FC<CastVoteProps> = ({
         <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
         {!userHasVoted && isVotingEligible && !presentationMode && (
           <Button
-            bg={green}
+            bg={green()}
             color="white"
             w="200px"
             onClick={() => submitVote()}

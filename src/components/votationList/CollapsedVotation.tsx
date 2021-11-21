@@ -18,7 +18,7 @@ const CollapsedVotation: React.FC<CollapsedVotationProps> = ({ isAdmin, votation
         <Text sx={highlightedStyle}>{`${index + 1}`}</Text>
         <Text>{votationTitle}</Text>
       </HStack>
-      <CustomTag bgColor={green} text="Aktiv" />
+      <CustomTag bgColor={green()} text="Aktiv" />
     </HStack>
   );
 };
