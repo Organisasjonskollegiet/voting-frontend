@@ -1,5 +1,5 @@
 import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { subtitlesStyle } from '../styles/styles';
 import VoteCount from './VoteCount';
 import { ActiveVotationContext, AlternativeWithIndex } from '../../pages/ActiveVotation';
@@ -42,10 +42,6 @@ const CastVote: React.FC<CastVoteProps> = ({
   const { presentationMode } = useContext(MeetingContext);
   const screenWidth = useScreenWidth();
   const breakpoint = 730;
-
-  useEffect(() => {
-    console.log(screenWidth);
-  }, [screenWidth]);
 
   return (
     <WrapStack breakpoint={breakpoint} w="100%" justifyContent="space-between">
