@@ -83,7 +83,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
       toast({
         title: 'Alternativer kan maks ha 255 bokstaver.',
         status: 'warning',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }

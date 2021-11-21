@@ -24,7 +24,7 @@ const MyMeetings: React.FC = () => {
           title: 'Møtet ble slettet',
           description: '',
           status: 'success',
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -40,7 +40,7 @@ const MyMeetings: React.FC = () => {
         description:
           'Det oppstod et problem med å slette måte. Prøv på ny eller ta kontakt med Organisasjonskollegiet.',
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
