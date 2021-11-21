@@ -43,10 +43,6 @@ const CastVote: React.FC<CastVoteProps> = ({
   const screenWidth = useScreenWidth();
   const breakpoint = 730;
 
-  useEffect(() => {
-    console.log(screenWidth);
-  }, [screenWidth]);
-
   return (
     <WrapStack breakpoint={breakpoint} w="100%" justifyContent="space-between">
       <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">
