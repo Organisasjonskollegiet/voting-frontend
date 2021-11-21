@@ -304,7 +304,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
           />
         ) : (
           <Box>
-            <Loading asOverlay={false} text={'Resultatene sjekkes'} />
+            <Loading text={'Resultatene sjekkes'} />
           </Box>
         );
       case VotationStatus.PublishedResult:
@@ -348,7 +348,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   if (loading) {
     return (
       <Center mt="10vh">
-        <Loading asOverlay={false} text={'Henter votering'} />
+        <Loading text={'Henter votering'} />
       </Center>
     );
   }
@@ -393,7 +393,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
       }}
     >
       <Center sx={outerContainer}>
-        {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay={true} />}
+        {(castVoteLoading || blankVoteLoading || stvLoading) && <Loading text="Registrerer stemme" asOverlay />}
         <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
           <VStack alignItems="left" spacing="1rem">
             <VStack alignItems="left" spacing="0.5rem">
