@@ -23,6 +23,7 @@ export interface VotationResultProps {
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
   const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+  const pageBreapoint = 850;
 
   useEffect(() => {
     window.addEventListener('resize', () => {
@@ -31,6 +32,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
   }, []);
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode } = useContext(MeetingContext);
+
   useEffect(() => {
     console.log(screenWidth);
   }, [screenWidth]);
@@ -42,16 +44,17 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         w="100%"
         bg="white"
         boxShadow={boxShadow}
-        spacing="1rem"
+        spacing={screenWidth < pageBreapoint ? '1rem' : 0}
         justifyContent="center"
         paddingX="3rem"
         paddingTop="3rem"
+        paddingBottom={screenWidth < pageBreapoint ? '3rem' : undefined}
         minH="19rem"
         maxH="80vh"
-        breakpoint={850}
+        breakpoint={pageBreapoint}
       >
         <Box flex="1" alignSelf="center" marginTop="auto">
-          <Image maxH={screenWidth < 850 ? '8rem' : undefined} src={Winners} />
+          <Image maxH={screenWidth < pageBreapoint ? '8rem' : undefined} src={Winners} />
         </Box>
         <VStack flex="1" margin="3rem">
           <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
