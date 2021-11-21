@@ -67,7 +67,7 @@ const CastVote: React.FC<CastVoteProps> = ({
           />
         )}
       </VStack>
-      <VStack h="100%" justifyContent="flex-end" spacing="1em">
+      <VStack alignSelf="flex-end" position="sticky" bottom="1.5em" spacing="1em">
         {userHasVoted && (
           <Center w="300px" mt="4em">
             <Heading as="h1" sx={h1Style}>
