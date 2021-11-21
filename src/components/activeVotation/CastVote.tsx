@@ -1,5 +1,5 @@
 import { Button, Center, Heading, VStack, Text } from '@chakra-ui/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { subtitlesStyle } from '../styles/styles';
 import VoteCount from './VoteCount';
 import { ActiveVotationContext, AlternativeWithIndex } from '../../pages/ActiveVotation';
