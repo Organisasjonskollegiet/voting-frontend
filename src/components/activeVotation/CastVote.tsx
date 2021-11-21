@@ -74,16 +74,7 @@ const CastVote: React.FC<CastVoteProps> = ({
           />
         )}
       </VStack>
-      <VStack
-        justifyContent="flex-end"
-        alignItems="flex-end"
-        alignSelf="center"
-        h="100%"
-        // justifyContent="end"
-        // position={screenWidth > breakpoint ? 'sticky' : 'static'}
-        // bottom="1.5em"
-        // spacing="1em"
-      >
+      <VStack justifyContent="flex-end" alignItems="flex-end" alignSelf="center" h="100%">
         <VStack spacing="1em" position={screenWidth > breakpoint ? 'sticky' : 'static'} bottom="1.5em">
           {userHasVoted && (
             <Center w="300px" mt="4em">
