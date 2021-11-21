@@ -106,7 +106,7 @@ const MeetingLobby: React.FC = () => {
 
   // set initial number of upcoming votations
   useEffect(() => {
-    if (!data?.numberOfUpcomingVotations || numberOfUpcomingVotations) return;
+    if (!data?.numberOfUpcomingVotations || numberOfUpcomingVotations !== null) return;
     setNumberOfUpcomingVotations(data.numberOfUpcomingVotations);
   }, [data, numberOfUpcomingVotations]);
 
@@ -114,7 +114,7 @@ const MeetingLobby: React.FC = () => {
   useEffect(() => {
     if (
       !votationOpened?.votationOpenedForMeeting ||
-      !numberOfUpcomingVotations ||
+      numberOfUpcomingVotations === null ||
       openVotation === votationOpened.votationOpenedForMeeting
     )
       return;
