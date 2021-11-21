@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
 import { VStack, Text, Divider, Button, HStack, Box, Image } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -61,8 +61,10 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
             </>
           ) : (
             <>
-              <Text fontSize="2.25em">Ingen vinner</Text>
-              <Text>Ingen av alternativene oppnådde tilstrekkelig flertall</Text>
+              <Text fontWeight="bold" textAlign="center" fontSize="2.25em">
+                Ingen vinner
+              </Text>
+              <Text textAlign="center">Ingen av alternativene oppnådde tilstrekkelig flertall</Text>
             </>
           )}
         </VStack>
