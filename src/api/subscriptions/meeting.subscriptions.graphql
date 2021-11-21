@@ -1,0 +1,6 @@
+subscription ParticipantUpdated($userId: String!, $meetingId: String!) {
+  participantUpdated(userId: $userId, meetingId: $meetingId) {
+    role
+    isVotingEligible
+  }
+}

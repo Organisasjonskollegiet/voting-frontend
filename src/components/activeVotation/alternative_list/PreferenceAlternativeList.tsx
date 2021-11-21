@@ -3,7 +3,7 @@ import { Divider, VStack } from '@chakra-ui/react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { AlternativeWithIndex } from '../../../pages/ActiveVotation';
 import DraggableAlternative from '../alternative/DraggableAlternative';
-import { lightGray } from '../../styles/theme';
+import { lightGray } from '../../styles/colors';
 
 export interface AlternativeListProps {
   alternatives: AlternativeWithIndex[];

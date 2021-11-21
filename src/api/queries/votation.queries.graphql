@@ -1,4 +1,35 @@
-query GetVotationById($votationId: String!, $meetingId: String!) {
+fragment StvRoundResultFields on StvRoundResult {
+  index
+  winners {
+    votationId
+    id
+    index
+    text
+  }
+  losers {
+    text
+    id
+    index
+  }
+  alternativesWithRoundVoteCount {
+    alternative {
+      id
+      index
+      text
+    }
+    voteCount
+  }
+}
+
+fragment AlternativeResultFields on AlternativeResult {
+  id
+  text
+  index
+  isWinner
+  votes
+}
+
+query GetVotationById($votationId: String!) {
   votationById(votationId: $votationId) {
     id
     title
@@ -8,6 +39,7 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     alternatives {
       id
       text
+      index
       votationId
     }
     status
@@ -17,17 +49,6 @@ query GetVotationById($votationId: String!, $meetingId: String!) {
     numberOfWinners
     majorityThreshold
     meetingId
-  }
-
-  meetingById(meetingId: $meetingId) {
-    participants {
-      user {
-        id
-        email
-      }
-      role
-      isVotingEligible
-    }
   }
 
   getVoteCount(votationId: $votationId) {
@@ -69,6 +90,7 @@ query VotationsByMeetingId($meetingId: String!) {
       alternatives {
         id
         text
+        index
       }
     }
   }
@@ -78,6 +100,7 @@ query VotationsByMeetingId($meetingId: String!) {
     alternatives {
       id
       text
+      index
       isWinner
     }
   }
@@ -92,16 +115,40 @@ query GetVoteCount($votationId: String!) {
 
 query GetVotationResults($votationId: String!) {
   getVotationResults(votationId: $votationId) {
-    alternatives {
-      id
-      text
-      isWinner
-      votes
-    }
-    blankVotes
-    blankVoteCount
+    id
     voteCount
     votingEligibleCount
+    alternatives {
+      ...AlternativeResultFields
+    }
+    blankVoteCount
+  }
+
+  getStvResult(votationId: $votationId) {
+    votationId
+    voteCount
+    votingEligibleCount
+    alternatives {
+      ...AlternativeResultFields
+    }
+    quota
+    stvRoundResults {
+      ...StvRoundResultFields
+    }
+  }
+
+  result(votationId: $votationId) {
+    votationId
+    voteCount
+    votingEligibleCount
+    alternatives {
+      ...AlternativeResultFields
+    }
+    blankVoteCount
+    quota
+    stvRoundResults {
+      ...StvRoundResultFields
+    }
   }
 }
 
@@ -110,34 +157,6 @@ query GetWinnerOfVotation($votationId: String!) {
     id
     text
     votationId
-  }
-}
-
-query GetStvResult($votationId: String!) {
-  getStvResult(votationId: $votationId) {
-    votationId
-    quota
-    voteCount
-    votingEligibleCount
-    stvRoundResults {
-      index
-      winners {
-        votationId
-        id
-        text
-      }
-      losers {
-        text
-        id
-      }
-      alternativesWithRoundVoteCount {
-        alternative {
-          id
-          text
-        }
-        voteCount
-      }
-    }
   }
 }
 

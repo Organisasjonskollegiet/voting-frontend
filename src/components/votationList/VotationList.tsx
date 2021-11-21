@@ -6,27 +6,38 @@ import {
   Role,
   useCreateVotationsMutation,
   useDeleteAlternativesMutation,
-  useDeleteVotationsMutation,
+  useDeleteVotationMutation,
+  useVotationDeletedSubscription,
   useUpdateVotationsMutation,
   useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
+  useVotationsUpdatedSubscription,
+  VotationsUpdatedSubscription,
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
-import EndedVotation from './endedVotations/EndedVotation';
+import EndedVotation from './EndedVotation';
 import OpenVotation from './OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
-import { getEmptyAlternative, getEmptyVotation } from './utils';
+import {
+  getEmptyAlternative,
+  getEmptyVotation,
+  prepareVotationsForCreation,
+  prepareVotationsForUpdate,
+  reorder,
+} from './utils';
+import ResultModal from '../myMeetings/ResultModal';
+// import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
   votationsMayExist: boolean;
   isMeetingLobby: boolean;
   role: Role | undefined;
-  hideOpenVotationButton: boolean;
+  hideStartNextButton?: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
 }
 
@@ -35,91 +46,40 @@ const VotationList: React.FC<VotationListProps> = ({
   votationsMayExist,
   isMeetingLobby,
   role,
-  hideOpenVotationButton,
+  hideStartNextButton,
   navigateToOpenVotation,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
       meetingId,
     },
+    fetchPolicy: 'no-cache',
   });
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
-
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
-
-  const [createVotations, createVotationsResult] = useCreateVotationsMutation();
-
-  const [deleteVotations] = useDeleteVotationsMutation();
-
-  const [ongoingVotation, setOngoingVotation] = useState<Votation>();
-
-  const [nextVotation, setNextVotation] = useState<Votation | null>();
-
-  const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
-
-  const [endedVotations, setEndedVotations] = useState<Votation[]>();
-
-  const [activeVotationId, setActiveVotationId] = useState<string>('');
-
-  const [deleteAlternatives] = useDeleteAlternativesMutation();
-
   const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
-
+  const [createVotations, createVotationsResult] = useCreateVotationsMutation();
+  const [deleteVotation] = useDeleteVotationMutation();
+  const [ongoingVotation, setOngoingVotation] = useState<Votation>();
+  const [nextVotation, setNextVotation] = useState<Votation | null>();
+  const [upcomingVotations, setUpcomingVotations] = useState<Votation[]>();
+  const [endedVotations, setEndedVotations] = useState<Votation[]>();
+  const [activeVotationId, setActiveVotationId] = useState<string>('');
+  const [showResultOf, setShowResultOf] = useState<Votation | null>(null);
+  const [deleteAlternatives] = useDeleteAlternativesMutation();
+  const { data: votationsUpdated } = useVotationsUpdatedSubscription({ variables: { meetingId } });
+  const [lastUpdate, setLastUpdate] = useState<VotationsUpdatedSubscription | undefined>();
+  const { data: deletedVotation } = useVotationDeletedSubscription({
+    variables: {
+      meetingId,
+    },
+  });
   const toast = useToast();
 
-  useEffect(() => {
-    if (role === Role.Admin && !ongoingVotation && !nextVotation && !upcomingVotations && !endedVotations && !loading) {
-      const emptyVotation = getEmptyVotation();
-      setNextVotation(emptyVotation);
-      setUpcomingVotations([]);
-      setActiveVotationId(emptyVotation.id);
-    }
-  }, [role, ongoingVotation, nextVotation, upcomingVotations, endedVotations, loading]);
-
-  // If there may exist votations (you are editing meeting or already
-  // been on add votations page), fetch votations from the backend
-  useEffect(() => {
-    if (votationsMayExist) {
-      getVotationsByMeetingId();
-    }
-  }, [votationsMayExist, getVotationsByMeetingId]);
-
-  useEffect(() => {
-    if (updateVotationStatusResult.data?.updateVotationStatus) {
-      const openedToastId = 'votationOpened';
-      const maxOneToastId = 'maxOneOpenVotation';
-      if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation' &&
-        !toast.isActive(openedToastId)
-      ) {
-        toast({
-          id: openedToastId,
-          title: 'Voteringen ble åpnet.',
-          status: 'success',
-          duration: 4000,
-          isClosable: true,
-        });
-      } else if (
-        updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError' &&
-        !toast.isActive(maxOneToastId)
-      ) {
-        toast({
-          id: maxOneToastId,
-          title: 'Kunne ikke åpne votering.',
-          description: updateVotationStatusResult.data?.updateVotationStatus.message,
-          status: 'error',
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    }
-  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
-
-  const alternativeMapper = (alternative: Alternative, index: number) => {
+  const alternativeMapper = (alternative: Alternative) => {
     return {
       ...alternative,
-      index: index,
       existsInDb: true,
     };
   };
@@ -141,9 +101,9 @@ const VotationList: React.FC<VotationListProps> = ({
       isEdited: false,
       alternatives:
         alternatives && alternatives.length > 0
-          ? alternatives.map(alternativeMapper)
+          ? alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
           : votation.alternatives.length > 0
-          ? votation.alternatives.map(alternativeMapper)
+          ? votation.alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
           : [getEmptyAlternative()],
     };
   }, []);
@@ -172,6 +132,160 @@ const VotationList: React.FC<VotationListProps> = ({
 
   useEffect(() => {
     if (
+      !nextVotation &&
+      role === Role.Admin &&
+      ((data?.meetingById?.votations && data.meetingById.votations.length === 0) || !votationsMayExist)
+    ) {
+      const emptyVotation = getEmptyVotation();
+      setNextVotation(emptyVotation);
+      setUpcomingVotations([]);
+      setActiveVotationId(emptyVotation.id);
+    }
+  }, [
+    data?.meetingById?.votations,
+    votationsMayExist,
+    role,
+    ongoingVotation,
+    nextVotation,
+    upcomingVotations,
+    endedVotations,
+    loading,
+  ]);
+
+  useEffect(() => {
+    if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated) return;
+    setLastUpdate(votationsUpdated);
+    const changedVotationIds = votationsUpdated.votationsUpdated.map((v) => (v ? v.id : ''));
+    const votations = votationsUpdated.votationsUpdated as Votation[];
+    const updatedVotations = formatVotations(votations);
+    const allVotations = [];
+    if (upcomingVotations) allVotations.push(...upcomingVotations);
+    if (nextVotation) allVotations.push(nextVotation);
+    const unchangedVotations = allVotations.filter((v) => !changedVotationIds.includes(v.id));
+    const updatedVotationList = [...(updatedVotations ?? []), ...unchangedVotations].sort(
+      (a, b) => (a?.index ?? 0) - (b?.index ?? 0)
+    ) as Votation[];
+    if (updatedVotationList.length > 0) {
+      setNextVotation(updatedVotationList[0]);
+      setUpcomingVotations(updatedVotationList.slice(1));
+    }
+  }, [votationsUpdated, nextVotation, upcomingVotations, lastUpdate, formatVotations]);
+
+  // If there may exist votations (you are editing meeting or already
+  // been on add votations page), fetch votations from the backend
+  useEffect(() => {
+    if (votationsMayExist) {
+      getVotationsByMeetingId();
+    }
+  }, [votationsMayExist, getVotationsByMeetingId]);
+
+  useEffect(() => {
+    if (updateVotationStatusResult.data?.updateVotationStatus) {
+      let responseTitle,
+        responseDescription,
+        responseStatus: 'success' | 'error' = 'error';
+
+      if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation') {
+        responseTitle = 'Voteringen ble åpnet.';
+        responseStatus = 'success';
+      } else if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError') {
+        responseTitle = 'Kunne ikke åpne votering.';
+        responseDescription = updateVotationStatusResult.data?.updateVotationStatus.message;
+      }
+
+      const toastId = 'votationOpenedResponse';
+      if (!toast.isActive(toastId)) {
+        toast({
+          id: toastId,
+          title: responseTitle,
+          description: responseDescription,
+          status: responseStatus,
+          duration: 4000,
+          isClosable: true,
+        });
+      }
+    }
+  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
+
+  /**
+   * @returns the index of what is going to be the nextVotation
+   */
+  const getIndexOfNextVotation = useCallback(() => {
+    // the index the coming nextVotation will have must be larger than
+    // all ended votations and the ongoing one
+    return ongoingVotation
+      ? ongoingVotation.index + 1
+      : endedVotations && endedVotations.length > 0
+      ? endedVotations[endedVotations.length - 1].index + 1
+      : 0;
+  }, [ongoingVotation, endedVotations]);
+
+  // updates the indexes of the votations in backend
+  const updateIndexes = useCallback(
+    async (votations: Votation[]) => {
+      const upcomingVotations = votations
+        .filter((v) => v.status === VotationStatus.Upcoming)
+        .map((v) => {
+          return {
+            id: v.id,
+            index: v.index,
+          };
+        });
+      if (upcomingVotations.length > 0) {
+        try {
+          await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
+        } catch (error) {
+          toast({
+            title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+            description: 'Last inn siden på nytt, og prøv igjen.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      }
+    },
+    [meetingId, toast, updateVotationIndexes]
+  );
+
+  const updateVotationsAfterDeletion = useCallback(
+    async (votations: Votation[], deletedVotation: string, shouldUpdateIndexes: boolean) => {
+      const indexOfNextVotation = getIndexOfNextVotation();
+      const remainingVotations = votations
+        .filter((v) => v.id !== deletedVotation)
+        .sort((a, b) => a.index - b.index)
+        .map((v, index) => {
+          return {
+            ...v,
+            index: indexOfNextVotation + index,
+          };
+        });
+      if (shouldUpdateIndexes && role === Role.Admin) await updateIndexes(remainingVotations);
+      const keyOfEmptyVotation = uuid();
+      setNextVotation(
+        remainingVotations.length > 0
+          ? remainingVotations[0]
+          : !ongoingVotation && (!endedVotations || endedVotations?.length === 0) && role === Role.Admin
+          ? getEmptyVotation(keyOfEmptyVotation)
+          : null
+      );
+      setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
+      setActiveVotationId('');
+    },
+    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
+  );
+
+  useEffect(() => {
+    if (!deletedVotation?.votationDeleted) return;
+    const allVotations = [];
+    if (nextVotation) allVotations.push(nextVotation);
+    if (upcomingVotations) allVotations.push(...upcomingVotations);
+    if (!allVotations.map((v) => v.id).includes(deletedVotation.votationDeleted)) return;
+    updateVotationsAfterDeletion(allVotations, deletedVotation.votationDeleted, false);
+  }, [deletedVotation?.votationDeleted, nextVotation, upcomingVotations, updateVotationsAfterDeletion]);
+
+  useEffect(() => {
+    if (
       data?.meetingById?.votations &&
       data.meetingById.votations.length > 0 &&
       !ongoingVotation &&
@@ -181,100 +295,43 @@ const VotationList: React.FC<VotationListProps> = ({
     ) {
       const votations = data.meetingById.votations as Votation[];
       const winners = data.resultsOfPublishedVotations as Votation[];
-      const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
-      const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-      const shouldAddEmpty = formattedVotations.length === 0;
-      if (shouldAddEmpty) {
-        formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
-      }
-      const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
-      const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
-      const ongoingVotation = sortedVotations.find(
-        (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
-      );
-      setOngoingVotation(ongoingVotation);
-      setNextVotation(upcomingVotations.slice(0, 1)[0]);
-      setUpcomingVotations(upcomingVotations.slice(1));
-      setEndedVotations(
-        sortedVotations.filter(
-          (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
-        )
-      );
-      if (upcomingVotations.length > 0) {
-        setActiveVotationId(upcomingVotations[0].id);
+      try {
+        const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
+        const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+        const shouldAddEmpty = formattedVotations.length === 0;
+        if (shouldAddEmpty) {
+          formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
+        }
+        const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
+        const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
+        const ongoingVotation = sortedVotations.find(
+          (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+        );
+        setOngoingVotation(ongoingVotation);
+        setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
+        setUpcomingVotations(upcomingVotations.slice(1));
+        setEndedVotations(
+          sortedVotations.filter(
+            (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+          )
+        );
+        if (upcomingVotations.length > 0) {
+          setActiveVotationId(upcomingVotations[0].id);
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
   }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
 
-  const reorder = (
-    next: Votation,
-    upcoming: Votation[],
-    startList: string,
-    endList: string,
-    startIndex: number,
-    endIndex: number
-  ) => {
-    // if the votation moved is the next votation...
-    if (startList === 'next') {
-      // ...and its moved to top of upcoming, its still the next votation
-      if (endList === 'upcoming' && endIndex === 0) {
-        return { newNext: next, newUpcoming: upcoming };
-        // if not it should me moved, and the first upcoming should be set as next votation
-      } else if (endList === 'upcoming') {
-        const newUpcoming = Array.from(upcoming);
-        const [newNext] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(endIndex, 0, next);
-        return { newNext, newUpcoming };
-      }
-      // if the votation is moved from upcoming...
-    } else {
-      // to next, but not to the top, it should be put on top of upcoming
-      if (endList === 'next' && endIndex !== 0) {
-        const newUpcoming = Array.from(upcoming);
-        const [removed] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(0, 0, removed);
-        return { newNext: next, newUpcoming };
-        // if it goes on top of next it should be set next and next bumped down
-      } else if (endList === 'next') {
-        const newUpcoming = Array.from(upcoming);
-        const [newNext] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(0, 0, next);
-        return { newNext, newUpcoming };
-        // if it goes elsewhere it should move there
-      } else {
-        const newUpcoming = Array.from(upcoming);
-        const [removed] = newUpcoming.splice(startIndex, 1);
-        newUpcoming.splice(endIndex, 0, removed);
-        return { newNext: next, newUpcoming };
-      }
-    }
-    return { newNext: next, newUpcoming: upcoming };
-  };
-
-  /**
-   * @returns the index of what is going to be the nextVotation
-   */
-  const getIndexOfNextVotation = () => {
-    // the index the coming nextVotation will have must be larger than
-    // all ended votations and the ongoing one
-    return ongoingVotation
-      ? ongoingVotation.index + 1
-      : endedVotations && endedVotations.length > 0
-      ? endedVotations[endedVotations.length - 1].index + 1
-      : 0;
-  };
-
   async function onDragEnd(result: DropResult) {
-    if (!result.destination) {
-      return;
-    }
+    if (!result.destination) return;
 
     if (
       result.destination.index === result.source.index &&
       result.destination.droppableId === result.source.droppableId
-    ) {
+    )
       return;
-    }
 
     if (!nextVotation || !upcomingVotations) return;
 
@@ -299,93 +356,52 @@ const VotationList: React.FC<VotationListProps> = ({
     });
     setNextVotation({ ...newNext, index: indexOfNextVotation });
     setUpcomingVotations([
-      ...newUpcoming.map((v, index) => {
-        return {
-          ...v,
-          index: indexOfNextVotation + 1 + index,
-        };
-      }),
+      ...newUpcoming.map((v, index) => ({
+        ...v,
+        index: indexOfNextVotation + 1 + index,
+      })),
     ]);
     await updateIndexes(updatedVotations);
   }
 
-  // updates the indexes of the votations in backend
-  const updateIndexes = async (votations: Votation[]) => {
-    const upcomingVotations = votations
-      .filter((v) => v.status === VotationStatus.Upcoming)
-      .map((v) => {
-        return {
-          id: v.id,
-          index: v.index,
-        };
-      });
-    if (upcomingVotations.length > 0) {
-      try {
-        await updateVotationIndexes({ variables: { votations: upcomingVotations } });
-      } catch (error) {
-        toast({
-          title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
-          description: 'Last inn siden på nytt, og prøv igjen.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    }
-  };
-
   const handleDeleteVotation = async (votation: Votation) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       if (votation.existsInDb) {
-        await deleteVotations({
+        await deleteVotation({
           variables: {
-            ids: [votation.id],
+            votationId: votation.id,
           },
         });
       }
       const votations = [];
       if (nextVotation) votations.push(nextVotation);
       if (upcomingVotations) votations.push(...upcomingVotations);
-      const indexOfNextVotation = getIndexOfNextVotation();
-      const remainingVotations = votations
-        .filter((v) => v.id !== votation.id)
-        .sort((a, b) => a.index - b.index)
-        .map((v, index) => {
-          return {
-            ...v,
-            index: indexOfNextVotation + index,
-          };
-        });
-      await updateIndexes(remainingVotations);
-      const keyOfEmptyVotation = uuid();
-      setNextVotation(
-        remainingVotations.length > 0
-          ? remainingVotations[0]
-          : ongoingVotation || (endedVotations && endedVotations?.length > 0)
-          ? null
-          : getEmptyVotation(keyOfEmptyVotation)
-      );
-      setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
-      setActiveVotationId('');
-      toast({
-        title: 'Votering slettet.',
-        description: `${votation.title} ble slettet`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      updateVotationsAfterDeletion(votations, votation.id, true);
+
+      responseTitle = 'Votering slettet.';
+      responseDescription = `${votation.title} ble slettet`;
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette voteringen. Prøv å laste inn siden på nytt.`,
-        status: 'error',
-        duration: 5000,
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
+        duration: 3000,
         isClosable: true,
       });
     }
   };
 
   const handleDeleteAlternative = async (alternativeId: string, votationId: string) => {
+    let responseTitle,
+      responseDescription,
+      responseStatus: 'success' | 'error' = 'error';
     try {
       await deleteAlternatives({
         variables: {
@@ -397,24 +413,21 @@ const VotationList: React.FC<VotationListProps> = ({
       if (upcomingVotations) votations.push(...upcomingVotations);
       const updatedVotation = votations
         .filter((v) => v.id === votationId)
-        .map((v) => {
-          return { ...v, alternatives: v.alternatives.filter((a) => a.id !== alternativeId) };
-        });
+        .map((v) => ({ ...v, alternatives: v.alternatives.filter((a) => a.id !== alternativeId) }));
       if (updatedVotation.length > 0) {
         updateVotation(updatedVotation[0]);
       }
-      toast({
-        title: 'Alternativ slettet.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+      responseTitle = 'Alternativ slettet.';
+      responseStatus = 'success';
     } catch (error) {
+      responseTitle = 'Det oppstod et problem.';
+      responseDescription = 'Vi kune ikke slette alternativet. Prøv å laste inn siden på nytt.';
+    } finally {
       toast({
-        title: 'Det oppstod et problem.',
-        description: `Vi kunne ikke slette alternativet. Prøv å laste inn siden på nytt.`,
-        status: 'error',
-        duration: 5000,
+        title: responseTitle,
+        description: responseDescription,
+        status: responseStatus,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -466,55 +479,20 @@ const VotationList: React.FC<VotationListProps> = ({
       title: 'Votering duplisert',
       description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
       status: 'success',
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
     });
   };
 
   const handleUpdateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => {
-      return {
-        id: votation.id,
-        title: votation.title,
-        description: votation.description,
-        index: votation.index,
-        blankVotes: votation.blankVotes,
-        hiddenVotes: votation.hiddenVotes,
-        type: votation.type,
-        numberOfWinners: votation.numberOfWinners,
-        majorityThreshold: votation.majorityThreshold,
-        alternatives: votation.alternatives
-          .map((alternative) => {
-            return {
-              id: alternative.id,
-              text: alternative.text,
-            };
-          })
-          .filter((alternative) => alternative.text !== ''),
-      };
-    });
-
-    const updateResponse = await updateVotations({ variables: { votations: preparedVotations } });
+    const preparedVotations = prepareVotationsForUpdate(votations);
+    const updateResponse = await updateVotations({ variables: { meetingId, votations: preparedVotations } });
     const updateResults = updateResponse.data?.updateVotations as Votation[];
     return formatVotations(updateResults) as Votation[];
   };
 
   const handleCreateVotations = async (votations: Votation[]) => {
-    const preparedVotations = votations.map((votation) => {
-      return {
-        title: votation.title,
-        description: votation.description,
-        index: votation.index,
-        blankVotes: votation.blankVotes,
-        hiddenVotes: votation.hiddenVotes,
-        type: votation.type,
-        numberOfWinners: votation.numberOfWinners,
-        majorityThreshold: votation.majorityThreshold,
-        alternatives: votation.alternatives
-          .map((alternative) => alternative.text)
-          .filter((alternative) => alternative !== ''),
-      };
-    });
+    const preparedVotations = prepareVotationsForCreation(votations);
     const createResponse = await createVotations({ variables: { votations: preparedVotations, meetingId } });
     const createResults = createResponse.data?.createVotations as Votation[];
     return formatVotations(createResults) as Votation[];
@@ -534,7 +512,7 @@ const VotationList: React.FC<VotationListProps> = ({
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
       status: 'success',
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
     });
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
@@ -568,6 +546,10 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   };
 
+  if (loading) {
+    return <Loading text={'Henter voteringer'} />;
+  }
+
   if (error) {
     return (
       <>
@@ -581,9 +563,8 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {(createVotationsResult.loading || updateVotationsResult.loading) && (
-        <Loading asOverlay={true} text="Oppdaterer votering" />
+        <Loading asOverlay text="Oppdaterer votering" />
       )}
-      {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {ongoingVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">
@@ -613,7 +594,7 @@ const VotationList: React.FC<VotationListProps> = ({
             handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
-            showStartNextButton={role === Role.Admin && !hideOpenVotationButton}
+            showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}
             heading={'Neste votering'}
             isAdmin={role === Role.Admin}
           />
@@ -645,10 +626,21 @@ const VotationList: React.FC<VotationListProps> = ({
           </Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
-              <EndedVotation key={votation.id} role={role} votation={votation} duplicateVotation={duplicateVotation} />
+              <EndedVotation
+                key={votation.id}
+                role={role}
+                votation={votation}
+                duplicateVotation={duplicateVotation}
+                onClick={() => {
+                  if (votation.status === VotationStatus.PublishedResult) setShowResultOf(votation);
+                }}
+              />
             ))}
           </Accordion>
         </VStack>
+      )}
+      {(role === Role.Admin || role === Role.Counter) && isMeetingLobby && (
+        <ResultModal isOpen={!!showResultOf} onClose={() => setShowResultOf(null)} votation={showResultOf} />
       )}
     </VStack>
   );

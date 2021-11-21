@@ -1,10 +1,10 @@
 import React from 'react';
 import { VStack, Center, Spinner, Text } from '@chakra-ui/react';
-import { darkblue } from '../styles/theme';
+import { darkblue } from '../styles/colors';
 
 export interface LoadingProps {
   text: string;
-  asOverlay: boolean;
+  asOverlay?: boolean;
 }
 
 const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
@@ -15,20 +15,29 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     color: darkblue,
   };
 
-  const overlaySpinnerStyle = {
-    position: 'absolute',
+  const loadingStyle = {
     justifyContent: 'center',
-    width: '100%',
-    height: '100%',
     left: '0',
     top: '0',
     backgroundColor: 'rgba(255, 255, 255, 0.4);',
-    // opacity: 0.2,
     zIndex: 10,
+    alignItems: 'center',
+  } as React.CSSProperties;
+
+  const overlaySpinnerStyle = {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  } as React.CSSProperties;
+
+  const fixedStyle = {
+    position: 'fixed',
+    height: '100vh',
+    width: '100vw',
   } as React.CSSProperties;
 
   return (
-    <VStack spacing="1.5em" sx={asOverlay ? overlaySpinnerStyle : undefined}>
+    <VStack spacing="1.5em" sx={{ ...loadingStyle, ...(asOverlay ? overlaySpinnerStyle : fixedStyle) }}>
       <Center position="relative">
         <Spinner thickness="0.25em" speed="0.69s" w="80px" h="80px" /> <br />
       </Center>

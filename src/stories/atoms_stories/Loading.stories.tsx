@@ -7,6 +7,6 @@ export default {
   component: Loading,
 } as Meta;
 
-const Template: Story<LoadingProps> = () => <Loading asOverlay={false} text="nå skjer det noe" />;
+const Template: Story<LoadingProps> = () => <Loading text="nå skjer det noe" />;
 
 export const Defualt = Template.bind({});

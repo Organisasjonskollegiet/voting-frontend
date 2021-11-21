@@ -11,7 +11,7 @@ const VoteCount: React.FC<VoteCountProps> = ({ voteCount, votingEligibleCount })
   if (!votingEligibleCount) return <></>;
 
   return (
-    <VStack>
+    <VStack mx="3rem">
       <Center>
         <Text fontSize="2.25em" fontWeight="bold">
           {`${voteCount} / ${votingEligibleCount}`}

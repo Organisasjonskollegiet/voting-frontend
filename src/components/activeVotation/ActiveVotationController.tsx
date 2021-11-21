@@ -3,15 +3,16 @@ import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon, CloseIcon } from '@chakra-ui/icons';
 import WrapStack from '../common/WrapStack';
-import { useHistory } from 'react-router';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
+import { MeetingContext } from '../../pages/MeetingLobby';
 
 interface VotationControllerProps {
   status: VotationStatus;
   showVote: boolean;
   toggleShowVote: () => void;
   disableShowVote: boolean;
+  backToVotationList: () => void;
 }
 
 const ActiveVotationController: React.FC<VotationControllerProps> = ({
@@ -19,17 +20,18 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   showVote,
   toggleShowVote,
   disableShowVote,
+  backToVotationList,
 }) => {
   const [updateVotationStatus] = useUpdateVotationStatusMutation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [invalidateVotationDialogOpen, setInvalidateVotationDialogOpen] = useState(false);
-  const history = useHistory();
-  const { role, votationId, meetingId } = useContext(ActiveVotationContext);
+  const { votationId } = useContext(ActiveVotationContext);
+  const { role, presentationMode } = useContext(MeetingContext);
 
   const getText = () => {
     switch (status) {
       case VotationStatus.Open:
-        return <Text>Steng votering</Text>;
+        return <Text>Gå videre</Text>;
       case VotationStatus.CheckingResult:
         return <Text>Publiser resultater</Text>;
     }
@@ -66,12 +68,23 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
 
   const handleInvalidResult = async () => {
     await updateVotationStatus({ variables: { votationId, status: VotationStatus.Invalid } });
-    history.push(`/meeting/${meetingId}`);
+    backToVotationList();
   };
 
   return (
     <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
-      {status === VotationStatus.Open && (
+      {role === Role.Admin && (
+        <Button
+          p="1.5em 4em"
+          bg="transparent"
+          borderRadius="16em"
+          onClick={() => setInvalidateVotationDialogOpen(true)}
+          leftIcon={<CloseIcon h="2.5" />}
+        >
+          <Text mt="0.25rem">Avbryt votering</Text>
+        </Button>
+      )}
+      {status === VotationStatus.Open && !presentationMode && (
         <FormControl display="flex" width="fit-content">
           <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
             Vis meg hva jeg stemte
@@ -80,39 +93,32 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
         </FormControl>
       )}
       {role === Role.Admin && (
-        <>
-          <Button
-            p="1.5em 4em"
-            bg="transparent"
-            borderRadius="16em"
-            onClick={() => setInvalidateVotationDialogOpen(true)}
-            leftIcon={<CloseIcon h="2.5" />}
-          >
-            <Text mt="0.25rem">Avbryt votering</Text>
-          </Button>
-          <Button
-            w="fit-content"
-            onClick={() => setDialogOpen(true)}
-            p="1.5em 4em"
-            borderRadius="16em"
-            bg="transparent"
-            rightIcon={<ArrowForwardIcon />}
-          >
-            <Text mt="0.25rem">{getText()}</Text>
-          </Button>
-        </>
+        <Button
+          w="fit-content"
+          onClick={() => setDialogOpen(true)}
+          p="1.5em 4em"
+          borderRadius="16em"
+          bg="transparent"
+          rightIcon={<ArrowForwardIcon />}
+        >
+          <Text justifyContent="end" mt="0.25rem">
+            {getText()}
+          </Text>
+        </Button>
       )}
       <CustomAlertDialog
         dialogIsOpen={invalidateVotationDialogOpen}
         handleCancel={() => setInvalidateVotationDialogOpen(false)}
         handleConfirm={handleInvalidResult}
         type={DialogType.INVALIDATE}
+        confirmColor="red"
       />
       <CustomAlertDialog
         dialogIsOpen={dialogOpen}
         handleCancel={() => setDialogOpen(false)}
         handleConfirm={handleConfirm}
         type={getDialogType()}
+        confirmColor={'green'}
       />
     </WrapStack>
   );

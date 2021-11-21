@@ -1,18 +1,22 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { getRoundedPercentage } from '../activeVotation/utils';
 import DownloadCSVButton from '../common/DownloadCSVButton';
-import { ActiveVotationContext } from '../../pages/ActiveVotation';
+import { Result } from '../../__generated__/graphql-types';
 
-const DownloadResultButton: React.FC = () => {
-  const { result, stvResult, isStv } = useContext(ActiveVotationContext);
+interface DownloadResultButtonProps {
+  result: Result | null | undefined;
+  isStv: boolean;
+}
+
+const DownloadResultButton: React.FC<DownloadResultButtonProps> = ({ isStv, result }) => {
   const getStvOverview = () => {
-    if (!stvResult?.getStvResult) throw new Error('Fant ikke resultat.');
+    if (!result) throw new Error('Fant ikke resultat.');
     return (
-      `Antall stemmer som krevdes for å vinne: ${stvResult.getStvResult.quota}` +
+      `Antall stemmer som krevdes for å vinne: ${result.quota}` +
       '\n' +
-      `Antall stemmeberettigede deltakere: ${stvResult.getStvResult.votingEligibleCount}` +
+      `Antall stemmeberettigede deltakere: ${result.votingEligibleCount}` +
       '\n' +
-      `Antall avgitte stemmer: ${stvResult.getStvResult.voteCount} \n`
+      `Antall avgitte stemmer: ${result.voteCount} \n`
     );
   };
 
@@ -59,7 +63,7 @@ const DownloadResultButton: React.FC = () => {
 
   const getStvResultFileContent = () => {
     const overview = getStvOverview() + '\n';
-    const rounds = stvResult?.getStvResult?.stvRoundResults.map(
+    const rounds = result?.stvRoundResults?.map(
       (round) =>
         getStvRoundResultFileContent(
           round.index,
@@ -74,15 +78,11 @@ const DownloadResultButton: React.FC = () => {
   };
 
   const getAlternativeResultString = (text: string, votes: number) => {
-    if (!result?.getVotationResults) return '';
+    if (!result) return '';
     return `${text}, ${votes}, ${
-      result.getVotationResults.voteCount > 0
-        ? getRoundedPercentage(votes / result.getVotationResults.voteCount).toString()
-        : '0'
+      result.voteCount > 0 ? getRoundedPercentage(votes / result.voteCount).toString() : '0'
     }, ${
-      result.getVotationResults.votingEligibleCount > 0
-        ? getRoundedPercentage(votes / result.getVotationResults.votingEligibleCount).toString()
-        : '0'
+      result.votingEligibleCount > 0 ? getRoundedPercentage(votes / result.votingEligibleCount).toString() : '0'
     } \n`;
   };
 
@@ -90,15 +90,13 @@ const DownloadResultButton: React.FC = () => {
     if (isStv) {
       return getStvResultFileContent();
     }
-    if (!result?.getVotationResults) throw new Error('Fant ikke resultatene fra voteringen.');
+    if (!result) throw new Error('Fant ikke resultatene fra voteringen.');
     const header = 'Alternativ, Antall stemmer, % av stemmene, % av stemmeberettigede \n';
-    const alternativesContent = [...result.getVotationResults.alternatives]
+    const alternativesContent = [...result.alternatives]
       .sort((a, b) => (b?.votes ?? 0) - (a?.votes ?? 0))
       .map((a) => (a ? getAlternativeResultString(a.text, a.votes) : ''))
       .reduce((p, c) => p + c);
-    const blankVotes = result.getVotationResults.blankVotes
-      ? getAlternativeResultString('Blanke stemmer', result.getVotationResults.blankVoteCount)
-      : '';
+    const blankVotes = result.blankVoteCount ? getAlternativeResultString('Blanke stemmer', result.blankVoteCount) : '';
     return header + alternativesContent + blankVotes;
   };
 

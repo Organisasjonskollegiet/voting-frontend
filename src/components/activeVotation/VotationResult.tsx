@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
-import { Center, VStack, Text, Divider, Button, HStack, Box } from '@chakra-ui/react';
+import { Center, VStack, Text, Divider, Button, HStack, Box, Image } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
@@ -11,6 +11,8 @@ import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 import Winners from '../../static/winners.svg';
 import { boxShadow } from '../styles/formStyles';
+import { MeetingContext } from '../../pages/MeetingLobby';
+import WrapStack from '../common/WrapStack';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -20,24 +22,45 @@ export interface VotationResultProps {
 }
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
-  const { result, stvResult, votationId, isStv, role } = useContext(ActiveVotationContext);
+  const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 
-  if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      setScreenWidth(window.innerWidth);
+    });
+  }, []);
+  const { result, votationId, isStv } = useContext(ActiveVotationContext);
+  const { role, presentationMode } = useContext(MeetingContext);
+  useEffect(() => {
+    console.log(screenWidth);
+  }, [screenWidth]);
+  if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
   return (
-    <VStack spacing="2em">
-      <HStack bg="white" boxShadow={boxShadow} justifyContent="center" paddingX="3rem" minH="19rem">
-        <Box alignSelf="center" marginTop="auto" flex="1">
-          <img src={Winners} />
+    <VStack spacing="2em" w="100%">
+      <WrapStack
+        w="100%"
+        bg="white"
+        boxShadow={boxShadow}
+        spacing="1rem"
+        justifyContent="center"
+        paddingX="3rem"
+        paddingTop="3rem"
+        minH="19rem"
+        maxH="80vh"
+        breakpoint={850}
+      >
+        <Box flex="1" alignSelf="center" marginTop="auto">
+          <Image maxH={screenWidth < 850 ? '8rem' : undefined} src={Winners} />
         </Box>
-        <VStack flex="1" justifyContent="center">
+        <VStack flex="1" margin="3rem">
           <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
           <AlternativesString
             alternatives={winners.map((w: AlternativeType | AlternativeResult) => w.text)}
             fontSize="2.25em"
           />
         </VStack>
-      </HStack>
+      </WrapStack>
       {/* <Center bg="white" paddingLeft="34px">
         <img src={Hammer} alt="hammer" />
       </Center>
@@ -60,7 +83,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         </VStack>
       </Center> */}
       {showResultsTable &&
-        (isStv ? <StvResultTable result={stvResult} /> : <ResultsTable result={result} votationId={votationId} />)}
+        (isStv ? <StvResultTable result={result} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
       <HStack w="100%" justifyContent="space-between">
         <Button
@@ -72,10 +95,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         >
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
-        {/* <Button borderRadius={'16em'} onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
-          Gå tilbake til liste over voteringer
-        </Button> */}
-        {(result || stvResult) && role === Role.Admin && <DownloadResultButton />}
+        {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
       </HStack>
     </VStack>
   );

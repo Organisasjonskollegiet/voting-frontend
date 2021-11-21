@@ -14,7 +14,7 @@ import React from 'react';
 import participantIcon from '../../../static/participantIcon.svg';
 import ReturnToPreviousButton from '../../common/ReturnToPreviousButton';
 import ManageParticipants from './ManageParticipants';
-import { darkblue, offwhite } from '../../styles/theme';
+import { darkblue, offwhite } from '../../styles/colors';
 
 interface ParticipantModalProps {
   meetingId: string;
@@ -33,7 +33,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="4xl">
         <ModalOverlay />
-        <ModalContent bg={offwhite} textColor={darkblue} p="2em">
+        <ModalContent mx="2rem" bg={offwhite} textColor={darkblue} p="2em">
           <ModalHeader>Administrer deltagere</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

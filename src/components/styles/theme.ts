@@ -1,12 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../activeVotation/alternative/Alternative';
 import { MeetingInformationFormConfig } from '../manageMeeting/MeetingInformationForm';
-
-export const darkblue = '#718096';
-export const lightblue = '#EDF2F7';
-export const offwhite = '#F9F9F9';
-export const green = '#1E9B50';
-export const lightGray = '#C4C4C4';
+import { darkblue, lightblue } from './colors';
 
 const theme = extendTheme({
   colors: {

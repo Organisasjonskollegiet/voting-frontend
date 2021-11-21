@@ -4,7 +4,7 @@ import { ParticipantOrInvite, Role } from '../../../__generated__/graphql-types'
 import { boxShadow } from '../../styles/formStyles';
 import SelectRole from '../atoms/SelectRole';
 import ToggleVotingEligibility from '../atoms/ToggleVotingEligibility';
-import { darkblue, lightblue } from '../../styles/theme';
+import { darkblue, lightblue } from '../../styles/colors';
 
 interface ParticipantListProps {
   participants: ParticipantOrInvite[];
@@ -68,8 +68,8 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
               </HStack>
               <HStack spacing="1em">
                 <ToggleVotingEligibility
-                  onChange={() => changeParticipantRights(participant, undefined, true)}
-                  defaultChecked={participant.isVotingEligible}
+                  toggle={() => changeParticipantRights(participant, undefined, true)}
+                  isChecked={participant.isVotingEligible}
                 />
                 <SelectRole
                   onChange={(role) => changeParticipantRights(participant, role)}

@@ -1,4 +1,4 @@
-import { darkblue } from "./theme";
+import { darkblue } from './colors';
 
 export const outerContainer = {
   padding: '5rem 2rem 1rem 2rem',
