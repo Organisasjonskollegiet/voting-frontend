@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
-import { Center, VStack, Text, Divider, Button, HStack, Box, Image } from '@chakra-ui/react';
-import Hammer from '../../static/hammer.svg';
+import { VStack, Text, Divider, Button, HStack, Box, Image } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
@@ -10,6 +9,7 @@ import StvResultTable from './results_table/StvResultTable';
 import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 import Winners from '../../static/winners.svg';
+import NoWinner from '../../static/noWinner.svg';
 import { boxShadow } from '../styles/formStyles';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import WrapStack from '../common/WrapStack';
@@ -54,21 +54,12 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         breakpoint={pageBreapoint}
       >
         <Box flex="1" alignSelf="center" marginTop="auto">
-          <Image maxH={screenWidth < pageBreapoint ? '8rem' : undefined} src={Winners} />
+          <Image
+            maxH={screenWidth < pageBreapoint ? '8rem' : undefined}
+            src={winners.length > 0 ? Winners : NoWinner}
+          />
         </Box>
         <VStack flex="1" margin="3rem">
-          <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
-          <AlternativesString
-            alternatives={winners.map((w: AlternativeType | AlternativeResult) => w.text)}
-            fontSize="2.25em"
-          />
-        </VStack>
-      </WrapStack>
-      {/* <Center bg="white" paddingLeft="34px">
-        <img src={Hammer} alt="hammer" />
-      </Center>
-      <Center fontWeight="bold">
-        <VStack spacing="0">
           {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
@@ -84,7 +75,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
             </>
           )}
         </VStack>
-      </Center> */}
+      </WrapStack>
       {showResultsTable &&
         (isStv ? <StvResultTable result={result} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
