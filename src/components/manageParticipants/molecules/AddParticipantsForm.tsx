@@ -74,6 +74,16 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
           },
         });
         setParticipants([...participants, { email: lowerCaseEmail, role: inputRole, isVotingEligible: true }]);
+      } else if (emailAlreadyAdded) {
+        const toastId = 'participantAdded';
+        toast({
+          id: toastId,
+          title: 'Deltaker finnes allerede.',
+          description: 'Det finnes allerede en deltaker med denne emailen.',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } else {
       const toastId = 'invalidEmail';
