@@ -239,7 +239,7 @@ const VotationList: React.FC<VotationListProps> = ({
             title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
             description: 'Last inn siden på nytt, og prøv igjen.',
             status: 'error',
-            duration: 5000,
+            duration: 3000,
             isClosable: true,
           });
         }
@@ -392,7 +392,7 @@ const VotationList: React.FC<VotationListProps> = ({
         title: responseTitle,
         description: responseDescription,
         status: responseStatus,
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -427,7 +427,7 @@ const VotationList: React.FC<VotationListProps> = ({
         title: responseTitle,
         description: responseDescription,
         status: responseStatus,
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -512,7 +512,7 @@ const VotationList: React.FC<VotationListProps> = ({
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
       status: 'success',
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
     });
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
