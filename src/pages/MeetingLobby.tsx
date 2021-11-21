@@ -118,7 +118,7 @@ const MeetingLobby: React.FC = () => {
   };
 
   if (loading) {
-    return <Loading asOverlay={false} text={'Henter møte'} />;
+    return <Loading text={'Henter møte'} />;
   }
 
   if (error || participantError) {

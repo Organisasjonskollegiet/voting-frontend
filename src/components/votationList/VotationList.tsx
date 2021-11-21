@@ -239,7 +239,7 @@ const VotationList: React.FC<VotationListProps> = ({
             title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
             description: 'Last inn siden på nytt, og prøv igjen.',
             status: 'error',
-            duration: 5000,
+            duration: 3000,
             isClosable: true,
           });
         }
@@ -392,7 +392,7 @@ const VotationList: React.FC<VotationListProps> = ({
         title: responseTitle,
         description: responseDescription,
         status: responseStatus,
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -427,7 +427,7 @@ const VotationList: React.FC<VotationListProps> = ({
         title: responseTitle,
         description: responseDescription,
         status: responseStatus,
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -512,7 +512,7 @@ const VotationList: React.FC<VotationListProps> = ({
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
       status: 'success',
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
     });
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
@@ -546,8 +546,11 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   };
 
+  if (loading) {
+    return <Loading text={'Henter voteringer'} />;
+  }
+
   if (error) {
-    console.log(error);
     return (
       <>
         <Center mt="10vh">
@@ -560,9 +563,8 @@ const VotationList: React.FC<VotationListProps> = ({
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
       {(createVotationsResult.loading || updateVotationsResult.loading) && (
-        <Loading asOverlay={true} text="Oppdaterer votering" />
+        <Loading asOverlay text="Oppdaterer votering" />
       )}
-      {loading && <Loading text="Henter voteringer" asOverlay={true} />}
       {ongoingVotation && navigateToOpenVotation && (
         <>
           <Heading as="h1" fontSize="1em">

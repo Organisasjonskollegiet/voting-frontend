@@ -21,7 +21,7 @@ export interface VotationResultProps {
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode } = useContext(MeetingContext);
-  if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
+  if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
   return (
     <VStack spacing="2em">

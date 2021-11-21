@@ -24,7 +24,7 @@ const MyMeetings: React.FC = () => {
           title: 'Møtet ble slettet',
           description: '',
           status: 'success',
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
         });
       }
@@ -40,7 +40,7 @@ const MyMeetings: React.FC = () => {
         description:
           'Det oppstod et problem med å slette måte. Prøv på ny eller ta kontakt med Organisasjonskollegiet.',
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -95,7 +95,7 @@ const MyMeetings: React.FC = () => {
 
   return (
     <PageContainer>
-      {deleteMeetingLoading && <Loading asOverlay={true} text="Sletter møte" />}
+      {deleteMeetingLoading && <Loading asOverlay text="Sletter møte" />}
       <Box m="auto" pt="5em" pb="1.125em" maxWidth="800px">
         {meetingsData.length === 0 && (
           <Center m="0 2em 2.625em">
