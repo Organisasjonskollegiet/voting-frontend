@@ -38,6 +38,7 @@ interface VotationListProps {
   role: Role | undefined;
   hideStartNextButton?: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
+  setNumberOfUpcomingVotations?: (upcomingVotations: number) => void;
 }
 
 const VotationList: React.FC<VotationListProps> = ({
@@ -47,6 +48,7 @@ const VotationList: React.FC<VotationListProps> = ({
   role,
   hideStartNextButton,
   navigateToOpenVotation,
+  setNumberOfUpcomingVotations,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
@@ -221,6 +223,7 @@ const VotationList: React.FC<VotationListProps> = ({
   const updateVotationsAfterDeletion = useCallback(
     async (votations: Votation[], deletedVotation: string, shouldUpdateIndexes: boolean) => {
       const indexOfNextVotation = getIndexOfNextVotation();
+      // remaining upcoming votations
       const remainingVotations = votations
         .filter((v) => v.id !== deletedVotation)
         .sort((a, b) => a.index - b.index)
@@ -240,6 +243,7 @@ const VotationList: React.FC<VotationListProps> = ({
           : null
       );
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
+      if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(remainingVotations.length);
       setActiveVotationId('');
     },
     [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
@@ -280,6 +284,7 @@ const VotationList: React.FC<VotationListProps> = ({
         setOngoingVotation(ongoingVotation);
         setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
         setUpcomingVotations(upcomingVotations.slice(1));
+        if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(upcomingVotations.length);
         setEndedVotations(
           sortedVotations.filter(
             (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
@@ -487,7 +492,9 @@ const VotationList: React.FC<VotationListProps> = ({
     });
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
     const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
+    // upcoming votations sorted
     const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
+    if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(sortedNewVotations.length);
     if (sortedNewVotations.length > 0) {
       setNextVotation(sortedNewVotations[0]);
       setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);

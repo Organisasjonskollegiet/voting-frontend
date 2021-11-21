@@ -305,6 +305,8 @@ export type Query = {
   meetingById?: Maybe<Meeting>;
   /** Return relevant information about invites and participants connected to meeting */
   participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
+  /** Get number of upcoming votations for a meeting. */
+  numberOfUpcomingVotations?: Maybe<Scalars['Int']>;
   /** Return participant belonging to the user for the meeting specified. */
   myParticipant?: Maybe<ParticipantOrInvite>;
 };
@@ -366,6 +368,11 @@ export type QueryMeetingByIdArgs = {
 
 
 export type QueryParticipantsArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryNumberOfUpcomingVotationsArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -977,7 +984,7 @@ export type GetMeetingForLobbyQueryVariables = Exact<{
 
 export type GetMeetingForLobbyQuery = (
   { __typename?: 'Query' }
-  & Pick<Query, 'getOpenVotation'>
+  & Pick<Query, 'getOpenVotation' | 'numberOfUpcomingVotations'>
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id' | 'title'>
@@ -2110,6 +2117,7 @@ export const GetMeetingForLobbyDocument = gql`
     }
   }
   getOpenVotation(meetingId: $meetingId)
+  numberOfUpcomingVotations(meetingId: $meetingId)
 }
     `;
 

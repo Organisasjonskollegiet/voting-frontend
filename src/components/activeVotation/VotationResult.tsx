@@ -21,7 +21,7 @@ export interface VotationResultProps {
 
 const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
-  const { role, presentationMode } = useContext(MeetingContext);
+  const { role, presentationMode, numberOfUpcomingVotations } = useContext(MeetingContext);
 
   if (!winners && loading) return <Loading text="Henter resultat" asOverlay={false} />;
   if (!winners) return <></>;
@@ -56,7 +56,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           Tilbake til voteringsliste
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
-        <StartNextVotationButton />
+        {numberOfUpcomingVotations && numberOfUpcomingVotations > 0 && <StartNextVotationButton />}
       </HStack>
     </VStack>
   );

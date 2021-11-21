@@ -67,6 +67,8 @@ query GetMeetingForLobby($meetingId: String!) {
   }
 
   getOpenVotation(meetingId: $meetingId)
+
+  numberOfUpcomingVotations(meetingId: $meetingId)
 }
 
 query VotationsByMeetingId($meetingId: String!) {
