@@ -185,14 +185,14 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         })
       );
     }
-  }, [data?.votationById?.alternatives, alternatives, votationId]);
+  }, [data?.votationById, alternatives, votationId]);
 
   // update initial votationStatus
   useEffect(() => {
     if (data?.votationById?.id === votationId && data?.votationById?.status) {
       setStatus(data.votationById.status);
     }
-  }, [data?.votationById?.status, votationId]);
+  }, [data?.votationById, votationId]);
 
   // update initial vote count when data arrives on votation
   useEffect(() => {
@@ -208,14 +208,14 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     if (voteCount !== data.getVoteCount.voteCount) setVoteCount(data.getVoteCount.voteCount);
     if (votingEligibleCount !== data.getVoteCount.votingEligibleCount)
       setVotingEligibleCount(data.getVoteCount.votingEligibleCount);
-  }, [data?.getVoteCount, voteCount, votingEligibleCount, newVoteCountData, votationId]);
+  }, [data?.getVoteCount, data?.votationById, voteCount, votingEligibleCount, newVoteCountData, votationId]);
 
   // update initial userHasVoted when data arrives on votation
   useEffect(() => {
     if (data?.votationById?.id === votationId && data?.votationById?.hasVoted && user?.sub) {
       setUserHasVoted(data.votationById.hasVoted.map((hasVoted) => `auth0|${hasVoted}`).includes(user?.sub));
     }
-  }, [data?.votationById?.hasVoted, user, votationId]);
+  }, [data?.votationById, user, votationId]);
 
   // update status of votation when new data arrives on subscription
   useEffect(() => {
