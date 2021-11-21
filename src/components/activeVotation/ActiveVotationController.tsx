@@ -72,7 +72,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   };
 
   return (
-    <WrapStack breakpoint={400} w="100%" justifyContent="space-between">
+    <WrapStack breakpoint={550} w="100%" justifyContent="space-between">
       {role === Role.Admin && (
         <Button
           p="1.5em 4em"

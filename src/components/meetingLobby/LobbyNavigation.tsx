@@ -25,9 +25,9 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
     const newIsMobile = screenWidth < breakpoint;
     if (newIsMobile === isMobile) return;
     setIsMobile(newIsMobile);
-  }, [screenWidth]);
+  }, [screenWidth, isMobile]);
 
-  const breakpoint = 500;
+  const breakpoint = 550;
   return (
     <WrapStack
       breakpoint={breakpoint}
