@@ -36,9 +36,7 @@ const ManageVotations: React.FC<IProps> = ({
   return (
     <>
       <VStack spacing="5" w="90vw" maxWidth="800px" align="left">
-        <Heading sx={h1Style} as="h1">
-          Legg til voteringer
-        </Heading>
+        <Heading size="lg">Legg til voteringer</Heading>
         <Text fontSize="20px">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>

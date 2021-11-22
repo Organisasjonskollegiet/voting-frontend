@@ -46,9 +46,7 @@ const CastVote: React.FC<CastVoteProps> = ({
   return (
     <WrapStack breakpoint={breakpoint} w="100%" justifyContent="space-between">
       <VStack h="100%" w="100%" maxW="400px" justifyContent="top" spacing="1.5em" alignItems="left">
-        <Heading as="h2" sx={subtitlesStyle}>
-          Alternativer
-        </Heading>
+        <Heading size="md">Alternativer</Heading>
         {isStv && !presentationMode && (
           <Text>Ranger de alternativene du ønsker å stemme på ved å dra dem inn i den øverste boksen.</Text>
         )}
@@ -74,16 +72,12 @@ const CastVote: React.FC<CastVoteProps> = ({
         <VStack spacing="1em" position={screenWidth > breakpoint ? 'sticky' : 'static'} bottom="1.5em">
           {userHasVoted && (
             <Center w="300px" mt="4em">
-              <Heading as="h1" sx={h1Style}>
-                Din stemme er registrert.
-              </Heading>
+              <Heading size="md">Din stemme er registrert.</Heading>
             </Center>
           )}
           {!isVotingEligible && !userHasVoted && (
             <Center w="300px" mt="4em">
-              <Heading as="h1" sx={h1Style}>
-                Du har ikke stemmerett.
-              </Heading>
+              <Heading size="md">Du har ikke stemmerett.</Heading>
             </Center>
           )}
           <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />

@@ -1,15 +1,15 @@
 import React, { useContext } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
-import { Center, VStack, Text, Divider, Button, HStack } from '@chakra-ui/react';
+import { Center, VStack, Text, Divider, Button, HStack, Heading } from '@chakra-ui/react';
 import Hammer from '../../static/hammer.svg';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
-import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
 import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 import { MeetingContext } from '../../pages/MeetingLobby';
+import { getAlternativesString } from './utils';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -33,10 +33,9 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
-              <AlternativesString
-                alternatives={winners.map((w: AlternativeType | AlternativeResult) => w.text)}
-                fontSize="2.25em"
-              />
+              <Heading size="xl">
+                {getAlternativesString(winners.map((w: AlternativeType | AlternativeResult) => w.text))}
+              </Heading>
             </>
           ) : (
             <>

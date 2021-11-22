@@ -4,6 +4,14 @@ export const getRoundedPercentage = (share: number): number => {
   return Math.round(share * 100 * 100) / 100;
 };
 
+export const getAlternativesString = (alternatives: string[]) => {
+  return alternatives.length > 0
+    ? alternatives.map(
+        (a, index) => `${a}${index < alternatives.length - 2 ? ', ' : index === alternatives.length - 2 ? ' og ' : ''}`
+      )
+    : 'Ingen vinner';
+};
+
 const formatOldVotationResult: (oldResult: VotationResults) => Result = (oldResult) => {
   return {
     votationId: oldResult.id,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStyleConfig, FormControl, FormLabel, Input, ComponentStyleConfig, VStack } from '@chakra-ui/react';
+import { useStyleConfig, FormControl, FormLabel, Input, ComponentStyleConfig, VStack, Heading } from '@chakra-ui/react';
 import DatePicker from '../common/DatePicker/DatePicker';
 import { labelStyle, inputStyle, highlightedInputStyle } from '../styles/formStyles';
 import { MeetingWorking } from '../../types/types';
@@ -83,7 +83,7 @@ export const MeetingInformationFormConfig: ComponentStyleConfig = {
     minWidth: '320px',
     width: '100%',
     maxWidth: '800px',
-    padding: '12px;',
+    padding: '12px 0',
     borderRadius: '5px',
     fontSize: '16px',
     fontWeight: '700',

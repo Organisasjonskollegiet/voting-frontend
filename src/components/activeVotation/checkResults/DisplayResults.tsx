@@ -1,10 +1,10 @@
 import { Heading, VStack } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import { Result } from '../../../__generated__/graphql-types';
-import AlternativesString from '../../common/AlternativesString';
 import { green } from '../../styles/colors';
 import ResultsTable from '../results_table/ResultsTable';
 import StvResultTable from '../results_table/StvResultTable';
+import { getAlternativesString } from '../utils';
 
 interface DisplayResultsProps {
   result: Result | null;
@@ -31,17 +31,15 @@ const DisplayResults: React.FC<DisplayResultsProps> = ({ result, isStv, votation
       <VStack alignSelf="flex-start" alignItems="flex-start">
         {winners && winners.length > 0 ? (
           <>
-            <Heading fontSize="16px" as="h3">
-              {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
-            </Heading>
+            <Heading size="md">{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}</Heading>
             <VStack alignItems="start">
-              <AlternativesString fontSize="24px" color={green} alternatives={winners} />
+              <Heading size="md" color={green}>
+                {getAlternativesString(winners)}
+              </Heading>
             </VStack>
           </>
         ) : (
-          <Heading fontSize="24px" as="h3">
-            Voteringen hadde ingen vinner
-          </Heading>
+          <Heading size="md">Voteringen hadde ingen vinner</Heading>
         )}
       </VStack>
       {!isStv ? <ResultsTable result={result} votationId={votationId} /> : <StvResultTable result={result} />}

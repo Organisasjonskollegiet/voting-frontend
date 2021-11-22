@@ -91,9 +91,7 @@ const Meeting: React.FC<
         {isAdmin && <CustomTag bgColor={lightGray} text="Admin" />}
       </HStack>
       <VStack alignItems="start">
-        <Heading as="h2" fontSize="1.5em">
-          {title}
-        </Heading>
+        <Heading size="lg">{title}</Heading>
         <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
       </VStack>
       {isAdmin ? (

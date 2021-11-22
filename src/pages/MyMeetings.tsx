@@ -103,7 +103,7 @@ const MyMeetings: React.FC = () => {
           </Center>
         )}
         {(ongoingMeetings.length > 0 || upcomingMeetings.length > 0) && (
-          <Heading as="h1" fontSize="1em" mx="2em" mb="1.125em">
+          <Heading size="sm" mx="2em" mb="1.125em">
             Mine møter
           </Heading>
         )}
@@ -127,7 +127,7 @@ const MyMeetings: React.FC = () => {
         )}
         {endedMeetings.length > 0 && (
           <Box m="0 2em 2.625em">
-            <Heading as="h1" fontSize="1em" mb="1.125em">
+            <Heading size="sm" mb="1.125em">
               Avsluttede møter
             </Heading>
             <MeetingList

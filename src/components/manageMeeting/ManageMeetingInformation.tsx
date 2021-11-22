@@ -22,9 +22,7 @@ const ManageMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, m
   return (
     <>
       <VStack spacing="5" align="left">
-        <Heading sx={h1Style} as="h1">
-          Legg til møteinformasjon
-        </Heading>
+        <Heading size="lg">Legg til møteinformasjon</Heading>
         <Text fontSize="20px">Her kan du legge til informasjon om møtet </Text>
       </VStack>
       <MeetingInformationForm meeting={meeting} onChange={onChange} />

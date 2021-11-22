@@ -566,10 +566,8 @@ const VotationList: React.FC<VotationListProps> = ({
         <Loading asOverlay text="Oppdaterer votering" />
       )}
       {ongoingVotation && navigateToOpenVotation && (
-        <>
-          <Heading as="h1" fontSize="1em">
-            {'Aktiv votering'}
-          </Heading>
+        <VStack alignItems="start" spacing="16px">
+          <Heading size="sm">{'Aktiv votering'}</Heading>
           <OpenVotation
             onClick={() => navigateToOpenVotation(ongoingVotation.id)}
             isAdmin={role === Role.Admin}
@@ -577,7 +575,7 @@ const VotationList: React.FC<VotationListProps> = ({
             index={ongoingVotation.index}
             isActive={true}
           />
-        </>
+        </VStack>
       )}
       {nextVotation && upcomingVotations && (
         <DragDropContext onDragEnd={onDragEnd}>
@@ -621,9 +619,7 @@ const VotationList: React.FC<VotationListProps> = ({
       )}
       {endedVotations && endedVotations.length > 0 && (
         <VStack spacing="16px" alignItems="start">
-          <Heading as="h1" fontSize="1em" mb="1.125em">
-            Avsluttede voteringer
-          </Heading>
+          <Heading size="sm">Avsluttede voteringer</Heading>
           <Accordion allowToggle>
             {endedVotations.map((votation) => (
               <EndedVotation

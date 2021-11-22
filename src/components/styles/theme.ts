@@ -1,7 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../activeVotation/alternative/Alternative';
 import { MeetingInformationFormConfig } from '../manageMeeting/MeetingInformationForm';
-import { darkblue, lightblue } from './colors';
+import { darkblue, darkgray, lightblue } from './colors';
 
 const theme = extendTheme({
   colors: {
@@ -50,6 +50,11 @@ const theme = extendTheme({
     Heading: {
       baseStyle: {
         color: darkblue,
+      },
+      variants: {
+        h1: {
+          fontSize: '1.5rem',
+        },
       },
     },
   },

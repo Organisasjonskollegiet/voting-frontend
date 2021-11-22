@@ -1,7 +1,7 @@
 import { Box, Heading, VStack, Text, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { StvRoundResult, Result } from '../../../__generated__/graphql-types';
-import AlternativesString from '../../common/AlternativesString';
+import { getAlternativesString } from '../utils';
 import ResultTableContainer from './ResultTableContainer';
 import TableColumnNames from './TableColumnNames';
 import TableRow from './TableRow';
@@ -15,7 +15,7 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
     return (
       <HStack>
         <Text>{alternatives.length > 1 ? `${prefix}: ` : `${prefix}e: `}</Text>
-        <AlternativesString alternatives={alternatives} />
+        <Heading size="sm">{getAlternativesString(alternatives)}</Heading>
       </HStack>
     );
   };
@@ -44,19 +44,19 @@ const StvResultTable: React.FC<StvResultTableProps> = ({ result }) => {
   return (
     <VStack w="100%" spacing="2rem" alignItems="start">
       <VStack w="100%" alignItems="start">
-        <Heading fontSize="18px" alignSelf="start">
+        <Heading size="md" alignSelf="start">
           Oversikt
         </Heading>
-        <Box>{`Stemmer som krevdes for å vinne: ${result?.quota}`}</Box>
-        <Box>{`Stemmeberettigede deltakere: ${result?.votingEligibleCount}`}</Box>
-        <Box>{`Avgitte stemmer: ${result?.voteCount}`}</Box>
-        {result?.blankVoteCount !== undefined && <Box>{`Blanke stemmer: ${result.blankVoteCount}`}</Box>}
+        <Text>{`Stemmer som krevdes for å vinne: ${result?.quota}`}</Text>
+        <Text>{`Stemmeberettigede deltakere: ${result?.votingEligibleCount}`}</Text>
+        <Text>{`Avgitte stemmer: ${result?.voteCount}`}</Text>
+        {result?.blankVoteCount !== undefined && <Text>{`Blanke stemmer: ${result.blankVoteCount}`}</Text>}
       </VStack>
       {result?.stvRoundResults?.map((round) => (
         <Box maxW="600px" w="100%" key={round.index}>
           <ResultTableContainer>
             <VStack w="100%" alignSelf="start" alignItems="start">
-              <Heading fontSize="18px" alignSelf="start">
+              <Heading size="md" alignSelf="start">
                 {`Runde ${round.index + 1}`}
               </Heading>
               {isLoserRemovedRandomly(round as StvRoundResult) && (

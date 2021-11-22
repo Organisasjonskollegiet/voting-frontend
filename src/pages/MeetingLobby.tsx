@@ -153,9 +153,7 @@ const MeetingLobby: React.FC = () => {
           ) : (
             <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
               <VStack alignItems="left">
-                <Heading sx={h1Style} as="h1">
-                  {data?.meetingById?.title}
-                </Heading>
+                <Heading size="lg">{data?.meetingById?.title}</Heading>
                 <VStack align="start">
                   <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
                   <VotationList

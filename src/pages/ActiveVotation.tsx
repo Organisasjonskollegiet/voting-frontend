@@ -397,12 +397,8 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
           <VStack alignItems="left" spacing="1rem">
             <VStack alignItems="left" spacing="0.5rem">
-              <Heading as="h1" style={subtitlesStyle}>
-                Votering {data.votationById.index + 1}
-              </Heading>
-              <Heading as="h1" sx={h1Style}>
-                {data.votationById.title}
-              </Heading>
+              <Heading size="sm">Votering {data.votationById.index + 1}</Heading>
+              <Heading size="lg">{data.votationById.title}</Heading>
             </VStack>
 
             <Text mt="1em">{data.votationById.description}</Text>
