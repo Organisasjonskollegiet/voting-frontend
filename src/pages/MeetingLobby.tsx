@@ -10,7 +10,6 @@ import {
   useParticipantUpdatedSubscription,
 } from '../__generated__/graphql-types';
 import Loading from '../components/common/Loading';
-import { h1Style } from '../components/styles/formStyles';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
 import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';

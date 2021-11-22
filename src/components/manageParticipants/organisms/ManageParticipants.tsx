@@ -3,7 +3,6 @@ import { useHistory } from 'react-router';
 import { VStack, Heading, Text, Center } from '@chakra-ui/react';
 import ManageMeetingController from '../../manageMeeting/ManageMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
-import { h1Style } from '../../styles/formStyles';
 import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../../__generated__/graphql-types';
 import Loading from '../../common/Loading';
 

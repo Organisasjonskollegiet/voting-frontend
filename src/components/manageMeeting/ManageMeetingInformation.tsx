@@ -2,7 +2,6 @@ import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm';
 import ManageMeetingController from './ManageMeetingController';
-import { h1Style } from '../styles/formStyles';
 import { MeetingWorking } from '../../types/types';
 
 interface IProps {

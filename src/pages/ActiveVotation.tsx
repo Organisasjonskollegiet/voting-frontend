@@ -21,13 +21,11 @@ import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chak
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import VotationResult from '../components/activeVotation/VotationResult';
-import { h1Style } from '../components/styles/formStyles';
 import VotationController from '../components/activeVotation/ActiveVotationController';
 import { centerContainer, outerContainer } from '../components/styles/containerStyles';
 import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/checkResults/CheckResults';
-import { subtitlesStyle } from '../components/styles/styles';
 import { MeetingContext } from './MeetingLobby';
 import { getCorrectVotationResult } from '../components/activeVotation/utils';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
