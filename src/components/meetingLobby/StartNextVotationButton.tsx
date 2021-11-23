@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useRef } from 'react';
-import { green } from '../styles/colors';
 
 interface StartNextVotationButtonProps {
   handleStartVotation: () => void;

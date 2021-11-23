@@ -7,7 +7,6 @@ import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
 import { h1Style } from '../styles/formStyles';
-import { green } from '../styles/colors';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import useScreenWidth from '../../hooks/ScreenWidth';
 
