@@ -1,7 +1,7 @@
-import { Box, Text, HStack } from '@chakra-ui/react';
+import { Box, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { collapsedStyle, highlightedStyle } from '../../styles/formStyles';
+import { collapsedStyle } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import { expandAndLift } from '../../styles/styles';
 import { DragHandleIcon } from '@chakra-ui/icons';
