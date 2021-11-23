@@ -54,7 +54,3 @@ export const checkboxStyle = {
 export const pointerStyle = {
   cursor: 'pointer',
 } as React.CSSProperties;
-
-export const h1Style = {
-  fontSize: '1.5em',
-};
