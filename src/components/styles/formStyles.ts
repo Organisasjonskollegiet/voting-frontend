@@ -1,15 +1,12 @@
 import React from 'react';
 
 export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-export const highlightedStyle = {
+
+export const labelStyle = {
   fontStyle: 'normal',
   fontSize: '1rem',
   fontWeight: 'bold',
   lineHeight: '150%',
-} as React.CSSProperties;
-
-export const labelStyle = {
-  ...highlightedStyle,
   marginBottom: '10px',
 } as React.CSSProperties;
 
