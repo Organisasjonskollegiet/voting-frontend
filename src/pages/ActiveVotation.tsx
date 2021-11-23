@@ -399,7 +399,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
               <Heading size="lg">{data.votationById.title}</Heading>
             </VStack>
 
-            <Text mt="1em">{data.votationById.description}</Text>
+            {data.votationById.description && <Text>{data.votationById.description}</Text>}
             {/* <VotationTypeAccordion
                 votationType={data.votationById.type}
                 majorityThreshold={data.votationById.majorityThreshold}
