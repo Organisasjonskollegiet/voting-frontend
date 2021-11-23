@@ -572,10 +572,8 @@ const VotationList: React.FC<VotationListProps> = ({
           </Heading>
           <OpenVotation
             onClick={() => navigateToOpenVotation(ongoingVotation.id)}
-            isAdmin={role === Role.Admin}
-            votationTitle={ongoingVotation.title}
+            title={ongoingVotation.title}
             index={ongoingVotation.index}
-            isActive={true}
           />
         </>
       )}
