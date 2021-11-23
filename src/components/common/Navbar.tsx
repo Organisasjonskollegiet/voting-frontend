@@ -2,15 +2,21 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Flex,
-  /*Avatar,*/ HStack,
+  HStack,
   IconButton,
   useDisclosure,
   Stack,
   Image,
   Button,
   Divider,
+  Link,
+  Avatar,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Text,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { darkblue } from '../styles/colors';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router';
@@ -34,7 +40,7 @@ const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link
 
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout } = useAuth0();
+  const { logout, user } = useAuth0();
   const history = useHistory();
 
   return (
@@ -58,18 +64,29 @@ const Navbar: React.FC = () => {
           ))}
         </HStack>
 
-        {/* <Box display={{ base: 'none', md: 'flex' }}> */}
-        {/* <Link to={links.get('Min profil') || ''}>
-            <Avatar size="sm" />
-          </Link> */}
-        <Button
+        <Box display={{ base: 'none', md: 'flex' }}>
+          <Popover>
+            <PopoverTrigger>
+              <Button rightIcon={<ChevronDownIcon />} bg="transparent" _hover={{ backgroundColor: 'transparent' }}>
+                <Avatar background={darkblue} size="sm" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent p="0.5rem">
+              <Text>{user?.email}</Text>
+              <Divider />
+              <Button p="0" w="fit-content" bg="transparent">
+                <Text> Logg ut</Text>
+              </Button>
+            </PopoverContent>
+          </Popover>
+          {/* <Button
           w="100px"
           onClick={() => logout({ returnTo: window.location.origin })}
           display={{ base: 'none', md: 'flex' }}
         >
           Logg ut
-        </Button>
-        {/* </Box> */}
+        </Button> */}
+        </Box>
 
         {/* Button to toggle hamburger menu */}
         <IconButton

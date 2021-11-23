@@ -32,7 +32,7 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
     <WrapStack
       breakpoint={breakpoint}
       bg="white"
-      zIndex="100"
+      zIndex="2"
       boxShadow={'0px 8px 10px rgba(0, 0, 0, 0.03)'}
       borderTop="1px solid rgba(0, 0, 0, 0.1)"
       w="100%"
