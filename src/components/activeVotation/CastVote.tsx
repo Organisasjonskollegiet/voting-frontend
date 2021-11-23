@@ -89,12 +89,10 @@ const CastVote: React.FC<CastVoteProps> = ({
           <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
           {!userHasVoted && isVotingEligible && !presentationMode && (
             <Button
-              bg={green}
-              color="white"
+              variant="green"
               w="200px"
               onClick={() => submitVote()}
               p="1.5em 4em"
-              borderRadius="16em"
               isDisabled={submitButtonDisabled}
             >
               Avgi stemme

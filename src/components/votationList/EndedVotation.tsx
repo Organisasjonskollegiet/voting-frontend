@@ -54,7 +54,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
         pr={role !== Role.Admin ? '1.5em' : '0'}
       >
         <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
-          <HStack spacing="8" opacity="0.6">
+          <HStack spacing="8" opacity="0.5">
             <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
             <Text>{votation.title}</Text>
           </HStack>
@@ -72,7 +72,11 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
             {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Avbrutt" />}
           </HStack>
         </HStack>
-        {role === Role.Admin && <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />}
+        {role === Role.Admin && (
+          <Box opacity="0.5" _hover={{ opacity: 1 }}>
+            <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />
+          </Box>
+        )}
       </HStack>
     </Box>
   );

@@ -45,7 +45,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
 
   return (
     <>
-      <Button onClick={openVotationIfNoChanges} w={'250px'} bg={green} color="white" borderRadius={'16em'}>
+      <Button onClick={openVotationIfNoChanges} w={'250px'} variant="green">
         Start neste votering
       </Button>
       <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>

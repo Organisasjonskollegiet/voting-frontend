@@ -1,7 +1,7 @@
 import React from 'react';
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Divider, HStack, VStack } from '@chakra-ui/react';
-import { offwhite } from '../styles/colors';
+import { lightblue, offwhite } from '../styles/colors';
 
 interface VotationListButtonRowProps {
   handleAddNewVotation: () => void;
@@ -30,20 +30,14 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
           <Button
             aria-label="Legg til votering"
             w={'200px'}
-            icon={<AddIcon w={3} h={3} />}
+            bg={lightblue}
+            leftIcon={<AddIcon w={3} h={3} />}
             borderRadius={'16em'}
             onClick={handleAddNewVotation}
           >
             Legg til votering
           </Button>
-          <Button
-            disabled={saveIsDisabled}
-            bg="gray.500"
-            color="white"
-            w={'200px'}
-            borderRadius={'16em'}
-            onClick={handleSave}
-          >
+          <Button disabled={saveIsDisabled} variant="dark" w={'200px'} onClick={handleSave}>
             Lagre
           </Button>
         </HStack>
