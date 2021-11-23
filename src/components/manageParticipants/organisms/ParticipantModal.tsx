@@ -27,7 +27,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
   return (
     <>
       <Button leftIcon={<img alt="Deltager" src={participantIcon} />} onClick={onOpen} w="fit-content" bg="transparent">
-        <Text fontWeight="normal" fontSize="15px" decoration="underline">
+        <Text fontWeight="normal" fontSize="md" decoration="underline">
           Administrer deltagere
         </Text>
       </Button>

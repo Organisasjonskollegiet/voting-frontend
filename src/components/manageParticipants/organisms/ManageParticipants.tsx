@@ -64,7 +64,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
     <>
       <VStack spacing="5" align="left">
         {!modalView && <Heading size="lg">Administrer deltagere</Heading>}
-        <Text fontSize="18px" mb={modalView ? '1.5em' : 0}>
+        <Text fontSize="lg" mb={modalView ? '1.5em' : 0}>
           Her kan du invitere deltagere og gi redigeringstilgang
         </Text>
       </VStack>

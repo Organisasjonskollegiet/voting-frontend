@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, HStack, Text, Tooltip } from '@chakra-ui/react';
-import { collapsedStyle, highlightedStyle } from '../styles/formStyles';
+import { collapsedStyle } from '../styles/formStyles';
 import { Votation } from '../../types/types';
 import { Role, VotationStatus } from '../../__generated__/graphql-types';
 import CustomTag from '../common/CustomTag';
@@ -57,7 +57,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
       >
         <HStack w="100%" justifyContent="space-between" bgColor="rgba(255, 255, 255, 0.5)">
           <HStack spacing="8" opacity="0.6">
-            <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
+            <Text fontSize="md" fontWeight="bold">{`${votation.index + 1}`}</Text>
             <Text>{votation.title}</Text>
           </HStack>
           <HStack ml="auto">

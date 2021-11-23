@@ -92,7 +92,7 @@ const Meeting: React.FC<
       </HStack>
       <VStack alignItems="start">
         <Heading size="lg">{title}</Heading>
-        <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
+        <Text fontSize="md">{formatMeetingTime(new Date(startTime))}</Text>
       </VStack>
       {isAdmin ? (
         <MeetingActionsWithPopover

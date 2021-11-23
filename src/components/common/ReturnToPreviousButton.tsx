@@ -11,7 +11,7 @@ const ReturnToPreviousButton: React.FC<ReturnToPreviousButtonProps> = ({ onClick
   return (
     <>
       <Button bg="transparent" w="fit-content" onClick={onClick} leftIcon={<ArrowBackIcon />}>
-        <Text fontWeight="normal" fontSize="16px" decoration="underline">
+        <Text fontWeight="normal" fontSize="md" decoration="underline">
           {text}
         </Text>
       </Button>
