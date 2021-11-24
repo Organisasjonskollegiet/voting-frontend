@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from '@chakra-ui/layout';
+import { Box, HStack } from '@chakra-ui/layout';
 import React from 'react';
 import { Role, VotationStatus } from '../../__generated__/graphql-types';
 import CustomTag from '../common/CustomTag';
