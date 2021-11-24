@@ -9,12 +9,12 @@ import {
   Image,
   Button,
   Divider,
-  Link,
   Avatar,
   Popover,
   PopoverTrigger,
   PopoverContent,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { darkblue } from '../styles/colors';
@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
   const history = useHistory();
 
   return (
-    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" zIndex="2" position="relative">
+    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
       <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
         <Box w="100px" justifyContent="start">
           <Image
@@ -71,21 +71,25 @@ const Navbar: React.FC = () => {
                 <Avatar background={darkblue} size="sm" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent p="0.5rem">
-              <Text>{user?.email}</Text>
-              <Divider />
-              <Button p="0" w="fit-content" bg="transparent">
-                <Text> Logg ut</Text>
-              </Button>
+            <PopoverContent p="1rem">
+              <VStack alignItems="start">
+                <Text opacity="0.5">{user?.email}</Text>
+                <Divider />
+                <Button
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                  _hover={{ bg: 'transparent' }}
+                  w="fit-content"
+                  h="fit-content"
+                  p="0"
+                  bg="transparent"
+                >
+                  <Text marginX="-16px" fontWeight="normal">
+                    Logg ut
+                  </Text>
+                </Button>
+              </VStack>
             </PopoverContent>
           </Popover>
-          {/* <Button
-          w="100px"
-          onClick={() => logout({ returnTo: window.location.origin })}
-          display={{ base: 'none', md: 'flex' }}
-        >
-          Logg ut
-        </Button> */}
         </Box>
 
         {/* Button to toggle hamburger menu */}
