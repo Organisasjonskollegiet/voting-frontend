@@ -45,12 +45,12 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
       <Droppable droppableId={droppableId ?? 'votation-list'} isDropDisabled={!isAdmin}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {votations.map((votation: Votation, index: number) => (
+            {votations.map((votation: Votation) => (
               <VotationForm
                 toggleCollapsedVotation={() => setActiveVotationId(votation.id)}
                 isActive={votation.id === activeVotationId}
                 votation={votation}
-                index={index}
+                index={votation.index}
                 key={votation.id}
                 updateVotation={updateVotation}
                 deleteVotation={handleDeleteVotation}
