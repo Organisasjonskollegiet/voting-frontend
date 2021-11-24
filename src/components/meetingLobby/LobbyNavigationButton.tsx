@@ -14,7 +14,12 @@ const LobbyNavigationButton: React.FC<LobbyNavigationButtonProps> = ({ selected,
       <Button _hover={{ bg: 'transparent' }} bg="transparent" disabled={isDisabled} onClick={onClick} fontSize="12px">
         {text}
       </Button>
-      {selected && <Box h="4px" w="100%" borderBottom="4px solid #43679C" borderRadius="10px" />}
+      <Box
+        h="4px"
+        w="100%"
+        borderBottom={`4px solid ${selected ? '#43679C' : 'rgba(0, 0, 0, 0)'}`}
+        borderRadius="10px"
+      />
     </VStack>
   );
 };
