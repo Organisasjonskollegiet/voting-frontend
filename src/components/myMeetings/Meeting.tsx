@@ -20,7 +20,7 @@ interface ParticipantResult {
 export interface MeetingProps {
   id: string;
   title: string;
-  description?: string | null;
+  description: string | undefined;
   startTime: string;
   organization: string;
   participants: ParticipantResult[];
@@ -30,14 +30,14 @@ const styles = {
   width: '100%',
   borderRadius: '4px',
   boxShadow,
-  padding: '1em 2em',
+  padding: '2em',
   overflow: 'hidden',
   ...transition,
 } as React.CSSProperties;
 
 const Meeting: React.FC<
   MeetingProps & { handleDeleteMeeting: (id: string) => void; meetingStatus: 'open' | 'upcoming' | 'ended' }
-> = ({ id, title, startTime, participants, handleDeleteMeeting, meetingStatus }) => {
+> = ({ id, title, startTime, participants, handleDeleteMeeting, meetingStatus, description }) => {
   const { user } = useAuth0();
   const history = useHistory();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -94,17 +94,20 @@ const Meeting: React.FC<
         <Heading as="h2" fontSize="1.5em">
           {title}
         </Heading>
-        <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
+        <Box minH="2rem">{description && <Text>{description}</Text>}</Box>
       </VStack>
-      {isAdmin ? (
-        <MeetingActionsWithPopover
-          meetingStatus={meetingStatus}
-          onEditClick={() => history.push(`/meeting/${id}/edit`)}
-          onDeleteClick={() => setDialogIsOpen(true)}
-        />
-      ) : (
-        <Box h="1rem" />
-      )}
+      <HStack w="100%" justifyContent="space-between">
+        <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
+        {isAdmin ? (
+          <MeetingActionsWithPopover
+            meetingStatus={meetingStatus}
+            onEditClick={() => history.push(`/meeting/${id}/edit`)}
+            onDeleteClick={() => setDialogIsOpen(true)}
+          />
+        ) : (
+          <Box h="1rem" />
+        )}
+      </HStack>
       <CustomAlertDialog
         dialogIsOpen={dialogIsOpen}
         handleConfirm={() => {
