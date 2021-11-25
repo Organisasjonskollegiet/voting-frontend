@@ -7,7 +7,6 @@ import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
 import WrapStack from '../common/WrapStack';
 import { h1Style } from '../styles/formStyles';
-import { green } from '../styles/colors';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import useScreenWidth from '../../hooks/ScreenWidth';
 
@@ -89,12 +88,10 @@ const CastVote: React.FC<CastVoteProps> = ({
           <VoteCount voteCount={voteCount} votingEligibleCount={votingEligibleCount} />
           {!userHasVoted && isVotingEligible && !presentationMode && (
             <Button
-              bg={green()}
-              color="white"
+              variant="green"
               w="200px"
               onClick={() => submitVote()}
               p="1.5em 4em"
-              borderRadius="16em"
               isDisabled={submitButtonDisabled}
             >
               Avgi stemme
