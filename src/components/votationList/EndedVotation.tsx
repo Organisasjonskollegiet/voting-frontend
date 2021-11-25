@@ -59,7 +59,7 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
           <CollapsedVotationRow title={votation.title} index={votation.index} />
           <HStack ml="auto">
             {votation.status === VotationStatus.PublishedResult && (
-              <HStack opacity="0.5">
+              <HStack>
                 <img alt="hammer" style={{ width: '24px', padding: '1em 0' }} src={Hammer} />
                 <Tooltip label={winnerString} isDisabled={!isOverflown}>
                   <Text isTruncated ref={ref} maxWidth={screenWidth > 500 ? '200px' : `${screenWidth - 300}px`}>
@@ -71,7 +71,11 @@ const EndedVotation: React.FC<EndedVotationProps> = ({ votation, duplicateVotati
             {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Avbrutt" />}
           </HStack>
         </HStack>
-        {role === Role.Admin && <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />}
+        {role === Role.Admin && (
+          <Box opacity="0.5" _hover={{ opacity: 1 }}>
+            <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />
+          </Box>
+        )}
       </HStack>
     </Box>
   );

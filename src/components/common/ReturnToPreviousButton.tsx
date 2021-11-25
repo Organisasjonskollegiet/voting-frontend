@@ -9,13 +9,11 @@ interface ReturnToPreviousButtonProps {
 
 const ReturnToPreviousButton: React.FC<ReturnToPreviousButtonProps> = ({ onClick, text }) => {
   return (
-    <>
-      <Button bg="transparent" w="fit-content" onClick={onClick} leftIcon={<ArrowBackIcon />}>
-        <Text fontWeight="normal" fontSize="md" decoration="underline">
-          {text}
-        </Text>
-      </Button>
-    </>
+    <Button w="fit-content" onClick={onClick} leftIcon={<ArrowBackIcon />}>
+      <Text fontWeight="normal" fontSize="md" decoration="underline">
+        {text}
+      </Text>
+    </Button>
   );
 };
 
