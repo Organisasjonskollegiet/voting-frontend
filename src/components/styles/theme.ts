@@ -26,7 +26,7 @@ const theme = extendTheme({
         p: '1.5em 4em',
       },
       variants: {
-        solid: {
+        standard: {
           bg: 'transparent',
         },
         link: {

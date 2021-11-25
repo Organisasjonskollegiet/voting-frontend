@@ -11,7 +11,7 @@ interface LobbyNavigationButtonProps {
 const LobbyNavigationButton: React.FC<LobbyNavigationButtonProps> = ({ selected, text, isDisabled, onClick }) => {
   return (
     <VStack spacing="0">
-      <Button _hover={{ bg: 'transparent' }} disabled={isDisabled} onClick={onClick} fontSize="12px">
+      <Button variant="standard" _hover={{ bg: 'transparent' }} disabled={isDisabled} onClick={onClick} fontSize="12px">
         {text}
       </Button>
       <Box

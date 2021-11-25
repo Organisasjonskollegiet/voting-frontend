@@ -9,7 +9,7 @@ interface ReturnToPreviousButtonProps {
 
 const ReturnToPreviousButton: React.FC<ReturnToPreviousButtonProps> = ({ onClick, text }) => {
   return (
-    <Button w="fit-content" onClick={onClick} leftIcon={<ArrowBackIcon />}>
+    <Button variant="standard" w="fit-content" onClick={onClick} leftIcon={<ArrowBackIcon />}>
       <Text fontWeight="normal" fontSize="md" decoration="underline">
         {text}
       </Text>

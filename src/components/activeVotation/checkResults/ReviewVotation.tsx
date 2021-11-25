@@ -29,6 +29,7 @@ const ReviewVotation: React.FC<ReviewVotationProps> = ({ handleClick, choice }) 
           </Text>
         </Button>
         <Button
+          variant="standard"
           leftIcon={<CheckIcon color="green" />}
           onClick={() => handleClick(true)}
           _focus={{ ...(choice === true && activeButton) }}

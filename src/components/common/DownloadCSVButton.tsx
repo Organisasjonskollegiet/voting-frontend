@@ -27,7 +27,7 @@ const DownloadCSVButton: React.FC<DownloadCSVButtonProps> = ({ getContent }) => 
   };
 
   return (
-    <Button onClick={saveResult} aria-label="Last ned" leftIcon={<DownloadIcon />}>
+    <Button variant="standard" onClick={saveResult} aria-label="Last ned" leftIcon={<DownloadIcon />}>
       Last ned resultat
     </Button>
   );
