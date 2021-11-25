@@ -117,7 +117,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
         handleCancel={() => setDialogOpen(false)}
         handleConfirm={handleConfirm}
         type={getDialogType()}
-        confirmColor={green}
+        confirmColor={green()}
       />
     </WrapStack>
   );

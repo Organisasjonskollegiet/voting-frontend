@@ -54,7 +54,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({
               Du har ulagrede endringer
             </AlertDialogHeader>
 
-            <AlertDialogBody>Endringene dine vil bli forkastet om du starter votering uten å lagre</AlertDialogBody>
+            <AlertDialogBody>Endringene din vil bli forkastet om du starter votering uten å lagre</AlertDialogBody>
             <AlertDialogFooter justifyContent="center">
               <VStack alignItems="left" spacing="3">
                 <Button colorScheme={'green'} onClick={() => saveBeforeStartVotation(true)} minW="max-content">

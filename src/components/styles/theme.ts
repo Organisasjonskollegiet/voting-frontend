@@ -41,7 +41,7 @@ const theme = extendTheme({
           },
         },
         green: {
-          bg: green,
+          bg: green(),
           color: 'white',
           borderRadius: '16rem',
         },
