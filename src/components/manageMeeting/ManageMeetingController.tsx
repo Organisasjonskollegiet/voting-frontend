@@ -17,6 +17,7 @@ const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev,
         <Grid templateColumns="repeat(3, 1fr)" gap={6}>
           {showPrev ? (
             <Button
+              variant="standard"
               leftIcon={<img alt="previous" src={ArrowLeft} />}
               maxWidth="100px"
               onClick={() => handleNavigation(activeTab - 1)}

@@ -74,13 +74,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         (isStv ? <StvResultTable result={result} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
       <HStack w="100%" justifyContent="space-between">
-        <Button
-          p="1.5em 4em"
-          bg="transparent"
-          borderRadius="16em"
-          onClick={backToVotationList}
-          leftIcon={<ArrowBackIcon />}
-        >
+        <Button variant="standard" onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}

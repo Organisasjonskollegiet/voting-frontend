@@ -76,6 +76,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
     <WrapStack breakpoint={550} w="100%" justifyContent="space-between">
       {role === Role.Admin && (
         <Button
+          variant="standard"
           p="1.5em 4em"
           borderRadius="16em"
           onClick={() => setInvalidateVotationDialogOpen(true)}
@@ -93,13 +94,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
         </FormControl>
       )}
       {role === Role.Admin && (
-        <Button
-          w="fit-content"
-          onClick={() => setDialogOpen(true)}
-          p="1.5em 4em"
-          borderRadius="16em"
-          rightIcon={<ArrowForwardIcon />}
-        >
+        <Button variant="standard" w="fit-content" onClick={() => setDialogOpen(true)} rightIcon={<ArrowForwardIcon />}>
           <Text justifyContent="end" mt="0.25rem">
             {getText()}
           </Text>

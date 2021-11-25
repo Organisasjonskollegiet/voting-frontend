@@ -20,6 +20,7 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
       <Popover placement="top-end" isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <PopoverTrigger>
           <Button
+            variant="standard"
             h="1em"
             fontSize="0.75em"
             marginRight="-10px"
@@ -36,6 +37,7 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
         <PopoverContent w="fit-content">
           {meetingStatus !== 'ended' && (
             <Button
+              variant="standard"
               onClick={(e) => {
                 e.stopPropagation();
                 onEditClick();
@@ -47,6 +49,7 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
             </Button>
           )}
           <Button
+            variant="standard"
             onClick={(e) => {
               e.stopPropagation();
               onDeleteClick();
