@@ -22,6 +22,7 @@ import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Logo from '../../static/logo.svg';
 import { useAuth0 } from '@auth0/auth0-react';
+import { boxShadow } from '../styles/formStyles';
 
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
@@ -71,7 +72,7 @@ const Navbar: React.FC = () => {
                 <Avatar background={darkblue} size="sm" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent p="1rem">
+            <PopoverContent boxShadow={boxShadow} marginX="1rem" _focus={{ border: 'none' }} p="1rem">
               <VStack alignItems="start">
                 <Text opacity="0.5">{user?.email}</Text>
                 <Divider />
