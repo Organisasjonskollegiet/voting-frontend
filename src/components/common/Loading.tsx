@@ -19,12 +19,12 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
     justifyContent: 'center',
     left: '0',
     top: '0',
-    backgroundColor: 'rgba(255, 255, 255, 0.4);',
     zIndex: 10,
     alignItems: 'center',
   } as React.CSSProperties;
 
   const overlaySpinnerStyle = {
+    backgroundColor: 'rgba(255, 255, 255, 0.4);',
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -32,8 +32,9 @@ const Loading: React.FC<LoadingProps> = ({ text, asOverlay }) => {
 
   const fixedStyle = {
     position: 'fixed',
-    height: '100vh',
-    width: '100vw',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
   } as React.CSSProperties;
 
   return (
