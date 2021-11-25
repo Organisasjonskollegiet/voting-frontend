@@ -23,6 +23,7 @@ export type MeetingContextState = {
   meetingId: string;
   presentationMode: boolean;
   isVotingEligible: boolean;
+  numberOfUpcomingVotations: number | null;
 };
 
 const contextDefualtValues: MeetingContextState = {
@@ -30,6 +31,7 @@ const contextDefualtValues: MeetingContextState = {
   meetingId: '',
   presentationMode: false,
   isVotingEligible: false,
+  numberOfUpcomingVotations: 0,
 };
 
 export enum MeetingLocation {
@@ -51,9 +53,13 @@ const MeetingLobby: React.FC = () => {
   const [location, setLocation] = useState<MeetingLocation>(MeetingLocation.LOBBY);
   const [isVotingEligible, setIsVotingEligible] = useState(false);
 
+  const [numberOfUpcomingVotations, setNumberOfUpcomingVotations] = useState<number | null>(null);
+
   const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
-  const [openVotation, setOpenVotation] = useState<string | null>(null);
+  const [openVotation, setOpenVotation] = useState<string | null>();
+  // used to avoid immediately going back to open votation after going back to lobby
+  const [lastOpenVotation, setLastOpenVotation] = useState<string | null>();
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
     variables: {
       meetingId,
@@ -88,22 +94,39 @@ const MeetingLobby: React.FC = () => {
     if (openVotation) setLocation(MeetingLocation.ACTIVEVOTATION);
   }, []);
 
-  const handleOpenVotation = useCallback((openVotation: string) => {
-    setOpenVotation(openVotation);
-    setLocation(MeetingLocation.ACTIVEVOTATION);
-  }, []);
+  const handleOpenVotation = useCallback(
+    (newOpenVotation: string) => {
+      setLastOpenVotation(openVotation);
+      setOpenVotation(newOpenVotation);
+      setLocation(MeetingLocation.ACTIVEVOTATION);
+    },
+    [openVotation]
+  );
 
   // handle votation being open initially
   useEffect(() => {
-    if (!data?.getOpenVotation) return;
+    if (!data?.getOpenVotation || openVotation !== undefined) return;
     handleOpenVotation(data.getOpenVotation);
-  }, [data?.getOpenVotation, role, handleOpenVotation]);
+  }, [data?.getOpenVotation, role, handleOpenVotation, openVotation]);
+
+  // set initial number of upcoming votations
+  useEffect(() => {
+    if (!data?.numberOfUpcomingVotations || numberOfUpcomingVotations !== null) return;
+    setNumberOfUpcomingVotations(data.numberOfUpcomingVotations);
+  }, [data, numberOfUpcomingVotations]);
 
   // handle votation opening
   useEffect(() => {
-    if (!votationOpened?.votationOpenedForMeeting) return;
+    if (
+      !votationOpened?.votationOpenedForMeeting ||
+      numberOfUpcomingVotations === null ||
+      openVotation === votationOpened.votationOpenedForMeeting ||
+      lastOpenVotation === votationOpened.votationOpenedForMeeting
+    )
+      return;
+    setNumberOfUpcomingVotations(numberOfUpcomingVotations - 1);
     handleOpenVotation(votationOpened.votationOpenedForMeeting);
-  }, [votationOpened, handleOpenVotation]);
+  }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation, lastOpenVotation]);
 
   const backToMyMeetings = () => {
     history.push('/');
@@ -111,6 +134,7 @@ const MeetingLobby: React.FC = () => {
 
   const returnToVotationList = (status: VotationStatus) => {
     if (status !== VotationStatus.Open && status !== VotationStatus.CheckingResult) {
+      setLastOpenVotation(openVotation);
       setOpenVotation(null);
     }
     setLocation(MeetingLocation.LOBBY);
@@ -135,6 +159,7 @@ const MeetingLobby: React.FC = () => {
         meetingId,
         presentationMode,
         isVotingEligible,
+        numberOfUpcomingVotations,
       }}
     >
       <PageContainer>
@@ -156,6 +181,7 @@ const MeetingLobby: React.FC = () => {
                 <VStack align="start">
                   <Text mb="1.125em">Når en avstemning åpner, vil du bli tatt direkte til den.</Text>
                   <VotationList
+                    setNumberOfUpcomingVotations={setNumberOfUpcomingVotations}
                     navigateToOpenVotation={navigateToOpenVotation}
                     role={role}
                     isMeetingLobby={true}

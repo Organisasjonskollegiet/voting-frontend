@@ -108,7 +108,10 @@ export type Mutation = {
   updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
   /** Update votations belonging to a meeting. */
   updateVotations?: Maybe<Array<Maybe<Votation>>>;
-  updateVotationStatus?: Maybe<UpdateVotationStatusResult>;
+  /** Start the next votation in line for a meeting. */
+  startNextVotation?: Maybe<OpenVotationResult>;
+  /** Update status of a votation, to anything other than OPEN. */
+  updateVotationStatus?: Maybe<Votation>;
   deleteVotation?: Maybe<Scalars['String']>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
   castStvVote?: Maybe<Scalars['String']>;
@@ -143,6 +146,11 @@ export type MutationUpdateVotationIndexesArgs = {
 export type MutationUpdateVotationsArgs = {
   meetingId: Scalars['String'];
   votations: Array<UpdateVotationInput>;
+};
+
+
+export type MutationStartNextVotationArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -230,6 +238,19 @@ export type NoReview = {
   message: Scalars['String'];
 };
 
+export type NoUpcomingVotations = {
+  __typename?: 'NoUpcomingVotations';
+  message: Scalars['String'];
+};
+
+export type OpenVotationResult = OpenedVotation | MaxOneOpenVotationError | NoUpcomingVotations | VotationHasNoAlternatives;
+
+export type OpenedVotation = {
+  __typename?: 'OpenedVotation';
+  votationId: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type OwnerCannotBeRemovedFromParticipantError = {
   __typename?: 'OwnerCannotBeRemovedFromParticipantError';
   message: Scalars['String'];
@@ -284,6 +305,8 @@ export type Query = {
   meetingById?: Maybe<Meeting>;
   /** Return relevant information about invites and participants connected to meeting */
   participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
+  /** Get number of upcoming votations for a meeting. */
+  numberOfUpcomingVotations?: Maybe<Scalars['Int']>;
   /** Return participant belonging to the user for the meeting specified. */
   myParticipant?: Maybe<ParticipantOrInvite>;
 };
@@ -345,6 +368,11 @@ export type QueryMeetingByIdArgs = {
 
 
 export type QueryParticipantsArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryNumberOfUpcomingVotationsArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -491,8 +519,6 @@ export type UpdateVotationInput = {
   alternatives?: Maybe<Array<UpdateAlternativeInput>>;
 };
 
-export type UpdateVotationStatusResult = Votation | MaxOneOpenVotationError;
-
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
@@ -520,6 +546,11 @@ export type Votation = {
   meetingId: Scalars['String'];
   hasVoted?: Maybe<Array<Maybe<Scalars['String']>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
+};
+
+export type VotationHasNoAlternatives = {
+  __typename?: 'VotationHasNoAlternatives';
+  message: Scalars['String'];
 };
 
 /** The results of a votation */
@@ -701,6 +732,28 @@ export type UpdateVotationIndexesMutation = (
   )>>> }
 );
 
+export type StartNextVotationMutationVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type StartNextVotationMutation = (
+  { __typename?: 'Mutation' }
+  & { startNextVotation?: Maybe<(
+    { __typename: 'OpenedVotation' }
+    & Pick<OpenedVotation, 'votationId' | 'title'>
+  ) | (
+    { __typename: 'MaxOneOpenVotationError' }
+    & Pick<MaxOneOpenVotationError, 'message'>
+  ) | (
+    { __typename: 'NoUpcomingVotations' }
+    & Pick<NoUpcomingVotations, 'message'>
+  ) | (
+    { __typename: 'VotationHasNoAlternatives' }
+    & Pick<VotationHasNoAlternatives, 'message'>
+  )> }
+);
+
 export type UpdateVotationsMutationVariables = Exact<{
   votations: Array<UpdateVotationInput> | UpdateVotationInput;
   meetingId: Scalars['String'];
@@ -785,11 +838,8 @@ export type UpdateVotationStatusMutationVariables = Exact<{
 export type UpdateVotationStatusMutation = (
   { __typename?: 'Mutation' }
   & { updateVotationStatus?: Maybe<(
-    { __typename: 'Votation' }
+    { __typename?: 'Votation' }
     & Pick<Votation, 'title' | 'status'>
-  ) | (
-    { __typename: 'MaxOneOpenVotationError' }
-    & Pick<MaxOneOpenVotationError, 'message'>
   )> }
 );
 
@@ -934,7 +984,7 @@ export type GetMeetingForLobbyQueryVariables = Exact<{
 
 export type GetMeetingForLobbyQuery = (
   { __typename?: 'Query' }
-  & Pick<Query, 'getOpenVotation'>
+  & Pick<Query, 'getOpenVotation' | 'numberOfUpcomingVotations'>
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id' | 'title'>
@@ -1474,6 +1524,52 @@ export function useUpdateVotationIndexesMutation(baseOptions?: Apollo.MutationHo
 export type UpdateVotationIndexesMutationHookResult = ReturnType<typeof useUpdateVotationIndexesMutation>;
 export type UpdateVotationIndexesMutationResult = Apollo.MutationResult<UpdateVotationIndexesMutation>;
 export type UpdateVotationIndexesMutationOptions = Apollo.BaseMutationOptions<UpdateVotationIndexesMutation, UpdateVotationIndexesMutationVariables>;
+export const StartNextVotationDocument = gql`
+    mutation StartNextVotation($meetingId: String!) {
+  startNextVotation(meetingId: $meetingId) {
+    __typename
+    ... on MaxOneOpenVotationError {
+      message
+    }
+    ... on NoUpcomingVotations {
+      message
+    }
+    ... on VotationHasNoAlternatives {
+      message
+    }
+    ... on OpenedVotation {
+      votationId
+      title
+    }
+  }
+}
+    `;
+export type StartNextVotationMutationFn = Apollo.MutationFunction<StartNextVotationMutation, StartNextVotationMutationVariables>;
+
+/**
+ * __useStartNextVotationMutation__
+ *
+ * To run a mutation, you first call `useStartNextVotationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useStartNextVotationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [startNextVotationMutation, { data, loading, error }] = useStartNextVotationMutation({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useStartNextVotationMutation(baseOptions?: Apollo.MutationHookOptions<StartNextVotationMutation, StartNextVotationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<StartNextVotationMutation, StartNextVotationMutationVariables>(StartNextVotationDocument, options);
+      }
+export type StartNextVotationMutationHookResult = ReturnType<typeof useStartNextVotationMutation>;
+export type StartNextVotationMutationResult = Apollo.MutationResult<StartNextVotationMutation>;
+export type StartNextVotationMutationOptions = Apollo.BaseMutationOptions<StartNextVotationMutation, StartNextVotationMutationVariables>;
 export const UpdateVotationsDocument = gql`
     mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String!) {
   updateVotations(votations: $votations, meetingId: $meetingId) {
@@ -1685,14 +1781,8 @@ export type CastStvVoteMutationOptions = Apollo.BaseMutationOptions<CastStvVoteM
 export const UpdateVotationStatusDocument = gql`
     mutation UpdateVotationStatus($votationId: String!, $status: VotationStatus!) {
   updateVotationStatus(votationId: $votationId, status: $status) {
-    __typename
-    ... on Votation {
-      title
-      status
-    }
-    ... on MaxOneOpenVotationError {
-      message
-    }
+    title
+    status
   }
 }
     `;
@@ -2027,6 +2117,7 @@ export const GetMeetingForLobbyDocument = gql`
     }
   }
   getOpenVotation(meetingId: $meetingId)
+  numberOfUpcomingVotations(meetingId: $meetingId)
 }
     `;
 

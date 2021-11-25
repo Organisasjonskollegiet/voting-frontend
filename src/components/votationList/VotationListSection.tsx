@@ -14,7 +14,6 @@ export interface VotationListSectionProps {
   handleDeleteVotation: (votation: Votation) => void;
   handleDeleteAlternative: (alternativeId: string, votationId: string) => void;
   duplicateVotation: (votation: Votation) => void;
-  handleStartVotation: () => void;
   checkIfAnyChanges: () => boolean;
   handleSaveChanges: () => Promise<void>;
   showStartNextButton: boolean;
@@ -31,7 +30,6 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
   handleDeleteVotation,
   handleDeleteAlternative,
   duplicateVotation,
-  handleStartVotation,
   checkIfAnyChanges,
   handleSaveChanges,
   showStartNextButton,
@@ -64,11 +62,7 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
         )}
       </Droppable>
       {showStartNextButton && votations.length > 0 && votations[0].existsInDb && (
-        <StartNextVotationButton
-          handleStartVotation={handleStartVotation}
-          checkIfAnyChanges={checkIfAnyChanges}
-          handleSaveChanges={handleSaveChanges}
-        />
+        <StartNextVotationButton checkIfAnyChanges={checkIfAnyChanges} handleSaveChanges={handleSaveChanges} />
       )}
     </VStack>
   );

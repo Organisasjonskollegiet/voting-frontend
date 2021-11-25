@@ -9,7 +9,6 @@ import {
   useDeleteVotationMutation,
   useVotationDeletedSubscription,
   useUpdateVotationsMutation,
-  useUpdateVotationStatusMutation,
   useVotationsByMeetingIdLazyQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
@@ -39,6 +38,7 @@ interface VotationListProps {
   role: Role | undefined;
   hideStartNextButton?: boolean;
   navigateToOpenVotation?: (openVotation: string | null) => void;
+  setNumberOfUpcomingVotations?: (upcomingVotations: number) => void;
 }
 
 const VotationList: React.FC<VotationListProps> = ({
@@ -48,6 +48,7 @@ const VotationList: React.FC<VotationListProps> = ({
   role,
   hideStartNextButton,
   navigateToOpenVotation,
+  setNumberOfUpcomingVotations,
 }) => {
   const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
     variables: {
@@ -58,7 +59,6 @@ const VotationList: React.FC<VotationListProps> = ({
 
   const [updateVotations, updateVotationsResult] = useUpdateVotationsMutation();
   const [updateVotationIndexes] = useUpdateVotationIndexesMutation();
-  const [updateVotationStatus, updateVotationStatusResult] = useUpdateVotationStatusMutation();
   const [createVotations, createVotationsResult] = useCreateVotationsMutation();
   const [deleteVotation] = useDeleteVotationMutation();
   const [ongoingVotation, setOngoingVotation] = useState<Votation>();
@@ -179,34 +179,6 @@ const VotationList: React.FC<VotationListProps> = ({
     }
   }, [votationsMayExist, getVotationsByMeetingId]);
 
-  useEffect(() => {
-    if (updateVotationStatusResult.data?.updateVotationStatus) {
-      let responseTitle,
-        responseDescription,
-        responseStatus: 'success' | 'error' = 'error';
-
-      if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'Votation') {
-        responseTitle = 'Voteringen ble åpnet.';
-        responseStatus = 'success';
-      } else if (updateVotationStatusResult.data?.updateVotationStatus.__typename === 'MaxOneOpenVotationError') {
-        responseTitle = 'Kunne ikke åpne votering.';
-        responseDescription = updateVotationStatusResult.data?.updateVotationStatus.message;
-      }
-
-      const toastId = 'votationOpenedResponse';
-      if (!toast.isActive(toastId)) {
-        toast({
-          id: toastId,
-          title: responseTitle,
-          description: responseDescription,
-          status: responseStatus,
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    }
-  }, [updateVotationStatusResult.data?.updateVotationStatus, toast]);
-
   /**
    * @returns the index of what is going to be the nextVotation
    */
@@ -251,6 +223,7 @@ const VotationList: React.FC<VotationListProps> = ({
   const updateVotationsAfterDeletion = useCallback(
     async (votations: Votation[], deletedVotation: string, shouldUpdateIndexes: boolean) => {
       const indexOfNextVotation = getIndexOfNextVotation();
+      // remaining upcoming votations
       const remainingVotations = votations
         .filter((v) => v.id !== deletedVotation)
         .sort((a, b) => a.index - b.index)
@@ -270,9 +243,10 @@ const VotationList: React.FC<VotationListProps> = ({
           : null
       );
       setUpcomingVotations(remainingVotations.length > 1 ? remainingVotations.slice(1) : []);
+      if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(remainingVotations.length);
       setActiveVotationId('');
     },
-    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role]
+    [endedVotations, getIndexOfNextVotation, ongoingVotation, updateIndexes, role, setNumberOfUpcomingVotations]
   );
 
   useEffect(() => {
@@ -310,6 +284,7 @@ const VotationList: React.FC<VotationListProps> = ({
         setOngoingVotation(ongoingVotation);
         setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
         setUpcomingVotations(upcomingVotations.slice(1));
+        if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(upcomingVotations.length);
         setEndedVotations(
           sortedVotations.filter(
             (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
@@ -322,7 +297,16 @@ const VotationList: React.FC<VotationListProps> = ({
         console.log(error);
       }
     }
-  }, [data, formatVotations, isMeetingLobby, ongoingVotation, nextVotation, upcomingVotations, endedVotations]);
+  }, [
+    data,
+    formatVotations,
+    isMeetingLobby,
+    ongoingVotation,
+    nextVotation,
+    upcomingVotations,
+    endedVotations,
+    setNumberOfUpcomingVotations,
+  ]);
 
   async function onDragEnd(result: DropResult) {
     if (!result.destination) return;
@@ -517,7 +501,9 @@ const VotationList: React.FC<VotationListProps> = ({
     });
     const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
     const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
+    // upcoming votations sorted
     const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
+    if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(sortedNewVotations.length);
     if (sortedNewVotations.length > 0) {
       setNextVotation(sortedNewVotations[0]);
       setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
@@ -529,21 +515,6 @@ const VotationList: React.FC<VotationListProps> = ({
     if (nextVotation) votations.push(nextVotation);
     if (upcomingVotations) votations.push(...upcomingVotations);
     return votations.filter((v) => v.title !== '' && (!v.existsInDb || v.isEdited)).length > 0;
-  };
-
-  const startVotation = () => {
-    if (!nextVotation) return;
-    if (nextVotation.alternatives.filter((a) => a.existsInDb || a.text !== '').length === 0) {
-      toast({
-        title: 'Kunne ikke åpne votering.',
-        description: 'Kan ikke åpne voteringen da den ikke har noen alternativer.',
-        status: 'error',
-        duration: 4000,
-        isClosable: true,
-      });
-    } else {
-      updateVotationStatus({ variables: { votationId: nextVotation.id, status: VotationStatus.Open } });
-    }
   };
 
   if (loading) {
@@ -587,7 +558,6 @@ const VotationList: React.FC<VotationListProps> = ({
             handleDeleteVotation={handleDeleteVotation}
             handleDeleteAlternative={handleDeleteAlternative}
             duplicateVotation={duplicateVotation}
-            handleStartVotation={startVotation}
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
             showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}

@@ -11,6 +11,7 @@ import Winners from '../../static/winners.svg';
 import NoWinner from '../../static/noWinner.svg';
 import { boxShadow } from '../styles/formStyles';
 import { MeetingContext } from '../../pages/MeetingLobby';
+import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
 import WrapStack from '../common/WrapStack';
 import useScreenWidth from '../../hooks/ScreenWidth';
 import { getAlternativesString } from './utils';
@@ -26,7 +27,8 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
   const screenWidth = useScreenWidth();
   const pageBreapoint = 850;
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
-  const { role, presentationMode } = useContext(MeetingContext);
+  const { role, presentationMode, numberOfUpcomingVotations } = useContext(MeetingContext);
+
   if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
   return (
@@ -82,6 +84,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
+        {numberOfUpcomingVotations && numberOfUpcomingVotations > 0 && <StartNextVotationButton />}
       </HStack>
     </VStack>
   );

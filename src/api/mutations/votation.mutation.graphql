@@ -26,6 +26,25 @@ mutation UpdateVotationIndexes($votations: [UpdateVotationIndexInput!]!, $meetin
   }
 }
 
+mutation StartNextVotation($meetingId: String!) {
+  startNextVotation(meetingId: $meetingId) {
+    __typename
+    ... on MaxOneOpenVotationError {
+      message
+    }
+    ... on NoUpcomingVotations {
+      message
+    }
+    ... on VotationHasNoAlternatives {
+      message
+    }
+    ... on OpenedVotation {
+      votationId
+      title
+    }
+  }
+}
+
 mutation UpdateVotations($votations: [UpdateVotationInput!]!, $meetingId: String!) {
   updateVotations(votations: $votations, meetingId: $meetingId) {
     id
@@ -72,14 +91,8 @@ mutation CastStvVote($votationId: String!, $alternatives: [StvVoteAlternativeInp
 
 mutation UpdateVotationStatus($votationId: String!, $status: VotationStatus!) {
   updateVotationStatus(votationId: $votationId, status: $status) {
-    __typename
-    ... on Votation {
-      title
-      status
-    }
-    ... on MaxOneOpenVotationError {
-      message
-    }
+    title
+    status
   }
 }
 
