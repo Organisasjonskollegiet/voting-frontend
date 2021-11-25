@@ -616,9 +616,9 @@ const VotationList: React.FC<VotationListProps> = ({
         />
       )}
       {endedVotations && endedVotations.length > 0 && (
-        <VStack spacing="16px" alignItems="start">
+        <VStack spacing="16px" alignItems="start" w="100%">
           <Heading size="sm">Avsluttede voteringer</Heading>
-          <Accordion allowToggle>
+          <Accordion allowToggle w="100%">
             {endedVotations.map((votation) => (
               <EndedVotation
                 key={votation.id}
