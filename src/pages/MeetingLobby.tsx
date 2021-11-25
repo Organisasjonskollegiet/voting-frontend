@@ -57,7 +57,9 @@ const MeetingLobby: React.FC = () => {
 
   const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
-  const [openVotation, setOpenVotation] = useState<string | null>(null);
+  const [openVotation, setOpenVotation] = useState<string | null>();
+  // used to avoid immediately going back to open votation after going back to lobby
+  const [lastOpenVotation, setLastOpenVotation] = useState<string | null>();
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
     variables: {
       meetingId,
@@ -92,16 +94,20 @@ const MeetingLobby: React.FC = () => {
     if (openVotation) setLocation(MeetingLocation.ACTIVEVOTATION);
   }, []);
 
-  const handleOpenVotation = useCallback((openVotation: string) => {
-    setOpenVotation(openVotation);
-    setLocation(MeetingLocation.ACTIVEVOTATION);
-  }, []);
+  const handleOpenVotation = useCallback(
+    (newOpenVotation: string) => {
+      setLastOpenVotation(openVotation);
+      setOpenVotation(newOpenVotation);
+      setLocation(MeetingLocation.ACTIVEVOTATION);
+    },
+    [openVotation]
+  );
 
   // handle votation being open initially
   useEffect(() => {
-    if (!data?.getOpenVotation) return;
+    if (!data?.getOpenVotation || openVotation !== undefined) return;
     handleOpenVotation(data.getOpenVotation);
-  }, [data?.getOpenVotation, role, handleOpenVotation]);
+  }, [data?.getOpenVotation, role, handleOpenVotation, openVotation]);
 
   // set initial number of upcoming votations
   useEffect(() => {
@@ -114,12 +120,13 @@ const MeetingLobby: React.FC = () => {
     if (
       !votationOpened?.votationOpenedForMeeting ||
       numberOfUpcomingVotations === null ||
-      openVotation === votationOpened.votationOpenedForMeeting
+      openVotation === votationOpened.votationOpenedForMeeting ||
+      lastOpenVotation === votationOpened.votationOpenedForMeeting
     )
       return;
     setNumberOfUpcomingVotations(numberOfUpcomingVotations - 1);
     handleOpenVotation(votationOpened.votationOpenedForMeeting);
-  }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation]);
+  }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation, lastOpenVotation]);
 
   const backToMyMeetings = () => {
     history.push('/');
@@ -127,6 +134,7 @@ const MeetingLobby: React.FC = () => {
 
   const returnToVotationList = (status: VotationStatus) => {
     if (status !== VotationStatus.Open && status !== VotationStatus.CheckingResult) {
+      setLastOpenVotation(openVotation);
       setOpenVotation(null);
     }
     setLocation(MeetingLocation.LOBBY);
