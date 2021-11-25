@@ -3,7 +3,6 @@ import { Heading, VStack, Text } from '@chakra-ui/react';
 import VotationList from '../votationList/VotationList';
 import { Role } from '../../__generated__/graphql-types';
 import ManageMeetingController from './ManageMeetingController';
-import { h1Style } from '../styles/formStyles';
 interface IProps {
   meetingId: string;
   onVotationsCreated: () => void;
@@ -36,10 +35,8 @@ const ManageVotations: React.FC<IProps> = ({
   return (
     <>
       <VStack spacing="5" w="90vw" maxWidth="800px" align="left">
-        <Heading sx={h1Style} as="h1">
-          Legg til voteringer
-        </Heading>
-        <Text fontSize="20px">
+        <Heading size="lg">Legg til voteringer</Heading>
+        <Text fontSize="lg">
           Her kan du legge til voteringer. Voteringer kan også legges til på et senere tidspunkt.
         </Text>
         <VotationList

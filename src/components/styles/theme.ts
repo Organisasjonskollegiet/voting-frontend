@@ -65,6 +65,11 @@ const theme = extendTheme({
       baseStyle: {
         color: darkblue,
       },
+      variants: {
+        h1: {
+          fontSize: '1.5rem',
+        },
+      },
     },
   },
 });
