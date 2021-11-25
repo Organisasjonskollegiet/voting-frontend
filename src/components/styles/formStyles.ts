@@ -27,7 +27,7 @@ export const collapsedStyle = {
 };
 
 export const highlightedInputStyle = {
-  zIndex: 1,
+  zIndex: 0,
   borderColor: 'blue.600',
   boxShadow: '0px 0px 5px #3182ce',
 } as React.CSSProperties;
