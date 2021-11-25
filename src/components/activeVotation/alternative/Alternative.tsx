@@ -2,6 +2,7 @@ import { useStyleConfig, Button, Text, ComponentStyleConfig } from '@chakra-ui/r
 import React, { useContext } from 'react';
 import { MeetingContext } from '../../../pages/MeetingLobby';
 import { boxShadow } from '../../styles/formStyles';
+import { green } from '../../styles/colors';
 
 interface AlternativeProps {
   handleClick: () => void;
@@ -19,12 +20,11 @@ const Alternative: React.FC<AlternativeProps> = ({ children, handleClick, select
       boxShadow={boxShadow}
       justifyContent="left"
       onClick={handleClick}
-      sx={styles}
+      _focus={!selected ? { border: `2px solid ${green(0.3)}` } : undefined}
       _hover={{ cursor: presentationMode ? 'default' : 'pointer' }}
+      sx={styles}
     >
-      <Text color={selected ? 'white' : 'inherit'} isTruncated>
-        {children}
-      </Text>
+      <Text isTruncated>{children}</Text>
     </Button>
   );
 };
@@ -40,8 +40,8 @@ export const AlternativeConfig: ComponentStyleConfig = {
   },
   variants: {
     selected: {
-      bg: 'blue.400',
-      _hover: { bg: 'blue.200' },
+      border: `2px solid ${green()}`,
+      boxShadow: `0px 0px 2px ${green()}`,
     },
   },
 };

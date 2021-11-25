@@ -16,7 +16,7 @@ const FileUploadInformationModal: React.FC = () => {
 
       <Divider my="1.5rem" />
 
-      <Heading as="h2" fontSize="1.1rem" mb="1rem">
+      <Heading size="md" mb="1rem">
         Eksempel på CSV Fil
       </Heading>
 

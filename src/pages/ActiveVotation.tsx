@@ -21,13 +21,11 @@ import { Heading, Text, Box, Center, VStack, Divider, Link, Button } from '@chak
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
 import VotationResult from '../components/activeVotation/VotationResult';
-import { h1Style } from '../components/styles/formStyles';
 import VotationController from '../components/activeVotation/ActiveVotationController';
 import { centerContainer, outerContainer } from '../components/styles/containerStyles';
 import CastVote from '../components/activeVotation/CastVote';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import CheckResults from '../components/activeVotation/checkResults/CheckResults';
-import { subtitlesStyle } from '../components/styles/styles';
 import { MeetingContext } from './MeetingLobby';
 import { getCorrectVotationResult } from '../components/activeVotation/utils';
 // import VotationTypeAccordion from '../components/activeVotation/VotationTypeAccordion';
@@ -397,15 +395,11 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         <VStack sx={centerContainer} maxWidth="800px" alignItems="left" spacing="2em">
           <VStack alignItems="left" spacing="1rem">
             <VStack alignItems="left" spacing="0.5rem">
-              <Heading as="h1" style={subtitlesStyle}>
-                Votering {data.votationById.index + 1}
-              </Heading>
-              <Heading as="h1" sx={h1Style}>
-                {data.votationById.title}
-              </Heading>
+              <Heading size="sm">Votering {data.votationById.index + 1}</Heading>
+              <Heading size="lg">{data.votationById.title}</Heading>
             </VStack>
 
-            <Text mt="1em">{data.votationById.description}</Text>
+            {data.votationById.description && <Text>{data.votationById.description}</Text>}
             {/* <VotationTypeAccordion
                 votationType={data.votationById.type}
                 majorityThreshold={data.votationById.majorityThreshold}

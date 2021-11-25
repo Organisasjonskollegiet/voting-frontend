@@ -2,7 +2,6 @@ import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm';
 import ManageMeetingController from './ManageMeetingController';
-import { h1Style } from '../styles/formStyles';
 import { MeetingWorking } from '../../types/types';
 
 interface IProps {
@@ -22,10 +21,8 @@ const ManageMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, m
   return (
     <>
       <VStack spacing="5" align="left">
-        <Heading sx={h1Style} as="h1">
-          Legg til møteinformasjon
-        </Heading>
-        <Text fontSize="20px">Her kan du legge til informasjon om møtet </Text>
+        <Heading size="lg">Legg til møteinformasjon</Heading>
+        <Text fontSize="lg">Her kan du legge til informasjon om møtet </Text>
       </VStack>
       <MeetingInformationForm meeting={meeting} onChange={onChange} />
       <ManageMeetingController handleNavigation={handleNavigation} showPrev={false} activeTab={0} />

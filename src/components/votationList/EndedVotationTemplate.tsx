@@ -26,7 +26,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
         }
         pr={role !== Role.Admin ? '1.5em' : '0'}
       >
-        <HStack w="100%" justifyContent="space-between" opacity="0.5">
+        <HStack flex="1" justifyContent="space-between" opacity="0.5" s>
           <CollapsedVotationRow title={votation.title} index={votation.index} />
           <HStack ml="auto">
             {votation.status === VotationStatus.PublishedResult && (
@@ -38,7 +38,9 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
             {votation.status === VotationStatus.Invalid && <CustomTag bgColor="#b5bfca" text="Avbrutt" />}
           </HStack>
         </HStack>
-        {role === Role.Admin && <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />}
+        <Box opacity="0.5" _hover={{ opacity: '1' }}>
+          {role === Role.Admin && <DuplicateVotation handleDuplicateVotation={() => duplicateVotation(votation)} />}
+        </Box>
       </HStack>
     </Box>
   );

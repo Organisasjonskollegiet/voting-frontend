@@ -116,7 +116,6 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           width="190px"
           fontWeight="normal"
           leftIcon={<img alt="add" src={AddIcon} />}
-          bg="white"
           variant="link"
           onClick={() => addNewAlternative()}
         >

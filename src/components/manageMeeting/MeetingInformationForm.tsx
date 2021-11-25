@@ -83,7 +83,7 @@ export const MeetingInformationFormConfig: ComponentStyleConfig = {
     minWidth: '320px',
     width: '100%',
     maxWidth: '800px',
-    padding: '12px;',
+    padding: '12px 0',
     borderRadius: '5px',
     fontSize: '16px',
     fontWeight: '700',

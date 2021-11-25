@@ -6,6 +6,7 @@ import WrapStack from '../common/WrapStack';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 import { MeetingContext } from '../../pages/MeetingLobby';
+import { green } from '../styles/colors';
 
 interface VotationControllerProps {
   status: VotationStatus;
@@ -76,7 +77,6 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
       {role === Role.Admin && (
         <Button
           p="1.5em 4em"
-          bg="transparent"
           borderRadius="16em"
           onClick={() => setInvalidateVotationDialogOpen(true)}
           leftIcon={<CloseIcon h="2.5" />}
@@ -98,7 +98,6 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
           onClick={() => setDialogOpen(true)}
           p="1.5em 4em"
           borderRadius="16em"
-          bg="transparent"
           rightIcon={<ArrowForwardIcon />}
         >
           <Text justifyContent="end" mt="0.25rem">
@@ -111,14 +110,14 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
         handleCancel={() => setInvalidateVotationDialogOpen(false)}
         handleConfirm={handleInvalidResult}
         type={DialogType.INVALIDATE}
-        confirmColor="red"
+        confirmColor="red.500"
       />
       <CustomAlertDialog
         dialogIsOpen={dialogOpen}
         handleCancel={() => setDialogOpen(false)}
         handleConfirm={handleConfirm}
         type={getDialogType()}
-        confirmColor={'green'}
+        confirmColor={green()}
       />
     </WrapStack>
   );

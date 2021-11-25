@@ -10,10 +10,3 @@ export const expandAndLift = {
   MoxBoxShadow: '0px 0px 15px rgba(0,0,0,0.2)',
   WebkitBoxShadow: '0px 0px 15px rgba(0,0,0,0.2)',
 };
-
-export const subtitlesStyle = {
-  fontStyle: 'normal',
-  fontSize: '1rem',
-  fontWeight: 'bold',
-  lineHeight: '150%',
-} as React.CSSProperties;

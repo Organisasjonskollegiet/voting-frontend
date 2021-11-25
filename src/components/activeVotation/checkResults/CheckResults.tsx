@@ -59,7 +59,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
     <VStack spacing="2rem">
       <DisplayResults result={result} isStv={isStv} votationId={votationId} />
       {(role === Role.Counter || role === Role.Admin) && (
-        <VStack spacing="2rem" pt="2rem" alignItems="start">
+        <VStack w="100%" spacing="2rem" alignItems="start">
           {role === Role.Admin && (
             <VotationReviews numberOfApproved={reviews.approved} numberOfDisapproved={reviews.disapproved} />
           )}
