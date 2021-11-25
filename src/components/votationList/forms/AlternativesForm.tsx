@@ -98,6 +98,7 @@ const AlternativesForm: React.FC<IProps> = ({ votation, updateVotation, deleteAl
           .map((alternative) => (
             <HStack key={alternative.id}>
               <Input
+                style={{ scrollMargin: '6.5rem' }}
                 key={alternative.id}
                 id={alternative.id}
                 onKeyDown={onEnterSubmitAlternative}

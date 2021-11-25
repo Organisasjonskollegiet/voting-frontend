@@ -21,7 +21,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
         onClick={(e) => e.stopPropagation()}
         alignSelf="center"
         width="98vw"
-        zIndex="1"
+        zIndex="10"
         justifyContent="center"
         bg={offwhite}
         paddingY="1rem"
