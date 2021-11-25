@@ -33,7 +33,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
-              <Heading size="xl">
+              <Heading textAlign="center" size="xl">
                 {getAlternativesString(winners.map((w: AlternativeType | AlternativeResult) => w.text))}
               </Heading>
             </>
