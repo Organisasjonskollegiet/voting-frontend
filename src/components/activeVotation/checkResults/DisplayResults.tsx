@@ -35,7 +35,7 @@ const DisplayResults: React.FC<DisplayResultsProps> = ({ result, isStv, votation
               {`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} er:`}
             </Heading>
             <VStack alignItems="start">
-              <AlternativesString fontSize="24px" color={green} alternatives={winners} />
+              <AlternativesString fontSize="24px" color={green()} alternatives={winners} />
             </VStack>
           </>
         ) : (

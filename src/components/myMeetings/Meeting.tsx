@@ -80,7 +80,7 @@ const Meeting: React.FC<
       <HStack justifyContent="space-between" w="100%">
         {meetingStatus === 'open' || meetingStatus === 'ended' ? (
           <CustomTag
-            bgColor={meetingStatus === 'open' ? green : lightGray}
+            bgColor={meetingStatus === 'open' ? green() : lightGray}
             text={meetingStatus === 'open' ? 'Aktiv' : 'Avsluttet'}
           />
         ) : (
