@@ -24,7 +24,6 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
             fontSize="0.75em"
             marginRight="-10px"
             color={lightGray}
-            bg="transparent"
             rightIcon={<img src={MoreIcon} alt="more" />}
             onClick={(e) => {
               e.stopPropagation();
@@ -42,7 +41,6 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
                 onEditClick();
               }}
               w="100%"
-              bgColor="transparent"
               fontSize="0.75rem"
             >
               Rediger møte
@@ -54,7 +52,7 @@ const MeetingActionsWithPopover: React.FC<MeetingActionsWithPopoverProps> = ({
               onDeleteClick();
             }}
             w="100%"
-            bgColor="transparent"
+            // bgColor="transparent"
             fontSize="0.75rem"
           >
             Slett møte

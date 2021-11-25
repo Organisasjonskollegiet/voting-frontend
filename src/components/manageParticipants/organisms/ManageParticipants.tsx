@@ -3,7 +3,6 @@ import { useHistory } from 'react-router';
 import { VStack, Heading, Text, Center } from '@chakra-ui/react';
 import ManageMeetingController from '../../manageMeeting/ManageMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
-import { h1Style } from '../../styles/formStyles';
 import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../../__generated__/graphql-types';
 import Loading from '../../common/Loading';
 
@@ -64,12 +63,8 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
   return (
     <>
       <VStack spacing="5" align="left">
-        {!modalView && (
-          <Heading sx={h1Style} as="h1">
-            Administrer deltagere
-          </Heading>
-        )}
-        <Text fontSize="18px" mb={modalView ? '1.5em' : 0}>
+        {!modalView && <Heading size="lg">Administrer deltagere</Heading>}
+        <Text fontSize="lg" mb={modalView ? '1.5em' : 0}>
           Her kan du invitere deltagere og gi redigeringstilgang
         </Text>
       </VStack>

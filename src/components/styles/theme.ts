@@ -1,7 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../activeVotation/alternative/Alternative';
 import { MeetingInformationFormConfig } from '../manageMeeting/MeetingInformationForm';
-import { darkblue, lightblue } from './colors';
+import { darkblue, lightblue, green } from './colors';
 
 const theme = extendTheme({
   colors: {
@@ -23,13 +23,27 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         color: darkblue,
-        bg: lightblue,
         p: '1.5em 4em',
       },
       variants: {
+        solid: {
+          bg: 'transparent',
+        },
         link: {
           py: '1rem',
-          bg: 'transparent',
+        },
+        dark: {
+          bg: 'gray.500',
+          color: 'white',
+          borderRadius: '16rem',
+          _hover: {
+            bg: 'gray.400',
+          },
+        },
+        green: {
+          bg: green(),
+          color: 'white',
+          borderRadius: '16rem',
         },
       },
     },
@@ -50,6 +64,11 @@ const theme = extendTheme({
     Heading: {
       baseStyle: {
         color: darkblue,
+      },
+      variants: {
+        h1: {
+          fontSize: '1.5rem',
+        },
       },
     },
   },

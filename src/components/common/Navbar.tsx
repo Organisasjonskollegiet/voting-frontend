@@ -2,20 +2,27 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Flex,
-  /*Avatar,*/ HStack,
+  HStack,
   IconButton,
   useDisclosure,
   Stack,
   Image,
   Button,
   Divider,
+  Avatar,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { darkblue } from '../styles/colors';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Logo from '../../static/logo.svg';
 import { useAuth0 } from '@auth0/auth0-react';
+import { boxShadow } from '../styles/formStyles';
 
 const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
@@ -34,11 +41,11 @@ const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link
 
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout } = useAuth0();
+  const { logout, user } = useAuth0();
   const history = useHistory();
 
   return (
-    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" zIndex="2" position="relative">
+    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
       <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
         <Box w="100px" justifyContent="start">
           <Image
@@ -58,18 +65,33 @@ const Navbar: React.FC = () => {
           ))}
         </HStack>
 
-        {/* <Box display={{ base: 'none', md: 'flex' }}> */}
-        {/* <Link to={links.get('Min profil') || ''}>
-            <Avatar size="sm" />
-          </Link> */}
-        <Button
-          w="100px"
-          onClick={() => logout({ returnTo: window.location.origin })}
-          display={{ base: 'none', md: 'flex' }}
-        >
-          Logg ut
-        </Button>
-        {/* </Box> */}
+        <Box display={{ base: 'none', md: 'flex' }}>
+          <Popover>
+            <PopoverTrigger>
+              <Button rightIcon={<ChevronDownIcon />} bg="transparent" _hover={{ backgroundColor: 'transparent' }}>
+                <Avatar background={darkblue} size="sm" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent boxShadow={boxShadow} marginX="1rem" _focus={{ border: 'none' }} p="1rem">
+              <VStack alignItems="start">
+                <Text opacity="0.5">{user?.email}</Text>
+                <Divider />
+                <Button
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                  _hover={{ bg: 'transparent' }}
+                  w="fit-content"
+                  h="fit-content"
+                  p="0"
+                  bg="transparent"
+                >
+                  <Text marginX="-16px" fontWeight="normal">
+                    Logg ut
+                  </Text>
+                </Button>
+              </VStack>
+            </PopoverContent>
+          </Popover>
+        </Box>
 
         {/* Button to toggle hamburger menu */}
         <IconButton

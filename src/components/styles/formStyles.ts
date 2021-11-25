@@ -1,15 +1,12 @@
 import React from 'react';
 
 export const boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-export const highlightedStyle = {
-  fontStyle: 'normal',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  lineHeight: '150%',
-} as React.CSSProperties;
 
 export const labelStyle = {
-  ...highlightedStyle,
+  fontStyle: 'normal',
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  lineHeight: '150%',
   marginBottom: '10px',
 } as React.CSSProperties;
 
@@ -54,7 +51,3 @@ export const checkboxStyle = {
 export const pointerStyle = {
   cursor: 'pointer',
 } as React.CSSProperties;
-
-export const h1Style = {
-  fontSize: '1.5em',
-};

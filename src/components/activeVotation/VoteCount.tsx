@@ -1,6 +1,5 @@
-import { Center, VStack, Text, Heading } from '@chakra-ui/react';
+import { Center, VStack, Heading } from '@chakra-ui/react';
 import React from 'react';
-import { subtitlesStyle } from '../styles/styles';
 
 interface VoteCountProps {
   voteCount: number;
@@ -13,14 +12,10 @@ const VoteCount: React.FC<VoteCountProps> = ({ voteCount, votingEligibleCount })
   return (
     <VStack mx="3rem">
       <Center>
-        <Text fontSize="2.25em" fontWeight="bold">
-          {`${voteCount} / ${votingEligibleCount}`}
-        </Text>
+        <Heading size="xl">{`${voteCount} / ${votingEligibleCount}`}</Heading>
       </Center>
       <Center>
-        <Heading as="h2" sx={subtitlesStyle}>
-          stemmer
-        </Heading>
+        <Heading size="md">stemmer</Heading>
       </Center>
     </VStack>
   );

@@ -40,13 +40,7 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, invit
         onKeyDown={handleOnEnter}
       />
       <SelectRole onChange={(role: Role) => selectRole(role)} value={participantRole} />
-      <IconButton
-        disabled={email === ''}
-        bg="transparent"
-        icon={<AddIcon />}
-        aria-label="Legg til deltaker"
-        onClick={addParticipant}
-      />
+      <IconButton disabled={email === ''} icon={<AddIcon />} aria-label="Legg til deltaker" onClick={addParticipant} />
     </HStack>
   );
 };

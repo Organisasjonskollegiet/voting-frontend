@@ -1,10 +1,11 @@
-import { Box, Text, HStack } from '@chakra-ui/react';
+import { Box, HStack } from '@chakra-ui/react';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { collapsedStyle, highlightedStyle } from '../../styles/formStyles';
+import { collapsedStyle } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import { expandAndLift } from '../../styles/styles';
 import { DragHandleIcon } from '@chakra-ui/icons';
+import CollapsedVotationRow from '../CollapsedVotationRow';
 
 interface CollapsedVotationFormProps {
   isAdmin: boolean;
@@ -37,10 +38,7 @@ const CollapsedVotationForm: React.FC<CollapsedVotationFormProps> = ({
           }}
           _hover={isAdmin ? expandAndLift : {}}
         >
-          <HStack spacing="8">
-            <Text sx={highlightedStyle}>{`${votation.index + 1}`}</Text>
-            <Text>{votation.title}</Text>
-          </HStack>
+          <CollapsedVotationRow title={votation.title} index={index} />
           {isAdmin && (
             <Box {...provided.dragHandleProps}>
               <DragHandleIcon />
