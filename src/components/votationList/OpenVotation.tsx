@@ -1,15 +1,21 @@
-import { Box } from '@chakra-ui/react';
+import { Box, HStack } from '@chakra-ui/react';
 import React from 'react';
-import CollapsedVotation, { CollapsedVotationProps } from './CollapsedVotation';
+import CustomTag from '../common/CustomTag';
+import { green } from '../styles/colors';
+import { collapsedStyle } from '../styles/formStyles';
+import CollapsedVotationRow, { CollapsedVotationRowProps } from './CollapsedVotationRow';
 
-interface OpenVotationProps extends CollapsedVotationProps {
+interface OpenVotationProps extends CollapsedVotationRowProps {
   onClick: () => void;
 }
 
-const OpenVotation: React.FC<OpenVotationProps> = ({ isAdmin, votationTitle, index, onClick }) => {
+const OpenVotation: React.FC<OpenVotationProps> = ({ title, index, onClick }) => {
   return (
     <Box onClick={onClick} _hover={{ cursor: 'pointer' }}>
-      <CollapsedVotation isAdmin={isAdmin} votationTitle={votationTitle} index={index} isActive={true} />
+      <HStack w="90vw" maxWidth="800px" justify="space-between" marginBottom="16px" sx={collapsedStyle}>
+        <CollapsedVotationRow title={title} index={index} />
+        <CustomTag bgColor={green()} text="Aktiv" />
+      </HStack>
     </Box>
   );
 };

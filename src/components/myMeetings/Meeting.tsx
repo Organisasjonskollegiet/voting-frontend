@@ -80,7 +80,7 @@ const Meeting: React.FC<
       <HStack justifyContent="space-between" w="100%">
         {meetingStatus === 'open' || meetingStatus === 'ended' ? (
           <CustomTag
-            bgColor={meetingStatus === 'open' ? green : lightGray}
+            bgColor={meetingStatus === 'open' ? green() : lightGray}
             text={meetingStatus === 'open' ? 'Aktiv' : 'Avsluttet'}
           />
         ) : (
@@ -91,10 +91,8 @@ const Meeting: React.FC<
         {isAdmin && <CustomTag bgColor={lightGray} text="Admin" />}
       </HStack>
       <VStack alignItems="start">
-        <Heading as="h2" fontSize="1.5em">
-          {title}
-        </Heading>
-        <Text fontSize="1em">{formatMeetingTime(new Date(startTime))}</Text>
+        <Heading size="lg">{title}</Heading>
+        <Text fontSize="md">{formatMeetingTime(new Date(startTime))}</Text>
       </VStack>
       {isAdmin ? (
         <MeetingActionsWithPopover
@@ -113,7 +111,7 @@ const Meeting: React.FC<
         }}
         handleCancel={() => setDialogIsOpen(false)}
         type={DialogType.MEETING}
-        confirmColor="red"
+        confirmColor="red.500"
       />
     </VStack>
   );

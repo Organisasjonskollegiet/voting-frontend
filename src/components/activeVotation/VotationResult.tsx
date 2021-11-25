@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
-import { VStack, Text, Divider, Button, HStack, Box, Image } from '@chakra-ui/react';
+import { VStack, Text, Divider, Button, HStack, Box, Image, Heading } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
-import AlternativesString from '../common/AlternativesString';
 import StvResultTable from './results_table/StvResultTable';
 import DownloadResultButton from './DownloadResultButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
@@ -14,6 +13,7 @@ import { boxShadow } from '../styles/formStyles';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import WrapStack from '../common/WrapStack';
 import useScreenWidth from '../../hooks/ScreenWidth';
+import { getAlternativesString } from './utils';
 
 export interface VotationResultProps {
   winners: AlternativeType[] | AlternativeResult[] | null;
@@ -54,10 +54,9 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           {winners.length > 0 ? (
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
-              <AlternativesString
-                alternatives={winners.map((w: AlternativeType | AlternativeResult) => w.text)}
-                fontSize="2.25em"
-              />
+              <Heading textAlign="center" size="xl">
+                {getAlternativesString(winners.map((w: AlternativeType | AlternativeResult) => w.text))}
+              </Heading>
             </>
           ) : (
             <>

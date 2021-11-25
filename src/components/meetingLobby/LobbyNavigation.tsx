@@ -1,6 +1,8 @@
 import { Box, FormControl, FormLabel, HStack, Switch } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import useScreenWidth from '../../hooks/ScreenWidth';
 import { MeetingLocation } from '../../pages/MeetingLobby';
+import WrapStack from '../common/WrapStack';
 import LobbyNavigationButton from './LobbyNavigationButton';
 
 interface LobbyNavigationProps {
@@ -16,16 +18,28 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
   setLocation,
   togglePresentationMode,
 }) => {
+  const screenWidth = useScreenWidth();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const newIsMobile = screenWidth < breakpoint;
+    if (newIsMobile === isMobile) return;
+    setIsMobile(newIsMobile);
+  }, [screenWidth, isMobile]);
+
+  const breakpoint = 550;
   return (
-    <HStack
+    <WrapStack
+      breakpoint={breakpoint}
       bg="white"
       zIndex="100"
       boxShadow={'0px 8px 10px rgba(0, 0, 0, 0.03)'}
       borderTop="1px solid rgba(0, 0, 0, 0.1)"
       w="100%"
-      paddingX="2rem"
+      paddingTop={isMobile ? '0.5rem' : 0}
+      paddingX={isMobile ? '0.5rem' : '2rem'}
       justifyContent="space-between"
-      spacing="2em"
+      spacing={isMobile ? '0.5rem' : '2em'}
     >
       <FormControl flex="1" display="flex" width="fit-content">
         <FormLabel ml="0.5em" fontSize="12px" mb="0" fontWeight="bold">
@@ -50,8 +64,8 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
           }}
         />
       </HStack>
-      <Box flex="1" />
-    </HStack>
+      {!isMobile && <Box flex="1" />}
+    </WrapStack>
   );
 };
 

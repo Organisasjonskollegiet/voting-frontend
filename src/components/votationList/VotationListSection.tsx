@@ -41,20 +41,16 @@ const VotationListSection: React.FC<VotationListSectionProps> = ({
 }) => {
   return (
     <VStack spacing="16px" alignItems="start">
-      {heading && votations.length > 0 && (
-        <Heading as="h1" fontSize="1em" mb="1.125em">
-          {heading}
-        </Heading>
-      )}
+      {heading && votations.length > 0 && <Heading size="sm">{heading}</Heading>}
       <Droppable droppableId={droppableId ?? 'votation-list'} isDropDisabled={!isAdmin}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {votations.map((votation: Votation, index: number) => (
+            {votations.map((votation: Votation) => (
               <VotationForm
                 toggleCollapsedVotation={() => setActiveVotationId(votation.id)}
                 isActive={votation.id === activeVotationId}
                 votation={votation}
-                index={index}
+                index={votation.index}
                 key={votation.id}
                 updateVotation={updateVotation}
                 deleteVotation={handleDeleteVotation}

@@ -10,13 +10,6 @@ interface IProps {
 }
 
 const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, activeTab }) => {
-  const buttonStyle = {
-    bg: 'gray.500',
-    color: 'white',
-    width: '245px',
-    borderRadius: '16em',
-  } as React.CSSProperties;
-
   return (
     <>
       <Divider m="3em 0" />
@@ -25,20 +18,17 @@ const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev,
           {showPrev ? (
             <Button
               leftIcon={<img alt="previous" src={ArrowLeft} />}
-              variant="ghost"
               maxWidth="100px"
-              fontWeight="normal"
-              bg="#f9f9f9"
               onClick={() => handleNavigation(activeTab - 1)}
             >
-              <Text pt="5px" as="span">
+              <Text alignItems="center" as="span">
                 Forrige
               </Text>
             </Button>
           ) : (
             <Box />
           )}
-          <Button sx={buttonStyle} onClick={() => handleNavigation(activeTab + 1)}>
+          <Button variant="dark" w="245px" onClick={() => handleNavigation(activeTab + 1)}>
             {activeTab !== 2 ? 'Neste' : 'Fullfør'}
           </Button>
         </Grid>

@@ -73,7 +73,7 @@ const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
             <Button ref={cancelRef} onClick={handleCancel}>
               Avbryt
             </Button>
-            <Button colorScheme={confirmColor} onClick={handleConfirm} ml={3}>
+            <Button bg={confirmColor} color="white" _hover={{ bg: confirmColor }} onClick={handleConfirm} ml={3}>
               Bekreft
             </Button>
           </AlertDialogFooter>
