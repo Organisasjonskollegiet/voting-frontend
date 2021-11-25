@@ -309,9 +309,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
             castVotationReview={(approved: boolean) => castVotationReview({ variables: { votationId, approved } })}
           />
         ) : (
-          <Box>
-            <Loading text={'Resultatene sjekkes'} />
-          </Box>
+          <Loading text={'Resultatene sjekkes'} />
         );
       case VotationStatus.PublishedResult:
         return (
@@ -352,11 +350,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   }
 
   if (loading) {
-    return (
-      <Center mt="10vh">
-        <Loading text={'Henter votering'} />
-      </Center>
-    );
+    return <Loading text={'Henter votering'} />;
   }
 
   if (error || data?.votationById?.id === undefined) {
@@ -415,7 +409,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
               /> */}
           </VStack>
           {getViewFromStatus()}
-          {(status === VotationStatus.Open || status === VotationStatus.CheckingResult) && (
+          {(status === VotationStatus.Open || (status === VotationStatus.CheckingResult && role === Role.Admin)) && (
             <VStack>
               <Divider />
               <VotationController
