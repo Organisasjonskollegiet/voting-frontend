@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
+import { Center, Box, Heading, Text, VStack, Divider, HStack, Button, Tooltip, useToast } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
   useVotationOpenedForMeetingSubscription,
@@ -17,6 +17,10 @@ import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
 import { useAuth0 } from '@auth0/auth0-react';
+import QRCode from 'qrcode.react';
+import Logo from '../static/logo.svg';
+import { CopyIcon } from '@chakra-ui/icons';
+import useScreenWidth from '../hooks/ScreenWidth';
 
 export type MeetingContextState = {
   role: Role;
@@ -24,6 +28,7 @@ export type MeetingContextState = {
   presentationMode: boolean;
   isVotingEligible: boolean;
   numberOfUpcomingVotations: number | null;
+  allowSelfRegistration: boolean;
 };
 
 const contextDefualtValues: MeetingContextState = {
@@ -32,11 +37,13 @@ const contextDefualtValues: MeetingContextState = {
   presentationMode: false,
   isVotingEligible: false,
   numberOfUpcomingVotations: 0,
+  allowSelfRegistration: false,
 };
 
 export enum MeetingLocation {
   LOBBY,
   ACTIVEVOTATION,
+  SELFREGISTRATION,
 }
 
 export const MeetingContext = createContext<MeetingContextState>(contextDefualtValues);
@@ -50,6 +57,10 @@ const MeetingLobby: React.FC = () => {
     },
   });
 
+  const toast = useToast();
+
+  const width = useScreenWidth();
+
   const [location, setLocation] = useState<MeetingLocation>(MeetingLocation.LOBBY);
   const [isVotingEligible, setIsVotingEligible] = useState(false);
 
@@ -57,6 +68,7 @@ const MeetingLobby: React.FC = () => {
 
   const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
+  const [allowSelfRegistration, setAllowSelfRegistration] = useState(false);
   const [openVotation, setOpenVotation] = useState<string | null>();
   // used to avoid immediately going back to open votation after going back to lobby
   const [lastOpenVotation, setLastOpenVotation] = useState<string | null>();
@@ -115,6 +127,11 @@ const MeetingLobby: React.FC = () => {
     setNumberOfUpcomingVotations(data.numberOfUpcomingVotations);
   }, [data, numberOfUpcomingVotations]);
 
+  useEffect(() => {
+    if (!data?.meetingById) return;
+    setAllowSelfRegistration(data.meetingById.allowSelfRegistration);
+  });
+
   // handle votation opening
   useEffect(() => {
     if (
@@ -140,6 +157,16 @@ const MeetingLobby: React.FC = () => {
     setLocation(MeetingLocation.LOBBY);
   };
 
+  const copyString = (link: string) => {
+    navigator.clipboard.writeText(link);
+    toast({
+      title: 'Linken ble kopiert.',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
   if (loading) {
     return <Loading text={'Henter møte'} />;
   }
@@ -152,6 +179,8 @@ const MeetingLobby: React.FC = () => {
     );
   }
 
+  const registrationLink = `${process.env.REACT_APP_REDIRECT_URI}/meeting/${meetingId}/register`;
+
   return (
     <MeetingContext.Provider
       value={{
@@ -160,6 +189,7 @@ const MeetingLobby: React.FC = () => {
         presentationMode,
         isVotingEligible,
         numberOfUpcomingVotations,
+        allowSelfRegistration,
       }}
     >
       <PageContainer>
@@ -174,7 +204,7 @@ const MeetingLobby: React.FC = () => {
           )}
           {location === MeetingLocation.ACTIVEVOTATION && openVotation ? (
             <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
-          ) : (
+          ) : location === MeetingLocation.LOBBY ? (
             <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
               <VStack alignItems="left">
                 <Heading size="lg">{data?.meetingById?.title}</Heading>
@@ -199,6 +229,29 @@ const MeetingLobby: React.FC = () => {
                   )}
                 </HStack>
               </VStack>
+            </VStack>
+          ) : (
+            <VStack w="90vw" maxWidth="800px" spacing="3em" mt="10vh">
+              <Tooltip label={registrationLink}>
+                <Button
+                  variant="standard"
+                  w="fit-content"
+                  rightIcon={<CopyIcon />}
+                  onClick={() => copyString(registrationLink)}
+                >
+                  Kopier registreringslink
+                </Button>
+              </Tooltip>
+              <QRCode
+                size={width > 600 ? 0.9 * 600 : 0.9 * width}
+                value={registrationLink}
+                imageSettings={{
+                  src: Logo,
+                  height: width > 600 ? 0.15 * 600 : 0.15 * width,
+                  width: width > 600 ? 0.15 * 600 : 0.15 * width,
+                  excavate: true,
+                }}
+              />
             </VStack>
           )}
         </Box>

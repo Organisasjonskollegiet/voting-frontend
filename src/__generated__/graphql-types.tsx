@@ -1010,7 +1010,7 @@ export type GetMeetingForLobbyQuery = (
   & Pick<Query, 'getOpenVotation' | 'numberOfUpcomingVotations'>
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title'>
+    & Pick<Meeting, 'id' | 'title' | 'allowSelfRegistration'>
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'email'>
@@ -2172,6 +2172,7 @@ export const GetMeetingForLobbyDocument = gql`
   meetingById(meetingId: $meetingId) {
     id
     title
+    allowSelfRegistration
     owner {
       email
     }

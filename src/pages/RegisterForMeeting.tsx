@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router';
 import Loading from '../components/common/Loading';
 import { useRegisterAsParticipantMutation } from '../__generated__/graphql-types';
 
-const RegisterForMeeting = () => {
+const RegisterForMeeting: React.FC = () => {
   const history = useHistory();
   const [registerAsParticipant, { data, loading, error }] = useRegisterAsParticipantMutation();
 
@@ -14,19 +14,19 @@ const RegisterForMeeting = () => {
     if (meetingId && !loading && !data && !error) {
       registerAsParticipant({ variables: { meetingId } });
     }
-  }, [meetingId, data, loading, error]);
+  }, [meetingId, data, loading, error, registerAsParticipant]);
 
   useEffect(() => {
     if (data) {
       history.push(`/meeting/${meetingId}`);
     }
-  }, [data]);
+  }, [data, history, meetingId]);
 
   if (loading) return <Loading text="Registrer deg som deltaker" />;
 
   if (error)
     return (
-      <Center mt="10vh">
+      <Center mt="10vh" mb="1vh">
         <VStack>
           <Text>Kunne ikke registrere deg som deltaker.</Text>
           <Text>Enten finnes ikke møtet, eller så tillater det ikke selvregistrering.</Text>
