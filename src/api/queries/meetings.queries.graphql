@@ -38,6 +38,7 @@ query GetMeetingById($meetingId: String!) {
     organization
     status
     startTime
+    allowSelfRegistration
   }
 }
 

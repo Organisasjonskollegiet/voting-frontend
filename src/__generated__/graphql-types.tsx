@@ -59,6 +59,7 @@ export type CreateMeetingInput = {
   title: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
+  allowSelfRegistration: Scalars['Boolean'];
 };
 
 export type CreateVotationInput = {
@@ -90,6 +91,7 @@ export type Meeting = {
   organization: Scalars['String'];
   startTime: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
+  allowSelfRegistration: Scalars['Boolean'];
   owner?: Maybe<User>;
   votations?: Maybe<Array<Maybe<Votation>>>;
   status: MeetingStatus;
@@ -127,6 +129,8 @@ export type Mutation = {
   updateParticipant?: Maybe<ParticipantOrInvite>;
   /** Creates invites and participants for the emails provided. */
   addParticipants?: Maybe<Scalars['Int']>;
+  /** Register the logged in user as a participant. */
+  registerAsParticipant?: Maybe<Participant>;
   deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
@@ -216,6 +220,11 @@ export type MutationUpdateParticipantArgs = {
 export type MutationAddParticipantsArgs = {
   meetingId: Scalars['String'];
   participants: Array<ParticipantInput>;
+};
+
+
+export type MutationRegisterAsParticipantArgs = {
+  meetingId: Scalars['String'];
 };
 
 
@@ -492,6 +501,7 @@ export type UpdateMeetingInput = {
   startTime?: Maybe<Scalars['DateTime']>;
   description?: Maybe<Scalars['String']>;
   status?: Maybe<MeetingStatus>;
+  allowSelfRegistration?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateParticipantInput = {
@@ -634,7 +644,7 @@ export type CreateMeetingMutation = (
   { __typename?: 'Mutation' }
   & { createMeeting?: Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status'>
+    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status' | 'allowSelfRegistration'>
   )> }
 );
 
@@ -647,7 +657,7 @@ export type UpdateMeetingMutation = (
   { __typename?: 'Mutation' }
   & { updateMeeting?: Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status'>
+    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status' | 'allowSelfRegistration'>
   )> }
 );
 
@@ -697,6 +707,19 @@ export type DeleteMeetingMutation = (
   & { deleteMeeting?: Maybe<(
     { __typename?: 'Meeting' }
     & Pick<Meeting, 'id'>
+  )> }
+);
+
+export type RegisterAsParticipantMutationVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type RegisterAsParticipantMutation = (
+  { __typename?: 'Mutation' }
+  & { registerAsParticipant?: Maybe<(
+    { __typename?: 'Participant' }
+    & Pick<Participant, 'role' | 'isVotingEligible'>
   )> }
 );
 
@@ -912,7 +935,7 @@ export type GetMeetingByIdQuery = (
   { __typename?: 'Query' }
   & { meetingById?: Maybe<(
     { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime'>
+    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime' | 'allowSelfRegistration'>
     & { owner?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'email'>
@@ -1240,6 +1263,7 @@ export const CreateMeetingDocument = gql`
     startTime
     description
     status
+    allowSelfRegistration
   }
 }
     `;
@@ -1278,6 +1302,7 @@ export const UpdateMeetingDocument = gql`
     startTime
     description
     status
+    allowSelfRegistration
   }
 }
     `;
@@ -1440,6 +1465,40 @@ export function useDeleteMeetingMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteMeetingMutationHookResult = ReturnType<typeof useDeleteMeetingMutation>;
 export type DeleteMeetingMutationResult = Apollo.MutationResult<DeleteMeetingMutation>;
 export type DeleteMeetingMutationOptions = Apollo.BaseMutationOptions<DeleteMeetingMutation, DeleteMeetingMutationVariables>;
+export const RegisterAsParticipantDocument = gql`
+    mutation RegisterAsParticipant($meetingId: String!) {
+  registerAsParticipant(meetingId: $meetingId) {
+    role
+    isVotingEligible
+  }
+}
+    `;
+export type RegisterAsParticipantMutationFn = Apollo.MutationFunction<RegisterAsParticipantMutation, RegisterAsParticipantMutationVariables>;
+
+/**
+ * __useRegisterAsParticipantMutation__
+ *
+ * To run a mutation, you first call `useRegisterAsParticipantMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterAsParticipantMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerAsParticipantMutation, { data, loading, error }] = useRegisterAsParticipantMutation({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useRegisterAsParticipantMutation(baseOptions?: Apollo.MutationHookOptions<RegisterAsParticipantMutation, RegisterAsParticipantMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterAsParticipantMutation, RegisterAsParticipantMutationVariables>(RegisterAsParticipantDocument, options);
+      }
+export type RegisterAsParticipantMutationHookResult = ReturnType<typeof useRegisterAsParticipantMutation>;
+export type RegisterAsParticipantMutationResult = Apollo.MutationResult<RegisterAsParticipantMutation>;
+export type RegisterAsParticipantMutationOptions = Apollo.BaseMutationOptions<RegisterAsParticipantMutation, RegisterAsParticipantMutationVariables>;
 export const CreateVotationsDocument = gql`
     mutation CreateVotations($meetingId: String!, $votations: [CreateVotationInput!]!) {
   createVotations(meetingId: $meetingId, votations: $votations) {
@@ -1983,6 +2042,7 @@ export const GetMeetingByIdDocument = gql`
     organization
     status
     startTime
+    allowSelfRegistration
   }
 }
     `;
