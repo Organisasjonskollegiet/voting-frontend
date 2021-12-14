@@ -128,9 +128,9 @@ const MeetingLobby: React.FC = () => {
   }, [data, numberOfUpcomingVotations]);
 
   useEffect(() => {
-    if (!data?.meetingById) return;
+    if (!data?.meetingById || data?.meetingById?.allowSelfRegistration === allowSelfRegistration) return;
     setAllowSelfRegistration(data.meetingById.allowSelfRegistration);
-  });
+  }, [data?.meetingById, allowSelfRegistration, setAllowSelfRegistration]);
 
   // handle votation opening
   useEffect(() => {
