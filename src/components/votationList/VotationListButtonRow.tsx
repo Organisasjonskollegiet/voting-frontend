@@ -2,6 +2,7 @@ import React from 'react';
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Divider, HStack, VStack } from '@chakra-ui/react';
 import { lightblue, offwhite } from '../styles/colors';
+import WrapStack from '../common/WrapStack';
 
 interface VotationListButtonRowProps {
   handleAddNewVotation: () => void;
@@ -26,7 +27,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
         bg={offwhite}
         paddingY="1rem"
       >
-        <HStack maxWidth="800px" w="92%" justifyContent="space-between">
+        <WrapStack breakpoint={479} maxWidth="800px" w="92%" justifyContent="space-between">
           <Button
             aria-label="Legg til votering"
             w={'200px'}
@@ -40,7 +41,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
           <Button disabled={saveIsDisabled} variant="dark" w={'200px'} onClick={handleSave}>
             Lagre
           </Button>
-        </HStack>
+        </WrapStack>
       </HStack>
     </VStack>
   );
