@@ -943,6 +943,19 @@ export type GetMeetingByIdQuery = (
   )> }
 );
 
+export type GetAllowSelfRegistrationQueryVariables = Exact<{
+  meetingId: Scalars['String'];
+}>;
+
+
+export type GetAllowSelfRegistrationQuery = (
+  { __typename?: 'Query' }
+  & { meetingById?: Maybe<(
+    { __typename?: 'Meeting' }
+    & Pick<Meeting, 'allowSelfRegistration'>
+  )> }
+);
+
 export type GetParticipantsByMeetingIdQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
@@ -2074,6 +2087,41 @@ export function useGetMeetingByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetMeetingByIdQueryHookResult = ReturnType<typeof useGetMeetingByIdQuery>;
 export type GetMeetingByIdLazyQueryHookResult = ReturnType<typeof useGetMeetingByIdLazyQuery>;
 export type GetMeetingByIdQueryResult = Apollo.QueryResult<GetMeetingByIdQuery, GetMeetingByIdQueryVariables>;
+export const GetAllowSelfRegistrationDocument = gql`
+    query GetAllowSelfRegistration($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    allowSelfRegistration
+  }
+}
+    `;
+
+/**
+ * __useGetAllowSelfRegistrationQuery__
+ *
+ * To run a query within a React component, call `useGetAllowSelfRegistrationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllowSelfRegistrationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllowSelfRegistrationQuery({
+ *   variables: {
+ *      meetingId: // value for 'meetingId'
+ *   },
+ * });
+ */
+export function useGetAllowSelfRegistrationQuery(baseOptions: Apollo.QueryHookOptions<GetAllowSelfRegistrationQuery, GetAllowSelfRegistrationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllowSelfRegistrationQuery, GetAllowSelfRegistrationQueryVariables>(GetAllowSelfRegistrationDocument, options);
+      }
+export function useGetAllowSelfRegistrationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllowSelfRegistrationQuery, GetAllowSelfRegistrationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllowSelfRegistrationQuery, GetAllowSelfRegistrationQueryVariables>(GetAllowSelfRegistrationDocument, options);
+        }
+export type GetAllowSelfRegistrationQueryHookResult = ReturnType<typeof useGetAllowSelfRegistrationQuery>;
+export type GetAllowSelfRegistrationLazyQueryHookResult = ReturnType<typeof useGetAllowSelfRegistrationLazyQuery>;
+export type GetAllowSelfRegistrationQueryResult = Apollo.QueryResult<GetAllowSelfRegistrationQuery, GetAllowSelfRegistrationQueryVariables>;
 export const GetParticipantsByMeetingIdDocument = gql`
     query GetParticipantsByMeetingId($meetingId: String!) {
   participants(meetingId: $meetingId) {

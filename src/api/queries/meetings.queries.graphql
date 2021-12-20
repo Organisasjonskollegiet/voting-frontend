@@ -42,6 +42,12 @@ query GetMeetingById($meetingId: String!) {
   }
 }
 
+query GetAllowSelfRegistration($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    allowSelfRegistration
+  }
+}
+
 query GetParticipantsByMeetingId($meetingId: String!) {
   participants(meetingId: $meetingId) {
     email

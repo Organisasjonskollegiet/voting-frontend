@@ -49,15 +49,14 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
         <Switch onChange={togglePresentationMode} aria-label="Presentasjonsmodus" defaultChecked={false} />
       </FormControl>
       <HStack justifyContent="center" flex="1">
-        {allowSelfRegistration && (
-          <LobbyNavigationButton
-            selected={location === MeetingLocation.SELFREGISTRATION}
-            text="Selvregistrering"
-            onClick={() => {
-              setLocation(MeetingLocation.SELFREGISTRATION);
-            }}
-          />
-        )}
+        <LobbyNavigationButton
+          selected={location === MeetingLocation.SELFREGISTRATION}
+          isDisabled={!allowSelfRegistration}
+          text="Selvregistrering"
+          onClick={() => {
+            setLocation(MeetingLocation.SELFREGISTRATION);
+          }}
+        />
         <LobbyNavigationButton
           selected={location === MeetingLocation.LOBBY}
           text="Voteringsliste"

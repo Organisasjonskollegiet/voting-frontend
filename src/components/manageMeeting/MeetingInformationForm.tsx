@@ -83,14 +83,6 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
           showPopperArrow={true}
         />
       </FormControl>
-      <Tooltip label="Ved å tillate selvregistrering vil det åpnes en link. Alle som besøker denne linken vil bli lagt til som deltakere på møtet. Det kan endres i ettertid.">
-        <FormControl isRequired width="fit-content" alignSelf="start">
-          <FormLabel sx={labelStyle} htmlFor="self-registration">
-            Tillat selvregistrering
-          </FormLabel>
-          <Switch id="self-registration" onChange={toggleSelfRegistration} isChecked={meeting.allowSelfRegistration} />
-        </FormControl>
-      </Tooltip>
       <FormControl>
         <FormLabel htmlFor="description" sx={labelStyle}>
           Beskrivelse av møte

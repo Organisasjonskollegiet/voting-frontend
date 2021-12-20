@@ -4,7 +4,6 @@ import { VStack, Heading, Text, Center } from '@chakra-ui/react';
 import ManageMeetingController from '../../manageMeeting/ManageMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
 import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../../__generated__/graphql-types';
-import Loading from '../../common/Loading';
 
 interface IProps {
   meetingId: string;
@@ -38,11 +37,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
 
   if (!isActive) return <></>;
 
-  if (loading) {
-    return <Loading asOverlay text="Henter deltagere" />;
-  }
-
-  if (error || data?.participants === undefined) {
+  if (!loading && (error || data?.participants === undefined)) {
     return (
       <Center>
         <Text>Det skjedde noe galt under innlastingen</Text>
@@ -73,6 +68,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
         participants={participants}
         setParticipants={setParticipants}
         ownerEmail={ownerEmail}
+        participantsLoading={loading}
       />
       {handleNavigation && (
         <ManageMeetingController showPrev={true} activeTab={2} handleNavigation={handleNavigationClick} />

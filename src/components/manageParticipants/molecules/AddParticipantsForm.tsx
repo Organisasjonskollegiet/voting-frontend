@@ -4,9 +4,23 @@ import {
   Role,
   useAddParticipantsMutation,
   useDeleteParticipantsMutation,
+  useGetAllowSelfRegistrationQuery,
+  useUpdateMeetingMutation,
   useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text, Flex } from '@chakra-ui/react';
+import {
+  VStack,
+  FormControl,
+  FormLabel,
+  Divider,
+  HStack,
+  Select,
+  useToast,
+  Text,
+  Flex,
+  Tooltip,
+  Switch,
+} from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import Loading from '../../common/Loading';
 import { useEffect } from 'react';
@@ -18,12 +32,14 @@ import { useCallback } from 'react';
 import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUpload';
 import { checkIfEmailIsValid, onFileUpload } from '../utils';
 import DeleteParticipants from '../atoms/DeleteParticipants';
+import AllowSelfRegistrationSwitch from '../atoms/AllowSelfRegistrationSwitch';
 
 interface IProps {
   meetingId: string;
   participants: ParticipantOrInvite[];
   setParticipants: (participants: ParticipantOrInvite[]) => void;
   ownerEmail: string | undefined;
+  participantsLoading: boolean;
 }
 
 enum SortingType {
@@ -31,10 +47,19 @@ enum SortingType {
   DESC = 'DESC',
 }
 
-const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setParticipants, ownerEmail }) => {
+const AddParticipantsForm: React.FC<IProps> = ({
+  meetingId,
+  participants,
+  setParticipants,
+  ownerEmail,
+  participantsLoading,
+}) => {
   const [addParticipants, addParticipantsResult] = useAddParticipantsMutation();
   const [updateParticipant, updateParticipantResult] = useUpdateParticipantMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
+  const [updateMeeting] = useUpdateMeetingMutation();
+  const { data, loading } = useGetAllowSelfRegistrationQuery({ variables: { meetingId } });
+  const [allowSelfRegistration, setAllowSelfRegistration] = useState<boolean | undefined>(undefined);
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
   const [selectedParticipantsEmails, setSelectedParticipantsEmails] = useState<string[]>([]);
@@ -55,6 +80,12 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       });
     // eslint-disable-next-line
   }, [deleteParticipantsResult.data]);
+
+  useEffect(() => {
+    if (allowSelfRegistration === undefined && data?.meetingById) {
+      setAllowSelfRegistration(data.meetingById.allowSelfRegistration);
+    }
+  }, [data, allowSelfRegistration]);
 
   const addParticipantByEmail = async (email: string) => {
     if (checkIfEmailIsValid(email)) {
@@ -182,6 +213,28 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
     setFilteredParticipants([...participantsCopy].filter((p) => p.email.includes(searchInputValue)));
   }, [searchInputValue, participantsCopy]);
 
+  const toggleSelfRegistration = async () => {
+    try {
+      const response = await updateMeeting({
+        variables: { meeting: { id: meetingId, allowSelfRegistration: !allowSelfRegistration } },
+      });
+      toast({
+        title: 'Tillatelse for selvregistrering oppdatert.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      setAllowSelfRegistration(!allowSelfRegistration);
+    } catch (error) {
+      toast({
+        title: 'Kunne ikke oppdatere tillatelse for selvregistrering.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   const numberOfVotingEligibleParticipants = useMemo(() => participants.filter((p) => p.isVotingEligible).length, [
     participants,
   ]);
@@ -193,6 +246,10 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
       {updateParticipantResult.loading && <Loading asOverlay text="Oppdaterer deltaker" />}
       {deleteParticipantsResult.loading && <Loading asOverlay text="Sletter deltaker" />}
       <VStack spacing="7">
+        <AllowSelfRegistrationSwitch
+          toggleSelfRegistration={toggleSelfRegistration}
+          allowSelfRegistration={allowSelfRegistration}
+        />
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
           <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
@@ -219,14 +276,17 @@ const AddParticipantsForm: React.FC<IProps> = ({ meetingId, participants, setPar
               <option value={SortingType.DESC}>Å - A</option>
             </Select>
           </HStack>
-
-          <ParticipantList
-            participants={filteredParticipants}
-            ownerEmail={ownerEmail}
-            changeParticipantRights={changeParticipantsRights}
-            selectedParticipantsEmails={selectedParticipantsEmails}
-            toggleSelectedParticipant={toggleSelectedParticipant}
-          />
+          {participantsLoading ? (
+            <Loading text="Henter deltagere." asOverlay />
+          ) : (
+            <ParticipantList
+              participants={filteredParticipants}
+              ownerEmail={ownerEmail}
+              changeParticipantRights={changeParticipantsRights}
+              selectedParticipantsEmails={selectedParticipantsEmails}
+              toggleSelectedParticipant={toggleSelectedParticipant}
+            />
+          )}
 
           <Flex justifyContent="flex-start" borderRadius="4px" alignItems="center" w="100%" mt="1rem">
             <DeleteParticipants
