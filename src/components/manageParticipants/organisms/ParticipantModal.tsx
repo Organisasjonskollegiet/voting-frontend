@@ -38,7 +38,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="4xl">
         <ModalOverlay />
-        <ModalContent mx="2rem" bg={offwhite} textColor={darkblue} p="2em">
+        <ModalContent bg={offwhite} textColor={darkblue} p="2em">
           <ModalHeader>Administrer deltagere</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
