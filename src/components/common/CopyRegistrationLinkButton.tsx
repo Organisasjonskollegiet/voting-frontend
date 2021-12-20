@@ -2,7 +2,7 @@ import { CopyIcon } from '@chakra-ui/icons';
 import { Button, Tooltip, useToast, Text } from '@chakra-ui/react';
 import React from 'react';
 
-export const getRegistrationLink = (meetingId: string) => {
+export const getRegistrationLink: (meetingId: string) => string = (meetingId) => {
   return `${process.env.REACT_APP_REDIRECT_URI}/meeting/${meetingId}/register`;
 };
 

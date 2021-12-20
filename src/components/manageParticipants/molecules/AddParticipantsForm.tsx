@@ -8,19 +8,7 @@ import {
   useUpdateMeetingMutation,
   useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
-import {
-  VStack,
-  FormControl,
-  FormLabel,
-  Divider,
-  HStack,
-  Select,
-  useToast,
-  Text,
-  Flex,
-  Tooltip,
-  Switch,
-} from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text, Flex } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import Loading from '../../common/Loading';
 import { useEffect } from 'react';
@@ -58,7 +46,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
   const [updateParticipant, updateParticipantResult] = useUpdateParticipantMutation();
   const [deleteParticipants, deleteParticipantsResult] = useDeleteParticipantsMutation();
   const [updateMeeting] = useUpdateMeetingMutation();
-  const { data, loading } = useGetAllowSelfRegistrationQuery({ variables: { meetingId } });
+  const { data } = useGetAllowSelfRegistrationQuery({ variables: { meetingId } });
   const [allowSelfRegistration, setAllowSelfRegistration] = useState<boolean | undefined>(undefined);
   const [readingFiles, setReadingFiles] = useState<boolean>(false);
   const [inputRole, setInputRole] = useState<Role>(Role.Participant);
@@ -215,7 +203,7 @@ const AddParticipantsForm: React.FC<IProps> = ({
 
   const toggleSelfRegistration = async () => {
     try {
-      const response = await updateMeeting({
+      await updateMeeting({
         variables: { meeting: { id: meetingId, allowSelfRegistration: !allowSelfRegistration } },
       });
       toast({

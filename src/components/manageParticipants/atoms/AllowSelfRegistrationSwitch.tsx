@@ -1,5 +1,5 @@
-import { FormControl, FormLabel, HStack, Switch, Tooltip, Box } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import React from 'react';
+import { FormControl, FormLabel, HStack, Switch, Box } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import AllowSelfRegistrationInformationModal from './AllowSelfRegistrationInformationModal';
 

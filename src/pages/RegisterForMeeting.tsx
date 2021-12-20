@@ -27,7 +27,7 @@ const RegisterForMeeting: React.FC = () => {
       });
       history.push(`/meeting/${meetingId}`);
     }
-  }, [data, history, meetingId]);
+  }, [data, history, meetingId, toast]);
 
   if (loading) return <Loading text="Registrerer deg som deltaker" />;
 
