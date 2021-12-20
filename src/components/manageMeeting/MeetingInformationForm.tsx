@@ -28,10 +28,6 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
     onChange({ ...meeting, description: (e.target as HTMLTextAreaElement).value });
   };
 
-  const toggleSelfRegistration = () => {
-    onChange({ ...meeting, allowSelfRegistration: !meeting.allowSelfRegistration });
-  };
-
   return (
     <VStack spacing="7" color="#718096" sx={meetingInformationFormStyle}>
       <FormControl isRequired>
