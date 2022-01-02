@@ -31,6 +31,7 @@ const ManageMeeting: React.FC = () => {
     organization: '',
     startTime: new Date(),
     description: '',
+    allowSelfRegistration: false,
   });
 
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
@@ -50,6 +51,7 @@ const ManageMeeting: React.FC = () => {
       description: meeting.description ?? '',
       organization: meeting.organization,
       startTime: new Date(meeting.startTime),
+      allowSelfRegistration: meeting.allowSelfRegistration,
     });
     setMeetingHasBeenEdited(false);
     const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
@@ -78,6 +80,7 @@ const ManageMeeting: React.FC = () => {
         description: meeting.description ?? '',
         organization: meeting.organization,
         startTime: new Date(meeting.startTime),
+        allowSelfRegistration: meeting.allowSelfRegistration,
       });
     }
   }, [data, meeting.id]);

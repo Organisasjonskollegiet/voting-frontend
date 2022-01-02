@@ -11,7 +11,13 @@ const nullFunction = () => {
   return;
 };
 
-const emptyMeeting = { title: '', organization: '', startTime: new Date(), description: '' };
+const emptyMeeting = {
+  title: '',
+  organization: '',
+  startTime: new Date(),
+  description: '',
+  allowSelfRegistration: false,
+};
 
 const Template: Story = () => (
   <ManageMeetingInformation

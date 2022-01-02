@@ -38,6 +38,13 @@ query GetMeetingById($meetingId: String!) {
     organization
     status
     startTime
+    allowSelfRegistration
+  }
+}
+
+query GetAllowSelfRegistration($meetingId: String!) {
+  meetingById(meetingId: $meetingId) {
+    allowSelfRegistration
   }
 }
 

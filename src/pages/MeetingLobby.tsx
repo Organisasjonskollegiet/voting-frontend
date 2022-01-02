@@ -17,6 +17,7 @@ import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
 import { useAuth0 } from '@auth0/auth0-react';
+import SelfRegistration from '../components/meetingLobby/SelfRegistration';
 
 export type MeetingContextState = {
   role: Role;
@@ -24,6 +25,7 @@ export type MeetingContextState = {
   presentationMode: boolean;
   isVotingEligible: boolean;
   numberOfUpcomingVotations: number | null;
+  allowSelfRegistration: boolean;
 };
 
 const contextDefualtValues: MeetingContextState = {
@@ -32,11 +34,13 @@ const contextDefualtValues: MeetingContextState = {
   presentationMode: false,
   isVotingEligible: false,
   numberOfUpcomingVotations: 0,
+  allowSelfRegistration: false,
 };
 
 export enum MeetingLocation {
   LOBBY,
   ACTIVEVOTATION,
+  SELFREGISTRATION,
 }
 
 export const MeetingContext = createContext<MeetingContextState>(contextDefualtValues);
@@ -57,6 +61,7 @@ const MeetingLobby: React.FC = () => {
 
   const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
   const [role, setRole] = useState<Role>();
+  const [allowSelfRegistration, setAllowSelfRegistration] = useState(false);
   const [openVotation, setOpenVotation] = useState<string | null>();
   // used to avoid immediately going back to open votation after going back to lobby
   const [lastOpenVotation, setLastOpenVotation] = useState<string | null>();
@@ -115,6 +120,11 @@ const MeetingLobby: React.FC = () => {
     setNumberOfUpcomingVotations(data.numberOfUpcomingVotations);
   }, [data, numberOfUpcomingVotations]);
 
+  useEffect(() => {
+    if (!data?.meetingById || data?.meetingById?.allowSelfRegistration === allowSelfRegistration) return;
+    setAllowSelfRegistration(data.meetingById.allowSelfRegistration);
+  }, [data?.meetingById, allowSelfRegistration, setAllowSelfRegistration]);
+
   // handle votation opening
   useEffect(() => {
     if (
@@ -160,6 +170,7 @@ const MeetingLobby: React.FC = () => {
         presentationMode,
         isVotingEligible,
         numberOfUpcomingVotations,
+        allowSelfRegistration,
       }}
     >
       <PageContainer>
@@ -174,7 +185,7 @@ const MeetingLobby: React.FC = () => {
           )}
           {location === MeetingLocation.ACTIVEVOTATION && openVotation ? (
             <ActiveVotation backToVotationList={returnToVotationList} votationId={openVotation} />
-          ) : (
+          ) : location === MeetingLocation.LOBBY ? (
             <VStack w="90vw" maxWidth="800px" alignItems="left" spacing="3em" mt="10vh">
               <VStack alignItems="left">
                 <Heading size="lg">{data?.meetingById?.title}</Heading>
@@ -200,6 +211,8 @@ const MeetingLobby: React.FC = () => {
                 </HStack>
               </VStack>
             </VStack>
+          ) : (
+            <SelfRegistration meetingId={meetingId} />
           )}
         </Box>
       </PageContainer>

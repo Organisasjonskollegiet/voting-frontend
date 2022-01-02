@@ -61,6 +61,7 @@ query GetMeetingForLobby($meetingId: String!) {
   meetingById(meetingId: $meetingId) {
     id
     title
+    allowSelfRegistration
     owner {
       email
     }

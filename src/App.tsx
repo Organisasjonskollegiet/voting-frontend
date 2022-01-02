@@ -4,6 +4,7 @@ import Navbar from './components/common/Navbar';
 import ManageMeeting from './pages/ManageMeeting';
 import MyMeetings from './pages/MyMeetings';
 import MeetingLobby from './pages/MeetingLobby';
+import RegisterForMeeting from './pages/RegisterForMeeting';
 
 const App: FC = () => {
   return (
@@ -15,6 +16,9 @@ const App: FC = () => {
         </Route>
         <Route key="add-meeting" path="/meeting/new">
           <ManageMeeting />
+        </Route>
+        <Route path="/meeting/:meetingId/register">
+          <RegisterForMeeting />
         </Route>
         <Route path="/meeting/:meetingId">
           <MeetingLobby />
