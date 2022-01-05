@@ -14,7 +14,7 @@ interface ReviewVotationProps {
 
 const ReviewVotation: React.FC<ReviewVotationProps> = ({ handleClick, choice }) => {
   return (
-    <Box mr="4rem">
+    <Box mr="4rem" maxW="100%">
       <Text fontWeight="bold">Gi din tilbakemelding: </Text>
       <HStack spacing="0" border={`1px solid ${darkblue}`} borderRadius="0.5rem" overflow="hidden">
         <Button

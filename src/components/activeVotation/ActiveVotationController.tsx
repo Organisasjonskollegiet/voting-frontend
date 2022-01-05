@@ -32,9 +32,9 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   const getText = () => {
     switch (status) {
       case VotationStatus.Open:
-        return <Text>Gå videre</Text>;
+        return 'Gå videre';
       case VotationStatus.CheckingResult:
-        return <Text>Publiser resultater</Text>;
+        return 'Publiser resultater';
     }
   };
 
