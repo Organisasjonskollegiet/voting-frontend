@@ -1,8 +1,8 @@
 import { Box, HStack } from '@chakra-ui/react';
 import React from 'react';
-import CustomTag from '../common/CustomTag';
-import { green } from '../styles/colors';
-import { collapsedStyle } from '../styles/formStyles';
+import CustomTag from '../../common/CustomTag';
+import { green } from '../../styles/colors';
+import { collapsedStyle } from '../../styles/formStyles';
 import CollapsedVotationRow, { CollapsedVotationRowProps } from './CollapsedVotationRow';
 
 interface OpenVotationProps extends CollapsedVotationRowProps {

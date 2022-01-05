@@ -17,8 +17,8 @@ import {
 } from '../../__generated__/graphql-types';
 import { Votation, Alternative } from '../../types/types';
 import Loading from '../common/Loading';
-import EndedVotation from './EndedVotation';
-import OpenVotation from './OpenVotation';
+import EndedVotation from './votation/EndedVotation';
+import OpenVotation from './votation/OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
 import {

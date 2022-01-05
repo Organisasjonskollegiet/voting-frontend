@@ -5,7 +5,7 @@ import { collapsedStyle } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import { expandAndLift } from '../../styles/styles';
 import { DragHandleIcon } from '@chakra-ui/icons';
-import CollapsedVotationRow from '../CollapsedVotationRow';
+import CollapsedVotationRow from '../votation/CollapsedVotationRow';
 
 interface CollapsedVotationFormProps {
   isAdmin: boolean;

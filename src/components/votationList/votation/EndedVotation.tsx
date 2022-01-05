@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Text, Tooltip } from '@chakra-ui/react';
-import { collapsedStyle } from '../styles/formStyles';
-import { Votation } from '../../types/types';
-import { Role } from '../../__generated__/graphql-types';
-import useScreenWidth from '../../hooks/ScreenWidth';
+import { collapsedStyle } from '../../styles/formStyles';
+import { Votation } from '../../../types/types';
+import { Role } from '../../../__generated__/graphql-types';
+import useScreenWidth from '../../../hooks/ScreenWidth';
 import EndedVotationMobile from './EndedVotationMobile';
 import EndedVotationTemplate from './EndedVotationTemplate';
 
