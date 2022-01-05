@@ -1,9 +1,8 @@
-import { HStack, IconButton, Input } from '@chakra-ui/react';
+import { Button, HStack, Input } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Role } from '../../../__generated__/graphql-types';
 import SelectRole from './SelectRole';
 import { boxShadow } from '../../styles/formStyles';
-import { AddIcon } from '@chakra-ui/icons';
 import { checkIfEmailIsValid } from '../utils';
 
 interface InviteParticipantProps {
@@ -29,25 +28,23 @@ const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, invit
   };
 
   return (
-    <HStack w="100%" borderRadius="4px" bg="#fff" zIndex="10" sx={{ boxShadow }}>
-      <Input
-        w="80%"
-        style={{ border: 'none' }}
-        placeholder="Inviter deltaker med epostadresse"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={handleOnEnter}
-      />
-      <SelectRole onChange={(role: Role) => selectRole(role)} value={participantRole} />
-      <IconButton
-        variant="standard"
-        disabled={email === ''}
-        icon={<AddIcon />}
-        aria-label="Legg til deltaker"
-        onClick={addParticipant}
-      />
-    </HStack>
+    <>
+      <HStack w="100%" borderRadius="4px" bg="#fff" zIndex="10" sx={{ boxShadow }}>
+        <Input
+          w="80%"
+          style={{ border: 'none' }}
+          placeholder="Inviter deltaker med epostadresse"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={handleOnEnter}
+        />
+        <SelectRole onChange={(role: Role) => selectRole(role)} value={participantRole} />
+      </HStack>
+      <Button onClick={addParticipant} disabled={email === ''} variant="dark" mt="1rem">
+        Legg til deltager
+      </Button>
+    </>
   );
 };
 
