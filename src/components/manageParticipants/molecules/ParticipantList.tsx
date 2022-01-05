@@ -56,7 +56,7 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
           <React.Fragment key={participant.email}>
             {index > 0 && <Divider width="100%" m="0.5em 0" />}
             <HStack key={participant.email} width="100%" justifyContent="space-between" p="1px" pl="1rem">
-              <HStack spacing="2">
+              <HStack spacing="2" pr="1rem">
                 <Checkbox
                   isChecked={selectedParticipantsEmails.includes(participant.email)}
                   onChange={() => toggleSelectedParticipant(participant.email)}
