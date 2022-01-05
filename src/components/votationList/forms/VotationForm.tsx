@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { VStack, Divider, HStack, IconButton, Box, Tooltip } from '@chakra-ui/react';
+import { VStack, Divider, IconButton, Box, Tooltip } from '@chakra-ui/react';
 import DuplicateIcon from '../../../static/duplicateIcon.svg';
 import { VotationType } from '../../../__generated__/graphql-types';
 import { Draggable } from 'react-beautiful-dnd';
@@ -12,6 +12,7 @@ import { Votation } from '../../../types/types';
 import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
 import DeleteButton from '../../common/DeleteButton';
 import CollapsedVotationForm from './CollapsedVotationForm';
+import WrapStack from '../../common/WrapStack';
 
 interface IProps {
   index: number;
@@ -88,7 +89,7 @@ const AddVotationForm: React.FC<IProps> = ({
             maxWidth="800px"
             spacing="5"
           >
-            <HStack flexWrap={'wrap'} spacing="10" width="100%" align="start">
+            <WrapStack breakpoint={690} width="100%" align="start">
               <VStack spacing="7" flex="2">
                 <VotationInfoForm votation={votation} updateVotation={updateVotation} />
                 <AlternativesForm
@@ -105,7 +106,7 @@ const AddVotationForm: React.FC<IProps> = ({
                 />
                 <VotationCheckboxes votation={votation} updateVotation={updateVotation} />
               </VStack>
-            </HStack>
+            </WrapStack>
             <Divider m="3em 0" />
             <Box align="right" width="100%">
               <DeleteButton onClick={() => setVotationDialogIsOpen(true)} label="Slett votering" />
