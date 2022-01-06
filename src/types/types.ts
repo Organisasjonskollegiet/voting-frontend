@@ -6,6 +6,7 @@ export interface MeetingWorking {
   organization: string;
   startTime: Date;
   description: string;
+  allowSelfRegistration: boolean;
 }
 
 export interface Alternative {

@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, FormControl, FormLabel, HStack, Switch } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
 import useScreenWidth from '../../hooks/ScreenWidth';
-import { MeetingLocation } from '../../pages/MeetingLobby';
+import { MeetingContext, MeetingLocation } from '../../pages/MeetingLobby';
 import WrapStack from '../common/WrapStack';
 import LobbyNavigationButton from './LobbyNavigationButton';
 
@@ -19,6 +19,7 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
   togglePresentationMode,
 }) => {
   const screenWidth = useScreenWidth();
+  const { allowSelfRegistration } = useContext(MeetingContext);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -48,6 +49,14 @@ const LobbyNavigation: React.FC<LobbyNavigationProps> = ({
         <Switch onChange={togglePresentationMode} aria-label="Presentasjonsmodus" defaultChecked={false} />
       </FormControl>
       <HStack justifyContent="center" flex="1">
+        <LobbyNavigationButton
+          selected={location === MeetingLocation.SELFREGISTRATION}
+          isDisabled={!allowSelfRegistration}
+          text="Selvregistrering"
+          onClick={() => {
+            setLocation(MeetingLocation.SELFREGISTRATION);
+          }}
+        />
         <LobbyNavigationButton
           selected={location === MeetingLocation.LOBBY}
           text="Voteringsliste"

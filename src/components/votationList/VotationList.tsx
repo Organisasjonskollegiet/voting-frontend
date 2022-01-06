@@ -536,6 +536,12 @@ const VotationList: React.FC<VotationListProps> = ({
       {(createVotationsResult.loading || updateVotationsResult.loading) && (
         <Loading asOverlay text="Oppdaterer votering" />
       )}
+      {(!endedVotations || (endedVotations && endedVotations.length === 0)) &&
+        !ongoingVotation &&
+        !nextVotation &&
+        (!upcomingVotations || (upcomingVotations && upcomingVotations.length === 0)) && (
+          <Text>Møtet har ingen voteringer enda</Text>
+        )}
       {ongoingVotation && navigateToOpenVotation && (
         <VStack alignItems="start" spacing="16px">
           <Heading size="sm">{'Aktiv votering'}</Heading>

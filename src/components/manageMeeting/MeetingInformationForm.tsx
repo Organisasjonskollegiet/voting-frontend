@@ -31,9 +31,12 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
   return (
     <VStack spacing="7" color="#718096" sx={meetingInformationFormStyle}>
       <FormControl isRequired>
-        <FormLabel sx={labelStyle}>Organisasjonsnavn</FormLabel>
+        <FormLabel htmlFor="organization" sx={labelStyle}>
+          Organisasjonsnavn
+        </FormLabel>
         <Input
           sx={inputStyle}
+          id="organization"
           isRequired
           _focus={highlightedInputStyle}
           value={meeting.organization}
@@ -42,8 +45,11 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         />
       </FormControl>
       <FormControl isRequired>
-        <FormLabel sx={labelStyle}>Tittel på møte</FormLabel>
+        <FormLabel htmlFor="title" sx={labelStyle}>
+          Tittel på møte
+        </FormLabel>
         <Input
+          id="title"
           sx={inputStyle}
           isRequired
           _focus={highlightedInputStyle}
@@ -53,9 +59,11 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         />
       </FormControl>
       <FormControl isRequired fontWeight="normal">
-        <FormLabel sx={labelStyle}>Møtetidspunkt</FormLabel>
+        <FormLabel htmlFor="start-time" sx={labelStyle}>
+          Møtetidspunkt
+        </FormLabel>
         <DatePicker
-          id="published-date"
+          id="start-time"
           selectedDate={meeting.startTime}
           // eslint-disable-next-line
           onChange={(date: any) => onChange({ ...meeting, startTime: date })}
@@ -63,9 +71,12 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
         />
       </FormControl>
       <FormControl>
-        <FormLabel sx={labelStyle}>Beskrivelse av møte</FormLabel>
+        <FormLabel htmlFor="description" sx={labelStyle}>
+          Beskrivelse av møte
+        </FormLabel>
         <AutoResizeTextarea
           sx={inputStyle}
+          id="description"
           isRequired
           _focus={highlightedInputStyle}
           value={meeting.description}

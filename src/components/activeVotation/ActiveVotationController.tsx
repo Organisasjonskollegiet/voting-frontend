@@ -87,7 +87,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
       )}
       {status === VotationStatus.Open && !presentationMode && (
         <FormControl display="flex" width="fit-content">
-          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="email-alerts" mb="0">
+          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="hide-vote" mb="0">
             Vis meg hva jeg stemte
           </FormLabel>
           <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />

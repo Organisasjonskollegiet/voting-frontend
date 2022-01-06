@@ -6,6 +6,7 @@ mutation CreateMeeting($meeting: CreateMeetingInput!) {
     startTime
     description
     status
+    allowSelfRegistration
   }
 }
 
@@ -17,6 +18,7 @@ mutation UpdateMeeting($meeting: UpdateMeetingInput!) {
     startTime
     description
     status
+    allowSelfRegistration
   }
 }
 
@@ -39,5 +41,12 @@ mutation DeleteParticipants($meetingId: String!, $emails: [String!]!) {
 mutation DeleteMeeting($id: String!) {
   deleteMeeting(id: $id) {
     id
+  }
+}
+
+mutation RegisterAsParticipant($meetingId: String!) {
+  registerAsParticipant(meetingId: $meetingId) {
+    role
+    isVotingEligible
   }
 }
