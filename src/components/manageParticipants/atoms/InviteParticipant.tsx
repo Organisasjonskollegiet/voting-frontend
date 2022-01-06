@@ -1,4 +1,4 @@
-import { Button, HStack, Input } from '@chakra-ui/react';
+import { Button, HStack, Input, useToast } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Role } from '../../../__generated__/graphql-types';
 import SelectRole from './SelectRole';
@@ -14,10 +14,18 @@ interface InviteParticipantProps {
 const InviteParticipant: React.FC<InviteParticipantProps> = ({ selectRole, inviteParticipant, participantRole }) => {
   const [email, setEmail] = useState<string>('');
 
+  const toast = useToast();
   const addParticipant = () => {
     if (checkIfEmailIsValid(email)) {
       inviteParticipant(email);
       setEmail('');
+    } else {
+      toast({
+        title: 'Epost er ikke gyldig',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
