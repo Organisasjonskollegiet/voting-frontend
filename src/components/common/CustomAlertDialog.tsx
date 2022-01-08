@@ -54,7 +54,7 @@ const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
   return (
-    <AlertDialog leastDestructiveRef={cancelRef} isOpen={dialogIsOpen} onClose={handleCancel}>
+    <AlertDialog leastDestructiveRef={cancelRef} isOpen={dialogIsOpen} onClose={handleCancel} isCentered>
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
