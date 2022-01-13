@@ -73,7 +73,7 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
   };
 
   return (
-    <WrapStack breakpoint={550} w="100%" justifyContent="space-between">
+    <WrapStack breakpoint={650} w="100%" justifyContent="space-between" spacing="2">
       {role === Role.Admin && (
         <Button
           variant="standard"
@@ -82,22 +82,27 @@ const ActiveVotationController: React.FC<VotationControllerProps> = ({
           onClick={() => setInvalidateVotationDialogOpen(true)}
           leftIcon={<CloseIcon h="2.5" />}
         >
-          <Text mt="0.25rem">Avbryt votering</Text>
+          <Text>Avbryt votering</Text>
         </Button>
       )}
       {status === VotationStatus.Open && !presentationMode && (
         <FormControl display="flex" width="fit-content">
-          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="hide-vote" mb="0">
+          <FormLabel ml="0.5em" fontWeight="bold" htmlFor="hide-vote" mb="0" py="0.5rem">
             Vis meg hva jeg stemte
           </FormLabel>
-          <Switch isDisabled={disableShowVote} id="hide-vote" onChange={toggleShowVote} isChecked={showVote} />
+          <Switch
+            isDisabled={disableShowVote}
+            id="hide-vote"
+            mt="1px"
+            py="0.5rem"
+            onChange={toggleShowVote}
+            isChecked={showVote}
+          />
         </FormControl>
       )}
       {role === Role.Admin && (
         <Button variant="standard" w="fit-content" onClick={() => setDialogOpen(true)} rightIcon={<ArrowForwardIcon />}>
-          <Text justifyContent="end" mt="0.25rem">
-            {getText()}
-          </Text>
+          <Text justifyContent="end">{getText()}</Text>
         </Button>
       )}
       <CustomAlertDialog
