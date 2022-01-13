@@ -27,7 +27,7 @@ const VotationListButtonRow: React.FC<VotationListButtonRowProps> = ({
         bg={offwhite}
         paddingY="1rem"
       >
-        <WrapStack breakpoint={479} maxWidth="800px" w="92%" justifyContent="space-between">
+        <WrapStack breakpoint={600} maxWidth="800px" w="92%" justifyContent="space-between">
           <Button
             aria-label="Legg til votering"
             w={'200px'}

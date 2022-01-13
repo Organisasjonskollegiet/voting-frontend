@@ -204,7 +204,7 @@ const MeetingLobby: React.FC = () => {
               </VStack>
               <VStack alignItems="left" spacing="1em">
                 <Divider />
-                <WrapStack breakpoint={479} justifyContent="space-between">
+                <WrapStack breakpoint={600} justifyContent="space-between">
                   <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
 
                   {role === Role.Admin && (
