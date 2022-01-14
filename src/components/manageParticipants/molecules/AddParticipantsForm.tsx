@@ -8,7 +8,7 @@ import {
   useUpdateMeetingMutation,
   useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text, Flex } from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Divider, useToast, Text, Flex } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import Loading from '../../common/Loading';
 import { useEffect } from 'react';
@@ -228,12 +228,14 @@ const AddParticipantsForm: React.FC<IProps> = ({
         />
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
-          <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
-          <InviteParticipant
-            inviteParticipant={addParticipantByEmail}
-            selectRole={(role: Role) => setInputRole(role)}
-            participantRole={inputRole}
-          />
+          <VStack alignItems="left" spacing="6">
+            <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
+            <InviteParticipant
+              inviteParticipant={addParticipantByEmail}
+              selectRole={(role: Role) => setInputRole(role)}
+              participantRole={inputRole}
+            />
+          </VStack>
         </FormControl>
         <Divider m="3em 0" />
         <FormControl>
