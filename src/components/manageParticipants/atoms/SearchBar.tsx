@@ -21,7 +21,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchValue }) => {
   };
 
   return (
-    <InputGroup boxShadow={boxShadow} borderRadius="20px" w="60%" bg="white">
+    <InputGroup boxShadow={boxShadow} borderRadius="20px" w="min(100%, 420px)" bg="white">
       <InputLeftElement pointerEvents="none" children={<SearchIcon />} />
       <Input
         borderRadius="20px"
