@@ -56,7 +56,7 @@ const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
   return (
     <AlertDialog leastDestructiveRef={cancelRef} isOpen={dialogIsOpen} onClose={handleCancel} isCentered>
       <AlertDialogOverlay>
-        <AlertDialogContent mx="2rem">
+        <AlertDialogContent mx="1.5rem">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {type}
           </AlertDialogHeader>

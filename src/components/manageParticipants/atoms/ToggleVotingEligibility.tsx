@@ -1,4 +1,4 @@
-import { FormLabel, Text, Switch, HStack } from '@chakra-ui/react';
+import { Switch } from '@chakra-ui/react';
 import React from 'react';
 
 interface ToggleVotingEligibilityProps {
@@ -7,14 +7,7 @@ interface ToggleVotingEligibilityProps {
 }
 
 const ToggleVotingEligibility: React.FC<ToggleVotingEligibilityProps> = ({ toggle, isChecked }) => {
-  return (
-    <HStack>
-      <FormLabel mb="0">
-        <Text whiteSpace="nowrap">Har stemmerett</Text>
-      </FormLabel>
-      <Switch isChecked={isChecked} onChange={toggle} aria-label="Har stemmerett" />
-    </HStack>
-  );
+  return <Switch isChecked={isChecked} onChange={toggle} aria-label="Har stemmerett" />;
 };
 
 export default ToggleVotingEligibility;
