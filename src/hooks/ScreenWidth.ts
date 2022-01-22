@@ -8,10 +8,8 @@ function useScreenWidth(): number {
       setScreenWidth(window.innerWidth);
     }
 
-    window.addEventListener('resize', () => {
-      setScreenWidth(window.innerWidth);
-    });
-    handleResize();
+    window.addEventListener('resize', handleResize);
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 

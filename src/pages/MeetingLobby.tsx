@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { Center, Box, Heading, Text, VStack, Divider, HStack } from '@chakra-ui/react';
+import { Center, Box, Heading, Text, VStack, Divider } from '@chakra-ui/react';
 import { useParams, useHistory } from 'react-router';
 import {
   useVotationOpenedForMeetingSubscription,
@@ -17,6 +17,7 @@ import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
 import PageContainer from '../components/common/PageContainer';
 import ActiveVotation from './ActiveVotation';
 import { useAuth0 } from '@auth0/auth0-react';
+import WrapStack from '../components/common/WrapStack';
 import SelfRegistration from '../components/meetingLobby/SelfRegistration';
 
 export type MeetingContextState = {
@@ -203,12 +204,13 @@ const MeetingLobby: React.FC = () => {
               </VStack>
               <VStack alignItems="left" spacing="1em">
                 <Divider />
-                <HStack justifyContent="space-between">
+                <WrapStack breakpoint={600} justifyContent="space-between">
                   <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
+
                   {role === Role.Admin && (
                     <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
                   )}
-                </HStack>
+                </WrapStack>
               </VStack>
             </VStack>
           ) : (

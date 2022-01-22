@@ -1,6 +1,6 @@
 import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, HStack, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import useScreenWidth from '../../hooks/ScreenWidth';
+import useScreenWidth from '../../../hooks/ScreenWidth';
 import { EndedVotationProps, endedVotationStyles } from './EndedVotation';
 import EndedVotationTemplate from './EndedVotationTemplate';
 

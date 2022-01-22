@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
-import { VStack, Text, Divider, Button, HStack, Box, Image, Heading } from '@chakra-ui/react';
+import { VStack, Text, Divider, Button, Box, Image, Heading } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
 import Loading from '../common/Loading';
@@ -28,6 +28,8 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
   const pageBreapoint = 850;
   const { result, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode, numberOfUpcomingVotations } = useContext(MeetingContext);
+
+  const isThereAnyUpcomingVotations = numberOfUpcomingVotations && numberOfUpcomingVotations > 0;
 
   if (!winners && loading) return <Loading text="Henter resultat" />;
   if (!winners) return <></>;
@@ -73,13 +75,13 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
       {showResultsTable &&
         (isStv ? <StvResultTable result={result} /> : <ResultsTable result={result} votationId={votationId} />)}
       <Divider m="3em 0" />
-      <HStack w="100%" justifyContent="space-between">
+      <WrapStack breakpoint={isThereAnyUpcomingVotations ? 650 : 450} w="100%" justifyContent="space-between">
         <Button variant="standard" onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
-        {numberOfUpcomingVotations && numberOfUpcomingVotations > 0 && <StartNextVotationButton />}
-      </HStack>
+        {isThereAnyUpcomingVotations && <StartNextVotationButton />}
+      </WrapStack>
     </VStack>
   );
 };

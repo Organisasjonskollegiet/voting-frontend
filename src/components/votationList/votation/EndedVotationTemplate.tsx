@@ -1,11 +1,11 @@
 import { Box, HStack } from '@chakra-ui/layout';
 import React from 'react';
-import { Role, VotationStatus } from '../../__generated__/graphql-types';
-import CustomTag from '../common/CustomTag';
-import DuplicateVotation from './DuplicateVotation';
-import Hammer from '../../static/hammer.svg';
-import CollapsedVotationRow from './CollapsedVotationRow';
+import { Role, VotationStatus } from '../../../__generated__/graphql-types';
+import CustomTag from '../../common/CustomTag';
+import DuplicateVotation from './DuplicateVotationButton';
+import Hammer from '../../../static/hammer.svg';
 import { EndedVotationProps } from './EndedVotation';
+import CollapsedVotationRow from './CollapsedVotationRow';
 
 const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
   role,
@@ -15,7 +15,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
   onClick,
 }) => {
   return (
-    <Box key={votation.id} onClick={onClick} w="90vw" maxW="800px" h="56px" paddingLeft="1.25em">
+    <Box key={votation.id} onClick={onClick} w="90vw" maxW="800px" h="56px" paddingLeft="1.25em" bg="white">
       <HStack
         h="100%"
         justifyContent="space-between"

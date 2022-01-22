@@ -8,11 +8,10 @@ import {
   useUpdateMeetingMutation,
   useUpdateParticipantMutation,
 } from '../../../__generated__/graphql-types';
-import { VStack, FormControl, FormLabel, Divider, HStack, Select, useToast, Text, Flex } from '@chakra-ui/react';
+import { VStack, FormControl, FormLabel, Divider, useToast, Text, Flex } from '@chakra-ui/react';
 import { labelStyle } from '../../styles/formStyles';
 import Loading from '../../common/Loading';
 import { useEffect } from 'react';
-import { boxShadow } from '../../styles/formStyles';
 import ParticipantList from './ParticipantList';
 import SearchBar from '../atoms/SearchBar';
 import InviteParticipant from '../atoms/InviteParticipant';
@@ -21,6 +20,8 @@ import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUploa
 import { checkIfEmailIsValid, onFileUpload } from '../utils';
 import DeleteParticipants from '../atoms/DeleteParticipants';
 import AllowSelfRegistrationSwitch from '../atoms/AllowSelfRegistrationSwitch';
+import WrapStack from '../../common/WrapStack';
+import SortParticipants, { SortingOptions } from '../atoms/SortParticipants';
 
 interface IProps {
   meetingId: string;
@@ -28,11 +29,6 @@ interface IProps {
   setParticipants: (participants: ParticipantOrInvite[]) => void;
   ownerEmail: string | undefined;
   participantsLoading: boolean;
-}
-
-enum SortingType {
-  ASC = 'ASC',
-  DESC = 'DESC',
 }
 
 const AddParticipantsForm: React.FC<IProps> = ({
@@ -182,18 +178,18 @@ const AddParticipantsForm: React.FC<IProps> = ({
     setParticipants([...participants.filter((p) => p.email !== participant.email), participantInput]);
   };
 
-  const [ascVsDesc, setAscVsDesc] = useState<SortingType>(SortingType.ASC);
+  const [activeSortingOption, setActiveSortingOption] = useState<SortingOptions>(SortingOptions.ASC);
   const sortParticipantsAlphabetically = useCallback(() => {
-    const reversed = ascVsDesc === SortingType.DESC;
+    const reversed = activeSortingOption === SortingOptions.DESC;
     return [...participants].sort((a, b) =>
       reversed ? -a.email.localeCompare(b.email) : a.email.localeCompare(b.email)
     );
-  }, [participants, ascVsDesc]);
+  }, [participants, activeSortingOption]);
 
   const [participantsCopy, setParticipantsCopy] = useState<ParticipantOrInvite[]>(sortParticipantsAlphabetically);
   useEffect(() => {
     setParticipantsCopy(sortParticipantsAlphabetically);
-  }, [participants, ascVsDesc, sortParticipantsAlphabetically]);
+  }, [participants, activeSortingOption, sortParticipantsAlphabetically]);
 
   const [searchInputValue, setSearchInputValue] = useState<string>('');
   const [filteredParticipants, setFilteredParticipants] = useState<ParticipantOrInvite[]>(participants);
@@ -206,20 +202,12 @@ const AddParticipantsForm: React.FC<IProps> = ({
       await updateMeeting({
         variables: { meeting: { id: meetingId, allowSelfRegistration: !allowSelfRegistration } },
       });
-      toast({
-        title: 'Tillatelse for selvregistrering oppdatert.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      const title = 'Tillatelse for selvregistrering oppdatert.';
+      toast({ title, status: 'success', duration: 3000, isClosable: true });
       setAllowSelfRegistration(!allowSelfRegistration);
     } catch (error) {
-      toast({
-        title: 'Kunne ikke oppdatere tillatelse for selvregistrering.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      const title = 'Kunne ikke oppdatere tillatelse for selvregistrering.';
+      toast({ title, status: 'error', duration: 3000, isClosable: true });
     }
   };
 
@@ -240,30 +228,23 @@ const AddParticipantsForm: React.FC<IProps> = ({
         />
         <FormControl>
           <FormLabel sx={labelStyle}>Inviter møtedeltagere</FormLabel>
-          <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
-          <InviteParticipant
-            inviteParticipant={addParticipantByEmail}
-            selectRole={(role: Role) => setInputRole(role)}
-            participantRole={inputRole}
-          />
+          <VStack alignItems="left" spacing="6">
+            <InviteParticipantByFileUpload handleFileUpload={handleOnFileUpload} />
+            <InviteParticipant
+              inviteParticipant={addParticipantByEmail}
+              selectRole={(role: Role) => setInputRole(role)}
+              participantRole={inputRole}
+            />
+          </VStack>
         </FormControl>
         <Divider m="3em 0" />
         <FormControl>
           <FormLabel sx={labelStyle}>Administrer deltagere</FormLabel>
           <Text mb="0.5em">{`Antall deltakere med stemmerett:  ${numberOfVotingEligibleParticipants} av ${participants.length}`}</Text>
-          <HStack justifyContent="space-between" spacing="1em" mb="2em">
+          <WrapStack breakpoint={600} justifyContent="space-between" spacing="1em" mb="2em" alignItems="left">
             <SearchBar setSearchValue={setSearchInputValue} />
-
-            <Select
-              onChange={(e) => setAscVsDesc(e.target.value as SortingType)}
-              bg="white"
-              boxShadow={boxShadow}
-              w="200px"
-            >
-              <option value={SortingType.ASC}>A - Å</option>
-              <option value={SortingType.DESC}>Å - A</option>
-            </Select>
-          </HStack>
+            <SortParticipants setSortingOption={setActiveSortingOption} />
+          </WrapStack>
           {participantsLoading ? (
             <Loading text="Henter deltagere." asOverlay />
           ) : (

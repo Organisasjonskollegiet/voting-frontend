@@ -1,6 +1,6 @@
 import { Tooltip, IconButton } from '@chakra-ui/react';
 import React from 'react';
-import DuplicateIcon from '../../static/duplicateIcon.svg';
+import DuplicateIcon from '../../../static/duplicateIcon.svg';
 
 interface DuplicateVotationProps {
   handleDuplicateVotation: () => void;
