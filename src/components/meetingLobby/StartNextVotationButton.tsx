@@ -8,9 +8,11 @@ import {
   Button,
   VStack,
   useToast,
+  Flex,
 } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 import { useRef } from 'react';
+import useScreenWidth from '../../hooks/ScreenWidth';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import { useStartNextVotationMutation } from '../../__generated__/graphql-types';
 
@@ -69,9 +71,12 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({ check
     startVotation();
   };
 
+  const screenWidth = useScreenWidth();
+  const isMobile = screenWidth <= 601;
+
   return (
-    <>
-      <Button onClick={openVotationIfNoChanges} w={'250px'} variant="green">
+    <Flex w="100%">
+      <Button onClick={openVotationIfNoChanges} w={'250px'} variant="green" mx={isMobile ? 'auto' : undefined}>
         Start neste votering
       </Button>
       <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={() => setIsOpen(false)}>
@@ -98,7 +103,7 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({ check
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-    </>
+    </Flex>
   );
 };
 

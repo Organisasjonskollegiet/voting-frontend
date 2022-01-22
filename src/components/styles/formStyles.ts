@@ -40,7 +40,7 @@ export const inputStyle = {
 
 export const checkboxStyle = {
   boxShadow,
-  width: '270px',
+  width: 'min(100%, 270px)',
   height: '56px',
   padding: '16px',
   borderRadius: '8px',

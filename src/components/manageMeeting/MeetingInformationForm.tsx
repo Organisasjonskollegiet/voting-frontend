@@ -4,6 +4,7 @@ import DatePicker from '../common/DatePicker/DatePicker';
 import { labelStyle, inputStyle, highlightedInputStyle } from '../styles/formStyles';
 import { MeetingWorking } from '../../types/types';
 import { AutoResizeTextarea } from '../common/AutosizeTextArea';
+import { darkblue } from '../styles/colors';
 
 interface IProps {
   meeting: MeetingWorking;
@@ -29,7 +30,7 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
   };
 
   return (
-    <VStack spacing="7" color="#718096" sx={meetingInformationFormStyle}>
+    <VStack spacing="7" color={darkblue} sx={meetingInformationFormStyle}>
       <FormControl isRequired>
         <FormLabel htmlFor="organization" sx={labelStyle}>
           Organisasjonsnavn
@@ -91,7 +92,6 @@ const MeetingInformationForm: React.FC<IProps> = ({ meeting, onChange }) => {
 
 export const MeetingInformationFormConfig: ComponentStyleConfig = {
   baseStyle: {
-    minWidth: '320px',
     width: '100%',
     maxWidth: '800px',
     padding: '12px 0',
