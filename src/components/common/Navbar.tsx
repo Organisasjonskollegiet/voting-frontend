@@ -28,6 +28,7 @@ const links: Map<string, string> = new Map([
   ['Mine møter', '/'],
   // ['Min profil', '/profile'],
   ['Opprett møte', '/meeting/new'],
+  ['Om oss', '/about'],
 ]);
 const pageNames = Array.from(links.keys());
 

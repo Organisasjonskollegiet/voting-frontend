@@ -5,6 +5,7 @@ import ManageMeeting from './pages/ManageMeeting';
 import MyMeetings from './pages/MyMeetings';
 import MeetingLobby from './pages/MeetingLobby';
 import RegisterForMeeting from './pages/RegisterForMeeting';
+import AboutUs from './pages/AboutUs';
 
 const App: FC = () => {
   return (
@@ -22,6 +23,9 @@ const App: FC = () => {
         </Route>
         <Route path="/meeting/:meetingId">
           <MeetingLobby />
+        </Route>
+        <Route path="/about">
+          <AboutUs />
         </Route>
         <Route path="/">
           <MyMeetings />

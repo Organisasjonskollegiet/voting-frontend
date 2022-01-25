@@ -1,7 +1,8 @@
 import React from 'react';
 import InformationModal from '../../common/InformationModal';
-import { Heading, Link, Text } from '@chakra-ui/react';
+import { Heading, Text } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
+import ExternalLink from '../../common/ExternalLink';
 
 const VotationTypeInformation: React.FC = () => {
   return (
@@ -28,14 +29,9 @@ const VotationTypeInformation: React.FC = () => {
       </Text>
       <Text>
         Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
-        <Link
-          href="https://www.youtube.com/watch?v=bLH_w5kHJpA"
-          textDecoration="underline"
-          fontStyle="italic"
-          isExternal
-        >
+        <ExternalLink href="https://www.youtube.com/watch?v=bLH_w5kHJpA">
           Single transferable vote <ExternalLinkIcon mx="2px" />
-        </Link>
+        </ExternalLink>
       </Text>
     </InformationModal>
   );
