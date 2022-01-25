@@ -151,7 +151,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
     listName: 'ranked' | 'unranked',
     direction: 'up' | 'down'
   ) => {
-    if (!rankedAlternatives || !unrankedAlternatives) return;
+    if (!rankedAlternatives || !unrankedAlternatives || userHasVoted) return;
     const index = list.indexOf(alternative);
     // if alternative is on the bottom of a list and down is pressed, it is moved to
     // unranked if in ranked, and nothing happens if else
@@ -201,6 +201,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
                     isRanked={true}
                     showVote={!userHasVoted || showVote}
                     alternative={alt}
+                    key={alt.id}
                   />
                 ))}
               {provided.placeholder}
@@ -228,6 +229,7 @@ const PreferenceAlternativeList: React.FC<AlternativeListProps> = ({
                     isRanked={false}
                     showVote={!userHasVoted || showVote}
                     alternative={alt}
+                    key={alt.id}
                   />
                 ))}
               {provided.placeholder}
