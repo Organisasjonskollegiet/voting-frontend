@@ -33,9 +33,11 @@ const DraggableAlternative: React.FC<DraggableAlternativeProps> = ({
               <HStack>
                 {/* Arrow up should not show if alternative is at the top of ranked list */}
                 {!(isRanked && alternative.index === 0) && (
-                  <IconButton onClick={moveUp} icon={<ArrowUpIcon />} aria-label="Flytt opp" />
+                  <IconButton onClick={moveUp} icon={<ArrowUpIcon />} aria-label="Flytt opp" bg="transparent" />
                 )}
-                {isRanked && <IconButton onClick={moveDown} icon={<ArrowDownIcon />} aria-label="Flytt ned" />}
+                {isRanked && (
+                  <IconButton onClick={moveDown} icon={<ArrowDownIcon />} aria-label="Flytt ned" bg="transparent" />
+                )}
                 <Box {...provided.dragHandleProps}>
                   <DragHandleIcon />
                 </Box>
