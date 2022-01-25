@@ -1,6 +1,6 @@
 import React from 'react';
 import InformationModal from '../../common/InformationModal';
-import { Heading, Link, Text } from '@chakra-ui/react';
+import { Heading, Text } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import ExternalLink from '../../common/ExternalLink';
 
