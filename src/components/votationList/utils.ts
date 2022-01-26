@@ -66,9 +66,9 @@ export const reorder: ReorderType = (next, upcoming, startList, endList, startIn
       return { newNext: next, newUpcoming };
       // if it goes on top of next it should be set next and next bumped down
     } else if (endList === 'next') {
+      const newNext = upcoming[startIndex - 1];
       const newUpcoming = Array.from(upcoming);
-      const [newNext] = newUpcoming.splice(startIndex, 1);
-      newUpcoming.splice(0, 0, next);
+      newUpcoming.splice(0, 1, next);
       return { newNext, newUpcoming };
       // if it goes elsewhere it should move there
     } else {
