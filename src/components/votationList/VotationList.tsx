@@ -488,8 +488,19 @@ const VotationList: React.FC<VotationListProps> = ({
     if (nextVotation) votations.push(nextVotation);
     if (upcomingVotations) votations.push(...upcomingVotations);
     const validVotations = votations.filter((v) => v.title !== '');
-    const votationsToCreate = validVotations.filter((votation) => !votation.existsInDb);
-    const votationsToUpdate = validVotations.filter((votation) => votation.existsInDb && votation.isEdited);
+
+    const startIndex = endedVotations ? endedVotations.length : 0;
+
+    const votationsWithUpdatedIndexes = validVotations.map((v, index) => ({
+      ...v,
+      index: startIndex + index,
+      isEdited: v.isEdited || v.index !== startIndex + index,
+    }));
+
+    const votationsToCreate = votationsWithUpdatedIndexes.filter((votation) => !votation.existsInDb);
+    const votationsToUpdate = votationsWithUpdatedIndexes.filter(
+      (votation) => votation.existsInDb && votation.isEdited
+    );
     promises.push(handleCreateVotations(votationsToCreate), handleUpdateVotations(votationsToUpdate));
     const [createdVotations, updatedVotations] = await Promise.all(promises);
     toast({
@@ -567,7 +578,6 @@ const VotationList: React.FC<VotationListProps> = ({
             checkIfAnyChanges={checkIfAnyChanges}
             handleSaveChanges={() => handleSave()}
             showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}
-            heading={'Neste votering'}
             isAdmin={role === Role.Admin}
           />
         </DragDropContext>
