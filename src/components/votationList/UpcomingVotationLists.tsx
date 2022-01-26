@@ -8,50 +8,24 @@ interface VotationListMainSectionsProps extends VotationListSectionProps {
 const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
   isMeetingLobby,
   votations,
-  setActiveVotationId,
-  activeVotationId,
-  updateVotation,
-  handleDeleteVotation,
-  handleDeleteAlternative,
-  duplicateVotation,
-  checkIfAnyChanges,
-  handleSaveChanges,
-  showStartNextButton,
-  isAdmin,
+  ...votationListSectionProps
 }) => {
   if (isMeetingLobby) {
     return (
       <>
         <VotationListSection
+          {...votationListSectionProps}
+          heading={'Neste votering'}
           droppableId={'next'}
           votations={votations.slice(0, 1)}
-          setActiveVotationId={setActiveVotationId}
-          activeVotationId={activeVotationId}
-          updateVotation={updateVotation}
-          handleDeleteVotation={handleDeleteVotation}
-          handleDeleteAlternative={handleDeleteAlternative}
-          duplicateVotation={duplicateVotation}
-          checkIfAnyChanges={checkIfAnyChanges}
-          handleSaveChanges={handleSaveChanges}
-          showStartNextButton={showStartNextButton}
-          heading={'Neste votering'}
-          isAdmin={isAdmin}
         />
         {votations.length > 1 && (
           <VotationListSection
+            {...votationListSectionProps}
+            heading={'Kommende voteringer'}
             droppableId={'upcoming'}
             votations={votations.slice(1)}
-            setActiveVotationId={setActiveVotationId}
-            activeVotationId={activeVotationId}
-            updateVotation={updateVotation}
-            handleDeleteVotation={handleDeleteVotation}
-            handleDeleteAlternative={handleDeleteAlternative}
-            duplicateVotation={duplicateVotation}
-            checkIfAnyChanges={checkIfAnyChanges}
-            handleSaveChanges={handleSaveChanges}
             showStartNextButton={false}
-            heading={'Kommende voteringer'}
-            isAdmin={isAdmin}
           />
         )}
       </>
@@ -59,18 +33,12 @@ const UpcomingVotationLists: React.FC<VotationListMainSectionsProps> = ({
   } else {
     return (
       <VotationListSection
-        droppableId={'list'}
-        votations={votations}
-        setActiveVotationId={setActiveVotationId}
-        activeVotationId={activeVotationId}
-        updateVotation={updateVotation}
-        handleDeleteVotation={handleDeleteVotation}
-        handleDeleteAlternative={handleDeleteAlternative}
-        duplicateVotation={duplicateVotation}
-        checkIfAnyChanges={checkIfAnyChanges}
-        handleSaveChanges={handleSaveChanges}
-        showStartNextButton={false}
-        isAdmin={isAdmin}
+        {...{
+          ...votationListSectionProps,
+          droppableId: 'list',
+          votations,
+          showStartNextButton: false,
+        }}
       />
     );
   }
