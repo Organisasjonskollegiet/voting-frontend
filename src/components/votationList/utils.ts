@@ -44,41 +44,52 @@ type ReorderType = (
 ) => { newNext: Votation; newUpcoming: Votation[] };
 
 export const reorder: ReorderType = (next, upcoming, startList, endList, startIndex, endIndex) => {
+  const newUpcoming = Array.from(upcoming);
+  let newNext: Votation | undefined = undefined;
+  // the indexOffset is the number of ended votations
+  // this is important since they Draggable are provided with the votation's index in the whole meeting, not just upcoming.
+  const indexOffset = next.index;
+
   // if the votation moved is the next votation...
-  if (startList === 'next') {
+  if (startList === 'next' && endList === 'upcoming') {
     // ...and its moved to top of upcoming, its still the next votation
-    if (endList === 'upcoming' && endIndex === 0) {
-      return { newNext: next, newUpcoming: upcoming };
-      // if not it should me moved, and the first upcoming should be set as next votation
-    } else if (endList === 'upcoming') {
-      const newUpcoming = Array.from(upcoming);
-      const [newNext] = newUpcoming.splice(startIndex, 1);
-      newUpcoming.splice(endIndex, 0, next);
-      return { newNext, newUpcoming };
+    if (endIndex === indexOffset) {
+      newNext = next;
     }
-    // if the votation is moved from upcoming...
-  } else {
-    // to next, but not to the top, it should be put on top of upcoming
-    if (endList === 'next' && endIndex !== 0) {
-      const newUpcoming = Array.from(upcoming);
-      const [removed] = newUpcoming.splice(startIndex, 1);
-      newUpcoming.splice(0, 0, removed);
-      return { newNext: next, newUpcoming };
-      // if it goes on top of next it should be set next and next bumped down
-    } else if (endList === 'next') {
-      const newUpcoming = Array.from(upcoming);
-      const [newNext] = newUpcoming.splice(startIndex, 1);
-      newUpcoming.splice(0, 0, next);
-      return { newNext, newUpcoming };
-      // if it goes elsewhere it should move there
-    } else {
-      const newUpcoming = Array.from(upcoming);
-      const [removed] = newUpcoming.splice(startIndex, 1);
-      newUpcoming.splice(endIndex, 0, removed);
-      return { newNext: next, newUpcoming };
+
+    // move the 'next' to dropped position and set top of upcoming as next
+    else {
+      newUpcoming.splice(endIndex - indexOffset - 1, 0, next);
+      [newNext] = newUpcoming.splice(0, 1);
     }
   }
-  return { newNext: next, newUpcoming: upcoming };
+  // if the votation is moved from upcoming...
+  else {
+    const draggedElementIndex = startIndex - indexOffset - 1;
+
+    if (startList === 'upcoming' && endList === 'next') {
+      // if it goes on top of next it should be set as next and previous next should be bumped down
+      if (endIndex === indexOffset) {
+        newNext = newUpcoming[draggedElementIndex];
+        newUpcoming.splice(draggedElementIndex, 1);
+        newUpcoming.unshift(next);
+      }
+
+      // to next, but not to the top, it should be put on top of upcoming
+      else {
+        const [removed] = newUpcoming.splice(draggedElementIndex, 1);
+        newUpcoming.unshift(removed);
+      }
+    }
+    // if it goes elsewhere it should move there
+    else {
+      const [removed] = newUpcoming.splice(draggedElementIndex, 1);
+      newUpcoming.splice(endIndex - indexOffset - 1, 0, removed);
+    }
+  }
+
+  return { newNext: newNext || next, newUpcoming };
+  // return { newNext: next, newUpcoming: upcoming };
 };
 
 export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotationInput[] = (votations: Votation[]) =>
