@@ -462,7 +462,9 @@ const VotationList: React.FC<VotationListProps> = ({
       votations.splice(placementOfDuplicatedVotation, 0, duplicatedVotation);
     }
 
-    await handleSave(votations).then(() => {
+    await handleSave(votations).then(({ createdVotations }) => {
+      setActiveVotationId(createdVotations[0].id);
+
       toast({
         title: 'Votering duplisert',
         description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
@@ -531,6 +533,8 @@ const VotationList: React.FC<VotationListProps> = ({
       setNextVotation(sortedNewVotations[0]);
       setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
     }
+
+    return { createdVotations };
   };
 
   const checkIfAnyChanges = () => {
