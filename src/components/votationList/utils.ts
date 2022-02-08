@@ -47,7 +47,7 @@ export const reorder: ReorderType = (next, upcoming, startList, endList, startIn
   const newUpcoming = Array.from(upcoming);
   let newNext: Votation | undefined = undefined;
   // the indexOffset is the number of ended votations
-  // this is important since they Draggable are provided with the votation's index in the whole meeting, not just upcoming.
+  // this is important since the Draggable are provided with the votation's index in the whole meeting, not just upcoming.
   const indexOffset = next.index;
 
   // if the votation moved is the next votation...
