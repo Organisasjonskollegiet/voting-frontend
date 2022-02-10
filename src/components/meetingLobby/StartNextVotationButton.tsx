@@ -16,9 +16,9 @@ import useScreenWidth from '../../hooks/ScreenWidth';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import { useStartNextVotationMutation } from '../../__generated__/graphql-types';
 
-interface StartNextVotationButtonProps {
+export interface StartNextVotationButtonProps {
   checkIfAnyChanges?: () => boolean;
-  handleSaveChanges?: () => Promise<void>;
+  handleSaveChanges?: () => Promise<unknown>; //method can return a value, but not relevant for this component
 }
 
 const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({ checkIfAnyChanges, handleSaveChanges }) => {

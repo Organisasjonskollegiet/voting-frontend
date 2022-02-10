@@ -430,7 +430,7 @@ const VotationList: React.FC<VotationListProps> = ({
   /**
    * @returns the index of the next votation to be created
    */
-  const getNextVotationIndex = () => {
+  const getIndexOfNewVotation = () => {
     const votations = [];
     if (nextVotation) votations.push(nextVotation);
     if (upcomingVotations) votations.push(...upcomingVotations);
@@ -440,31 +440,38 @@ const VotationList: React.FC<VotationListProps> = ({
   };
 
   // copys a votation and adds the votation last in line
-  const duplicateVotation = (votation: Votation) => {
-    const newId = uuid();
-    const nextVotationIndex = getNextVotationIndex();
-    const newDuplicatedVotation = {
+  const handleDuplicateVotation = async (votation: Votation) => {
+    //if the votation has ended the duplicated votation should be put first
+    const duplicatedVotationIndex =
+      nextVotation && votation.index < nextVotation.index ? nextVotation.index : votation.index + 1;
+    const duplicatedVotation = {
       ...votation,
-      id: newId,
       existsInDb: false,
-      index: nextVotationIndex,
+      index: 0,
       status: VotationStatus.Upcoming,
       alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
     };
+
+    const votations: Votation[] = [nextVotation, ...(upcomingVotations || [])].filter((v) => !!v) as Votation[];
     if (!nextVotation) {
-      setNextVotation(newDuplicatedVotation);
-    } else if (upcomingVotations) {
-      setUpcomingVotations(Array.from([...upcomingVotations, newDuplicatedVotation]));
+      votations.unshift(duplicatedVotation);
+    } else if (!upcomingVotations) {
+      votations.push(duplicatedVotation);
     } else {
-      setUpcomingVotations(Array.from([newDuplicatedVotation]));
+      const placementOfDuplicatedVotation = duplicatedVotationIndex - nextVotation.index;
+      votations.splice(placementOfDuplicatedVotation, 0, duplicatedVotation);
     }
-    setActiveVotationId(newId);
-    toast({
-      title: 'Votering duplisert',
-      description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
+
+    await handleSave(votations).then(({ createdVotations }) => {
+      setActiveVotationId(createdVotations[0].id);
+
+      toast({
+        title: 'Votering duplisert',
+        description: 'Du finner voteringen under "Kommende voteringer" eller "Neste votering".',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     });
   };
 
@@ -482,11 +489,14 @@ const VotationList: React.FC<VotationListProps> = ({
     return formatVotations(createResults) as Votation[];
   };
 
-  const handleSave = async () => {
-    const votations = [];
+  const handleSave = async (votationsToSave?: Votation[]) => {
     const promises: Promise<Votation[]>[] = [];
-    if (nextVotation) votations.push(nextVotation);
-    if (upcomingVotations) votations.push(...upcomingVotations);
+
+    const votations = votationsToSave || [];
+    if (votations.length === 0) {
+      if (nextVotation) votations.push(nextVotation);
+      if (upcomingVotations) votations.push(...upcomingVotations);
+    }
     const validVotations = votations.filter((v) => v.title !== '');
 
     const startIndex = endedVotations ? endedVotations.length : 0;
@@ -503,6 +513,7 @@ const VotationList: React.FC<VotationListProps> = ({
     );
     promises.push(handleCreateVotations(votationsToCreate), handleUpdateVotations(votationsToUpdate));
     const [createdVotations, updatedVotations] = await Promise.all(promises);
+
     toast({
       title: 'Voteringer oppdatert.',
       description: 'Voteringene har blitt opprettet',
@@ -510,8 +521,11 @@ const VotationList: React.FC<VotationListProps> = ({
       duration: 3000,
       isClosable: true,
     });
-    const untouchedVotations = votations.filter((v) => !v.isEdited && v.existsInDb);
+
+    const untouchedVotations = votationsWithUpdatedIndexes.filter((v) => !v.isEdited && v.existsInDb);
+
     const newVotations = [...untouchedVotations, ...createdVotations, ...updatedVotations] as Votation[];
+
     // upcoming votations sorted
     const sortedNewVotations = newVotations.sort((a, b) => a.index - b.index);
     if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(sortedNewVotations.length);
@@ -519,6 +533,8 @@ const VotationList: React.FC<VotationListProps> = ({
       setNextVotation(sortedNewVotations[0]);
       setUpcomingVotations(sortedNewVotations.length > 1 ? sortedNewVotations.slice(1) : []);
     }
+
+    return { createdVotations };
   };
 
   const checkIfAnyChanges = () => {
@@ -541,6 +557,20 @@ const VotationList: React.FC<VotationListProps> = ({
       </>
     );
   }
+
+  const handleAddNewVotation = () => {
+    const id = uuid();
+    const nextVotationIndex = getIndexOfNewVotation();
+    const newVotation = { ...getEmptyVotation(id), index: nextVotationIndex };
+    if (!nextVotation) {
+      setNextVotation(newVotation);
+    } else if (upcomingVotations) {
+      setUpcomingVotations([...upcomingVotations, newVotation]);
+    } else {
+      setUpcomingVotations([newVotation]);
+    }
+    setActiveVotationId(id);
+  };
 
   return (
     <VStack w="100%" h="100%" alignItems="start" spacing="32px" onClick={() => setActiveVotationId('')}>
@@ -569,13 +599,15 @@ const VotationList: React.FC<VotationListProps> = ({
             isMeetingLobby={isMeetingLobby}
             droppableId={'top-list'}
             votations={[nextVotation, ...upcomingVotations]}
-            setActiveVotationId={setActiveVotationId}
-            activeVotationId={activeVotationId}
-            updateVotation={updateVotation}
-            handleDeleteVotation={handleDeleteVotation}
-            handleDeleteAlternative={handleDeleteAlternative}
-            duplicateVotation={duplicateVotation}
-            checkIfAnyChanges={checkIfAnyChanges}
+            {...{
+              activeVotationId,
+              setActiveVotationId,
+              updateVotation,
+              handleDeleteVotation,
+              handleDeleteAlternative,
+              checkIfAnyChanges,
+            }}
+            duplicateVotation={handleDuplicateVotation}
             handleSaveChanges={() => handleSave()}
             showStartNextButton={role === Role.Admin && !ongoingVotation && !hideStartNextButton}
             isAdmin={role === Role.Admin}
@@ -584,19 +616,7 @@ const VotationList: React.FC<VotationListProps> = ({
       )}
       {role === Role.Admin && (
         <VotationListButtonRow
-          handleAddNewVotation={() => {
-            const id = uuid();
-            const nextVotationIndex = getNextVotationIndex();
-            const newVotation = { ...getEmptyVotation(id), index: nextVotationIndex };
-            if (!nextVotation) {
-              setNextVotation(newVotation);
-            } else if (upcomingVotations) {
-              setUpcomingVotations([...upcomingVotations, newVotation]);
-            } else {
-              setUpcomingVotations([newVotation]);
-            }
-            setActiveVotationId(id);
-          }}
+          handleAddNewVotation={handleAddNewVotation}
           saveIsDisabled={!checkIfAnyChanges()}
           handleSave={() => handleSave()}
         />
@@ -610,7 +630,7 @@ const VotationList: React.FC<VotationListProps> = ({
                 key={votation.id}
                 role={role}
                 votation={votation}
-                duplicateVotation={duplicateVotation}
+                duplicateVotation={handleDuplicateVotation}
                 onClick={() => {
                   if (votation.status === VotationStatus.PublishedResult) setShowResultOf(votation);
                 }}

@@ -4,9 +4,9 @@ import { Droppable } from 'react-beautiful-dnd';
 import { Heading, VStack } from '@chakra-ui/react';
 
 import { Votation } from '../../types/types';
-import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
+import StartNextVotationButton, { StartNextVotationButtonProps } from '../meetingLobby/StartNextVotationButton';
 
-export interface VotationListSectionProps {
+export interface VotationListSectionProps extends StartNextVotationButtonProps {
   votations: Votation[];
   setActiveVotationId: (id: string) => void;
   activeVotationId: string;
@@ -14,8 +14,6 @@ export interface VotationListSectionProps {
   handleDeleteVotation: (votation: Votation) => void;
   handleDeleteAlternative: (alternativeId: string, votationId: string) => void;
   duplicateVotation: (votation: Votation) => void;
-  checkIfAnyChanges: () => boolean;
-  handleSaveChanges: () => Promise<void>;
   showStartNextButton: boolean;
   heading?: string;
   droppableId?: string;
