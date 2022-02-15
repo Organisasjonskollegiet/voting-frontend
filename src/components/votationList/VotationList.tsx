@@ -141,27 +141,21 @@ const VotationList: React.FC<VotationListProps> = ({
       setUpcomingVotations([]);
       setActiveVotationId(emptyVotation.id);
     }
-  }, [
-    data?.meetingById?.votations,
-    votationsMayExist,
-    role,
-    ongoingVotation,
-    nextVotation,
-    upcomingVotations,
-    endedVotations,
-    loading,
-  ]);
+  }, [data?.meetingById?.votations, votationsMayExist, role, nextVotation]);
 
+  // handles updates from the VotationsUpdated-subscriptions by merge the unchanged votations with the changed ones
   useEffect(() => {
     if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated) return;
     setLastUpdate(votationsUpdated);
-    const changedVotationIds = votationsUpdated.votationsUpdated.map((v) => (v ? v.id : ''));
+
     const votations = votationsUpdated.votationsUpdated as Votation[];
+    const changedVotationIds = votations.map((v) => (v ? v.id : ''));
     const updatedVotations = formatVotations(votations);
-    const allVotations = [];
-    if (upcomingVotations) allVotations.push(...upcomingVotations);
+
+    const allVotations: Votation[] = [...(upcomingVotations || [])];
     if (nextVotation) allVotations.push(nextVotation);
     const unchangedVotations = allVotations.filter((v) => !changedVotationIds.includes(v.id));
+
     const updatedVotationList = [...(updatedVotations ?? []), ...unchangedVotations].sort(
       (a, b) => (a?.index ?? 0) - (b?.index ?? 0)
     ) as Votation[];
@@ -203,18 +197,17 @@ const VotationList: React.FC<VotationListProps> = ({
             index: v.index,
           };
         });
-      if (upcomingVotations.length > 0) {
-        try {
-          await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
-        } catch (error) {
-          toast({
-            title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
-            description: 'Last inn siden på nytt, og prøv igjen.',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+      if (upcomingVotations.length === 0) return;
+      try {
+        await updateVotationIndexes({ variables: { meetingId, votations: upcomingVotations } });
+      } catch (error) {
+        toast({
+          title: 'Kunne ikke oppdatere rekkefølge på voteringer.',
+          description: 'Last inn siden på nytt, og prøv igjen.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
       }
     },
     [meetingId, toast, updateVotationIndexes]
