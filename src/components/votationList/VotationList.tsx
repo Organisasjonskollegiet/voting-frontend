@@ -375,7 +375,7 @@ const VotationList: React.FC<VotationListProps> = ({
     return votations.length > 0 ? Math.max(...votations.map((votation) => votation.index)) + 1 : 0;
   };
 
-  // copys a votation and adds the votation last in line
+  // creates a copy of the votation and puts it after the original
   const handleDuplicateVotation = async (votation: Votation) => {
     //if the votation has ended the duplicated votation should be put first
     const duplicatedVotationIndex =
@@ -383,7 +383,7 @@ const VotationList: React.FC<VotationListProps> = ({
     const duplicatedVotation = {
       ...votation,
       existsInDb: false,
-      index: 0,
+      index: duplicatedVotationIndex,
       status: VotationStatus.Upcoming,
       alternatives: votation.alternatives.map((alt) => ({ ...alt, isWinner: false })),
     };
@@ -435,8 +435,7 @@ const VotationList: React.FC<VotationListProps> = ({
     }
     const validVotations = votations.filter((v) => v.title !== '');
 
-    const startIndex = endedVotations ? endedVotations.length : 0;
-
+    const startIndex = endedVotations?.length ?? 0;
     const votationsWithUpdatedIndexes = validVotations.map((v, index) => ({
       ...v,
       index: startIndex + index,
