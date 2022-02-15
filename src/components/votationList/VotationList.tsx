@@ -15,20 +15,15 @@ import {
   useVotationsUpdatedSubscription,
   VotationsUpdatedSubscription,
 } from '../../__generated__/graphql-types';
-import { Votation, Alternative } from '../../types/types';
+import { Votation } from '../../types/types';
 import Loading from '../common/Loading';
 import EndedVotation from './votation/EndedVotation';
 import OpenVotation from './votation/OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
-import {
-  getEmptyAlternative,
-  getEmptyVotation,
-  prepareVotationsForCreation,
-  prepareVotationsForUpdate,
-  reorder,
-} from './utils';
+import { getEmptyVotation, prepareVotationsForCreation, prepareVotationsForUpdate, reorder } from './utils';
 import ResultModal from '../myMeetings/ResultModal';
+import useFormatVotations from '../../hooks/FormatVotations';
 
 interface VotationListProps {
   meetingId: string;
@@ -75,59 +70,7 @@ const VotationList: React.FC<VotationListProps> = ({
     },
   });
   const toast = useToast();
-
-  const alternativeMapper = (alternative: Alternative) => {
-    return {
-      ...alternative,
-      existsInDb: true,
-    };
-  };
-
-  /**
-   * @description adds existsInDb and isEdited to the votations. If the results of the
-   * votation is published, alternatives prop is used and alternatives include isWinner.
-   * If the results are not published, the alternatives from the votation is used.
-   * If the votations has no alternatives, an empty alternative is added.
-   * @param votation
-   * @param alternatives is set only if the votationstatus is published, and includes
-   * isWinner
-   * @returns
-   */
-  const formatVotation = useCallback((votation: Votation, alternatives?: Alternative[]) => {
-    return {
-      ...votation,
-      existsInDb: true,
-      isEdited: false,
-      alternatives:
-        alternatives && alternatives.length > 0
-          ? alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
-          : votation.alternatives.length > 0
-          ? votation.alternatives.sort((a, b) => a.index - b.index).map(alternativeMapper)
-          : [getEmptyAlternative()],
-    };
-  }, []);
-
-  /**
-   * @description formats all votations and couple it with its results if the
-   * votation results are published.
-   * @param votations votations from meetingById.votations
-   * @param winners list of result from resultsOfPublishedVotations containing
-   * votationId and alternatives including whether they are winners or not.
-   * @returns votations formatted correctly for further use and editing
-   */
-  const formatVotations = useCallback(
-    (votations: Votation[], winners?: Votation[]) => {
-      if (!votations) return;
-      return votations.map((votation) => {
-        if (winners && votation.status === VotationStatus.PublishedResult) {
-          const indexOfVotation = winners.map((v) => v.id).indexOf(votation.id);
-          if (indexOfVotation !== -1) return formatVotation(votation, winners[indexOfVotation].alternatives);
-        }
-        return formatVotation(votation);
-      });
-    },
-    [formatVotation]
-  );
+  const formatVotations = useFormatVotations();
 
   useEffect(() => {
     if (
