@@ -29,7 +29,6 @@ import {
   reorder,
 } from './utils';
 import ResultModal from '../myMeetings/ResultModal';
-// import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
@@ -253,42 +252,43 @@ const VotationList: React.FC<VotationListProps> = ({
 
   useEffect(() => {
     if (
-      data?.meetingById?.votations &&
-      data.meetingById.votations.length > 0 &&
-      !ongoingVotation &&
-      !nextVotation &&
-      !upcomingVotations &&
-      !endedVotations
-    ) {
-      const votations = data.meetingById.votations as Votation[];
-      const winners = data.resultsOfPublishedVotations as Votation[];
-      try {
-        const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
-        const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
-        const shouldAddEmpty = formattedVotations.length === 0;
-        if (shouldAddEmpty) {
-          formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
-        }
-        const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
-        const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
-        const ongoingVotation = sortedVotations.find(
-          (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
-        );
-        setOngoingVotation(ongoingVotation);
-        setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
-        setUpcomingVotations(upcomingVotations.slice(1));
-        if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(upcomingVotations.length);
-        setEndedVotations(
-          sortedVotations.filter(
-            (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
-          )
-        );
-        if (upcomingVotations.length > 0) {
-          setActiveVotationId(upcomingVotations[0].id);
-        }
-      } catch (error) {
-        console.log(error);
+      !data?.meetingById?.votations ||
+      data.meetingById.votations.length === 0 ||
+      ongoingVotation ||
+      nextVotation ||
+      upcomingVotations ||
+      endedVotations
+    )
+      return;
+
+    const votations = data.meetingById.votations as Votation[];
+    const winners = data.resultsOfPublishedVotations as Votation[];
+    try {
+      const formattedVotations = formatVotations(votations, winners) ?? [getEmptyVotation()];
+      const nextVotationIndex = Math.max(...votations.map((votation) => votation.index)) + 1;
+      const shouldAddEmpty = formattedVotations.length === 0;
+      if (shouldAddEmpty) {
+        formattedVotations.push(getEmptyVotation(uuid(), nextVotationIndex));
       }
+      const sortedVotations = formattedVotations.sort((a, b) => a.index - b.index);
+      const upcomingVotations = sortedVotations.filter((v) => v.status === VotationStatus.Upcoming);
+      const ongoingVotation = sortedVotations.find(
+        (v) => v.status === VotationStatus.Open || v.status === VotationStatus.CheckingResult
+      );
+      setOngoingVotation(ongoingVotation);
+      setNextVotation(upcomingVotations.slice(0, 1)[0] ?? null);
+      setUpcomingVotations(upcomingVotations.slice(1));
+      if (setNumberOfUpcomingVotations) setNumberOfUpcomingVotations(upcomingVotations.length);
+      setEndedVotations(
+        sortedVotations.filter(
+          (v) => v.status === VotationStatus.PublishedResult || v.status === VotationStatus.Invalid
+        )
+      );
+      if (upcomingVotations.length > 0) {
+        setActiveVotationId(upcomingVotations[0].id);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [
     data,
