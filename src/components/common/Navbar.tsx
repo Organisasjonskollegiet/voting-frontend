@@ -18,8 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { darkblue } from '../styles/colors';
-import { NavLink } from 'react-router-dom';
-import { useHistory } from 'react-router';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Logo from '../../static/logo.svg';
 import { useAuth0 } from '@auth0/auth0-react';
 import { boxShadow } from '../styles/formStyles';
@@ -43,7 +42,7 @@ const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { logout, user } = useAuth0();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
@@ -51,7 +50,7 @@ const Navbar: React.FC = () => {
         <Box w="100px" justifyContent="start">
           <Image
             _hover={{ cursor: 'pointer' }}
-            onClick={() => history.push('/')}
+            onClick={() => navigate('/', { replace: true })}
             src={Logo}
             alt="Organisasjonskollegiet"
             h="3em"

@@ -20,7 +20,7 @@ const ManageMeeting: React.FC = () => {
   const { meetingId } = useParams<{ meetingId: string }>();
   const [getMeeting, { data, loading, error }] = useGetMeetingByIdLazyQuery({
     variables: {
-      meetingId,
+      meetingId: meetingId ?? '',
     },
   });
 
@@ -67,7 +67,7 @@ const ManageMeeting: React.FC = () => {
 
   useEffect(() => {
     if (meetingId && !data) {
-      getMeeting();
+      getMeeting({ variables: { meetingId } });
     }
   }, [meetingId, getMeeting, data]);
 
@@ -125,6 +125,7 @@ const ManageMeeting: React.FC = () => {
   };
 
   const onVotationsCreated = () => {
+    setVotationsMayExist(true);
     setActiveTab(2);
   };
 

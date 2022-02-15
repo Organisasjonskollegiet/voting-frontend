@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { Center, Box, Heading, Text, VStack, Divider } from '@chakra-ui/react';
-import { useParams, useHistory } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   useVotationOpenedForMeetingSubscription,
   useGetMeetingForLobbyQuery,
@@ -51,7 +51,7 @@ const MeetingLobby: React.FC = () => {
   const { user } = useAuth0();
   const { data, loading, error } = useGetMeetingForLobbyQuery({
     variables: {
-      meetingId,
+      meetingId: meetingId ?? '',
     },
   });
 
@@ -60,7 +60,9 @@ const MeetingLobby: React.FC = () => {
 
   const [numberOfUpcomingVotations, setNumberOfUpcomingVotations] = useState<number | null>(null);
 
-  const { data: participantResult, error: participantError } = useGetParticipantQuery({ variables: { meetingId } });
+  const { data: participantResult, error: participantError } = useGetParticipantQuery({
+    variables: { meetingId: meetingId ?? '' },
+  });
   const [role, setRole] = useState<Role>();
   const [allowSelfRegistration, setAllowSelfRegistration] = useState(false);
   const [openVotation, setOpenVotation] = useState<string | null>();
@@ -68,7 +70,7 @@ const MeetingLobby: React.FC = () => {
   const [lastOpenVotation, setLastOpenVotation] = useState<string | null>();
   const { data: votationOpened } = useVotationOpenedForMeetingSubscription({
     variables: {
-      meetingId,
+      meetingId: meetingId ?? '',
     },
   });
 
@@ -76,11 +78,11 @@ const MeetingLobby: React.FC = () => {
     variables: {
       // remove auth0| from beginning of sub to get userId
       userId: user && user.sub ? user.sub.slice(6) : '',
-      meetingId,
+      meetingId: meetingId ?? '',
     },
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [presentationMode, setPresentationMode] = useState(false);
 
@@ -140,7 +142,7 @@ const MeetingLobby: React.FC = () => {
   }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation, lastOpenVotation]);
 
   const backToMyMeetings = () => {
-    history.push('/');
+    navigate('/', { replace: true });
   };
 
   const returnToVotationList = (status: VotationStatus) => {
@@ -167,7 +169,7 @@ const MeetingLobby: React.FC = () => {
     <MeetingContext.Provider
       value={{
         role: role ?? Role.Participant,
-        meetingId,
+        meetingId: meetingId ?? '',
         presentationMode,
         isVotingEligible,
         numberOfUpcomingVotations,
@@ -198,7 +200,7 @@ const MeetingLobby: React.FC = () => {
                     role={role}
                     isMeetingLobby={true}
                     votationsMayExist={true}
-                    meetingId={meetingId}
+                    meetingId={meetingId ?? ''}
                   />
                 </VStack>
               </VStack>
@@ -208,13 +210,13 @@ const MeetingLobby: React.FC = () => {
                   <ReturnToPreviousButton onClick={backToMyMeetings} text="Tiltake til møteoversikt" />
 
                   {role === Role.Admin && (
-                    <ParticipantModal meetingId={meetingId} ownerEmail={data?.meetingById?.owner?.email} />
+                    <ParticipantModal meetingId={meetingId ?? ''} ownerEmail={data?.meetingById?.owner?.email} />
                   )}
                 </WrapStack>
               </VStack>
             </VStack>
           ) : (
-            <SelfRegistration meetingId={meetingId} />
+            <SelfRegistration meetingId={meetingId ?? ''} />
           )}
         </Box>
       </PageContainer>

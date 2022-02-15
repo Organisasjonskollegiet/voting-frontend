@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import ManageMeeting from './pages/ManageMeeting';
 import MyMeetings from './pages/MyMeetings';
@@ -11,26 +11,14 @@ const App: FC = () => {
   return (
     <>
       <Navbar />
-      <Switch>
-        <Route key="edit-meeting" path="/meeting/:meetingId/edit">
-          <ManageMeeting />
-        </Route>
-        <Route key="add-meeting" path="/meeting/new">
-          <ManageMeeting />
-        </Route>
-        <Route path="/meeting/:meetingId/register">
-          <RegisterForMeeting />
-        </Route>
-        <Route path="/meeting/:meetingId">
-          <MeetingLobby />
-        </Route>
-        <Route path="/about">
-          <AboutUs />
-        </Route>
-        <Route path="/">
-          <MyMeetings />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route key="edit-meeting" path="/meeting/:meetingId/edit" element={<ManageMeeting />} />
+        <Route key="add-meeting" path="/meeting/new" element={<ManageMeeting />} />
+        <Route path="/meeting/:meetingId/register" element={<RegisterForMeeting />} />
+        <Route path="/meeting/:meetingId" element={<MeetingLobby />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/" element={<MyMeetings />} />
+      </Routes>
     </>
   );
 };

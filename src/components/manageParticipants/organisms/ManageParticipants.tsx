@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { VStack, Heading, Text, Center } from '@chakra-ui/react';
 import ManageMeetingController from '../../manageMeeting/ManageMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
@@ -14,7 +14,7 @@ interface IProps {
 }
 
 const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail, modalView }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [getParticipants, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
     variables: { meetingId },
@@ -48,7 +48,7 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
   const handleNavigationClick = (nextIndex: number) => {
     if (handleNavigation) {
       if (nextIndex > 2) {
-        history.push('/');
+        navigate('/', { replace: true });
       } else {
         handleNavigation(nextIndex);
       }
