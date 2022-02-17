@@ -40,7 +40,12 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({ meetingId, ownerEma
           <ModalHeader>Administrer deltagere</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <ManageParticipants meetingId={meetingId} ownerEmail={ownerEmail} isActive={true} modalView={true} />
+            <ManageParticipants
+              meetingId={meetingId}
+              ownerEmail={ownerEmail}
+              // isActive={true}
+              modalView={true}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>

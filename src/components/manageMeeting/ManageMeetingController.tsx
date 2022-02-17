@@ -5,14 +5,23 @@ import ManageMeetingStatus from './ManageMeetingStatus';
 import useScreenWidth from '../../hooks/ScreenWidth';
 
 interface IProps {
-  handleNavigation: (nextIndex: number) => void;
-  showPrev: boolean;
   activeTab: number;
+  handleNavigation: (value: number) => void;
 }
 
-const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev, activeTab }) => {
+const ManageMeetingController: React.FC<IProps> = ({ activeTab, handleNavigation }) => {
   const screenWidth = useScreenWidth();
   const hasReachedBreakpoint = screenWidth < 600;
+
+  const showPrev = activeTab > 0;
+
+  const next = () => {
+    handleNavigation(activeTab + 1);
+    console.log('neste', activeTab + 1);
+  };
+  const previous = () => {
+    handleNavigation(activeTab - 1);
+  };
 
   return (
     <>
@@ -31,7 +40,7 @@ const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev,
               leftIcon={<img alt="previous" src={ArrowLeft} />}
               pr="38px"
               maxWidth="100px"
-              onClick={() => handleNavigation(activeTab - 1)}
+              onClick={previous}
               gridArea={hasReachedBreakpoint ? '1 / 2' : '2 / 1'}
               justifySelf={hasReachedBreakpoint ? 'center' : 'left'}
             >
@@ -40,7 +49,7 @@ const ManageMeetingController: React.FC<IProps> = ({ handleNavigation, showPrev,
               </Text>
             </Button>
           )}
-          <Button variant="dark" w="min(100%, 245px)" gridArea="2 / 2" onClick={() => handleNavigation(activeTab + 1)}>
+          <Button variant="dark" w="min(100%, 245px)" gridArea="2 / 2" onClick={next}>
             <Text alignItems="center" as="span" px="2rem" color="inherit">
               {activeTab !== 2 ? 'Neste' : 'Fullfør'}
             </Text>

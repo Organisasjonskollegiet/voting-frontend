@@ -2,36 +2,12 @@ import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
 import VotationList from '../votationList/VotationList';
 import { Role } from '../../__generated__/graphql-types';
-import ManageMeetingController from './ManageMeetingController';
 interface IProps {
   meetingId: string;
-  onVotationsCreated: () => void;
-  handlePrevious: () => void;
-  isActive: boolean;
   votationsMayExist: boolean; // If votations may exists, we fetch votations from backend
 }
 
-const ManageVotations: React.FC<IProps> = ({
-  isActive,
-  meetingId,
-  handlePrevious,
-  onVotationsCreated,
-  votationsMayExist,
-}) => {
-  const handleNavigation = (nextIndex: number) => {
-    if (nextIndex === 0) {
-      handlePrevious();
-    } else if (nextIndex === 2) {
-      handleNext();
-    }
-  };
-
-  const handleNext = () => {
-    onVotationsCreated();
-  };
-
-  if (!isActive) return <></>;
-
+const ManageVotations: React.FC<IProps> = ({ meetingId, votationsMayExist }) => {
   return (
     <>
       <VStack spacing="5" w="100%" maxWidth="800px" align="left">
@@ -47,7 +23,6 @@ const ManageVotations: React.FC<IProps> = ({
           votationsMayExist={votationsMayExist}
         />
       </VStack>
-      <ManageMeetingController handleNavigation={handleNavigation} showPrev={true} activeTab={1} />
     </>
   );
 };

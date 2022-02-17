@@ -20,12 +20,7 @@ const emptyMeeting = {
 };
 
 const Template: Story = () => (
-  <ManageMeetingInformation
-    isActive={true}
-    meeting={emptyMeeting}
-    updateMeeting={(meeting) => nullFunction()}
-    handleNavigation={nullFunction}
-  />
+  <ManageMeetingInformation meeting={emptyMeeting} updateMeeting={(meeting) => nullFunction()} />
 );
 
 export const Default = Template.bind({});
