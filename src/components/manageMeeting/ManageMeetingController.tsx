@@ -17,7 +17,6 @@ const ManageMeetingController: React.FC<IProps> = ({ activeTab, handleNavigation
 
   const next = () => {
     handleNavigation(activeTab + 1);
-    console.log('neste', activeTab + 1);
   };
   const previous = () => {
     handleNavigation(activeTab - 1);
