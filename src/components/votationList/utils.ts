@@ -34,6 +34,8 @@ export const getEmptyVotation: (id?: string, index?: number) => Votation = (id?,
   };
 };
 
+type ReorderRetunValues = { newNext: Votation; newUpcoming: Votation[] };
+
 type ReorderType = (
   next: Votation,
   upcoming: Votation[],
@@ -41,7 +43,7 @@ type ReorderType = (
   endList: string,
   startIndex: number,
   endIndex: number
-) => { newNext: Votation; newUpcoming: Votation[] };
+) => ReorderRetunValues;
 
 export const reorder: ReorderType = (next, upcoming, startList, endList, startIndex, endIndex) => {
   const newUpcoming = Array.from(upcoming);
@@ -89,6 +91,21 @@ export const reorder: ReorderType = (next, upcoming, startList, endList, startIn
   }
 
   return { newNext: newNext || next, newUpcoming };
+};
+
+export const reorderSingleList = (
+  votations: Votation[],
+  startIndex: number,
+  endIndex: number,
+  indexOffset = 0
+): ReorderRetunValues => {
+  const votationsCopy = [...votations];
+
+  const [removed] = votationsCopy.splice(startIndex - indexOffset, 1);
+  votationsCopy.splice(endIndex - indexOffset, 0, removed);
+
+  const [newNext] = votationsCopy.splice(0, 1);
+  return { newNext, newUpcoming: votationsCopy };
 };
 
 export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotationInput[] = (votations: Votation[]) =>

@@ -21,7 +21,13 @@ import EndedVotation from './votation/EndedVotation';
 import OpenVotation from './votation/OpenVotation';
 import VotationListButtonRow from './VotationListButtonRow';
 import UpcomingVotationLists from './UpcomingVotationLists';
-import { getEmptyVotation, prepareVotationsForCreation, prepareVotationsForUpdate, reorder } from './utils';
+import {
+  getEmptyVotation,
+  prepareVotationsForCreation,
+  prepareVotationsForUpdate,
+  reorder,
+  reorderSingleList,
+} from './utils';
 import ResultModal from '../myMeetings/ResultModal';
 import useFormatVotations from '../../hooks/FormatVotations';
 
@@ -255,14 +261,21 @@ const VotationList: React.FC<VotationListProps> = ({
 
     if (!nextVotation || !upcomingVotations) return;
 
-    const { newNext, newUpcoming } = reorder(
-      nextVotation,
-      upcomingVotations,
-      result.source.droppableId,
-      result.destination.droppableId,
-      result.source.index,
-      result.destination.index
-    );
+    const { newNext, newUpcoming } = isMeetingLobby
+      ? reorder(
+          nextVotation,
+          upcomingVotations,
+          result.source.droppableId,
+          result.destination.droppableId,
+          result.source.index,
+          result.destination.index
+        )
+      : reorderSingleList(
+          [nextVotation, ...upcomingVotations],
+          result.source.index,
+          result.destination.index,
+          endedVotations?.length
+        );
 
     // the index the coming nextVotation will have must be larger than
     // all ended votations and the ongoing one
