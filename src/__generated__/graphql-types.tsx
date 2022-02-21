@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions =  {}
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -19,18 +20,18 @@ export type Scalars = {
 export type Alternative = {
   __typename?: 'Alternative';
   id: Scalars['ID'];
-  text: Scalars['String'];
   index: Scalars['Int'];
+  text: Scalars['String'];
   votationId: Scalars['String'];
 };
 
 export type AlternativeResult = {
   __typename?: 'AlternativeResult';
   id: Scalars['ID'];
-  text: Scalars['String'];
   index: Scalars['Int'];
-  votationId: Scalars['String'];
   isWinner: Scalars['Boolean'];
+  text: Scalars['String'];
+  votationId: Scalars['String'];
   votes: Scalars['Int'];
 };
 
@@ -44,38 +45,37 @@ export type AlternativeRoundVoteCount = {
 export type AlternativeWithWinner = {
   __typename?: 'AlternativeWithWinner';
   id: Scalars['ID'];
-  text: Scalars['String'];
   index: Scalars['Int'];
   isWinner: Scalars['Boolean'];
+  text: Scalars['String'];
 };
 
 export type CreateAlternativeInput = {
-  text: Scalars['String'];
   index: Scalars['Int'];
+  text: Scalars['String'];
 };
 
 export type CreateMeetingInput = {
-  organization: Scalars['String'];
-  title: Scalars['String'];
-  startTime: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
   allowSelfRegistration: Scalars['Boolean'];
+  description?: InputMaybe<Scalars['String']>;
+  organization: Scalars['String'];
+  startTime: Scalars['DateTime'];
+  title: Scalars['String'];
 };
 
 export type CreateVotationInput = {
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  alternatives?: InputMaybe<Array<CreateAlternativeInput>>;
   blankVotes: Scalars['Boolean'];
+  description?: InputMaybe<Scalars['String']>;
   hiddenVotes: Scalars['Boolean'];
-  type: VotationType;
-  numberOfWinners: Scalars['Int'];
-  majorityThreshold: Scalars['Int'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<CreateAlternativeInput>>;
+  majorityThreshold: Scalars['Int'];
+  numberOfWinners: Scalars['Int'];
+  title: Scalars['String'];
+  type: VotationType;
 };
 
-
-export type DeleteParticipantResult = Participant | OwnerCannotBeRemovedFromParticipantError;
+export type DeleteParticipantResult = OwnerCannotBeRemovedFromParticipantError | Participant;
 
 export type GetUserResult = User | UserNotFoundError;
 
@@ -86,134 +86,52 @@ export type MaxOneOpenVotationError = {
 
 export type Meeting = {
   __typename?: 'Meeting';
-  id: Scalars['ID'];
-  title: Scalars['String'];
-  organization: Scalars['String'];
-  startTime: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
   allowSelfRegistration: Scalars['Boolean'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  organization: Scalars['String'];
   owner?: Maybe<User>;
-  votations?: Maybe<Array<Maybe<Votation>>>;
-  status: MeetingStatus;
   participants: Array<Maybe<Participant>>;
+  startTime: Scalars['DateTime'];
+  status: MeetingStatus;
+  title: Scalars['String'];
+  votations?: Maybe<Array<Maybe<Votation>>>;
 };
 
 export enum MeetingStatus {
-  Upcoming = 'UPCOMING',
+  Ended = 'ENDED',
   Ongoing = 'ONGOING',
-  Ended = 'ENDED'
+  Upcoming = 'UPCOMING'
 }
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createVotations?: Maybe<Array<Maybe<Votation>>>;
-  updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
-  /** Update votations belonging to a meeting. */
-  updateVotations?: Maybe<Array<Maybe<Votation>>>;
-  /** Start the next votation in line for a meeting. */
-  startNextVotation?: Maybe<OpenVotationResult>;
-  /** Update status of a votation, to anything other than OPEN. */
-  updateVotationStatus?: Maybe<Votation>;
-  deleteVotation?: Maybe<Scalars['String']>;
-  deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
-  castStvVote?: Maybe<Scalars['String']>;
-  castVote?: Maybe<Vote>;
-  /** Returns the id of the votation */
-  castBlankVote?: Maybe<Scalars['String']>;
-  /** Approve or disapprove a votation result */
-  reviewVotation?: Maybe<Scalars['String']>;
-  createMeeting?: Maybe<Meeting>;
-  updateMeeting?: Maybe<Meeting>;
-  deleteMeeting?: Maybe<Meeting>;
-  /** Update participants of a meeting. */
-  updateParticipant?: Maybe<ParticipantOrInvite>;
   /** Creates invites and participants for the emails provided. */
   addParticipants?: Maybe<Scalars['Int']>;
+  /** Returns the id of the votation */
+  castBlankVote?: Maybe<Scalars['String']>;
+  castStvVote?: Maybe<Scalars['String']>;
+  castVote?: Maybe<Vote>;
+  createMeeting?: Maybe<Meeting>;
+  createVotations?: Maybe<Array<Maybe<Votation>>>;
+  deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
+  deleteMeeting?: Maybe<Meeting>;
+  deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
+  deleteVotation?: Maybe<Scalars['String']>;
   /** Register the logged in user as a participant. */
   registerAsParticipant?: Maybe<Participant>;
-  deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
-
-
-export type MutationCreateVotationsArgs = {
-  meetingId: Scalars['String'];
-  votations: Array<CreateVotationInput>;
-};
-
-
-export type MutationUpdateVotationIndexesArgs = {
-  meetingId: Scalars['String'];
-  votations: Array<UpdateVotationIndexInput>;
-};
-
-
-export type MutationUpdateVotationsArgs = {
-  meetingId: Scalars['String'];
-  votations: Array<UpdateVotationInput>;
-};
-
-
-export type MutationStartNextVotationArgs = {
-  meetingId: Scalars['String'];
-};
-
-
-export type MutationUpdateVotationStatusArgs = {
-  votationId: Scalars['String'];
-  status: VotationStatus;
-};
-
-
-export type MutationDeleteVotationArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type MutationDeleteAlternativesArgs = {
-  ids: Array<Scalars['String']>;
-};
-
-
-export type MutationCastStvVoteArgs = {
-  votationId: Scalars['String'];
-  alternatives: Array<StvVoteAlternativeInput>;
-};
-
-
-export type MutationCastVoteArgs = {
-  alternativeId: Scalars['String'];
-};
-
-
-export type MutationCastBlankVoteArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type MutationReviewVotationArgs = {
-  votationId: Scalars['String'];
-  approved: Scalars['Boolean'];
-};
-
-
-export type MutationCreateMeetingArgs = {
-  meeting: CreateMeetingInput;
-};
-
-
-export type MutationUpdateMeetingArgs = {
-  meeting: UpdateMeetingInput;
-};
-
-
-export type MutationDeleteMeetingArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationUpdateParticipantArgs = {
-  meetingId: Scalars['String'];
-  participant: ParticipantInput;
+  /** Approve or disapprove a votation result */
+  reviewVotation?: Maybe<Scalars['String']>;
+  /** Start the next votation in line for a meeting. */
+  startNextVotation?: Maybe<OpenVotationResult>;
+  updateMeeting?: Maybe<Meeting>;
+  /** Update participants of a meeting. */
+  updateParticipant?: Maybe<ParticipantOrInvite>;
+  updateVotationIndexes?: Maybe<Array<Maybe<Votation>>>;
+  /** Update status of a votation, to anything other than OPEN. */
+  updateVotationStatus?: Maybe<Votation>;
+  /** Update votations belonging to a meeting. */
+  updateVotations?: Maybe<Array<Maybe<Votation>>>;
 };
 
 
@@ -223,17 +141,99 @@ export type MutationAddParticipantsArgs = {
 };
 
 
+export type MutationCastBlankVoteArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type MutationCastStvVoteArgs = {
+  alternatives: Array<StvVoteAlternativeInput>;
+  votationId: Scalars['String'];
+};
+
+
+export type MutationCastVoteArgs = {
+  alternativeId: Scalars['String'];
+};
+
+
+export type MutationCreateMeetingArgs = {
+  meeting: CreateMeetingInput;
+};
+
+
+export type MutationCreateVotationsArgs = {
+  meetingId: Scalars['String'];
+  votations: Array<CreateVotationInput>;
+};
+
+
+export type MutationDeleteAlternativesArgs = {
+  ids: Array<Scalars['String']>;
+};
+
+
+export type MutationDeleteMeetingArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteParticipantsArgs = {
+  emails: Array<Scalars['String']>;
+  meetingId: Scalars['String'];
+};
+
+
+export type MutationDeleteVotationArgs = {
+  votationId: Scalars['String'];
+};
+
+
 export type MutationRegisterAsParticipantArgs = {
   meetingId: Scalars['String'];
 };
 
 
-export type MutationDeleteParticipantsArgs = {
-  meetingId: Scalars['String'];
-  emails: Array<Scalars['String']>;
+export type MutationReviewVotationArgs = {
+  approved: Scalars['Boolean'];
+  votationId: Scalars['String'];
 };
 
-export type MyReviewResult = VotationReview | NoReview;
+
+export type MutationStartNextVotationArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type MutationUpdateMeetingArgs = {
+  meeting: UpdateMeetingInput;
+};
+
+
+export type MutationUpdateParticipantArgs = {
+  meetingId: Scalars['String'];
+  participant: ParticipantInput;
+};
+
+
+export type MutationUpdateVotationIndexesArgs = {
+  meetingId: Scalars['String'];
+  votations: Array<UpdateVotationIndexInput>;
+};
+
+
+export type MutationUpdateVotationStatusArgs = {
+  status: VotationStatus;
+  votationId: Scalars['String'];
+};
+
+
+export type MutationUpdateVotationsArgs = {
+  meetingId: Scalars['String'];
+  votations: Array<UpdateVotationInput>;
+};
+
+export type MyReviewResult = NoReview | VotationReview;
 
 export type NewVoteRegisteredResponse = {
   __typename?: 'NewVoteRegisteredResponse';
@@ -252,12 +252,12 @@ export type NoUpcomingVotations = {
   message: Scalars['String'];
 };
 
-export type OpenVotationResult = OpenedVotation | MaxOneOpenVotationError | NoUpcomingVotations | VotationHasNoAlternatives;
+export type OpenVotationResult = MaxOneOpenVotationError | NoUpcomingVotations | OpenedVotation | VotationHasNoAlternatives;
 
 export type OpenedVotation = {
   __typename?: 'OpenedVotation';
-  votationId: Scalars['String'];
   title: Scalars['String'];
+  votationId: Scalars['String'];
 };
 
 export type OwnerCannotBeRemovedFromParticipantError = {
@@ -267,92 +267,62 @@ export type OwnerCannotBeRemovedFromParticipantError = {
 
 export type Participant = {
   __typename?: 'Participant';
-  role: Role;
   isVotingEligible: Scalars['Boolean'];
+  role: Role;
   user?: Maybe<User>;
 };
 
 export type ParticipantInput = {
   email: Scalars['String'];
-  role: Role;
   isVotingEligible: Scalars['Boolean'];
+  role: Role;
 };
 
 export type ParticipantOrInvite = {
   __typename?: 'ParticipantOrInvite';
   email: Scalars['String'];
-  role: Role;
   isVotingEligible: Scalars['Boolean'];
+  role: Role;
 };
 
 export type ParticipantUpdatedResponse = {
   __typename?: 'ParticipantUpdatedResponse';
-  role: Role;
   isVotingEligible: Scalars['Boolean'];
+  role: Role;
 };
 
 export type Query = {
   __typename?: 'Query';
-  user?: Maybe<GetUserResult>;
-  votationById?: Maybe<Votation>;
-  getVoteCount?: Maybe<VoteCountResult>;
-  /** Get results from an stv votation */
-  getStvResult?: Maybe<StvResult>;
-  /** Returns result of a votation */
-  result?: Maybe<Result>;
-  getWinnerOfVotation?: Maybe<Array<Maybe<Alternative>>>;
-  getVotationResults?: Maybe<VotationResults>;
-  /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
-  resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
+  getMyReview?: Maybe<MyReviewResult>;
   getOpenVotation?: Maybe<Scalars['String']>;
   /** Return the number of approvals and disapprovals of a votation */
   getReviews?: Maybe<ReviewResult>;
-  getMyReview?: Maybe<MyReviewResult>;
-  /** Find meetings you are participating in */
-  meetings: Array<Maybe<Meeting>>;
+  /** Get results from an stv votation */
+  getStvResult?: Maybe<StvResult>;
+  getVotationResults?: Maybe<VotationResults>;
+  getVoteCount?: Maybe<VoteCountResult>;
+  getWinnerOfVotation?: Maybe<Array<Maybe<Alternative>>>;
   /** Find a meeting by id from meetings youre participating in */
   meetingById?: Maybe<Meeting>;
-  /** Return relevant information about invites and participants connected to meeting */
-  participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
-  /** Get number of upcoming votations for a meeting. */
-  numberOfUpcomingVotations?: Maybe<Scalars['Int']>;
+  /** Find meetings you are participating in */
+  meetings: Array<Maybe<Meeting>>;
   /** Return participant belonging to the user for the meeting specified. */
   myParticipant?: Maybe<ParticipantOrInvite>;
+  /** Get number of upcoming votations for a meeting. */
+  numberOfUpcomingVotations?: Maybe<Scalars['Int']>;
+  /** Return relevant information about invites and participants connected to meeting */
+  participants?: Maybe<Array<Maybe<ParticipantOrInvite>>>;
+  /** Returns result of a votation */
+  result?: Maybe<Result>;
+  /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
+  resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
+  user?: Maybe<GetUserResult>;
+  votationById?: Maybe<Votation>;
 };
 
 
-export type QueryVotationByIdArgs = {
+export type QueryGetMyReviewArgs = {
   votationId: Scalars['String'];
-};
-
-
-export type QueryGetVoteCountArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryGetStvResultArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryResultArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryGetWinnerOfVotationArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryGetVotationResultsArgs = {
-  votationId: Scalars['String'];
-};
-
-
-export type QueryResultsOfPublishedVotationsArgs = {
-  meetingId: Scalars['String'];
 };
 
 
@@ -366,7 +336,22 @@ export type QueryGetReviewsArgs = {
 };
 
 
-export type QueryGetMyReviewArgs = {
+export type QueryGetStvResultArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetVotationResultsArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetVoteCountArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryGetWinnerOfVotationArgs = {
   votationId: Scalars['String'];
 };
 
@@ -376,7 +361,7 @@ export type QueryMeetingByIdArgs = {
 };
 
 
-export type QueryParticipantsArgs = {
+export type QueryMyParticipantArgs = {
   meetingId: Scalars['String'];
 };
 
@@ -386,20 +371,35 @@ export type QueryNumberOfUpcomingVotationsArgs = {
 };
 
 
-export type QueryMyParticipantArgs = {
+export type QueryParticipantsArgs = {
   meetingId: Scalars['String'];
+};
+
+
+export type QueryResultArgs = {
+  votationId: Scalars['String'];
+};
+
+
+export type QueryResultsOfPublishedVotationsArgs = {
+  meetingId: Scalars['String'];
+};
+
+
+export type QueryVotationByIdArgs = {
+  votationId: Scalars['String'];
 };
 
 /** The result of a votation */
 export type Result = {
   __typename?: 'Result';
-  votationId: Scalars['String'];
-  votingEligibleCount: Scalars['Int'];
-  voteCount: Scalars['Int'];
-  quota?: Maybe<Scalars['Float']>;
-  blankVoteCount?: Maybe<Scalars['Int']>;
-  stvRoundResults?: Maybe<Array<StvRoundResult>>;
   alternatives: Array<AlternativeResult>;
+  blankVoteCount?: Maybe<Scalars['Int']>;
+  quota?: Maybe<Scalars['Float']>;
+  stvRoundResults?: Maybe<Array<StvRoundResult>>;
+  votationId: Scalars['String'];
+  voteCount: Scalars['Int'];
+  votingEligibleCount: Scalars['Int'];
 };
 
 export type ReviewResult = {
@@ -410,17 +410,17 @@ export type ReviewResult = {
 
 export enum Role {
   Admin = 'ADMIN',
-  Participant = 'PARTICIPANT',
-  Counter = 'COUNTER'
+  Counter = 'COUNTER',
+  Participant = 'PARTICIPANT'
 }
 
 /** Results from a stv votation */
 export type StvResult = {
   __typename?: 'StvResult';
-  votationId: Scalars['String'];
-  quota: Scalars['Int'];
   alternatives: Array<AlternativeResult>;
+  quota: Scalars['Int'];
   stvRoundResults: Array<StvRoundResult>;
+  votationId: Scalars['String'];
   voteCount: Scalars['Int'];
   votingEligibleCount: Scalars['Int'];
 };
@@ -428,11 +428,11 @@ export type StvResult = {
 /** Results from one round computing the result of an stv votation */
 export type StvRoundResult = {
   __typename?: 'StvRoundResult';
+  alternativesWithRoundVoteCount: Array<AlternativeRoundVoteCount>;
   id: Scalars['String'];
   index: Scalars['Int'];
-  winners: Array<Alternative>;
   losers: Array<Alternative>;
-  alternativesWithRoundVoteCount: Array<AlternativeRoundVoteCount>;
+  winners: Array<Alternative>;
 };
 
 export type StvVoteAlternativeInput = {
@@ -443,13 +443,13 @@ export type StvVoteAlternativeInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   newVoteRegistered?: Maybe<NewVoteRegisteredResponse>;
-  votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
+  participantUpdated?: Maybe<ParticipantUpdatedResponse>;
   reviewAdded?: Maybe<ReviewResult>;
-  /** Returns the updated votations of a meeting. */
-  votationsUpdated?: Maybe<Array<Maybe<VotationWithAlternative>>>;
   votationDeleted?: Maybe<Scalars['String']>;
   votationOpenedForMeeting?: Maybe<Scalars['String']>;
-  participantUpdated?: Maybe<ParticipantUpdatedResponse>;
+  votationStatusUpdated?: Maybe<VotationStatusUpdatedResponse>;
+  /** Returns the updated votations of a meeting. */
+  votationsUpdated?: Maybe<Array<Maybe<VotationWithAlternative>>>;
 };
 
 
@@ -458,18 +458,14 @@ export type SubscriptionNewVoteRegisteredArgs = {
 };
 
 
-export type SubscriptionVotationStatusUpdatedArgs = {
-  id: Scalars['String'];
+export type SubscriptionParticipantUpdatedArgs = {
+  meetingId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
 export type SubscriptionReviewAddedArgs = {
   votationId: Scalars['String'];
-};
-
-
-export type SubscriptionVotationsUpdatedArgs = {
-  meetingId: Scalars['String'];
 };
 
 
@@ -483,31 +479,35 @@ export type SubscriptionVotationOpenedForMeetingArgs = {
 };
 
 
-export type SubscriptionParticipantUpdatedArgs = {
+export type SubscriptionVotationStatusUpdatedArgs = {
+  id: Scalars['String'];
+};
+
+
+export type SubscriptionVotationsUpdatedArgs = {
   meetingId: Scalars['String'];
-  userId: Scalars['String'];
 };
 
 export type UpdateAlternativeInput = {
   id: Scalars['String'];
-  text: Scalars['String'];
   index: Scalars['Int'];
+  text: Scalars['String'];
 };
 
 export type UpdateMeetingInput = {
+  allowSelfRegistration?: InputMaybe<Scalars['Boolean']>;
+  description?: InputMaybe<Scalars['String']>;
   id: Scalars['String'];
-  organization?: Maybe<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
-  startTime?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  status?: Maybe<MeetingStatus>;
-  allowSelfRegistration?: Maybe<Scalars['Boolean']>;
+  organization?: InputMaybe<Scalars['String']>;
+  startTime?: InputMaybe<Scalars['DateTime']>;
+  status?: InputMaybe<MeetingStatus>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateParticipantInput = {
   email: Scalars['String'];
-  role: Role;
   isVotingEligible: Scalars['Boolean'];
+  role: Role;
   userExists: Scalars['Boolean'];
 };
 
@@ -517,23 +517,23 @@ export type UpdateVotationIndexInput = {
 };
 
 export type UpdateVotationInput = {
-  id: Scalars['String'];
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  alternatives?: InputMaybe<Array<UpdateAlternativeInput>>;
   blankVotes: Scalars['Boolean'];
+  description?: InputMaybe<Scalars['String']>;
   hiddenVotes: Scalars['Boolean'];
-  type: VotationType;
-  numberOfWinners: Scalars['Int'];
-  majorityThreshold: Scalars['Int'];
+  id: Scalars['String'];
   index: Scalars['Int'];
-  alternatives?: Maybe<Array<UpdateAlternativeInput>>;
+  majorityThreshold: Scalars['Int'];
+  numberOfWinners: Scalars['Int'];
+  title: Scalars['String'];
+  type: VotationType;
 };
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['ID'];
   email: Scalars['String'];
   emailVerified: Scalars['Boolean'];
+  id: Scalars['ID'];
 };
 
 export type UserNotFoundError = {
@@ -543,19 +543,19 @@ export type UserNotFoundError = {
 
 export type Votation = {
   __typename?: 'Votation';
-  id: Scalars['ID'];
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  status: VotationStatus;
-  blankVotes: Scalars['Boolean'];
-  hiddenVotes: Scalars['Boolean'];
-  type: VotationType;
-  numberOfWinners: Scalars['Int'];
-  majorityThreshold: Scalars['Int'];
-  index: Scalars['Int'];
-  meetingId: Scalars['String'];
-  hasVoted?: Maybe<Array<Maybe<Scalars['String']>>>;
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
+  blankVotes: Scalars['Boolean'];
+  description?: Maybe<Scalars['String']>;
+  hasVoted?: Maybe<Array<Maybe<Scalars['String']>>>;
+  hiddenVotes: Scalars['Boolean'];
+  id: Scalars['ID'];
+  index: Scalars['Int'];
+  majorityThreshold: Scalars['Int'];
+  meetingId: Scalars['String'];
+  numberOfWinners: Scalars['Int'];
+  status: VotationStatus;
+  title: Scalars['String'];
+  type: VotationType;
 };
 
 export type VotationHasNoAlternatives = {
@@ -567,9 +567,9 @@ export type VotationHasNoAlternatives = {
 export type VotationResults = {
   __typename?: 'VotationResults';
   alternatives: Array<Maybe<AlternativeResult>>;
-  id: Scalars['String'];
-  blankVotes: Scalars['Boolean'];
   blankVoteCount: Scalars['Int'];
+  blankVotes: Scalars['Boolean'];
+  id: Scalars['String'];
   voteCount: Scalars['Int'];
   votingEligibleCount: Scalars['Int'];
 };
@@ -580,11 +580,11 @@ export type VotationReview = {
 };
 
 export enum VotationStatus {
-  Upcoming = 'UPCOMING',
-  Open = 'OPEN',
   CheckingResult = 'CHECKING_RESULT',
+  Invalid = 'INVALID',
+  Open = 'OPEN',
   PublishedResult = 'PUBLISHED_RESULT',
-  Invalid = 'INVALID'
+  Upcoming = 'UPCOMING'
 }
 
 export type VotationStatusUpdatedResponse = {
@@ -601,31 +601,31 @@ export enum VotationType {
 
 export type VotationWithAlternative = {
   __typename?: 'VotationWithAlternative';
-  id: Scalars['ID'];
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  status: VotationStatus;
-  blankVotes: Scalars['Boolean'];
-  hiddenVotes: Scalars['Boolean'];
-  type: VotationType;
-  numberOfWinners: Scalars['Int'];
-  majorityThreshold: Scalars['Int'];
-  index: Scalars['Int'];
-  meetingId: Scalars['String'];
   alternatives?: Maybe<Array<Maybe<Alternative>>>;
+  blankVotes: Scalars['Boolean'];
+  description?: Maybe<Scalars['String']>;
+  hiddenVotes: Scalars['Boolean'];
+  id: Scalars['ID'];
+  index: Scalars['Int'];
+  majorityThreshold: Scalars['Int'];
+  meetingId: Scalars['String'];
+  numberOfWinners: Scalars['Int'];
+  status: VotationStatus;
+  title: Scalars['String'];
+  type: VotationType;
 };
 
 export type VotationWithWinner = {
   __typename?: 'VotationWithWinner';
-  id: Scalars['ID'];
   alternatives: Array<Maybe<AlternativeWithWinner>>;
+  id: Scalars['ID'];
 };
 
 export type Vote = {
   __typename?: 'Vote';
-  id: Scalars['ID'];
-  alternativeId: Scalars['String'];
   alternative?: Maybe<Alternative>;
+  alternativeId: Scalars['String'];
+  id: Scalars['ID'];
 };
 
 /** The result of getVoteCount */
@@ -640,26 +640,14 @@ export type CreateMeetingMutationVariables = Exact<{
 }>;
 
 
-export type CreateMeetingMutation = (
-  { __typename?: 'Mutation' }
-  & { createMeeting?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status' | 'allowSelfRegistration'>
-  )> }
-);
+export type CreateMeetingMutation = { __typename?: 'Mutation', createMeeting?: { __typename?: 'Meeting', id: string, title: string, organization: string, startTime: any, description?: string | null, status: MeetingStatus, allowSelfRegistration: boolean } | null };
 
 export type UpdateMeetingMutationVariables = Exact<{
   meeting: UpdateMeetingInput;
 }>;
 
 
-export type UpdateMeetingMutation = (
-  { __typename?: 'Mutation' }
-  & { updateMeeting?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'organization' | 'startTime' | 'description' | 'status' | 'allowSelfRegistration'>
-  )> }
-);
+export type UpdateMeetingMutation = { __typename?: 'Mutation', updateMeeting?: { __typename?: 'Meeting', id: string, title: string, organization: string, startTime: any, description?: string | null, status: MeetingStatus, allowSelfRegistration: boolean } | null };
 
 export type AddParticipantsMutationVariables = Exact<{
   meetingId: Scalars['String'];
@@ -667,10 +655,7 @@ export type AddParticipantsMutationVariables = Exact<{
 }>;
 
 
-export type AddParticipantsMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'addParticipants'>
-);
+export type AddParticipantsMutation = { __typename?: 'Mutation', addParticipants?: number | null };
 
 export type UpdateParticipantMutationVariables = Exact<{
   meetingId: Scalars['String'];
@@ -678,13 +663,7 @@ export type UpdateParticipantMutationVariables = Exact<{
 }>;
 
 
-export type UpdateParticipantMutation = (
-  { __typename?: 'Mutation' }
-  & { updateParticipant?: Maybe<(
-    { __typename?: 'ParticipantOrInvite' }
-    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
-  )> }
-);
+export type UpdateParticipantMutation = { __typename?: 'Mutation', updateParticipant?: { __typename?: 'ParticipantOrInvite', email: string, role: Role, isVotingEligible: boolean } | null };
 
 export type DeleteParticipantsMutationVariables = Exact<{
   meetingId: Scalars['String'];
@@ -692,36 +671,21 @@ export type DeleteParticipantsMutationVariables = Exact<{
 }>;
 
 
-export type DeleteParticipantsMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteParticipants'>
-);
+export type DeleteParticipantsMutation = { __typename?: 'Mutation', deleteParticipants?: Array<string | null> | null };
 
 export type DeleteMeetingMutationVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type DeleteMeetingMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteMeeting?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id'>
-  )> }
-);
+export type DeleteMeetingMutation = { __typename?: 'Mutation', deleteMeeting?: { __typename?: 'Meeting', id: string } | null };
 
 export type RegisterAsParticipantMutationVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type RegisterAsParticipantMutation = (
-  { __typename?: 'Mutation' }
-  & { registerAsParticipant?: Maybe<(
-    { __typename?: 'Participant' }
-    & Pick<Participant, 'role' | 'isVotingEligible'>
-  )> }
-);
+export type RegisterAsParticipantMutation = { __typename?: 'Mutation', registerAsParticipant?: { __typename?: 'Participant', role: Role, isVotingEligible: boolean } | null };
 
 export type CreateVotationsMutationVariables = Exact<{
   meetingId: Scalars['String'];
@@ -729,17 +693,7 @@ export type CreateVotationsMutationVariables = Exact<{
 }>;
 
 
-export type CreateVotationsMutation = (
-  { __typename?: 'Mutation' }
-  & { createVotations?: Maybe<Array<Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'meetingId' | 'title' | 'description' | 'index' | 'blankVotes' | 'status' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
-    & { alternatives?: Maybe<Array<Maybe<(
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'index'>
-    )>>> }
-  )>>> }
-);
+export type CreateVotationsMutation = { __typename?: 'Mutation', createVotations?: Array<{ __typename?: 'Votation', id: string, meetingId: string, title: string, description?: string | null, index: number, blankVotes: boolean, status: VotationStatus, hiddenVotes: boolean, type: VotationType, numberOfWinners: number, majorityThreshold: number, alternatives?: Array<{ __typename?: 'Alternative', id: string, text: string, index: number } | null> | null } | null> | null };
 
 export type UpdateVotationIndexesMutationVariables = Exact<{
   votations: Array<UpdateVotationIndexInput> | UpdateVotationIndexInput;
@@ -747,35 +701,14 @@ export type UpdateVotationIndexesMutationVariables = Exact<{
 }>;
 
 
-export type UpdateVotationIndexesMutation = (
-  { __typename?: 'Mutation' }
-  & { updateVotationIndexes?: Maybe<Array<Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'index'>
-  )>>> }
-);
+export type UpdateVotationIndexesMutation = { __typename?: 'Mutation', updateVotationIndexes?: Array<{ __typename?: 'Votation', id: string, index: number } | null> | null };
 
 export type StartNextVotationMutationVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type StartNextVotationMutation = (
-  { __typename?: 'Mutation' }
-  & { startNextVotation?: Maybe<(
-    { __typename: 'OpenedVotation' }
-    & Pick<OpenedVotation, 'votationId' | 'title'>
-  ) | (
-    { __typename: 'MaxOneOpenVotationError' }
-    & Pick<MaxOneOpenVotationError, 'message'>
-  ) | (
-    { __typename: 'NoUpcomingVotations' }
-    & Pick<NoUpcomingVotations, 'message'>
-  ) | (
-    { __typename: 'VotationHasNoAlternatives' }
-    & Pick<VotationHasNoAlternatives, 'message'>
-  )> }
-);
+export type StartNextVotationMutation = { __typename?: 'Mutation', startNextVotation?: { __typename: 'MaxOneOpenVotationError', message: string } | { __typename: 'NoUpcomingVotations', message: string } | { __typename: 'OpenedVotation', votationId: string, title: string } | { __typename: 'VotationHasNoAlternatives', message: string } | null };
 
 export type UpdateVotationsMutationVariables = Exact<{
   votations: Array<UpdateVotationInput> | UpdateVotationInput;
@@ -783,63 +716,35 @@ export type UpdateVotationsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateVotationsMutation = (
-  { __typename?: 'Mutation' }
-  & { updateVotations?: Maybe<Array<Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'blankVotes' | 'index' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'status'>
-    & { alternatives?: Maybe<Array<Maybe<(
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'index'>
-    )>>> }
-  )>>> }
-);
+export type UpdateVotationsMutation = { __typename?: 'Mutation', updateVotations?: Array<{ __typename?: 'Votation', id: string, title: string, description?: string | null, blankVotes: boolean, index: number, hiddenVotes: boolean, type: VotationType, numberOfWinners: number, majorityThreshold: number, status: VotationStatus, alternatives?: Array<{ __typename?: 'Alternative', id: string, text: string, index: number } | null> | null } | null> | null };
 
 export type DeleteVotationMutationVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type DeleteVotationMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteVotation'>
-);
+export type DeleteVotationMutation = { __typename?: 'Mutation', deleteVotation?: string | null };
 
 export type DeleteAlternativesMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
 }>;
 
 
-export type DeleteAlternativesMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteAlternatives'>
-);
+export type DeleteAlternativesMutation = { __typename?: 'Mutation', deleteAlternatives?: Array<string | null> | null };
 
 export type CastVoteMutationVariables = Exact<{
   alternativeId: Scalars['String'];
 }>;
 
 
-export type CastVoteMutation = (
-  { __typename?: 'Mutation' }
-  & { castVote?: Maybe<(
-    { __typename?: 'Vote' }
-    & { alternative?: Maybe<(
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'text'>
-    )> }
-  )> }
-);
+export type CastVoteMutation = { __typename?: 'Mutation', castVote?: { __typename?: 'Vote', alternative?: { __typename?: 'Alternative', text: string } | null } | null };
 
 export type CastBlankVoteMutationVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type CastBlankVoteMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'castBlankVote'>
-);
+export type CastBlankVoteMutation = { __typename?: 'Mutation', castBlankVote?: string | null };
 
 export type CastStvVoteMutationVariables = Exact<{
   votationId: Scalars['String'];
@@ -847,10 +752,7 @@ export type CastStvVoteMutationVariables = Exact<{
 }>;
 
 
-export type CastStvVoteMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'castStvVote'>
-);
+export type CastStvVoteMutation = { __typename?: 'Mutation', castStvVote?: string | null };
 
 export type UpdateVotationStatusMutationVariables = Exact<{
   votationId: Scalars['String'];
@@ -858,13 +760,7 @@ export type UpdateVotationStatusMutationVariables = Exact<{
 }>;
 
 
-export type UpdateVotationStatusMutation = (
-  { __typename?: 'Mutation' }
-  & { updateVotationStatus?: Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'title' | 'status'>
-  )> }
-);
+export type UpdateVotationStatusMutation = { __typename?: 'Mutation', updateVotationStatus?: { __typename?: 'Votation', title: string, status: VotationStatus } | null };
 
 export type CastVotationReviewMutationVariables = Exact<{
   votationId: Scalars['String'];
@@ -872,277 +768,98 @@ export type CastVotationReviewMutationVariables = Exact<{
 }>;
 
 
-export type CastVotationReviewMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'reviewVotation'>
-);
+export type CastVotationReviewMutation = { __typename?: 'Mutation', reviewVotation?: string | null };
 
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserQuery = (
-  { __typename?: 'Query' }
-  & { user?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'email'>
-  ) | (
-    { __typename?: 'UserNotFoundError' }
-    & Pick<UserNotFoundError, 'message'>
-  )> }
-);
+export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, email: string } | { __typename?: 'UserNotFoundError', message: string } | null };
 
 export type GetMeetingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMeetingsQuery = (
-  { __typename?: 'Query' }
-  & { meetings: Array<Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime'>
-    & { owner?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'email'>
-    )>, participants: Array<Maybe<(
-      { __typename?: 'Participant' }
-      & Pick<Participant, 'role'>
-      & { user?: Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id'>
-      )> }
-    )>> }
-  )>> }
-);
+export type GetMeetingsQuery = { __typename?: 'Query', meetings: Array<{ __typename?: 'Meeting', id: string, title: string, description?: string | null, organization: string, status: MeetingStatus, startTime: any, owner?: { __typename?: 'User', id: string, email: string } | null, participants: Array<{ __typename?: 'Participant', role: Role, user?: { __typename?: 'User', id: string } | null } | null> } | null> };
 
 export type GetParticipantQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetParticipantQuery = (
-  { __typename?: 'Query' }
-  & { myParticipant?: Maybe<(
-    { __typename?: 'ParticipantOrInvite' }
-    & Pick<ParticipantOrInvite, 'role' | 'isVotingEligible'>
-  )> }
-);
+export type GetParticipantQuery = { __typename?: 'Query', myParticipant?: { __typename?: 'ParticipantOrInvite', role: Role, isVotingEligible: boolean } | null };
 
 export type GetMeetingByIdQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetMeetingByIdQuery = (
-  { __typename?: 'Query' }
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'description' | 'organization' | 'status' | 'startTime' | 'allowSelfRegistration'>
-    & { owner?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'email'>
-    )> }
-  )> }
-);
+export type GetMeetingByIdQuery = { __typename?: 'Query', meetingById?: { __typename?: 'Meeting', id: string, title: string, description?: string | null, organization: string, status: MeetingStatus, startTime: any, allowSelfRegistration: boolean, owner?: { __typename?: 'User', id: string, email: string } | null } | null };
 
 export type GetAllowSelfRegistrationQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetAllowSelfRegistrationQuery = (
-  { __typename?: 'Query' }
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'allowSelfRegistration'>
-  )> }
-);
+export type GetAllowSelfRegistrationQuery = { __typename?: 'Query', meetingById?: { __typename?: 'Meeting', allowSelfRegistration: boolean } | null };
 
 export type GetParticipantsByMeetingIdQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetParticipantsByMeetingIdQuery = (
-  { __typename?: 'Query' }
-  & { participants?: Maybe<Array<Maybe<(
-    { __typename?: 'ParticipantOrInvite' }
-    & Pick<ParticipantOrInvite, 'email' | 'role' | 'isVotingEligible'>
-  )>>> }
-);
+export type GetParticipantsByMeetingIdQuery = { __typename?: 'Query', participants?: Array<{ __typename?: 'ParticipantOrInvite', email: string, role: Role, isVotingEligible: boolean } | null> | null };
 
-export type StvRoundResultFieldsFragment = (
-  { __typename?: 'StvRoundResult' }
-  & Pick<StvRoundResult, 'index'>
-  & { winners: Array<(
-    { __typename?: 'Alternative' }
-    & Pick<Alternative, 'votationId' | 'id' | 'index' | 'text'>
-  )>, losers: Array<(
-    { __typename?: 'Alternative' }
-    & Pick<Alternative, 'text' | 'id' | 'index'>
-  )>, alternativesWithRoundVoteCount: Array<(
-    { __typename?: 'AlternativeRoundVoteCount' }
-    & Pick<AlternativeRoundVoteCount, 'voteCount'>
-    & { alternative: (
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'index' | 'text'>
-    ) }
-  )> }
-);
+export type StvRoundResultFieldsFragment = { __typename?: 'StvRoundResult', index: number, winners: Array<{ __typename?: 'Alternative', votationId: string, id: string, index: number, text: string }>, losers: Array<{ __typename?: 'Alternative', text: string, id: string, index: number }>, alternativesWithRoundVoteCount: Array<{ __typename?: 'AlternativeRoundVoteCount', voteCount: number, alternative: { __typename?: 'Alternative', id: string, index: number, text: string } }> };
 
-export type AlternativeResultFieldsFragment = (
-  { __typename?: 'AlternativeResult' }
-  & Pick<AlternativeResult, 'id' | 'text' | 'index' | 'isWinner' | 'votes'>
-);
+export type AlternativeResultFieldsFragment = { __typename?: 'AlternativeResult', id: string, text: string, index: number, isWinner: boolean, votes: number };
 
 export type GetVotationByIdQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type GetVotationByIdQuery = (
-  { __typename?: 'Query' }
-  & { votationById?: Maybe<(
-    { __typename?: 'Votation' }
-    & Pick<Votation, 'id' | 'title' | 'description' | 'index' | 'hasVoted' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'meetingId'>
-    & { alternatives?: Maybe<Array<Maybe<(
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'index' | 'votationId'>
-    )>>> }
-  )>, getVoteCount?: Maybe<(
-    { __typename?: 'VoteCountResult' }
-    & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
-  )> }
-);
+export type GetVotationByIdQuery = { __typename?: 'Query', votationById?: { __typename?: 'Votation', id: string, title: string, description?: string | null, index: number, hasVoted?: Array<string | null> | null, status: VotationStatus, blankVotes: boolean, hiddenVotes: boolean, type: VotationType, numberOfWinners: number, majorityThreshold: number, meetingId: string, alternatives?: Array<{ __typename?: 'Alternative', id: string, text: string, index: number, votationId: string } | null> | null } | null, getVoteCount?: { __typename?: 'VoteCountResult', votingEligibleCount: number, voteCount: number } | null };
 
 export type GetMeetingForLobbyQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type GetMeetingForLobbyQuery = (
-  { __typename?: 'Query' }
-  & Pick<Query, 'getOpenVotation' | 'numberOfUpcomingVotations'>
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title' | 'allowSelfRegistration'>
-    & { owner?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'email'>
-    )> }
-  )> }
-);
+export type GetMeetingForLobbyQuery = { __typename?: 'Query', getOpenVotation?: string | null, numberOfUpcomingVotations?: number | null, meetingById?: { __typename?: 'Meeting', id: string, title: string, allowSelfRegistration: boolean, owner?: { __typename?: 'User', email: string } | null } | null };
 
 export type VotationsByMeetingIdQueryVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type VotationsByMeetingIdQuery = (
-  { __typename?: 'Query' }
-  & { meetingById?: Maybe<(
-    { __typename?: 'Meeting' }
-    & Pick<Meeting, 'id' | 'title'>
-    & { owner?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'email'>
-    )>, votations?: Maybe<Array<Maybe<(
-      { __typename?: 'Votation' }
-      & Pick<Votation, 'id' | 'title' | 'status' | 'description' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold' | 'index'>
-      & { alternatives?: Maybe<Array<Maybe<(
-        { __typename?: 'Alternative' }
-        & Pick<Alternative, 'id' | 'text' | 'index'>
-      )>>> }
-    )>>> }
-  )>, resultsOfPublishedVotations?: Maybe<Array<Maybe<(
-    { __typename?: 'VotationWithWinner' }
-    & Pick<VotationWithWinner, 'id'>
-    & { alternatives: Array<Maybe<(
-      { __typename?: 'AlternativeWithWinner' }
-      & Pick<AlternativeWithWinner, 'id' | 'text' | 'index' | 'isWinner'>
-    )>> }
-  )>>> }
-);
+export type VotationsByMeetingIdQuery = { __typename?: 'Query', meetingById?: { __typename?: 'Meeting', id: string, title: string, owner?: { __typename?: 'User', email: string } | null, votations?: Array<{ __typename?: 'Votation', id: string, title: string, status: VotationStatus, description?: string | null, blankVotes: boolean, hiddenVotes: boolean, type: VotationType, numberOfWinners: number, majorityThreshold: number, index: number, alternatives?: Array<{ __typename?: 'Alternative', id: string, text: string, index: number } | null> | null } | null> | null } | null, resultsOfPublishedVotations?: Array<{ __typename?: 'VotationWithWinner', id: string, alternatives: Array<{ __typename?: 'AlternativeWithWinner', id: string, text: string, index: number, isWinner: boolean } | null> } | null> | null };
 
 export type GetVoteCountQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type GetVoteCountQuery = (
-  { __typename?: 'Query' }
-  & { getVoteCount?: Maybe<(
-    { __typename?: 'VoteCountResult' }
-    & Pick<VoteCountResult, 'votingEligibleCount' | 'voteCount'>
-  )> }
-);
+export type GetVoteCountQuery = { __typename?: 'Query', getVoteCount?: { __typename?: 'VoteCountResult', votingEligibleCount: number, voteCount: number } | null };
 
 export type GetVotationResultsQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type GetVotationResultsQuery = (
-  { __typename?: 'Query' }
-  & { getVotationResults?: Maybe<(
-    { __typename?: 'VotationResults' }
-    & Pick<VotationResults, 'id' | 'voteCount' | 'votingEligibleCount' | 'blankVoteCount'>
-    & { alternatives: Array<Maybe<(
-      { __typename?: 'AlternativeResult' }
-      & AlternativeResultFieldsFragment
-    )>> }
-  )>, getStvResult?: Maybe<(
-    { __typename?: 'StvResult' }
-    & Pick<StvResult, 'votationId' | 'voteCount' | 'votingEligibleCount' | 'quota'>
-    & { alternatives: Array<(
-      { __typename?: 'AlternativeResult' }
-      & AlternativeResultFieldsFragment
-    )>, stvRoundResults: Array<(
-      { __typename?: 'StvRoundResult' }
-      & StvRoundResultFieldsFragment
-    )> }
-  )>, result?: Maybe<(
-    { __typename?: 'Result' }
-    & Pick<Result, 'votationId' | 'voteCount' | 'votingEligibleCount' | 'blankVoteCount' | 'quota'>
-    & { alternatives: Array<(
-      { __typename?: 'AlternativeResult' }
-      & AlternativeResultFieldsFragment
-    )>, stvRoundResults?: Maybe<Array<(
-      { __typename?: 'StvRoundResult' }
-      & StvRoundResultFieldsFragment
-    )>> }
-  )> }
-);
+export type GetVotationResultsQuery = { __typename?: 'Query', getVotationResults?: { __typename?: 'VotationResults', id: string, voteCount: number, votingEligibleCount: number, blankVoteCount: number, alternatives: Array<{ __typename?: 'AlternativeResult', id: string, text: string, index: number, isWinner: boolean, votes: number } | null> } | null, getStvResult?: { __typename?: 'StvResult', votationId: string, voteCount: number, votingEligibleCount: number, quota: number, alternatives: Array<{ __typename?: 'AlternativeResult', id: string, text: string, index: number, isWinner: boolean, votes: number }>, stvRoundResults: Array<{ __typename?: 'StvRoundResult', index: number, winners: Array<{ __typename?: 'Alternative', votationId: string, id: string, index: number, text: string }>, losers: Array<{ __typename?: 'Alternative', text: string, id: string, index: number }>, alternativesWithRoundVoteCount: Array<{ __typename?: 'AlternativeRoundVoteCount', voteCount: number, alternative: { __typename?: 'Alternative', id: string, index: number, text: string } }> }> } | null, result?: { __typename?: 'Result', votationId: string, voteCount: number, votingEligibleCount: number, blankVoteCount?: number | null, quota?: number | null, alternatives: Array<{ __typename?: 'AlternativeResult', id: string, text: string, index: number, isWinner: boolean, votes: number }>, stvRoundResults?: Array<{ __typename?: 'StvRoundResult', index: number, winners: Array<{ __typename?: 'Alternative', votationId: string, id: string, index: number, text: string }>, losers: Array<{ __typename?: 'Alternative', text: string, id: string, index: number }>, alternativesWithRoundVoteCount: Array<{ __typename?: 'AlternativeRoundVoteCount', voteCount: number, alternative: { __typename?: 'Alternative', id: string, index: number, text: string } }> }> | null } | null };
 
 export type GetWinnerOfVotationQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type GetWinnerOfVotationQuery = (
-  { __typename?: 'Query' }
-  & { getWinnerOfVotation?: Maybe<Array<Maybe<(
-    { __typename?: 'Alternative' }
-    & Pick<Alternative, 'id' | 'text' | 'votationId'>
-  )>>> }
-);
+export type GetWinnerOfVotationQuery = { __typename?: 'Query', getWinnerOfVotation?: Array<{ __typename?: 'Alternative', id: string, text: string, votationId: string } | null> | null };
 
 export type GetReviewsQueryVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type GetReviewsQuery = (
-  { __typename?: 'Query' }
-  & { getReviews?: Maybe<(
-    { __typename?: 'ReviewResult' }
-    & Pick<ReviewResult, 'approved' | 'disapproved'>
-  )>, getMyReview?: Maybe<(
-    { __typename?: 'VotationReview' }
-    & Pick<VotationReview, 'approved'>
-  ) | (
-    { __typename?: 'NoReview' }
-    & Pick<NoReview, 'message'>
-  )> }
-);
+export type GetReviewsQuery = { __typename?: 'Query', getReviews?: { __typename?: 'ReviewResult', approved: number, disapproved: number } | null, getMyReview?: { __typename?: 'NoReview', message: string } | { __typename?: 'VotationReview', approved: boolean } | null };
 
 export type ParticipantUpdatedSubscriptionVariables = Exact<{
   userId: Scalars['String'];
@@ -1150,89 +867,49 @@ export type ParticipantUpdatedSubscriptionVariables = Exact<{
 }>;
 
 
-export type ParticipantUpdatedSubscription = (
-  { __typename?: 'Subscription' }
-  & { participantUpdated?: Maybe<(
-    { __typename?: 'ParticipantUpdatedResponse' }
-    & Pick<ParticipantUpdatedResponse, 'role' | 'isVotingEligible'>
-  )> }
-);
+export type ParticipantUpdatedSubscription = { __typename?: 'Subscription', participantUpdated?: { __typename?: 'ParticipantUpdatedResponse', role: Role, isVotingEligible: boolean } | null };
 
 export type VotationStatusUpdatedSubscriptionVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type VotationStatusUpdatedSubscription = (
-  { __typename?: 'Subscription' }
-  & { votationStatusUpdated?: Maybe<(
-    { __typename?: 'VotationStatusUpdatedResponse' }
-    & Pick<VotationStatusUpdatedResponse, 'votationId' | 'votationStatus'>
-  )> }
-);
+export type VotationStatusUpdatedSubscription = { __typename?: 'Subscription', votationStatusUpdated?: { __typename?: 'VotationStatusUpdatedResponse', votationId: string, votationStatus: VotationStatus } | null };
 
 export type NewVoteRegisteredSubscriptionVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type NewVoteRegisteredSubscription = (
-  { __typename?: 'Subscription' }
-  & { newVoteRegistered?: Maybe<(
-    { __typename?: 'NewVoteRegisteredResponse' }
-    & Pick<NewVoteRegisteredResponse, 'votationId' | 'voteCount' | 'votingEligibleCount'>
-  )> }
-);
+export type NewVoteRegisteredSubscription = { __typename?: 'Subscription', newVoteRegistered?: { __typename?: 'NewVoteRegisteredResponse', votationId: string, voteCount: number, votingEligibleCount: number } | null };
 
 export type VotationOpenedForMeetingSubscriptionVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type VotationOpenedForMeetingSubscription = (
-  { __typename?: 'Subscription' }
-  & Pick<Subscription, 'votationOpenedForMeeting'>
-);
+export type VotationOpenedForMeetingSubscription = { __typename?: 'Subscription', votationOpenedForMeeting?: string | null };
 
 export type ReviewAddedSubscriptionVariables = Exact<{
   votationId: Scalars['String'];
 }>;
 
 
-export type ReviewAddedSubscription = (
-  { __typename?: 'Subscription' }
-  & { reviewAdded?: Maybe<(
-    { __typename?: 'ReviewResult' }
-    & Pick<ReviewResult, 'approved' | 'disapproved'>
-  )> }
-);
+export type ReviewAddedSubscription = { __typename?: 'Subscription', reviewAdded?: { __typename?: 'ReviewResult', approved: number, disapproved: number } | null };
 
 export type VotationsUpdatedSubscriptionVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type VotationsUpdatedSubscription = (
-  { __typename?: 'Subscription' }
-  & { votationsUpdated?: Maybe<Array<Maybe<(
-    { __typename?: 'VotationWithAlternative' }
-    & Pick<VotationWithAlternative, 'id' | 'title' | 'description' | 'index' | 'status' | 'blankVotes' | 'hiddenVotes' | 'type' | 'numberOfWinners' | 'majorityThreshold'>
-    & { alternatives?: Maybe<Array<Maybe<(
-      { __typename?: 'Alternative' }
-      & Pick<Alternative, 'id' | 'text' | 'index'>
-    )>>> }
-  )>>> }
-);
+export type VotationsUpdatedSubscription = { __typename?: 'Subscription', votationsUpdated?: Array<{ __typename?: 'VotationWithAlternative', id: string, title: string, description?: string | null, index: number, status: VotationStatus, blankVotes: boolean, hiddenVotes: boolean, type: VotationType, numberOfWinners: number, majorityThreshold: number, alternatives?: Array<{ __typename?: 'Alternative', id: string, text: string, index: number } | null> | null } | null> | null };
 
 export type VotationDeletedSubscriptionVariables = Exact<{
   meetingId: Scalars['String'];
 }>;
 
 
-export type VotationDeletedSubscription = (
-  { __typename?: 'Subscription' }
-  & Pick<Subscription, 'votationDeleted'>
-);
+export type VotationDeletedSubscription = { __typename?: 'Subscription', votationDeleted?: string | null };
 
 export const StvRoundResultFieldsFragmentDoc = gql`
     fragment StvRoundResultFields on StvRoundResult {
