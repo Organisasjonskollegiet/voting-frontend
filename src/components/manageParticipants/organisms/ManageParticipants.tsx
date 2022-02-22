@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import { VStack, Heading, Text, Center } from '@chakra-ui/react';
-import ManageMeetingController from '../../manageMeeting/ManageMeetingController';
 import AddParticipantsForm from '../molecules/AddParticipantsForm';
 import { ParticipantOrInvite, useGetParticipantsByMeetingIdLazyQuery } from '../../../__generated__/graphql-types';
 
 interface IProps {
   meetingId: string;
   handleNavigation?: (nextIndex: number) => void;
-  isActive?: boolean;
   ownerEmail: string | undefined;
   modalView?: boolean;
 }
 
-const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavigation, ownerEmail, modalView }) => {
-  const history = useHistory();
-
+const ManageParticipants: React.FC<IProps> = ({ meetingId, ownerEmail, modalView }) => {
   const [getParticipants, { data, loading, error }] = useGetParticipantsByMeetingIdLazyQuery({
     variables: { meetingId },
     fetchPolicy: 'cache-and-network',
@@ -35,8 +30,6 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
     }
   }, [data]);
 
-  if (!isActive) return <></>;
-
   if (!loading && (error || data?.participants === undefined)) {
     return (
       <Center>
@@ -44,16 +37,6 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
       </Center>
     );
   }
-
-  const handleNavigationClick = (nextIndex: number) => {
-    if (handleNavigation) {
-      if (nextIndex > 2) {
-        history.push('/');
-      } else {
-        handleNavigation(nextIndex);
-      }
-    }
-  };
 
   return (
     <>
@@ -70,9 +53,6 @@ const ManageParticipants: React.FC<IProps> = ({ isActive, meetingId, handleNavig
         ownerEmail={ownerEmail}
         participantsLoading={loading}
       />
-      {handleNavigation && (
-        <ManageMeetingController showPrev={true} activeTab={2} handleNavigation={handleNavigationClick} />
-      )}
     </>
   );
 };

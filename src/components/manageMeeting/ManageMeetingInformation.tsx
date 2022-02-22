@@ -1,22 +1,17 @@
 import React from 'react';
 import { Heading, VStack, Text } from '@chakra-ui/react';
 import MeetingInformationForm from './MeetingInformationForm';
-import ManageMeetingController from './ManageMeetingController';
 import { MeetingWorking } from '../../types/types';
 
 interface IProps {
   meeting: MeetingWorking;
   updateMeeting: (meeting: MeetingWorking) => void;
-  handleNavigation: (nextIndex: number) => void;
-  isActive: boolean;
 }
 
-const ManageMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, meeting, handleNavigation }) => {
+const ManageMeetingInformation: React.FC<IProps> = ({ updateMeeting, meeting }) => {
   const onChange = (meeting: MeetingWorking) => {
     updateMeeting(meeting);
   };
-
-  if (!isActive) return <></>;
 
   return (
     <>
@@ -25,7 +20,6 @@ const ManageMeetingInformation: React.FC<IProps> = ({ isActive, updateMeeting, m
         <Text fontSize="lg">Her kan du legge til informasjon om møtet </Text>
       </VStack>
       <MeetingInformationForm meeting={meeting} onChange={onChange} />
-      <ManageMeetingController handleNavigation={handleNavigation} showPrev={false} activeTab={0} />
     </>
   );
 };

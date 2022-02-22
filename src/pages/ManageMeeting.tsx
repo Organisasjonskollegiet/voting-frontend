@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Center, VStack, useToast, Text } from '@chakra-ui/react';
 import ManageVotations from '../components/manageMeeting/ManageVotations';
 import {
@@ -11,9 +11,10 @@ import ManageParticipants from '../components/manageParticipants/organisms/Manag
 import { MeetingWorking } from '../types/types';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { outerContainer, centerContainer } from '../components/styles/containerStyles';
 import PageContainer from '../components/common/PageContainer';
+import ManageMeetingController from '../components/manageMeeting/ManageMeetingController';
 
 const ManageMeeting: React.FC = () => {
   const { user } = useAuth0();
@@ -25,6 +26,7 @@ const ManageMeeting: React.FC = () => {
   });
 
   const toast = useToast();
+  const history = useHistory();
 
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
@@ -35,35 +37,34 @@ const ManageMeeting: React.FC = () => {
   });
 
   const [createMeeting, createMeetingResult] = useCreateMeetingMutation();
-
   const [meetingHasBeenEdited, setMeetingHasBeenEdited] = useState<boolean>(false);
-
   const [updateMeeting, updateMeetingResult] = useUpdateMeetingMutation();
-
   const [activeTab, setActiveTab] = useState<number>(0);
-
   const [votationsMayExist, setVotationsMayExist] = useState<boolean>(!!meetingId);
 
-  const handleCreatedOrUpdatedMeeting = (meeting: MeetingWorking, action: 'updated' | 'created') => {
-    setMeeting({
-      id: meeting.id,
-      title: meeting.title,
-      description: meeting.description ?? '',
-      organization: meeting.organization,
-      startTime: new Date(meeting.startTime),
-      allowSelfRegistration: meeting.allowSelfRegistration,
-    });
-    setMeetingHasBeenEdited(false);
-    const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
-    toast({
-      title: `Møte ${responseKeyWord}`,
-      description: `Møtet ble ${responseKeyWord}.`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
-    setActiveTab(1);
-  };
+  const handleCreatedOrUpdatedMeeting = useCallback(
+    (meeting: MeetingWorking, action: 'updated' | 'created') => {
+      setMeeting({
+        id: meeting.id,
+        title: meeting.title,
+        description: meeting.description ?? '',
+        organization: meeting.organization,
+        startTime: new Date(meeting.startTime),
+        allowSelfRegistration: meeting.allowSelfRegistration,
+      });
+      setMeetingHasBeenEdited(false);
+      const responseKeyWord = action === 'created' ? 'opprettet' : 'oppdatert';
+      toast({
+        title: `Møte ${responseKeyWord}`,
+        description: `Møtet ble ${responseKeyWord}.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      setActiveTab(1);
+    },
+    [toast]
+  );
 
   useEffect(() => {
     if (meetingId && !data) {
@@ -89,15 +90,13 @@ const ManageMeeting: React.FC = () => {
     if (!updateMeetingResult.data?.updateMeeting) return;
     const updatedMeeting = updateMeetingResult.data.updateMeeting as MeetingWorking;
     handleCreatedOrUpdatedMeeting(updatedMeeting, 'updated');
-    // eslint-disable-next-line
-  }, [updateMeetingResult.data?.updateMeeting]);
+  }, [updateMeetingResult.data?.updateMeeting, handleCreatedOrUpdatedMeeting]);
 
   useEffect(() => {
     if (!createMeetingResult.data?.createMeeting) return;
     const createdMeeting = createMeetingResult.data.createMeeting as MeetingWorking;
     handleCreatedOrUpdatedMeeting(createdMeeting, 'created');
-    // eslint-disable-next-line
-  }, [createMeetingResult.data?.createMeeting]);
+  }, [createMeetingResult.data?.createMeeting, handleCreatedOrUpdatedMeeting]);
 
   const isMeetingInformationValid = () => {
     return meeting.organization !== '' && meeting.title !== '';
@@ -124,25 +123,17 @@ const ManageMeeting: React.FC = () => {
     }
   };
 
-  const onVotationsCreated = () => {
-    setActiveTab(2);
-  };
-
-  const handlePrevFromVotation = () => {
-    try {
-      setActiveTab(activeTab - 1);
+  const handleNavigation = (nextIndex: number) => {
+    if (nextIndex < 0 || nextIndex > 2) {
+      return history.push('/');
+    }
+    if (activeTab === 0 && nextIndex === 1) {
+      return handleNextFromMeeting(nextIndex);
+    }
+    if (activeTab === 1 && nextIndex === 0) {
       setVotationsMayExist(true);
-    } catch (error) {
-      console.log('error', error);
     }
-  };
-
-  const handlePrevFromParticipants = (nextIndex: number) => {
-    try {
-      setActiveTab(nextIndex);
-    } catch (error) {
-      console.log('error', error);
-    }
+    setActiveTab(nextIndex);
   };
 
   if (createMeetingResult.error) {
@@ -169,28 +160,18 @@ const ManageMeeting: React.FC = () => {
       <Center sx={outerContainer}>
         {(createMeetingResult.loading || updateMeetingResult.loading) && <Loading asOverlay text="Oppretter møte" />}
         <VStack spacing="10" align="left" maxWidth="800px" sx={centerContainer}>
-          <ManageMeetingInformation
-            isActive={activeTab === 0}
-            meeting={meeting}
-            updateMeeting={(meeting: MeetingWorking) => {
-              setMeetingHasBeenEdited(true);
-              setMeeting(meeting);
-            }}
-            handleNavigation={handleNextFromMeeting}
-          />
-          <ManageVotations
-            isActive={activeTab === 1}
-            votationsMayExist={votationsMayExist}
-            onVotationsCreated={onVotationsCreated}
-            meetingId={meeting?.id ?? ''}
-            handlePrevious={handlePrevFromVotation}
-          />
-          <ManageParticipants
-            isActive={activeTab === 2}
-            meetingId={meeting?.id ?? ''}
-            handleNavigation={handlePrevFromParticipants}
-            ownerEmail={user?.email}
-          />
+          {activeTab === 0 && (
+            <ManageMeetingInformation
+              meeting={meeting}
+              updateMeeting={(meeting: MeetingWorking) => {
+                setMeetingHasBeenEdited(true);
+                setMeeting(meeting);
+              }}
+            />
+          )}
+          {activeTab === 1 && <ManageVotations votationsMayExist={votationsMayExist} meetingId={meeting?.id ?? ''} />}
+          {activeTab === 2 && <ManageParticipants meetingId={meeting?.id ?? ''} ownerEmail={user?.email} />}
+          <ManageMeetingController {...{ activeTab, handleNavigation }} />
         </VStack>
       </Center>
     </PageContainer>
