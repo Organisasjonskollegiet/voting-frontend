@@ -123,17 +123,17 @@ const ManageMeeting: React.FC = () => {
     }
   };
 
-  const handleNavigation = (target: number) => {
-    if (target < 0 || target > 2) {
+  const handleNavigation = (nextIndex: number) => {
+    if (nextIndex < 0 || nextIndex > 2) {
       return history.push('/');
     }
-    if (activeTab === 0 && target === 1) {
-      return handleNextFromMeeting(target);
+    if (activeTab === 0 && nextIndex === 1) {
+      return handleNextFromMeeting(nextIndex);
     }
-    if (activeTab === 1 && target === 0) {
+    if (activeTab === 1 && nextIndex === 0) {
       setVotationsMayExist(true);
     }
-    setActiveTab(target);
+    setActiveTab(nextIndex);
   };
 
   if (createMeetingResult.error) {

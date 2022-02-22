@@ -6,7 +6,7 @@ import useScreenWidth from '../../hooks/ScreenWidth';
 
 interface IProps {
   activeTab: number;
-  handleNavigation: (value: number) => void;
+  handleNavigation: (nextIndex: number) => void;
 }
 
 const ManageMeetingController: React.FC<IProps> = ({ activeTab, handleNavigation }) => {
