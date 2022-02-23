@@ -9,8 +9,8 @@ interface CustomProps {
 
 const CustomTag: React.FC<CustomProps> = ({ textColor, bgColor, text }) => {
   return (
-    <Tag bgColor={bgColor} fontWeight="bold" p="0 1em">
-      <TagLabel variant="subtle" pt="2px" fontWeight="bold" textColor={textColor || 'white'} fontSize="12px">
+    <Tag variant="subtle" bgColor={bgColor} fontWeight="bold" p="0 1em">
+      <TagLabel pt="2px" fontWeight="bold" textColor={textColor || 'white'} fontSize="12px">
         {text}
       </TagLabel>
     </Tag>

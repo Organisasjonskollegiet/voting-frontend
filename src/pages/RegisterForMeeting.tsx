@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { Center, Text, useToast, VStack } from '@chakra-ui/react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../components/common/Loading';
 import { useRegisterAsParticipantMutation } from '../__generated__/graphql-types';
 
 const RegisterForMeeting: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const toast = useToast();
   const [registerAsParticipant, { data, loading, error }] = useRegisterAsParticipantMutation();
 
@@ -25,9 +25,9 @@ const RegisterForMeeting: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
-      history.push(`/meeting/${meetingId}`);
+      navigate(`/meeting/${meetingId}`, { replace: true });
     }
-  }, [data, history, meetingId, toast]);
+  }, [data, navigate, meetingId, toast]);
 
   if (loading) return <Loading text="Registrerer deg som deltaker" />;
 

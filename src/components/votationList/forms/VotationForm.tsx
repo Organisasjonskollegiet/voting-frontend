@@ -108,7 +108,7 @@ const AddVotationForm: React.FC<IProps> = ({
               </VStack>
             </WrapStack>
             <Divider m="3em 0" />
-            <Box align="right" width="100%">
+            <Box alignItems={'end'} width="100%">
               <DeleteButton onClick={() => setVotationDialogIsOpen(true)} label="Slett votering" />
               <Tooltip label="Dupliser votering">
                 <IconButton
