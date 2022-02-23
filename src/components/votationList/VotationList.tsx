@@ -9,7 +9,7 @@ import {
   useDeleteVotationMutation,
   useVotationDeletedSubscription,
   useUpdateVotationsMutation,
-  useVotationsByMeetingIdLazyQuery,
+  useVotationsByMeetingIdQuery,
   VotationStatus,
   useUpdateVotationIndexesMutation,
   useVotationsUpdatedSubscription,
@@ -35,7 +35,6 @@ import MeetingController from './ManageMeetingControllerWithVotationValidation';
 
 interface VotationListProps {
   meetingId: string;
-  votationsMayExist?: boolean; //DELETE
   isMeetingLobby: boolean;
   role: Role | undefined;
   hideStartNextButton?: boolean;
@@ -45,14 +44,13 @@ interface VotationListProps {
 
 const VotationList: React.FC<VotationListProps> = ({
   meetingId,
-  votationsMayExist,
   isMeetingLobby,
   role,
   hideStartNextButton,
   navigateToOpenVotation,
   setNumberOfUpcomingVotations,
 }) => {
-  const [getVotationsByMeetingId, { data, loading, error }] = useVotationsByMeetingIdLazyQuery({
+  const { data, loading, error } = useVotationsByMeetingIdQuery({
     variables: {
       meetingId,
     },
@@ -136,23 +134,15 @@ const VotationList: React.FC<VotationListProps> = ({
     if (
       !nextVotation &&
       role === Role.Admin &&
-      ((data?.meetingById?.votations && data.meetingById.votations.length === 0) || !votationsMayExist)
+      data?.meetingById?.votations &&
+      data.meetingById.votations.length === 0
     ) {
       const emptyVotation = getEmptyVotation();
       setNextVotation(emptyVotation);
       setUpcomingVotations([]);
       setActiveVotationId(emptyVotation.id);
     }
-  }, [
-    data?.meetingById?.votations,
-    votationsMayExist,
-    role,
-    ongoingVotation,
-    nextVotation,
-    upcomingVotations,
-    endedVotations,
-    loading,
-  ]);
+  }, [data?.meetingById?.votations, role, ongoingVotation, nextVotation, upcomingVotations, endedVotations, loading]);
 
   useEffect(() => {
     if (votationsUpdated === lastUpdate || !votationsUpdated?.votationsUpdated) return;
@@ -172,14 +162,6 @@ const VotationList: React.FC<VotationListProps> = ({
       setUpcomingVotations(updatedVotationList.slice(1));
     }
   }, [votationsUpdated, nextVotation, upcomingVotations, lastUpdate, formatVotations]);
-
-  // If there may exist votations (you are editing meeting or already
-  // been on add votations page), fetch votations from the backend
-  useEffect(() => {
-    if (votationsMayExist) {
-      getVotationsByMeetingId();
-    }
-  }, [votationsMayExist, getVotationsByMeetingId]);
 
   /**
    * @returns the index of what is going to be the nextVotation
