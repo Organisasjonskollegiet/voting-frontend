@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import ManageMeetingInformation from '../../components/manageMeeting/ManageMeetingInformation';
+import ManageMeetingInformation from '../../components/manageMeeting/organisms/ManageMeetingInformation';
 
 export default {
   title: 'Molecules/AddMeetingInformation',
@@ -11,16 +11,6 @@ const nullFunction = () => {
   return;
 };
 
-const emptyMeeting = {
-  title: '',
-  organization: '',
-  startTime: new Date(),
-  description: '',
-  allowSelfRegistration: false,
-};
-
-const Template: Story = () => (
-  <ManageMeetingInformation meeting={emptyMeeting} updateMeeting={(meeting) => nullFunction()} />
-);
+const Template: Story = () => <ManageMeetingInformation meetingId="" setMeetingId={(id: string) => nullFunction()} />;
 
 export const Default = Template.bind({});

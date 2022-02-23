@@ -1,10 +1,10 @@
 import React from 'react';
 import { useStyleConfig, FormControl, FormLabel, Input, ComponentStyleConfig, VStack } from '@chakra-ui/react';
-import DatePicker from '../common/DatePicker/DatePicker';
-import { labelStyle, inputStyle, highlightedInputStyle } from '../styles/formStyles';
-import { MeetingWorking } from '../../types/types';
-import { AutoResizeTextarea } from '../common/AutosizeTextArea';
-import { darkblue } from '../styles/colors';
+import DatePicker from '../../common/DatePicker/DatePicker';
+import { labelStyle, inputStyle, highlightedInputStyle } from '../../styles/formStyles';
+import { MeetingWorking } from '../../../types/types';
+import { AutoResizeTextarea } from '../../common/AutosizeTextArea';
+import { darkblue } from '../../styles/colors';
 
 interface IProps {
   meeting: MeetingWorking;

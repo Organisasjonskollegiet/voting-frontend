@@ -30,11 +30,12 @@ import {
   reorderSingleList,
 } from './utils';
 import ResultModal from '../myMeetings/ResultModal';
+import MeetingController from './ManageMeetingControllerWithVotationValidation';
 // import VotationTypeAccordion from '../activeVotation/VotationTypeAccordion';
 
 interface VotationListProps {
   meetingId: string;
-  votationsMayExist: boolean;
+  votationsMayExist?: boolean; //DELETE
   isMeetingLobby: boolean;
   role: Role | undefined;
   hideStartNextButton?: boolean;
@@ -650,6 +651,7 @@ const VotationList: React.FC<VotationListProps> = ({
       {(role === Role.Admin || role === Role.Counter) && isMeetingLobby && (
         <ResultModal isOpen={!!showResultOf} onClose={() => setShowResultOf(null)} votation={showResultOf} />
       )}
+      {!isMeetingLobby && <MeetingController {...{ handleSave, checkIfAnyChanges }} />}
     </VStack>
   );
 };
