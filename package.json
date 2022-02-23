@@ -46,8 +46,6 @@
     "lint-fix": "eslint --fix 'src/**/*.{js,ts,tsx}'",
     "format": "prettier --write 'src/*.{js,jsx,ts,tsx}'",
     "eject": "react-scripts eject",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
     "generate": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
@@ -74,12 +72,6 @@
     "@graphql-codegen/typescript": "2.4.3",
     "@graphql-codegen/typescript-operations": "2.3.0",
     "@graphql-codegen/typescript-react-apollo": "3.2.6",
-    "@storybook/addon-actions": "^6.1.21",
-    "@storybook/addon-essentials": "^6.1.21",
-    "@storybook/addon-links": "^6.1.21",
-    "@storybook/node-logger": "^6.1.21",
-    "@storybook/preset-create-react-app": "^3.1.7",
-    "@storybook/react": "^6.1.21",
     "@types/qrcode.react": "^1.0.2",
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-datepicker": "^3.1.8",
