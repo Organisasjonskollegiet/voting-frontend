@@ -34,7 +34,7 @@
     "react-spinners": "^0.10.6",
     "react-textarea-autosize": "^8.3.3",
     "subscriptions-transport-ws": "^0.9.19",
-    "typescript": "4.2.2",
+    "typescript": "4.5.5",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1"
   },
@@ -68,10 +68,10 @@
   },
   "devDependencies": {
     "@cypress/react": "^4.16.4",
-    "@graphql-codegen/cli": "2.6.1",
-    "@graphql-codegen/typescript": "2.4.3",
-    "@graphql-codegen/typescript-operations": "2.3.0",
-    "@graphql-codegen/typescript-react-apollo": "3.2.6",
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/typescript": "2.4.5",
+    "@graphql-codegen/typescript-operations": "2.3.2",
+    "@graphql-codegen/typescript-react-apollo": "3.2.8",
     "@types/qrcode.react": "^1.0.2",
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-datepicker": "^3.1.8",

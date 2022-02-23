@@ -115,6 +115,8 @@ export type Mutation = {
   createMeeting?: Maybe<Meeting>;
   createVotations?: Maybe<Array<Maybe<Votation>>>;
   deleteAlternatives?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** Delete your own user. */
+  deleteMe?: Maybe<Scalars['String']>;
   deleteMeeting?: Maybe<Meeting>;
   deleteParticipants?: Maybe<Array<Maybe<Scalars['String']>>>;
   deleteVotation?: Maybe<Scalars['String']>;
@@ -589,6 +591,7 @@ export enum VotationStatus {
 
 export type VotationStatusUpdatedResponse = {
   __typename?: 'VotationStatusUpdatedResponse';
+  reason?: Maybe<Scalars['String']>;
   votationId: Scalars['String'];
   votationStatus: VotationStatus;
 };
