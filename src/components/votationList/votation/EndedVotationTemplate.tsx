@@ -26,7 +26,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
         }
         pr={role !== Role.Admin ? '1.5em' : '0'}
       >
-        <HStack flex="1" justifyContent="space-between" opacity="0.5" s>
+        <HStack flex="1" justifyContent="space-between" opacity="0.5">
           <CollapsedVotationRow title={votation.title} index={votation.index} />
           <HStack ml="auto">
             {votation.status === VotationStatus.PublishedResult && (

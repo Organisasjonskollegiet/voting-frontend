@@ -11,7 +11,7 @@ import ManageParticipants from '../components/manageParticipants/organisms/Manag
 import { MeetingWorking } from '../types/types';
 import Loading from '../components/common/Loading';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { outerContainer, centerContainer } from '../components/styles/containerStyles';
 import PageContainer from '../components/common/PageContainer';
 import ManageMeetingController from '../components/manageMeeting/ManageMeetingController';
@@ -21,12 +21,12 @@ const ManageMeeting: React.FC = () => {
   const { meetingId } = useParams<{ meetingId: string }>();
   const [getMeeting, { data, loading, error }] = useGetMeetingByIdLazyQuery({
     variables: {
-      meetingId,
+      meetingId: meetingId ?? '',
     },
   });
 
   const toast = useToast();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [meeting, setMeeting] = useState<MeetingWorking>({
     title: '',
@@ -125,7 +125,7 @@ const ManageMeeting: React.FC = () => {
 
   const handleNavigation = (nextIndex: number) => {
     if (nextIndex < 0 || nextIndex > 2) {
-      return history.push('/');
+      return navigate('/', { replace: true });
     }
     if (activeTab === 0 && nextIndex === 1) {
       return handleNextFromMeeting(nextIndex);

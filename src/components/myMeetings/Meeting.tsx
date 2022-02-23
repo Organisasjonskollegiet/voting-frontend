@@ -1,5 +1,5 @@
 import { Heading, Text, HStack, VStack, Box } from '@chakra-ui/react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { Role } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -39,7 +39,7 @@ const Meeting: React.FC<
   MeetingProps & { handleDeleteMeeting: (id: string) => void; meetingStatus: 'open' | 'upcoming' | 'ended' }
 > = ({ id, title, startTime, participants, handleDeleteMeeting, meetingStatus }) => {
   const { user } = useAuth0();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
@@ -62,10 +62,10 @@ const Meeting: React.FC<
         e.preventDefault();
         e.stopPropagation();
       } else {
-        history.push(`/meeting/${id}`);
+        navigate(`/meeting/${id}`, { replace: true });
       }
     } catch (error) {
-      history.push(`/meeting/${id}`);
+      navigate(`/meeting/${id}`, { replace: true });
     }
   };
 
@@ -97,7 +97,7 @@ const Meeting: React.FC<
       {isAdmin ? (
         <MeetingActionsWithPopover
           meetingStatus={meetingStatus}
-          onEditClick={() => history.push(`/meeting/${id}/edit`)}
+          onEditClick={() => navigate(`/meeting/${id}/edit`, { replace: true })}
           onDeleteClick={() => setDialogIsOpen(true)}
         />
       ) : (
