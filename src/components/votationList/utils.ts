@@ -108,21 +108,6 @@ export const reorderSingleList = (
   return { newNext, newUpcoming: votationsCopy };
 };
 
-export const reorderSingleList = (
-  votations: Votation[],
-  startIndex: number,
-  endIndex: number,
-  indexOffset = 0
-): ReorderRetunValues => {
-  const votationsCopy = [...votations];
-
-  const [removed] = votationsCopy.splice(startIndex - indexOffset, 1);
-  votationsCopy.splice(endIndex - indexOffset, 0, removed);
-
-  const [newNext] = votationsCopy.splice(0, 1);
-  return { newNext, newUpcoming: votationsCopy };
-};
-
 export const prepareVotationsForCreation: (votations: Votation[]) => CreateVotationInput[] = (votations: Votation[]) =>
   votations.map((votation) => ({
     title: votation.title,
