@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AppState, Auth0Provider } from '@auth0/auth0-react';
 
 const Auth0WithHistoryProvider: React.FC = ({ children }) => {
@@ -13,11 +13,11 @@ const Auth0WithHistoryProvider: React.FC = ({ children }) => {
       : process.env.REACT_APP_AUTH0_CALLBACK_URL;
   const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const onRedirectCallback = (appState: AppState) => {
-    history.push(appState?.returnTo || location.pathname);
+    navigate(appState?.returnTo || location.pathname, { replace: true });
   };
 
   return (

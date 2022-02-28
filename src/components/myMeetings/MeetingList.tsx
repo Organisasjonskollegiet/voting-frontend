@@ -10,7 +10,7 @@ export interface MeetingListProps {
 
 const MeetingList: React.FC<MeetingListProps> = ({ meetings, handleDeleteMeeting, meetingStatus }) => {
   return (
-    <SimpleGrid col="1" gap="1.5em">
+    <SimpleGrid columns={1} gap="1.5em">
       {meetings.map((meeting) => (
         <Meeting
           meetingStatus={meetingStatus}

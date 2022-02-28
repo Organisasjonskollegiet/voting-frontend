@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export type NavigationContextState = {
   activeTab: number;
@@ -11,6 +11,8 @@ const defaultValues = { navigateToTab: (value: number) => undefined, activeTab: 
 export const NavigationContext = createContext<NavigationContextState>(defaultValues);
 
 const NavigationContextProvider: React.FC = ({ children }) => {
+  const navigate = useNavigate();
+
   /**
    * Active tab refers to the current step of creating a meeting:
    * 0: General information
@@ -18,16 +20,15 @@ const NavigationContextProvider: React.FC = ({ children }) => {
    * 2: Participants
    */
   const [activeTab, setActiveTab] = useState<number>(0);
-  const history = useHistory();
 
   const navigateToTab = useCallback(
     (nextIndex: number) => {
       if (nextIndex < 0 || nextIndex > 2) {
-        return history.push('/');
+        return navigate('/', { replace: true });
       }
       setActiveTab(nextIndex);
     },
-    [history]
+    [navigate]
   );
 
   return (

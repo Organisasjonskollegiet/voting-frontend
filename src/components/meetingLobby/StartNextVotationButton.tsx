@@ -34,22 +34,22 @@ const StartNextVotationButton: React.FC<StartNextVotationButtonProps> = ({ check
   const startVotation = async () => {
     const response = await startNextVotation({ variables: { meetingId } });
     if (!response.data?.startNextVotation?.__typename) return;
-    let toastTitle;
-    let toastDescription;
-    let toastStatus: 'error' | 'success';
+    let title;
+    let description;
+    let status: 'error' | 'success';
     if (response.data?.startNextVotation?.__typename === 'OpenedVotation') {
-      toastTitle = 'Votering åpnet.';
-      toastDescription = `${response.data.startNextVotation.title} ble åpnet.`;
-      toastStatus = 'success';
+      title = 'Votering åpnet.';
+      description = `${response.data.startNextVotation.title} ble åpnet.`;
+      status = 'success';
     } else {
-      toastTitle = 'Kunne ikke åpne votering.';
-      toastDescription = response.data.startNextVotation.message;
-      toastStatus = 'error';
+      title = 'Kunne ikke åpne votering.';
+      description = response.data.startNextVotation.message;
+      status = 'error';
     }
     toast({
-      title: toastTitle,
-      description: toastDescription,
-      status: toastStatus,
+      title,
+      description,
+      status,
       duration: 4000,
       isClosable: true,
     });

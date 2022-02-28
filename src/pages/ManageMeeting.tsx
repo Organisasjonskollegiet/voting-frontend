@@ -15,7 +15,7 @@ import ManageMeetingInformation2 from '../components/manageMeeting/organisms/Man
 const ManageMeeting: React.FC = () => {
   const { user } = useAuth0();
   const existingId = useParams<{ meetingId: string }>();
-  const [meetingId, setMeetingId] = useState<string>(existingId.meetingId);
+  const [meetingId, setMeetingId] = useState<string>(existingId.meetingId ?? '');
   const { activeTab } = useContext(NavigationContext);
 
   return (

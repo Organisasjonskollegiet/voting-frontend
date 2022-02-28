@@ -91,7 +91,6 @@ export const reorder: ReorderType = (next, upcoming, startList, endList, startIn
   }
 
   return { newNext: newNext || next, newUpcoming };
-  // return { newNext: next, newUpcoming: upcoming };
 };
 
 export const reorderSingleList = (
