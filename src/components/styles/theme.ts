@@ -1,6 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../activeVotation/alternative/Alternative';
-import { MeetingInformationFormConfig } from '../manageMeeting/MeetingInformationForm';
+import { MeetingInformationFormConfig } from '../manageMeeting/atoms/MeetingInformationForm';
 import { darkblue, lightblue, green } from './colors';
 
 const theme = extendTheme({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { HStack, Text, Divider, Center } from '@chakra-ui/react';
-import useScreenWidth from '../../hooks/ScreenWidth';
+import useScreenWidth from '../../../hooks/ScreenWidth';
 
 interface IProps {
   active: number;

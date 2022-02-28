@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Divider, VStack, Grid, Button, Text } from '@chakra-ui/react';
-import ArrowLeft from '../../static/arrowLeft.svg';
-import ManageMeetingStatus from './ManageMeetingStatus';
-import useScreenWidth from '../../hooks/ScreenWidth';
+import ArrowLeft from '../../../static/arrowLeft.svg';
+import ManageMeetingStatus from '../atoms/ManageMeetingStatus';
+import useScreenWidth from '../../../hooks/ScreenWidth';
+import { NavigationContext } from '../atoms/NavigationContextProvider';
 
 interface IProps {
-  activeTab: number;
-  handleNavigation: (nextIndex: number) => void;
+  // activeTab: number;
+  // handleNavigation: (nextIndex: number) => void;
+  preventNavigation?: () => boolean;
+  alternativeAction?: (nextIndex: number) => void;
 }
 
-const ManageMeetingController: React.FC<IProps> = ({ activeTab, handleNavigation }) => {
+const ManageMeetingController: React.FC<IProps> = ({ preventNavigation, alternativeAction }) => {
   const screenWidth = useScreenWidth();
   const hasReachedBreakpoint = screenWidth < 600;
+
+  const { navigateToTab, activeTab } = useContext(NavigationContext);
+  const handleNavigation = (nextIndex: number) => {
+    if (preventNavigation && preventNavigation() && alternativeAction) {
+      alternativeAction(nextIndex);
+    } else return navigateToTab(nextIndex);
+  };
 
   const showPrev = activeTab > 0;
 
@@ -25,7 +35,7 @@ const ManageMeetingController: React.FC<IProps> = ({ activeTab, handleNavigation
   return (
     <>
       <Divider m="3em 0" />
-      <VStack spacing="16" w="100%">
+      <VStack spacing="10" w="100%">
         <Grid
           templateColumns={hasReachedBreakpoint ? '1rem 1fr 1rem' : 'repeat(3, 1fr)'}
           templateRows="reapeat(2, 1fr)"

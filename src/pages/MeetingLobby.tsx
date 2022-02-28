@@ -199,7 +199,6 @@ const MeetingLobby: React.FC = () => {
                     navigateToOpenVotation={navigateToOpenVotation}
                     role={role}
                     isMeetingLobby={true}
-                    votationsMayExist={true}
                     meetingId={meetingId ?? ''}
                   />
                 </VStack>
