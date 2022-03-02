@@ -80,7 +80,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
         {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
-        {isThereAnyUpcomingVotations && <StartNextVotationButton />}
+        {isThereAnyUpcomingVotations && role !== Role.Participant && <StartNextVotationButton />}
       </WrapStack>
     </VStack>
   );
