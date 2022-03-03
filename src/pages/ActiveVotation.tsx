@@ -13,7 +13,6 @@ import {
   useCastStvVoteMutation,
   Alternative,
   useGetVotationResultsLazyQuery,
-  AlternativeResult,
   useCastVotationReviewMutation,
   Result,
 } from '../__generated__/graphql-types';
@@ -37,16 +36,16 @@ export type AlternativeWithIndex = AlternativeType & {
 
 export type ActiveVotationContextState = {
   result: Result | null;
+  winners: string[] | null;
   votationId: string;
   isStv: boolean;
-  meetingId: string;
 };
 
 const contextDefualtValues: ActiveVotationContextState = {
   result: null,
+  winners: null,
   votationId: '',
   isStv: false,
-  meetingId: '',
 };
 
 export const ActiveVotationContext = createContext<ActiveVotationContextState>(contextDefualtValues);
@@ -56,7 +55,7 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   backToVotationList,
 }) => {
   const { user } = useAuth0();
-  const { presentationMode, isVotingEligible, role, meetingId } = useContext(MeetingContext);
+  const { presentationMode, isVotingEligible, role } = useContext(MeetingContext);
 
   //Get votation data and participants from meeting
   const { data, loading, error, refetch } = useGetVotationByIdQuery({
@@ -67,13 +66,11 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     variables: { votationId },
   });
 
-  const [
-    getVotationResult,
-    { data: votationResultData, loading: votationResultLoading },
-  ] = useGetVotationResultsLazyQuery({
-    variables: { votationId },
-    fetchPolicy: 'cache-and-network',
-  });
+  const [getVotationResult, { data: votationResultData, loading: votationResultLoading }] =
+    useGetVotationResultsLazyQuery({
+      variables: { votationId },
+      fetchPolicy: 'cache-and-network',
+    });
 
   const [castStvVote, { loading: stvLoading, error: castStvError }] = useCastStvVoteMutation();
 
@@ -91,7 +88,8 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   const [userHasVoted, setUserHasVoted] = useState<boolean>(false);
   const [voteCount, setVoteCount] = useState<number>(0);
   const [votingEligibleCount, setVotingEligibleCount] = useState<number>(0);
-  const [winners, setWinners] = useState<AlternativeType[] | AlternativeResult[] | null>(null);
+  const [winners, setWinners] = useState<string[] | null>(null);
+
   // when page is refreshed and votes are not hidden, what we say the
   // user has voted is not correct, and therefore the user should not
   // be able to unhide vote
@@ -123,9 +121,9 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
   useEffect(() => {
     if (winnerResult?.getWinnerOfVotation) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
-      const newWinners = result.map((a) => {
-        return { id: a.id, text: a.text, votationId: a.votationId, index: a.index };
-      });
+      const newWinners = result.map((a) => a.text);
+
+      //why newWinners.length > winner.length ?!?!
       if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
     }
   }, [winnerResult, winners]);
@@ -160,11 +158,16 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
 
   // Update winner of votation when new result is received from getVotationResult
   useEffect(() => {
-    if (votationResultData?.getVotationResults && votationResultData?.getVotationResults.id === votationId) {
-      const newWinners = votationResultData.getVotationResults.alternatives.filter(
-        (a) => a?.isWinner
-      ) as AlternativeResult[];
-      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
+    const votationsResult = votationResultData?.getVotationResults;
+
+    if (votationsResult && votationsResult.id === votationId) {
+      const newWinners =
+        votationsResult.alternatives.length > 0
+          ? votationsResult.alternatives.filter((a) => a.isWinner).map((a) => a.text)
+          : null;
+
+      //newWinners.length > winners.length?!??!?!?!
+      if (!winners || (winners && newWinners?.length && newWinners.length > winners.length)) setWinners(newWinners);
     }
   }, [votationResultData, winners, votationId]);
 
@@ -304,8 +307,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         return (role === Role.Admin || role === Role.Counter) && !presentationMode ? (
           <CheckResults
             loading={votationResultLoading}
-            meetingId={meetingId}
-            winners={winners}
             castVotationReview={(approved: boolean) => castVotationReview({ variables: { votationId, approved } })}
           />
         ) : (
@@ -318,7 +319,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
               loading={votationResultLoading || winnerLoading}
               showResultsTable={!data.votationById.hiddenVotes}
               backToVotationList={() => backToVotationList(status)}
-              winners={winners}
             />
           </Box>
         );
@@ -392,9 +392,10 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     <ActiveVotationContext.Provider
       value={{
         result: getCorrectVotationResult(votationResultData),
-        votationId: votationId,
+        winners,
+        votationId,
         isStv: data.votationById.type === VotationType.Stv,
-        meetingId: meetingId,
+        // meetingId,
       }}
     >
       <Center sx={outerContainer}>
