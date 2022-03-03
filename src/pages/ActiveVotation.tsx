@@ -395,7 +395,6 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         winners,
         votationId,
         isStv: data.votationById.type === VotationType.Stv,
-        // meetingId,
       }}
     >
       <Center sx={outerContainer}>
