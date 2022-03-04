@@ -13,6 +13,7 @@ const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfApproved, num
 
   const { data, error } = useGetParticipantsByMeetingIdQuery({
     variables: { meetingId },
+    fetchPolicy: 'no-cache',
   });
 
   const numberOfCounters = useMemo(() => {
@@ -21,7 +22,7 @@ const VotationReviews: React.FC<VotationReviewsProps> = ({ numberOfApproved, num
       (sum, p) => (p.role === Role.Counter || p.role === Role.Admin ? sum + 1 : sum),
       0
     );
-  }, [data]);
+  }, [data?.participants]);
 
   if (error) {
     return <Text>Kunne ikke hente tilbakemeldinger på resultat.</Text>;
