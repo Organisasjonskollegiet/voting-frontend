@@ -122,11 +122,9 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
     if (winnerResult?.getWinnerOfVotation) {
       const result = winnerResult.getWinnerOfVotation as Alternative[];
       const newWinners = result.map((a) => a.text);
-
-      //why newWinners.length > winner.length ?!?!
-      if (!winners || (winners && newWinners.length > winners.length)) setWinners(newWinners);
+      setWinners(newWinners);
     }
-  }, [winnerResult, winners]);
+  }, [winnerResult]);
 
   // returns true if we are checking results and you are not participant
   // or if the results are published and the votes are not hidden
@@ -165,11 +163,9 @@ const Votation: React.FC<{ votationId: string; backToVotationList: (status: Vota
         votationsResult.alternatives.length > 0
           ? votationsResult.alternatives.filter((a) => a.isWinner).map((a) => a.text)
           : null;
-
-      //newWinners.length > winners.length?!??!?!?!
-      if (!winners || (winners && newWinners?.length && newWinners.length > winners.length)) setWinners(newWinners);
+      setWinners(newWinners);
     }
-  }, [votationResultData, winners, votationId]);
+  }, [votationId, votationResultData]);
 
   // set alternatives when data arrives
   useEffect(() => {
