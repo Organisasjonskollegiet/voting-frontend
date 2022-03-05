@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Alternative as AlternativeType, AlternativeResult, Role } from '../../__generated__/graphql-types';
+import { Role } from '../../__generated__/graphql-types';
 import { VStack, Text, Divider, Button, Box, Image, Heading } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import ResultsTable from './results_table/ResultsTable';
@@ -17,16 +17,15 @@ import useScreenWidth from '../../hooks/ScreenWidth';
 import { getAlternativesString } from './utils';
 
 export interface VotationResultProps {
-  winners: AlternativeType[] | AlternativeResult[] | null;
   backToVotationList: () => void;
   showResultsTable: boolean;
   loading: boolean;
 }
 
-const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotationList, showResultsTable, loading }) => {
+const VotationResult: React.FC<VotationResultProps> = ({ backToVotationList, showResultsTable, loading }) => {
   const screenWidth = useScreenWidth();
   const pageBreapoint = 850;
-  const { result, votationId, isStv } = useContext(ActiveVotationContext);
+  const { result, winners, votationId, isStv } = useContext(ActiveVotationContext);
   const { role, presentationMode, numberOfUpcomingVotations } = useContext(MeetingContext);
 
   const isThereAnyUpcomingVotations = numberOfUpcomingVotations && numberOfUpcomingVotations > 0;
@@ -59,7 +58,7 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
             <>
               <Text>{`${winners.length > 1 ? 'Vinnerne' : 'Vinneren'} av valget er`}</Text>
               <Heading textAlign="center" size="xl">
-                {getAlternativesString(winners.map((w: AlternativeType | AlternativeResult) => w.text))}
+                {getAlternativesString(winners)}
               </Heading>
             </>
           ) : (
@@ -79,8 +78,8 @@ const VotationResult: React.FC<VotationResultProps> = ({ winners, backToVotation
         <Button variant="standard" onClick={backToVotationList} leftIcon={<ArrowBackIcon />}>
           <Text mt="0.25rem">Tilbake til voteringsliste</Text>
         </Button>
-        {result && role === Role.Admin && !presentationMode && <DownloadResultButton result={result} isStv={isStv} />}
-        {isThereAnyUpcomingVotations && role !== Role.Participant && <StartNextVotationButton />}
+        {result && role === Role.Admin && !presentationMode && <DownloadResultButton />}
+        {isThereAnyUpcomingVotations && role === Role.Admin && <StartNextVotationButton />}
       </WrapStack>
     </VStack>
   );

@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { VStack, Flex } from '@chakra-ui/react';
 import {
   Role,
-  AlternativeResult,
-  Alternative as AlternativeType,
   useReviewAddedSubscription,
   useGetReviewsQuery,
   ReviewResult,
@@ -17,14 +15,12 @@ import DisplayResults from './DisplayResults';
 import { MeetingContext } from '../../../pages/MeetingLobby';
 
 interface CheckResultsProps {
-  meetingId: string;
-  winners: AlternativeType[] | AlternativeResult[] | null;
   loading: boolean;
   castVotationReview: (approved: boolean) => void;
 }
 
-const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading, castVotationReview }) => {
-  const { result, votationId, isStv } = useContext(ActiveVotationContext);
+const CheckResults: React.FC<CheckResultsProps> = ({ loading, castVotationReview }) => {
+  const { result, votationId } = useContext(ActiveVotationContext);
   const { role } = useContext(MeetingContext);
   const { data: reviewsResult } = useGetReviewsQuery({ variables: { votationId } });
   const [reviews, setReviews] = useState<ReviewResult>(reviewsResult?.getReviews || { approved: 0, disapproved: 0 });
@@ -55,9 +51,13 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
     return <Loading text="Henter resultater" />;
   }
 
+  if (!result) {
+    return <></>;
+  }
+
   return (
     <VStack spacing="2rem">
-      <DisplayResults result={result} isStv={isStv} votationId={votationId} />
+      <DisplayResults />
       {(role === Role.Counter || role === Role.Admin) && (
         <VStack w="100%" spacing="2rem" alignItems="start">
           {role === Role.Admin && (
@@ -65,7 +65,7 @@ const CheckResults: React.FC<CheckResultsProps> = ({ meetingId, winners, loading
           )}
           <Flex justifyContent="space-between" w="100%" alignItems="flex-end" wrap="wrap">
             <ReviewVotation handleClick={handleCastReview} choice={currentReview} />
-            {role === Role.Admin && result && <DownloadResultButton result={result} isStv={isStv} />}
+            {role === Role.Admin && result && <DownloadResultButton />}
           </Flex>
         </VStack>
       )}
