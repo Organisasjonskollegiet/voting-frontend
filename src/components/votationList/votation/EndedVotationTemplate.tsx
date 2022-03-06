@@ -15,7 +15,7 @@ const EndedVotationTemplate: React.FC<EndedVotationProps> = ({
   onClick,
 }) => {
   return (
-    <Box key={votation.id} onClick={onClick} w="90vw" maxW="800px" h="56px" paddingLeft="1.25em" bg="white">
+    <Box key={votation.id} onClick={onClick} w="90vw" maxW="800px" minH="56px" h="auto" paddingLeft="1.25em" bg="white">
       <HStack
         h="100%"
         justifyContent="space-between"
