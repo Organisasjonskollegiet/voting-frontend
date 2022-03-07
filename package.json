@@ -74,7 +74,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.2.8",
     "@types/qrcode.react": "^1.0.2",
     "@types/react-beautiful-dnd": "^13.0.0",
-    "@types/react-datepicker": "^3.1.8",
+    "@types/react-datepicker": "^4.3.4",
     "@types/uuid": "^8.3.0",
     "chromatic": "^5.7.0",
     "cypress": "^7.0.0",
