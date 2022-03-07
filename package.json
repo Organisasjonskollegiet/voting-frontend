@@ -76,7 +76,7 @@
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-datepicker": "^4.3.4",
     "@types/uuid": "^8.3.0",
-    "chromatic": "^5.7.0",
+    "chromatic": "^6.5.1",
     "cypress": "^9.5.1",
     "eslint-config-prettier": "^8.1.0"
   },
