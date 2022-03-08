@@ -1,1 +1,0 @@
-import '@cypress/react/support';
