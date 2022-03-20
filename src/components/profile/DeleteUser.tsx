@@ -18,7 +18,7 @@ const DeleteUser: React.FC = () => {
         handleCancel={onClose}
         handleConfirm={() => deleteUser()}
         type={DialogType.USER}
-        confirmColor={''}
+        confirmColor={'#e53e3e'}
       />
     </>
   );
