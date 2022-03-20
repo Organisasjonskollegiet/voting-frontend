@@ -4,7 +4,7 @@ import VoteCount from './VoteCount';
 import { ActiveVotationContext, AlternativeWithIndex } from '../../pages/ActiveVotation';
 import AlternativeList from './alternative_list/AlternativeList';
 import PreferenceAlternativeList from './alternative_list/PreferenceAlternativeList';
-import WrapStack from '../common/WrapStack';
+import WrapStack from '../common/layout/WrapStack';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import useScreenWidth from '../../hooks/ScreenWidth';
 

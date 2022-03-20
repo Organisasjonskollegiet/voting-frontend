@@ -1,7 +1,7 @@
 import { useDisclosure } from '@chakra-ui/hooks';
 import React from 'react';
 import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
-import DeleteButton from '../../common/DeleteButton';
+import DeleteButton from '../../common/buttons/DeleteButton';
 
 interface DeleteParticipantsProps {
   handleDeleteParticipants: () => void;

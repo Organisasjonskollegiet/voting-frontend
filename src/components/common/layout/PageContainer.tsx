@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@chakra-ui/layout';
-import { offwhite } from '../styles/colors';
+import { offwhite } from '../../styles/colors';
 
 interface PageContainerProps {
   color?: string;

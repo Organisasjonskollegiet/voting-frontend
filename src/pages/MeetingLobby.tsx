@@ -12,12 +12,12 @@ import {
 import Loading from '../components/common/Loading';
 import VotationList from '../components/votationList/VotationList';
 import ParticipantModal from '../components/manageParticipants/organisms/ParticipantModal';
-import ReturnToPreviousButton from '../components/common/ReturnToPreviousButton';
+import ReturnToPreviousButton from '../components/common/buttons/ReturnToPreviousButton';
 import LobbyNavigation from '../components/meetingLobby/LobbyNavigation';
-import PageContainer from '../components/common/PageContainer';
+import PageContainer from '../components/common/layout/PageContainer';
 import ActiveVotation from './ActiveVotation';
 import { useAuth0 } from '@auth0/auth0-react';
-import WrapStack from '../components/common/WrapStack';
+import WrapStack from '../components/common/layout/WrapStack';
 import SelfRegistration from '../components/meetingLobby/SelfRegistration';
 
 export type MeetingContextState = {

@@ -2,7 +2,7 @@ import { VStack } from '@chakra-ui/react';
 import QRCode from 'qrcode.react';
 import React from 'react';
 import useScreenWidth from '../../hooks/ScreenWidth';
-import CopyRegistrationLinkButton, { getRegistrationLink } from '../common/CopyRegistrationLinkButton';
+import CopyRegistrationLinkButton, { getRegistrationLink } from '../common/buttons/CopyRegistrationLinkButton';
 import Logo from '../../static/logo.svg';
 
 interface SelfRegistrationProps {

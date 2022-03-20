@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip, IconButton } from '@chakra-ui/react';
-import DeleteIcon from '../../static/deleteIcon.svg';
+import DeleteIcon from '../../../static/deleteIcon.svg';
 
 interface DeleteButtonProps {
   onClick: () => void;

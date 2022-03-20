@@ -1,6 +1,6 @@
 import React from 'react';
 import { getRoundedPercentage } from '../activeVotation/utils';
-import DownloadCSVButton from '../common/DownloadCSVButton';
+import DownloadCSVButton from '../common/buttons/DownloadCSVButton';
 import { Result } from '../../__generated__/graphql-types';
 
 interface DownloadResultButtonProps {

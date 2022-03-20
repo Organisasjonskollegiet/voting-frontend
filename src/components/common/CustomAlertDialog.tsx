@@ -26,6 +26,7 @@ export enum DialogType {
   CLOSE = 'Avslutt votering',
   PUBLISH = 'Publiser resultat',
   INVALIDATE = 'Avbryt votering',
+  USER = 'Slett bruker',
 }
 
 const WarningBody = new Map<DialogType, string>([
@@ -41,6 +42,10 @@ const WarningBody = new Map<DialogType, string>([
   [DialogType.CLOSE, 'Er du sikker på at du vil avslutte votering?'],
   [DialogType.INVALIDATE, 'Er du sikker på at du vil avbryte voteringen? Voteringen vil da bli erklært ugyldig.'],
   [DialogType.PUBLISH, 'Er du sikker på at du vil publisere resultatet?'],
+  [
+    DialogType.USER,
+    'Er du sikker på at du slette brukeren din? Dette vil også slette all data relatert til brukeren din, så hvis du oppretter en bruker med denne eposten på nytt, vil du ikke kunne se tidligere møter',
+  ],
 ]);
 
 const CustomAlertDialog: React.FC<CustomAlertDialogProps> = ({
