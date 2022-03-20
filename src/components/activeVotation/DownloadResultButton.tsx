@@ -1,14 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { getRoundedPercentage } from '../activeVotation/utils';
 import DownloadCSVButton from '../common/buttons/DownloadCSVButton';
-import { Result } from '../../__generated__/graphql-types';
+import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
-interface DownloadResultButtonProps {
-  result: Result | null | undefined;
-  isStv: boolean;
-}
+const DownloadResultButton: React.FC = () => {
+  const { result, isStv } = useContext(ActiveVotationContext);
 
-const DownloadResultButton: React.FC<DownloadResultButtonProps> = ({ isStv, result }) => {
   const getStvOverview = () => {
     if (!result) throw new Error('Fant ikke resultat.');
     return (
