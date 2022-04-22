@@ -37,7 +37,6 @@ const UserMenu: React.VFC = () => {
               <Text opacity="0.5">{user?.email}</Text>
               <Divider />
               <VStack alignItems="start" spacing="4">
-                <MenuButton onClick={() => logout({ returnTo: window.location.origin })}>Logg ut</MenuButton>
                 <Button
                   sx={transparentButton}
                   onClick={() => {
@@ -49,6 +48,7 @@ const UserMenu: React.VFC = () => {
                     Min profil
                   </Text>
                 </Button>
+                <MenuButton onClick={() => logout({ returnTo: window.location.origin })}>Logg ut</MenuButton>
               </VStack>
             </VStack>
           </PopoverContent>
