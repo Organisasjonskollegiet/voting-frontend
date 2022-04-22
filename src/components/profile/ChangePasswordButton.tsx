@@ -1,4 +1,4 @@
-import { Button, useToast } from '@chakra-ui/react';
+import { Button, Flex, useToast, Box, Text } from '@chakra-ui/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUpdateMyPasswordLazyQuery } from '../../__generated__/graphql-types';
@@ -25,7 +25,28 @@ const ChangePasswordButton: React.VFC = () => {
   return (
     <>
       {loading && <Loading text="" asOverlay />}
-      <Button onClick={() => getUpdatePasswordLink()}>Bytt passord</Button>
+      <Flex
+        bgColor="rgba(255, 255, 0, 0.2)"
+        w="100%"
+        flexDirection="row"
+        p="1.5rem"
+        justifyContent="space-between"
+        borderRadius="5px"
+        gap="1rem"
+        alignItems="center"
+      >
+        <Box color="#c49102">
+          <Text as="span" fontWeight="bold" display="block" color="inherit">
+            Bytt passord
+          </Text>
+          <Text as="span" color="inherit">
+            Det er lurt å ha et sterkt og unikt passord, som du ikke bruker andre steder.
+          </Text>
+        </Box>
+        <Button colorScheme="yellow" color="#fff" onClick={() => getUpdatePasswordLink()} minW="min-content" w="130px">
+          Bytt passord
+        </Button>
+      </Flex>
     </>
   );
 };
