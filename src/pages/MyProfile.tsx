@@ -7,10 +7,8 @@ const MyProfile: React.FC = () => {
   return (
     <>
       <PageContainer>
-        <VStack w="min(90%,800px)" mx="auto" pt="10vh" justify="flex-start" alignItems="center">
-          <Heading pb="2rem" fontSize="3xl">
-            Min profil
-          </Heading>
+        <VStack w="min(90%,800px)" spacing="8" mx="auto" pt="10vh" justify="flex-start" alignItems="center">
+          <Heading fontSize="3xl">Min profil</Heading>
           <Box mb="5rem !important">
             <H2>Personlig data</H2>
             <Text maxW={500}>

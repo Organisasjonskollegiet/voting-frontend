@@ -18,6 +18,7 @@ const DeleteUser: React.FC = () => {
       borderRadius="5px"
       gap="1rem"
       alignItems="center"
+      shadow="0px 0px 8px rgba(0,0,0,0.1)"
     >
       <Box color="darkred">
         <Text as="span" fontWeight="bold" display="block" color="inherit">

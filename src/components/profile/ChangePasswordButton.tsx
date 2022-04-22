@@ -34,8 +34,9 @@ const ChangePasswordButton: React.VFC = () => {
         borderRadius="5px"
         gap="1rem"
         alignItems="center"
+        shadow="0px 0px 8px rgba(0,0,0,0.1)"
       >
-        <Box color="#c49102">
+        <Box color="#946102">
           <Text as="span" fontWeight="bold" display="block" color="inherit">
             Bytt passord
           </Text>
