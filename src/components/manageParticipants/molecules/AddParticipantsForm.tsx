@@ -20,7 +20,7 @@ import InviteParticipantByFileUpload from '../atoms/InviteParticipantByFileUploa
 import { checkIfEmailIsValid, onFileUpload } from '../utils';
 import DeleteParticipants from '../atoms/DeleteParticipants';
 import AllowSelfRegistrationSwitch from '../atoms/AllowSelfRegistrationSwitch';
-import WrapStack from '../../common/WrapStack';
+import WrapStack from '../../common/layout/WrapStack';
 import SortParticipants, { SortingOptions } from '../atoms/SortParticipants';
 
 interface IProps {
@@ -211,9 +211,10 @@ const AddParticipantsForm: React.FC<IProps> = ({
     }
   };
 
-  const numberOfVotingEligibleParticipants = useMemo(() => participants.filter((p) => p.isVotingEligible).length, [
-    participants,
-  ]);
+  const numberOfVotingEligibleParticipants = useMemo(
+    () => participants.filter((p) => p.isVotingEligible).length,
+    [participants]
+  );
 
   return (
     <>

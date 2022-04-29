@@ -10,3 +10,7 @@ query GetUser {
     }
   }
 }
+
+query updateMyPassword {
+  updateMyPassword
+}

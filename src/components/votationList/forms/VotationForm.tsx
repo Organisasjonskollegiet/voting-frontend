@@ -10,9 +10,9 @@ import VotationInfoForm from './VotationInfoForm';
 import { containerStyle } from '../../styles/formStyles';
 import { Votation } from '../../../types/types';
 import CustomAlertDialog, { DialogType } from '../../common/CustomAlertDialog';
-import DeleteButton from '../../common/DeleteButton';
+import DeleteButton from '../../common/buttons/DeleteButton';
 import CollapsedVotationForm from './CollapsedVotationForm';
-import WrapStack from '../../common/WrapStack';
+import WrapStack from '../../common/layout/WrapStack';
 
 interface IProps {
   index: number;

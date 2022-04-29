@@ -12,7 +12,7 @@ import NoWinner from '../../static/noWinner.svg';
 import { boxShadow } from '../styles/formStyles';
 import { MeetingContext } from '../../pages/MeetingLobby';
 import StartNextVotationButton from '../meetingLobby/StartNextVotationButton';
-import WrapStack from '../common/WrapStack';
+import WrapStack from '../common/layout/WrapStack';
 import useScreenWidth from '../../hooks/ScreenWidth';
 import { getAlternativesString } from './utils';
 

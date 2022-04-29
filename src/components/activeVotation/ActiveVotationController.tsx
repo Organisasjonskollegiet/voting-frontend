@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Button, FormControl, FormLabel, Switch, Text } from '@chakra-ui/react';
 import { VotationStatus, useUpdateVotationStatusMutation, Role } from '../../__generated__/graphql-types';
 import { ArrowForwardIcon, CloseIcon } from '@chakra-ui/icons';
-import WrapStack from '../common/WrapStack';
+import WrapStack from '../common/layout/WrapStack';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 import { MeetingContext } from '../../pages/MeetingLobby';

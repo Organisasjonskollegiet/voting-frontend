@@ -2,7 +2,7 @@ import React from 'react';
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Divider, VStack } from '@chakra-ui/react';
 import { lightblue, offwhite } from '../styles/colors';
-import WrapStack from '../common/WrapStack';
+import WrapStack from '../common/layout/WrapStack';
 
 interface VotationListButtonRowProps {
   handleAddNewVotation: () => void;

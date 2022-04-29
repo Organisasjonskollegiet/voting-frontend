@@ -13,7 +13,7 @@ import { Result, useGetVotationResultsLazyQuery, VotationType } from '../../__ge
 import DisplayResults from '../activeVotation/checkResults/DisplayResults';
 import DownloadResultButton from '../activeVotation/DownloadResultButton';
 import Loading from '../common/Loading';
-import ReturnToPreviousButton from '../common/ReturnToPreviousButton';
+import ReturnToPreviousButton from '../common/buttons/ReturnToPreviousButton';
 import { darkblue, offwhite } from '../styles/colors';
 import { getCorrectVotationResult } from '../activeVotation/utils';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';

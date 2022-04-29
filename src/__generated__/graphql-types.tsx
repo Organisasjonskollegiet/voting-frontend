@@ -318,6 +318,8 @@ export type Query = {
   result?: Maybe<Result>;
   /** Return the results of all the votations with votationStatus === "PUBLISHED_RESULT" of that meeting */
   resultsOfPublishedVotations?: Maybe<Array<Maybe<VotationWithWinner>>>;
+  /** Provides a ticket to change Auth0 password. */
+  updateMyPassword?: Maybe<Scalars['String']>;
   user?: Maybe<GetUserResult>;
   votationById?: Maybe<Votation>;
 };
@@ -638,6 +640,11 @@ export type VoteCountResult = {
   votingEligibleCount: Scalars['Int'];
 };
 
+export type DeleteMeMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeleteMeMutation = { __typename?: 'Mutation', deleteMe?: string | null };
+
 export type CreateMeetingMutationVariables = Exact<{
   meeting: CreateMeetingInput;
 }>;
@@ -777,6 +784,11 @@ export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, email: string } | { __typename?: 'UserNotFoundError', message: string } | null };
+
+export type UpdateMyPasswordQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UpdateMyPasswordQuery = { __typename?: 'Query', updateMyPassword?: string | null };
 
 export type GetMeetingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -947,6 +959,36 @@ export const AlternativeResultFieldsFragmentDoc = gql`
   votes
 }
     `;
+export const DeleteMeDocument = gql`
+    mutation DeleteMe {
+  deleteMe
+}
+    `;
+export type DeleteMeMutationFn = Apollo.MutationFunction<DeleteMeMutation, DeleteMeMutationVariables>;
+
+/**
+ * __useDeleteMeMutation__
+ *
+ * To run a mutation, you first call `useDeleteMeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMeMutation, { data, loading, error }] = useDeleteMeMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeleteMeMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMeMutation, DeleteMeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMeMutation, DeleteMeMutationVariables>(DeleteMeDocument, options);
+      }
+export type DeleteMeMutationHookResult = ReturnType<typeof useDeleteMeMutation>;
+export type DeleteMeMutationResult = Apollo.MutationResult<DeleteMeMutation>;
+export type DeleteMeMutationOptions = Apollo.BaseMutationOptions<DeleteMeMutation, DeleteMeMutationVariables>;
 export const CreateMeetingDocument = gql`
     mutation CreateMeeting($meeting: CreateMeetingInput!) {
   createMeeting(meeting: $meeting) {
@@ -1637,6 +1679,38 @@ export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export const UpdateMyPasswordDocument = gql`
+    query updateMyPassword {
+  updateMyPassword
+}
+    `;
+
+/**
+ * __useUpdateMyPasswordQuery__
+ *
+ * To run a query within a React component, call `useUpdateMyPasswordQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUpdateMyPasswordQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUpdateMyPasswordQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUpdateMyPasswordQuery(baseOptions?: Apollo.QueryHookOptions<UpdateMyPasswordQuery, UpdateMyPasswordQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UpdateMyPasswordQuery, UpdateMyPasswordQueryVariables>(UpdateMyPasswordDocument, options);
+      }
+export function useUpdateMyPasswordLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UpdateMyPasswordQuery, UpdateMyPasswordQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UpdateMyPasswordQuery, UpdateMyPasswordQueryVariables>(UpdateMyPasswordDocument, options);
+        }
+export type UpdateMyPasswordQueryHookResult = ReturnType<typeof useUpdateMyPasswordQuery>;
+export type UpdateMyPasswordLazyQueryHookResult = ReturnType<typeof useUpdateMyPasswordLazyQuery>;
+export type UpdateMyPasswordQueryResult = Apollo.QueryResult<UpdateMyPasswordQuery, UpdateMyPasswordQueryVariables>;
 export const GetMeetingsDocument = gql`
     query GetMeetings {
   meetings {

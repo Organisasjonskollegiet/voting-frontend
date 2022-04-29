@@ -2,7 +2,7 @@ import React from 'react';
 import InformationModal from '../../common/InformationModal';
 import { Heading, Text } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import ExternalLink from '../../common/ExternalLink';
+import ExternalLink from '../../common/buttons/ExternalLink';
 
 const VotationTypeInformation: React.FC = () => {
   return (

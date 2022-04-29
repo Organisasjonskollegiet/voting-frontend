@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { getRoundedPercentage } from '../activeVotation/utils';
-import DownloadCSVButton from '../common/DownloadCSVButton';
+import DownloadCSVButton from '../common/buttons/DownloadCSVButton';
 import { ActiveVotationContext } from '../../pages/ActiveVotation';
 
 const DownloadResultButton: React.FC = () => {

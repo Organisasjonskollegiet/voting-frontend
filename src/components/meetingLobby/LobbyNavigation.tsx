@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Box, FormControl, FormLabel, HStack, Switch } from '@chakra-ui/react';
 import useScreenWidth from '../../hooks/ScreenWidth';
 import { MeetingContext, MeetingLocation } from '../../pages/MeetingLobby';
-import WrapStack from '../common/WrapStack';
+import WrapStack from '../common/layout/WrapStack';
 import LobbyNavigationButton from './LobbyNavigationButton';
 
 interface LobbyNavigationProps {

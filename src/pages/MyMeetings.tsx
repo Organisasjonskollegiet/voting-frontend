@@ -4,15 +4,13 @@ import MeetingList from '../components/myMeetings/MeetingList';
 import { Center, Spinner, useToast } from '@chakra-ui/react';
 import { useGetMeetingsQuery, useDeleteMeetingMutation } from '../__generated__/graphql-types';
 import { MeetingProps } from '../components/myMeetings/Meeting';
-import PageContainer from '../components/common/PageContainer';
+import PageContainer from '../components/common/layout/PageContainer';
 import Loading from '../components/common/Loading';
 
 const MyMeetings: React.FC = () => {
   const { data, loading, error, refetch } = useGetMeetingsQuery();
-  const [
-    deleteMeeting,
-    { data: deleteMeetingData, error: deleteMeetingError, loading: deleteMeetingLoading },
-  ] = useDeleteMeetingMutation();
+  const [deleteMeeting, { data: deleteMeetingData, error: deleteMeetingError, loading: deleteMeetingLoading }] =
+    useDeleteMeetingMutation();
   const toast = useToast();
   const meetingsData = data?.meetings;
 

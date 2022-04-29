@@ -5,7 +5,7 @@ import ManageParticipants from '../components/manageParticipants/organisms/Manag
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router';
 import { outerContainer, centerContainer } from '../components/styles/containerStyles';
-import PageContainer from '../components/common/PageContainer';
+import PageContainer from '../components/common/layout/PageContainer';
 import ManageMeetingController from '../components/manageMeeting/molecules/ManageMeetingController';
 import NavigationContextProvider, {
   NavigationContext,

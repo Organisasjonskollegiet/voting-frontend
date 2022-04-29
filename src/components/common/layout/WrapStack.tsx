@@ -1,6 +1,6 @@
 import React from 'react';
 import { HStack, VStack, StackProps } from '@chakra-ui/react';
-import useScreenWidth from '../../hooks/ScreenWidth';
+import useScreenWidth from '../../../hooks/ScreenWidth';
 
 interface WrapStackProps extends StackProps {
   breakpoint: number;

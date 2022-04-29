@@ -6,6 +6,7 @@ import MyMeetings from './pages/MyMeetings';
 import MeetingLobby from './pages/MeetingLobby';
 import RegisterForMeeting from './pages/RegisterForMeeting';
 import AboutUs from './pages/AboutUs';
+import MyProfile from './pages/MyProfile';
 
 const App: FC = () => {
   return (
@@ -17,6 +18,7 @@ const App: FC = () => {
         <Route path="/meeting/:meetingId/register" element={<RegisterForMeeting />} />
         <Route path="/meeting/:meetingId" element={<MeetingLobby />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/myProfile" element={<MyProfile />} />
         <Route path="/" element={<MyMeetings />} />
       </Routes>
     </>
