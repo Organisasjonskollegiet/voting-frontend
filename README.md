@@ -34,3 +34,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ### `yarn lint`
 
 Run eslint
+
+### `yarn generate`
+
+After updating the graphql schema, will have to run this command while running the backend in order to automatically update the types in React.
