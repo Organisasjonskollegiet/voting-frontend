@@ -1,6 +1,7 @@
 import { Heading, Image, ImageProps, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import ExternalLink from '../components/common/buttons/ExternalLink';
+import DownloadFileLink from '../components/common/buttons/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
@@ -13,7 +14,8 @@ const AboutUs: React.FC = () => {
         <Text>
           Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting med støtte fra
           Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
-          effektive og gode demokratiske prosesser.
+          effektive og gode demokratiske prosesser. Hvordan vi håndterer brukeren din, om anonymitet og selvregistrering kan finnes 
+          <DownloadFileLink href={process.env.PUBLIC_URL + "/privacy-and-safety.pdf" }> her</DownloadFileLink>.
         </Text>
         <Text>
           <ExternalLink href="https://organisasjonskollegiet.no/">Organisasjonskollegiet</ExternalLink> er en gjeng med
