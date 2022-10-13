@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import Logo from '../../static/logo.svg';
 import UserMenu from './UserMenu';
 import { useAuth0 } from '@auth0/auth0-react';
-import LogInButton from './buttons/LogInButton';
+import { useLocation } from 'react-router';
 
 const links: Map<string, string> = new Map([
   ['Mine møter', '/myMeetings'],
@@ -27,8 +27,9 @@ const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link
 
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout, isAuthenticated, } = useAuth0();
+  const { logout, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
 
   if(!isAuthenticated){
     return (
@@ -38,13 +39,31 @@ const Navbar: React.FC = () => {
             <Image
               _hover={{ cursor: 'pointer' }}
               onClick={() => 
-                (isAuthenticated) ? navigate('/myMeetings', { replace: true }):navigate('/', { replace: true }) }
+                navigate('/', { replace: true })
+              }
               src={Logo}
               alt="Organisasjonskollegiet"
               h="3em"
             />
           </Box>
-          <LogInButton label='Log In'/>
+          <Button
+            w="200px"
+            size='md' 
+            colorScheme="orange"
+            onClick={() => {
+                if(!isLoading && !isAuthenticated){
+                    setTimeout(
+                        () =>
+                          loginWithRedirect({
+                            appState: {
+                              returnTo: location.pathname,
+                            },
+                          }),
+                        500
+                      );
+                }
+              }}>Log In
+        </Button>
         </Flex>
       </Box>
         );
@@ -57,7 +76,8 @@ const Navbar: React.FC = () => {
             <Image
               _hover={{ cursor: 'pointer' }}
               onClick={() => 
-                (isAuthenticated) ? navigate('/myMeetings', { replace: true }):navigate('/', { replace: true }) }
+                navigate('/', { replace: true }) 
+              }
               src={Logo}
               alt="Organisasjonskollegiet"
               h="3em"
