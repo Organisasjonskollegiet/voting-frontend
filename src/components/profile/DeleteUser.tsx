@@ -1,12 +1,15 @@
 import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import React from 'react';
 import { useDeleteMeMutation } from '../../__generated__/graphql-types';
+import { useAuth0 } from '@auth0/auth0-react';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 
 const DeleteUser: React.FC = () => {
   const [deleteUser] = useDeleteMeMutation();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { logout } = useAuth0();
 
   return (
     <Flex
@@ -34,7 +37,10 @@ const DeleteUser: React.FC = () => {
       <CustomAlertDialog
         dialogIsOpen={isOpen}
         handleCancel={onClose}
-        handleConfirm={() => deleteUser()}
+        handleConfirm={() => {
+          deleteUser();
+          logout({ returnTo: window.location.origin });
+        }}
         type={DialogType.USER}
         confirmColor={'#e53e3e'}
       />
