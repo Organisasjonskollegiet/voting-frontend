@@ -1,10 +1,11 @@
-import { Heading, Image, ImageProps, Text, VStack } from '@chakra-ui/react';
+import { Heading, Image, ImageProps, Text, VStack, Link } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import React from 'react';
 import ExternalLink from '../components/common/buttons/ExternalLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
-import { orgBlue } from '../components/styles/colors';
+import { orgBlue, darkblue } from '../components/styles/colors';
 
 
 const FrontPage: React.FC = () => {
@@ -18,6 +19,9 @@ const FrontPage: React.FC = () => {
           Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
           effektive og gode demokratiske prosesser.
         </Text>
+        <Link href='https://forms.gle/KjtsgttvHqPdzEvX8' isExternal style={{ fontWeight: 'bold', color: darkblue }} width="-moz-max-content">
+            Gi oss tilbakemelding<ExternalLinkIcon mx='2px' />
+        </Link>
         <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
           <ExternalLink href="https://organisasjonskollegiet.no/">
             <Logo
