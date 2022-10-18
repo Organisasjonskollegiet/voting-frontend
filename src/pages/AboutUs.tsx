@@ -14,7 +14,7 @@ const AboutUs: React.FC = () => {
         <Text>
           Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting med støtte fra
           Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
-          effektive og gode demokratiske prosesser. Hvordan vi håndterer brukeren din, om anonymitet og selvregistrering kan 
+          effektive og gode demokratiske prosesser. Informasjon om hvordan vi håndterer brukeren din, anonymitet og selvregistrering kan 
           finnes <DownloadFileLink href={process.env.PUBLIC_URL + "/privacy-and-safety.pdf" }>her</DownloadFileLink>.
         </Text>
         <Text>
