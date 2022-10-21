@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useDeleteMeMutation } from '../../__generated__/graphql-types';
 import { useAuth0 } from '@auth0/auth0-react';
