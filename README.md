@@ -1,5 +1,9 @@
 # voting-frontend
 
+## Description
+
+Vedtatt.no is a digital voting system developed by Organisasjonskollegiet and Junior Consulting, with support from Velferdstinget i Gjøvik, Ålesund og Trondheim. The goal is that volunteer organizations will be able to execute effective and good democratic processes. This is the front end part of the website. For the back end look [here.](https://github.com/Organisasjonskollegiet/voting-backend) The technologies used here are mainly Next.js, Auth0, and Apollo.
+
 ## Setup
 
 Create a file with the name `.env` and copy over the variables at [`.env.local`](./.env.local). The values can be found in [vault](https://vault.jrc.no/) under customer-projects > organisasjonskollegiet.
