@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router';
 import Logo from '../../static/logo.svg';
 import UserMenu from './UserMenu';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation } from 'react-router';
 
 const links: Map<string, string> = new Map([
-  ['Mine møter', '/'],
+  ['Mine møter', '/myMeetings'],
   // ['Min profil', '/profile'],
   ['Opprett møte', '/meeting/new'],
   ['Om oss', '/about'],
@@ -26,63 +27,106 @@ const NavigationLink = ({ children, link, onClose }: { children: ReactNode; link
 
 const Navbar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout } = useAuth0();
+  const { logout, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  return (
-    <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
-      <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
-        <Box w="100px" justifyContent="start">
-          <Image
-            _hover={{ cursor: 'pointer' }}
-            onClick={() => navigate('/', { replace: true })}
-            src={Logo}
-            alt="Organisasjonskollegiet"
-            h="3em"
-          />
-        </Box>
-
-        <HStack as={'nav'} spacing="2em" display={{ base: 'none', md: 'flex' }}>
-          {pageNames.map((page) => (
-            <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
-              {page}
-            </NavigationLink>
-          ))}
-        </HStack>
-
-        <UserMenu />
-
-        {/* Button to toggle hamburger menu */}
-        <IconButton
-          bg="white"
-          size={'md'}
-          icon={
-            isOpen ? <CloseIcon color={darkblue} boxSize="1em" /> : <HamburgerIcon color={darkblue} boxSize="1.5em" />
-          }
-          aria-label={'Open Menu'}
-          display={{ md: 'none' }}
-          onClick={isOpen ? onClose : onOpen}
-        />
-      </Flex>
-
-      {/* The hamburger menu */}
-      {isOpen && (
-        <Box pb={4} display={{ md: 'none' }}>
-          <Divider mb="1rem" />
-          <Stack as={'nav'} spacing={2} pl="0.5em">
+  if(!isAuthenticated){
+    return (
+      <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
+        <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
+          <Box w="100px" justifyContent="start">
+            <Image
+              _hover={{ cursor: 'pointer' }}
+              onClick={() => 
+                navigate('/', { replace: true })
+              }
+              src={Logo}
+              alt="Organisasjonskollegiet"
+              h="3em"
+            />
+          </Box>
+          <Button
+            w="200px"
+            size='md' 
+            colorScheme="orange"
+            onClick={() => {
+                if(!isLoading && !isAuthenticated){
+                    setTimeout(
+                        () =>
+                          loginWithRedirect({
+                            appState: {
+                              returnTo: location.pathname,
+                            },
+                          }),
+                        500
+                      );
+                }
+              }}>Log In
+        </Button>
+        </Flex>
+      </Box>
+        );
+  }
+  else{
+    return (
+      <Box bg="white" px="2rem" boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)" position="relative">
+        <Flex as="nav" h="5.5rem" alignItems="center" justifyContent="space-between">
+          <Box w="100px" justifyContent="start">
+            <Image
+              _hover={{ cursor: 'pointer' }}
+              onClick={() => 
+                navigate('/', { replace: true }) 
+              }
+              src={Logo}
+              alt="Organisasjonskollegiet"
+              h="3em"
+            />
+          </Box>
+  
+          <HStack as={'nav'} spacing="2em" display={{ base: 'none', md: 'flex' }}>
             {pageNames.map((page) => (
               <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
                 {page}
               </NavigationLink>
             ))}
-            <Button maxW="max-content" variant="link" onClick={() => logout({ returnTo: window.location.origin })}>
-              Logg ut
-            </Button>
-          </Stack>
-        </Box>
-      )}
-    </Box>
-  );
+          </HStack>
+  
+          <UserMenu />
+  
+          {/* Button to toggle hamburger menu */}
+          <IconButton
+            bg="white"
+            size={'md'}
+            icon={
+              isOpen ? <CloseIcon color={darkblue} boxSize="1em" /> : <HamburgerIcon color={darkblue} boxSize="1.5em" />
+            }
+            aria-label={'Open Menu'}
+            display={{ md: 'none' }}
+            onClick={isOpen ? onClose : onOpen}
+          />
+        </Flex>
+  
+        {/* The hamburger menu */}
+        {isOpen && (
+          <Box pb={4} display={{ md: 'none' }}>
+            <Divider mb="1rem" />
+            <Stack as={'nav'} spacing={2} pl="0.5em">
+              {pageNames.map((page) => (
+                <NavigationLink key={page} link={links.get(page) || ''} onClose={onClose}>
+                  {page}
+                </NavigationLink>
+              ))}
+              <Button maxW="max-content" variant="link" onClick={() => logout({ returnTo: window.location.origin })}>
+                Logg ut
+              </Button>
+            </Stack>
+          </Box>
+        )}
+      </Box>
+    );
+  }
+  
 };
 
 export default Navbar;
