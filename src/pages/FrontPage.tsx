@@ -1,7 +1,7 @@
-import { Heading, Image, ImageProps, Text, VStack, Link } from '@chakra-ui/react';
+import { Heading, Text, VStack, Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import React from 'react';
-import ExternalLink, { ExternalLinkProps } from '../components/common/links/ExternalLink';
+import LogoLink from '../components/common/links/LogoLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
@@ -43,22 +43,6 @@ const FrontPage: React.FC = () => {
         </WrapStack>
       </VStack>
     </PageContainer>
-  );
-};
-
-const LogoLink = ({ href, src, alt, ...options }: ImageProps & ExternalLinkProps) => {
-  return (
-    <ExternalLink href={href}>
-      <Image
-        src={src}
-        alt={alt}
-        w="200px"
-        h="115px"
-        objectFit="contain"
-        _hover={{ transform: 'scale(1.1)' }}
-        {...options}
-      />
-    </ExternalLink>
   );
 };
 

@@ -1,9 +1,10 @@
-import { Heading, Image, ImageProps, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import ExternalLink from '../components/common/links/ExternalLink';
-import DownloadFileLink from '../components/common/links/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
+import DownloadFileLink from '../components/common/links/DownloadFileLink';
+import ExternalLink from '../components/common/links/ExternalLink';
+import LogoLink from '../components/common/links/LogoLink';
 import JrcLogo from '../static/JrC.png';
 
 const AboutUs: React.FC = () => {
@@ -37,35 +38,20 @@ const AboutUs: React.FC = () => {
           og har hjulpet oss i Organisasjonskollegiet med å omforme vår organisasjonskunnskap til produktutvikling.
         </Text>
         <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
-          <ExternalLink href="https://organisasjonskollegiet.no/">
-            <Logo
-              src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
-              alt="Organisasjonskollegiet"
-            />
-          </ExternalLink>
-          <ExternalLink href="https://velferdstinget.no/">
-            <Logo src="https://velferdstinget.no/static/VTlogo.svg" alt="Velferdstinget" />
-          </ExternalLink>
-          <ExternalLink href="https://www.jrc.no">
-            <Logo src={JrcLogo} alt="Junior Consulting" />
-          </ExternalLink>
+          <LogoLink
+            href="https://organisasjonskollegiet.no/"
+            src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
+            alt="Organisasjonskollegiet"
+          />
+          <LogoLink
+            href="https://velferdstinget.no/"
+            src="https://velferdstinget.no/static/VTlogo.svg"
+            alt="Velferdstinget"
+          />
+          <LogoLink href="https://www.jrc.no" src={JrcLogo} alt="Junior Consulting" />
         </WrapStack>
       </VStack>
     </PageContainer>
-  );
-};
-
-const Logo = ({ src, alt, ...options }: ImageProps) => {
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      w="200px"
-      h="115px"
-      objectFit="contain"
-      _hover={{ transform: 'scale(1.1)' }}
-      {...options}
-    />
   );
 };
 
