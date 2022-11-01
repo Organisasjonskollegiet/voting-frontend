@@ -1,7 +1,7 @@
 import { Heading, Image, ImageProps, Text, VStack, Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import React from 'react';
-import ExternalLink, { ExternalLinkProps } from '../components/common/buttons/ExternalLink';
+import ExternalLink, { ExternalLinkProps } from '../components/common/links/ExternalLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';

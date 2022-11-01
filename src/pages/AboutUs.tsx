@@ -1,7 +1,7 @@
 import { Heading, Image, ImageProps, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import ExternalLink from '../components/common/buttons/ExternalLink';
-import DownloadFileLink from '../components/common/buttons/DownloadFileLink';
+import ExternalLink from '../components/common/links/ExternalLink';
+import DownloadFileLink from '../components/common/links/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
