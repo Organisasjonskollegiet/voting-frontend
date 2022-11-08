@@ -20,7 +20,7 @@ const FrontPage: React.FC = () => {
           effektive og gode demokratiske prosesser.
         </Text>
         <Link
-          href="https://forms.gle/KjtsgttvHqPdzEvX8"
+          href="https://forms.gle/NPECocCur5vddrve7"
           isExternal
           style={{ fontWeight: 'bold', color: darkblue }}
           width="-moz-max-content"
