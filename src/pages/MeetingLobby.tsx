@@ -142,7 +142,7 @@ const MeetingLobby: React.FC = () => {
   }, [votationOpened, handleOpenVotation, numberOfUpcomingVotations, openVotation, lastOpenVotation]);
 
   const backToMyMeetings = () => {
-    navigate('/', { replace: true });
+    navigate('/myMeetings', { replace: true });
   };
 
   const returnToVotationList = (status: VotationStatus) => {
