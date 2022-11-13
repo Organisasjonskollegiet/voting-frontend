@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@chakra-ui/react';
 
-interface ExternalLinkProps {
+export interface ExternalLinkProps {
   href: string;
 }
 
