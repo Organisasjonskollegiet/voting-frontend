@@ -8,31 +8,29 @@ const VotationTypeInformation: React.FC = () => {
   return (
     <InformationModal title="Flertallsformer" ariaLabel="Informasjon om flertallsformer" alignWithText={true}>
       <Text mb="1rem">
-        Administrator og teller får opp stemmefordelingen, og kan derfor selv regne ut et resultat basert på andre
-        regler enn de nedenfor.
+        Administrator og teller får opp fordelingen av stemmer. De kan selv regne ut et resultat basert på andre regler
+        enn de nedenfor.
       </Text>
       <Heading size="sm">Simpelt flertall</Heading>
       <Text mb="1rem">
-        Alternativet med flest stemmer vinner. <br />
-        Blanke og avholdende stemmer telles ikke i utregningen.
+        Alternativet med flest stemmer vinner. Blanke og avholdende stemmer telles ikke i utregningen.
       </Text>
       <Heading size="sm">Kvalifisert 50% flertall</Heading>
       <Text mb="1rem">
-        Et alternativ trenger stemmene fra mer enn halvparten av de stemmeberettigede tilstede for å vinne. <br />
-        Hvis alle med stemmerett er tilstede, er dette likt absolutt flertall. <br />
-        Både blanke og avholdende stemmer telles med i utregningen.
+        Et alternativ trenger mer enn halvparten av stemmene til alle de registrerte brukere i stemmesystemet for å
+        vinne. Hvis alle med stemmerett i organisasjonen er tilstede, er dette likt absolutt flertall. Både blanke og
+        avholdende stemmer telles med i utregningen.
       </Text>
 
       <Heading size="sm">Kvalifisert 2/3 flertall</Heading>
       <Text mb="1rem">
-        Et alternativ trenger stemmene fra mer enn to tredjedeler av de stemmeberettigede tilstede for å vinne. <br />
-        Både blanke og avholdende stemmer telles med i utregningen.
+        Et alternativ trenger mer enn to tredjedeler av stemmene til alle de registrerte brukere i stemmesystemet for å
+        vinne. Både blanke og avholdende stemmer telles med i utregningen.
       </Text>
       <Heading size="sm">Preferansevalg</Heading>
       <Text mb="1rem">
-        Velgerne rangerer de alternativene de ønsker i den rekkefølgen de foretrekker dem. Her har man mulighet til å
-        velge flere vinnere. <br />
-        Man kan stemme blankt ved å ikke rangerer noen alternativer.
+        Velgerne rangerer de alternativene de ønsker i den rekkefølgen de foretrekker dem. Valget kan ha flere vinnere
+        dersom dere ønsker det. Velgerne kan stemme blankt ved å ikke rangerer noen alternativer.
       </Text>
       <Text>
         Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
