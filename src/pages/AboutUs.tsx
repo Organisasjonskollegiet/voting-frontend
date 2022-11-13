@@ -5,6 +5,7 @@ import DownloadFileLink from '../components/common/buttons/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
+import NSOLogo from '../static/NSO_Logo_dark_green.png';
 
 const AboutUs: React.FC = () => {
   return (
@@ -44,7 +45,7 @@ const AboutUs: React.FC = () => {
           engasjement for nasjonale og internasjonale utdanningssaker blant studentene samt å representere sine
           medlemslag. Norsk studentorganisasjon er partipolitisk uavhengig.
         </Text>
-        <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
+        <WrapStack breakpoint={800} spacing="50" justifyContent="space-between">
           <ExternalLink href="https://organisasjonskollegiet.no/">
             <Logo
               src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
@@ -56,6 +57,9 @@ const AboutUs: React.FC = () => {
           </ExternalLink>
           <ExternalLink href="https://www.jrc.no">
             <Logo src={JrcLogo} alt="Junior Consulting" />
+          </ExternalLink>
+          <ExternalLink href="https://www.student.no/">
+            <Logo src={NSOLogo} alt="Norsk studentorganisasjon" />
           </ExternalLink>
         </WrapStack>
       </VStack>
