@@ -1,12 +1,28 @@
-import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
-import React from 'react';
+import { Box, Button, Flex, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import React, { useEffect } from 'react';
 import { useDeleteMeMutation } from '../../__generated__/graphql-types';
+import { useAuth0 } from '@auth0/auth0-react';
 import CustomAlertDialog, { DialogType } from '../common/CustomAlertDialog';
 
 const DeleteUser: React.FC = () => {
-  const [deleteUser] = useDeleteMeMutation();
+  const [deleteUser, { error }] = useDeleteMeMutation();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { logout } = useAuth0();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Kunne ikke slette brukeren.',
+        description: "Det oppstod et problem med å slette brukeren. Prøv på nytt eller ta kontakt med Organisasjonskollegiet.",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }, [error,toast]);
 
   return (
     <Flex
@@ -34,7 +50,11 @@ const DeleteUser: React.FC = () => {
       <CustomAlertDialog
         dialogIsOpen={isOpen}
         handleCancel={onClose}
-        handleConfirm={() => deleteUser()}
+        handleConfirm={() => {
+          deleteUser({onCompleted : ()=>{
+            logout({ returnTo: window.location.origin });
+          }});
+        }}
         type={DialogType.USER}
         confirmColor={'#e53e3e'}
       />

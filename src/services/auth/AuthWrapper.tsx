@@ -1,27 +1,31 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Center, Spinner } from '@chakra-ui/react';
-import { useLocation } from 'react-router';
+// import { useLocation } from 'react-router';
 
 const AuthWrapper: React.FC = ({ children }) => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
-  const location = useLocation();
+  // const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  // const location = useLocation();
 
-  if (!isLoading && isAuthenticated) {
+  const {isLoading } = useAuth0();
+  if (!isLoading) {
     return <>{children}</>;
   }
+  // if (!isLoading && isAuthenticated) {
+  //   return <>{children}</>;
+  // }
 
-  if (!isLoading && !isAuthenticated) {
-    setTimeout(
-      () =>
-        loginWithRedirect({
-          appState: {
-            returnTo: location.pathname,
-          },
-        }),
-      500
-    );
-  }
+  // if (!isLoading && !isAuthenticated) {
+  //   setTimeout(
+  //     () =>
+  //       loginWithRedirect({
+  //         appState: {
+  //           returnTo: location.pathname,
+  //         },
+  //       }),
+  //     500
+  //   );
+  // }
 
   return (
     <Center>
