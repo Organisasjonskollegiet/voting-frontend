@@ -12,8 +12,9 @@ const AboutUs: React.FC = () => {
         <Heading>Om Vedtatt.no</Heading>
         <Text>
           Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting med støtte fra
-          Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
-          effektive og gode demokratiske prosesser.
+          Velferdstinget i Gjøvik, Ålesund og Trondheim. Vedtatt.no har også fått tilskudd fra Norsk
+          studentorganisasjon. Målet er at frivillige organisasjoner skal kunne gjennomføre effektive og gode
+          demokratiske prosesser.
         </Text>
         <Text>
           <ExternalLink href="https://organisasjonskollegiet.no/">Organisasjonskollegiet</ExternalLink> er en gjeng med
@@ -33,6 +34,13 @@ const AboutUs: React.FC = () => {
           <ExternalLink href="https://www.jrc.no">Junior Consulting</ExternalLink> er et studentkonsulenthus bestående
           av studenter fra mange forskjellige studieprogram ved NTNU. De har stått for design og utvikling av løsningen
           og har hjulpet oss i Organisasjonskollegiet med å omforme vår organisasjonskunnskap til produktutvikling.
+        </Text>
+        <Text>
+          <ExternalLink href="https://www.student.no/">Norsk studentorganisasjon</ExternalLink> er en nasjonal
+          interesseorganisasjon for mange av studentdemokratiene ved norske universiteter og høyskoler. Norsk
+          studentorganisasjon har til oppgave å ivareta og fremme studentenes interesser og rettigheter, fremme
+          engasjement for nasjonale og internasjonale utdanningssaker blant studentene samt å representere sine
+          medlemslag. Norsk studentorganisasjon er partipolitisk uavhengig.
         </Text>
         <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
           <ExternalLink href="https://organisasjonskollegiet.no/">
