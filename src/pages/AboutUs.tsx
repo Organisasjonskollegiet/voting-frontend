@@ -5,7 +5,9 @@ import WrapStack from '../components/common/layout/WrapStack';
 import DownloadFileLink from '../components/common/links/DownloadFileLink';
 import ExternalLink from '../components/common/links/ExternalLink';
 import LogoLink from '../components/common/links/LogoLink';
+import ModalLink from '../components/common/links/ModalLink';
 import JrcLogo from '../static/JrC.png';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const AboutUs: React.FC = () => {
   return (
@@ -37,6 +39,9 @@ const AboutUs: React.FC = () => {
           av studenter fra mange forskjellige studieprogram ved NTNU. De har stått for design og utvikling av løsningen
           og har hjulpet oss i Organisasjonskollegiet med å omforme vår organisasjonskunnskap til produktutvikling.
         </Text>
+        <Text>
+          Vi bruker <VotationInformation label={"følgende"}/> flertallsformer.
+        </Text>
         <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
           <LogoLink
             href="https://organisasjonskollegiet.no/"
@@ -52,6 +57,43 @@ const AboutUs: React.FC = () => {
         </WrapStack>
       </VStack>
     </PageContainer>
+  );
+};
+
+const VotationInformation=({
+  label
+}: {
+  label : string
+}) => {
+  return (
+    <ModalLink title="Flertallsformer" label={label}>
+      <Heading size="sm">Simpelt flertall</Heading>
+      <Text mb="1rem">
+        Alternativet med flest stemmer vinner. <br />
+        Blanke stemmer telles ikke.
+      </Text>
+      <Heading size="sm">Kvalifisert flertall</Heading>
+      <Text mb="1rem">
+        Et alternativ trenger stemmene fra mer enn halvparten av de stemmeberettigede tilstede for å vinne.
+      </Text>
+
+      <Heading size="sm">Kvalifisert 2/3 flertall</Heading>
+      <Text mb="1rem">
+        Et alternativ trenger stemmene fra mer enn to tredjedeler av de stemmeberettigede tilstede for å vinne.
+      </Text>
+      <Heading size="sm">Preferansevalg</Heading>
+      <Text mb="1rem">
+        Velgerne rangerer de alternativene de ønsker i den rekkefølgen de foretrekker dem. Her har man mulighet til å
+        velge flere vinnere. <br />
+        Man kan stemme blankt ved å ikke rangerer noen alternativer.
+      </Text>
+      <Text>
+        Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
+        <ExternalLink href="https://www.youtube.com/watch?v=bLH_w5kHJpA">
+          Single transferable vote <ExternalLinkIcon mx="2px" />
+        </ExternalLink>
+      </Text>
+    </ModalLink>
   );
 };
 
