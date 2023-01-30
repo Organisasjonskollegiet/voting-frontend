@@ -1,10 +1,13 @@
-import { Heading, Image, ImageProps, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import ExternalLink from '../components/common/buttons/ExternalLink';
-import DownloadFileLink from '../components/common/buttons/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
+import DownloadFileLink from '../components/common/links/DownloadFileLink';
+import ExternalLink from '../components/common/links/ExternalLink';
+import LogoLink from '../components/common/links/LogoLink';
+import ModalLink from '../components/common/links/ModalLink';
 import JrcLogo from '../static/JrC.png';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const AboutUs: React.FC = () => {
   return (
@@ -36,36 +39,61 @@ const AboutUs: React.FC = () => {
           av studenter fra mange forskjellige studieprogram ved NTNU. De har stått for design og utvikling av løsningen
           og har hjulpet oss i Organisasjonskollegiet med å omforme vår organisasjonskunnskap til produktutvikling.
         </Text>
+        <Text>
+          Vi bruker <VotationInformation label={"følgende"}/> flertallsformer.
+        </Text>
         <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
-          <ExternalLink href="https://organisasjonskollegiet.no/">
-            <Logo
-              src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
-              alt="Organisasjonskollegiet"
-            />
-          </ExternalLink>
-          <ExternalLink href="https://velferdstinget.no/">
-            <Logo src="https://velferdstinget.no/static/VTlogo.svg" alt="Velferdstinget" />
-          </ExternalLink>
-          <ExternalLink href="https://www.jrc.no">
-            <Logo src={JrcLogo} alt="Junior Consulting" />
-          </ExternalLink>
+          <LogoLink
+            href="https://organisasjonskollegiet.no/"
+            src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
+            alt="Organisasjonskollegiet"
+          />
+          <LogoLink
+            href="https://velferdstinget.no/"
+            src="https://velferdstinget.no/static/VTlogo.svg"
+            alt="Velferdstinget"
+          />
+          <LogoLink href="https://www.jrc.no" src={JrcLogo} alt="Junior Consulting" />
         </WrapStack>
       </VStack>
     </PageContainer>
   );
 };
 
-const Logo = ({ src, alt, ...options }: ImageProps) => {
+const VotationInformation=({
+  label
+}: {
+  label : string
+}) => {
   return (
-    <Image
-      src={src}
-      alt={alt}
-      w="200px"
-      h="115px"
-      objectFit="contain"
-      _hover={{ transform: 'scale(1.1)' }}
-      {...options}
-    />
+    <ModalLink title="Flertallsformer" label={label}>
+      <Heading size="sm">Simpelt flertall</Heading>
+      <Text mb="1rem">
+        Alternativet med flest stemmer vinner. <br />
+        Blanke stemmer telles ikke.
+      </Text>
+      <Heading size="sm">Kvalifisert flertall</Heading>
+      <Text mb="1rem">
+        Et alternativ trenger stemmene fra mer enn halvparten av de stemmeberettigede tilstede for å vinne.
+      </Text>
+
+      <Heading size="sm">Kvalifisert 2/3 flertall</Heading>
+      <Text mb="1rem">
+        Et alternativ trenger stemmene fra mer enn to tredjedeler av de stemmeberettigede tilstede for å vinne.
+      </Text>
+      <Heading size="sm">Preferansevalg</Heading>
+      <Text mb="1rem">
+        Velgerne rangerer de alternativene de ønsker i den rekkefølgen de foretrekker dem. Her har man mulighet til å
+        velge flere vinnere. <br />
+        Man kan stemme blankt ved å ikke rangerer noen alternativer.
+      </Text>
+      <Text>
+        Hvordan resultatet ved preferansevalg blir utregnet kan du se her:{' '}
+        <ExternalLink href="https://www.youtube.com/watch?v=bLH_w5kHJpA">
+          Single transferable vote <ExternalLinkIcon mx="2px" />
+        </ExternalLink>
+      </Text>
+    </ModalLink>
   );
 };
 

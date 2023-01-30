@@ -1,7 +1,8 @@
-import { Heading, Image, ImageProps, Text, VStack, Link } from '@chakra-ui/react';
+import { Heading, Text, VStack, Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import React from 'react';
-import ExternalLink, { ExternalLinkProps } from '../components/common/buttons/ExternalLink';
+import LogoLink from '../components/common/links/LogoLink';
+import DownloadFileLink from '../components/common/links/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
 import WrapStack from '../components/common/layout/WrapStack';
 import JrcLogo from '../static/JrC.png';
@@ -17,10 +18,11 @@ const FrontPage: React.FC = () => {
         <Text>
           Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting med støtte fra
           Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
-          effektive og gode demokratiske prosesser.
+          effektive og gode demokratiske prosesser. Informasjon om hvordan vi håndterer brukeren din, anonymitet og selvregistrering kan 
+          finnes <DownloadFileLink href={process.env.PUBLIC_URL + "/privacy-and-safety.pdf" }>her</DownloadFileLink>.
         </Text>
         <Link
-          href="https://forms.gle/KjtsgttvHqPdzEvX8"
+          href="https://forms.gle/NPECocCur5vddrve7"
           isExternal
           style={{ fontWeight: 'bold', color: darkblue }}
           width="-moz-max-content"
@@ -43,22 +45,6 @@ const FrontPage: React.FC = () => {
         </WrapStack>
       </VStack>
     </PageContainer>
-  );
-};
-
-const LogoLink = ({ href, src, alt, ...options }: ImageProps & ExternalLinkProps) => {
-  return (
-    <ExternalLink href={href}>
-      <Image
-        src={src}
-        alt={alt}
-        w="200px"
-        h="115px"
-        objectFit="contain"
-        _hover={{ transform: 'scale(1.1)' }}
-        {...options}
-      />
-    </ExternalLink>
   );
 };
 

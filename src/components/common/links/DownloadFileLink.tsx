@@ -5,7 +5,7 @@ interface DownloadFileLinkProps {
   href: string;
 }
 
-const ExternalLink: React.FC<DownloadFileLinkProps> = ({ href, children }) => {
+const DownloadFileLink: React.FC<DownloadFileLinkProps> = ({ href, children }) => {
   return (
     <Link href={href} textDecoration="underline" fontStyle="italic" download>
       {children}
@@ -13,4 +13,4 @@ const ExternalLink: React.FC<DownloadFileLinkProps> = ({ href, children }) => {
   );
 };
 
-export default ExternalLink;
+export default DownloadFileLink;

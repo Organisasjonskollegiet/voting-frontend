@@ -126,6 +126,11 @@ const HamburgerBody = ({ onClose }: { onClose: () => void }) => {
       <Divider mb="1rem" />
       <Stack as={'nav'} spacing={2} pl="0.5em">
         <Links onClose={onClose} />
+        <NavLink style={{ fontWeight: 'bold' }} to={"/myProfile"} key={"Min profil"}>
+          <Button w="100%" justifyContent="left" variant="link" onClick={onClose}>
+            {"Min profil"}
+          </Button>
+        </NavLink>
         <Button maxW="max-content" variant="link" onClick={() => logout({ returnTo: window.location.origin })}>
           Logg ut
         </Button>
