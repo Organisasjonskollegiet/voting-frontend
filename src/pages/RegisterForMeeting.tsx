@@ -3,11 +3,15 @@ import { Center, Text, useToast, VStack } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../components/common/Loading';
 import { useRegisterAsParticipantMutation } from '../__generated__/graphql-types';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation } from 'react-router';
 
 const RegisterForMeeting: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [registerAsParticipant, { data, loading, error }] = useRegisterAsParticipantMutation();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const location = useLocation();
 
   const { meetingId } = useParams<{ meetingId: string }>();
 
@@ -32,15 +36,27 @@ const RegisterForMeeting: React.FC = () => {
   if (loading) return <Loading text="Registrerer deg som deltaker" />;
 
   if (error)
-    return (
-      <Center mt="10vh" mb="1vh">
-        <VStack>
-          <Text as="b">Kunne ikke registrere deg som deltaker.</Text>
-          <Text>Enten finnes ikke møtet, eller så tillater det ikke selvregistrering.</Text>
-        </VStack>
-      </Center>
-    );
-
+    if (!isAuthenticated){
+      setTimeout(
+        () =>
+          loginWithRedirect({
+            appState: {
+              returnTo: location.pathname,
+            },
+          }),
+        500
+      );
+    }
+    else{
+      return (
+        <Center mt="10vh" mb="1vh">
+          <VStack>
+            <Text as="b">Kunne ikke registrere deg som deltaker.</Text>
+            <Text>Enten finnes ikke møtet, eller så tillater det ikke selvregistrering.</Text>
+          </VStack>
+        </Center>
+      );
+    }
   return <></>;
 };
 

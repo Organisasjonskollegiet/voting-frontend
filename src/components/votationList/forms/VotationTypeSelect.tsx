@@ -75,7 +75,7 @@ const VotationTypeSelect: React.FC<IProps> = ({ votation, updateVotationType, up
           <NumberInput
             defaultValue={votation.numberOfWinners}
             min={1}
-            max={20}
+            max={50} //Can be changed upon request
             onChange={(value) => updateNumberOfWinners(Number(value))}
           >
             <NumberInputField />
