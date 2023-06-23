@@ -7,7 +7,7 @@ export interface ExternalLinkProps {
 
 const ExternalLink: React.FC<ExternalLinkProps> = ({ href, children }) => {
   return (
-    <Link href={href} textDecoration="underline" fontStyle="italic" isExternal>
+    <Link href={href} textDecoration="underline" fontWeight="bold" isExternal>
       {children}
     </Link>
   );

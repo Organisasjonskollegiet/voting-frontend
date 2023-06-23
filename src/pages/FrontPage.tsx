@@ -1,49 +1,71 @@
-import { Heading, Text, VStack, Link } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
+import { Heading, Text, VStack, Link, HStack, Image, Box } from '@chakra-ui/react';
 import React from 'react';
-import LogoLink from '../components/common/links/LogoLink';
+import LogoGrid from '../components/common/LogoGrid';
 import DownloadFileLink from '../components/common/links/DownloadFileLink';
 import PageContainer from '../components/common/layout/PageContainer';
-import WrapStack from '../components/common/layout/WrapStack';
-import JrcLogo from '../static/JrC.png';
-import { orgBlue, darkblue } from '../components/styles/colors';
+import blue_hand from '../static/blue_hand.png';
+import orange_hand from '../static/orange_hand.png';
+import { textBlue, textOrange } from '../components/styles/colors';
+import useScreenWidth from '../hooks/ScreenWidth';
 
 const FrontPage: React.FC = () => {
+  const mobileWidth = 600;
+  const screenWidth = useScreenWidth();
   return (
     <PageContainer>
-      <VStack py="10vh" alignItems="left" w="min(90%, 800px)" mx="auto" spacing={5} fontSize="2xl">
-        <Heading as="h1" size="3xl" textAlign="center" color={orgBlue}>
-          Velkommen til <br /> Vedtatt.no!
-        </Heading>
-        <Text>
-          Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting med støtte fra
-          Velferdstinget i Gjøvik, Ålesund og Trondheim. Målet er at frivillige organisasjoner skal kunne gjennomføre
-          effektive og gode demokratiske prosesser. Informasjon om hvordan vi håndterer brukeren din, anonymitet og selvregistrering kan 
-          finnes <DownloadFileLink href={process.env.PUBLIC_URL + "/privacy-and-safety.pdf" }>her</DownloadFileLink>.
-        </Text>
-        <Link
-          href="https://forms.gle/NPECocCur5vddrve7"
-          isExternal
-          style={{ fontWeight: 'bold', color: darkblue }}
-          width="-moz-max-content"
-        >
-          Gi oss tilbakemelding
-          <ExternalLinkIcon mx="2px" />
-        </Link>
-        <WrapStack breakpoint={800} spacing="0" justifyContent="space-between">
-          <LogoLink
-            href="https://organisasjonskollegiet.no/"
-            src="https://images.squarespace-cdn.com/content/v1/5c38b52f2487fdae852bdc70/1584098071586-CFU6NPF6HTRJEOLQMHC4/logoLarge.png"
-            alt="Organisasjonskollegiet"
+      <HStack spacing={5} mb="-10">
+        { screenWidth > mobileWidth ? 
+        <VStack mr="4">
+          <Image
+            src={blue_hand}
+            alt="Image"
+            w="200px"
+            h= "500px"
+            objectFit="contain"
           />
-          <LogoLink
-            href="https://velferdstinget.no/"
-            src="https://velferdstinget.no/static/VTlogo.svg"
-            alt="Velferdstinget"
+          <Box
+            w="200px"
+            h= "100px"
           />
-          <LogoLink href="https://www.jrc.no" src={JrcLogo} alt="Junior Consulting" />
-        </WrapStack>
-      </VStack>
+        </VStack> : <div/>}
+        <VStack py="10vh" alignItems="left" w="90%" mx="auto" spacing={5}>
+          <Heading variant={screenWidth > mobileWidth ? "h1" : "mobile"}>
+            Gjennomfør effektive og gode demokratiske prosesser med vårt digitale stemmesystem
+          </Heading>
+          <Text variant='bodyHeader'>
+            Vedtatt.no er et digitalt stemmesystem utviklet av Organisasjonskollegiet og Junior Consulting 
+            med støtte fra Velferdstinget i Gjøvik, Ålesund og Trondheim. 
+            Målet er at frivillige organisasjoner skal kunne gjennomføre effektive og
+            gode demokratiske prosesser. 
+          </Text>
+          <Text fontSize={"22px"} color={textBlue} fontWeight="normal">
+            Vil du hjelpe oss med å bli bedre? Klikk <Link
+            href="https://forms.gle/NPECocCur5vddrve7"
+            isExternal
+            style={{ fontWeight: 'bold', color: textOrange, textDecoration : 'underline' }}
+            width="-moz-max-content"
+          > her.</Link>
+          </Text>
+          <DownloadFileLink color={textBlue} href={process.env.PUBLIC_URL + "/privacy-and-safety.pdf" }>Informasjon om hvordan vi håndterer informasjon, anonymitet og selvregistrering.</DownloadFileLink>
+        </VStack>
+        { screenWidth > mobileWidth ? 
+        <VStack alignItems="right">
+          <Box
+            w="200px"
+            h= "100px"
+          />
+          <Image
+            src={orange_hand}
+            alt="Image"
+            w="200px"
+            h= "500px"
+            objectFit="contain"
+          />
+        </VStack> : <div/>}
+      </HStack>
+      <Box mx="100" pb="50">
+        <LogoGrid/>
+      </Box>
     </PageContainer>
   );
 };

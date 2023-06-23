@@ -11,6 +11,8 @@
     "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
+    "@fontsource/lora": "^4.5.13",
+    "@fontsource/open-sans": "^4.5.14",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

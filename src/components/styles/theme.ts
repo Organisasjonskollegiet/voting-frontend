@@ -1,7 +1,9 @@
 import { extendTheme } from '@chakra-ui/react';
 import { AlternativeConfig } from '../activeVotation/alternative/Alternative';
 import { MeetingInformationFormConfig } from '../manageMeeting/atoms/MeetingInformationForm';
-import { darkblue, lightblue, green } from './colors';
+import { darkblue, lightblue, green, logInButtonOrange, textBlue, textGray } from './colors';
+import "@fontsource/lora";
+import "@fontsource/open-sans"
 
 const theme = extendTheme({
   colors: {
@@ -10,9 +12,13 @@ const theme = extendTheme({
       300: '#8d99ab',
       400: '#718096',
     },
+    orangeButton : {
+      500 : logInButtonOrange
+    }
   },
   fonts: {
-    body: 'Helvetica',
+    heading : "'Lora', sans-serif",
+    body: "'Open Sans', sans-serif",
   },
   config: {
     initialColorMode: 'light',
@@ -31,6 +37,9 @@ const theme = extendTheme({
         },
         link: {
           py: '1rem',
+          fontSize : '22px', 
+          fontWeight: 'semibold', 
+          color: textGray
         },
         dark: {
           bg: 'gray.500',
@@ -58,17 +67,30 @@ const theme = extendTheme({
     },
     Text: {
       baseStyle: {
-        color: darkblue,
+        color: textGray,
+        fontSize: "18px",
+        fontWeight : "semibold",
+      },
+      variants: {
+        bodyHeader: {
+          fontSize: '24px',
+          fontWeight : "bold",
+          color: textBlue,
+         },
       },
     },
     Heading: {
       baseStyle: {
-        color: darkblue,
+        color: textBlue,
+        fontWeight : "bold",
       },
       variants: {
         h1: {
-          fontSize: '1.5rem',
+          fontSize: '3.0rem',
         },
+        mobile :{
+          fontSize: '2.0rem',
+        }
       },
     },
   },
