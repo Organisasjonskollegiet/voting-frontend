@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody } from '@chakra-ui/modal';
 import { useDisclosure, Link } from '@chakra-ui/react';
 import React from 'react';
-import { offwhite, darkblue } from '../../styles/colors';
+import { offwhite, darkblue, textOrange } from '../../styles/colors';
 
 interface ModalLinkProps {
   label: string;
@@ -13,7 +13,7 @@ const ModalLink: React.FC<ModalLinkProps> = ({ children, label, title, }) => {
 
   return (
     <>
-        <Link textDecoration="underline" fontStyle="italic" onClick={onOpen}>{label}</Link>
+        <Link color={textOrange} onClick={onOpen}>{label}</Link>
         
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
