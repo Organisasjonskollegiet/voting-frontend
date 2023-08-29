@@ -2,7 +2,7 @@ import React from 'react';
 import LogoLink from './links/LogoLink';
 import WrapStack from './layout/WrapStack';
 import JrcLogo from '../../static/JrC_logo.png';
-import NSOLogo from '../../static/NSO_logo_tiny.png';
+import NSOLogo from '../../static/NSO_logo.png';
 import VTLogo from '../../static/VTlogo.png';
 
 const LogoGrid = ()  => {
