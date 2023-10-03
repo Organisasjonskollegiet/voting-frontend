@@ -40,7 +40,7 @@ const FrontPage: React.FC = () => {
           </Text>
           <Text fontSize={"22px"} color={textBlue} fontWeight="normal">
             Vil du hjelpe oss med å bli bedre? Klikk <Link
-            href="https://forms.gle/NPECocCur5vddrve7"
+            href="https://forms.gle/g98XbxuWsGesFrzY6"
             isExternal
             style={{ fontWeight: 'bold', color: textOrange, textDecoration : 'underline' }}
             width="-moz-max-content"
