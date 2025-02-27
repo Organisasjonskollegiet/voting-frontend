@@ -1726,6 +1726,7 @@ export const GetMeetingsDocument = gql`
     startTime
     participants {
       user {
+        email
         id
       }
       role
