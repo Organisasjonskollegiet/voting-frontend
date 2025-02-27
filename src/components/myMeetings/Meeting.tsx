@@ -13,6 +13,7 @@ import MeetingActionsWithPopover from './MeetingActionsWithPopover';
 
 interface ParticipantResult {
   user: {
+    email: string;
     id: string;
   };
   role: Role;
@@ -45,11 +46,13 @@ const Meeting: React.FC<
 
   useEffect(() => {
     if (user?.sub && participants.length > 0) {
-      setIsAdmin(
-        participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0].role === Role.Admin
-      );
+      // setIsAdmin(
+      //   participants.filter((participant) => `auth0|${participant.user?.id}` === user?.sub)[0].role === Role.Admin
+      // );
+      // TODO: Check if and not email here
+      setIsAdmin(participants.filter((participant) => participant.user?.email === user?.email)[0].role === Role.Admin);
     }
-  }, [user?.sub, participants]);
+  }, [user?.sub, user?.email, participants]);
 
   // eslint-disable-next-line
   const handleClick = (e: any) => {

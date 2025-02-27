@@ -110,7 +110,7 @@ const MyMeetings: React.FC = () => {
             <MeetingList
               meetingStatus="open"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
-              meetings={ongoingMeetings as Array<MeetingProps>}
+              meetings={ongoingMeetings as unknown as Array<MeetingProps>}
             />
           </Box>
         )}
@@ -119,10 +119,11 @@ const MyMeetings: React.FC = () => {
             <MeetingList
               meetingStatus="upcoming"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
-              meetings={upcomingMeetings as Array<MeetingProps>}
+              meetings={upcomingMeetings as unknown as Array<MeetingProps>}
             />
           </Box>
         )}
+
         {endedMeetings.length > 0 && (
           <Box m="0 2em 2.625em">
             <Heading size="sm" mb="1.125em">
@@ -131,7 +132,7 @@ const MyMeetings: React.FC = () => {
             <MeetingList
               meetingStatus="ended"
               handleDeleteMeeting={(id: string) => deleteMeeting({ variables: { id } })}
-              meetings={endedMeetings as Array<MeetingProps>}
+              meetings={endedMeetings as unknown as Array<MeetingProps>}
             />
           </Box>
         )}
